@@ -29,5 +29,5 @@ updates:
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: "MINOR: [Java] "
+      prefix: "MINOR: "
     open-pull-requests-limit: 10
