@@ -144,7 +144,7 @@ under the License.
         <configuration>
           <enableAssertions>false</enableAssertions>
           <systemPropertyVariables>
-            <arrow.test.dataRoot>${project.basedir}/../../../testing/data</arrow.test.dataRoot>
+            <arrow.test.dataRoot>${project.basedir}/../../testing/data</arrow.test.dataRoot>
           </systemPropertyVariables>
         </configuration>
       </plugin>

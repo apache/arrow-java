@@ -23,6 +23,7 @@ import static org.apache.arrow.tools.ArrowFileTestFixtures.writeData;
 import static org.apache.arrow.tools.ArrowFileTestFixtures.writeInput;
 import static org.apache.arrow.tools.ArrowFileTestFixtures.writeVariableWidthViewInput;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -34,6 +35,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.Map;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -163,12 +165,9 @@ public class TestIntegration {
 
   @Test
   public void testJSONRoundTripWithVariableWidth() throws Exception {
-    File testJSONFile =
-        new File("../../docs/source/format/integration_json_examples/simple.json")
-            .getCanonicalFile();
-    if (!testJSONFile.exists()) {
-      testJSONFile = new File("../docs/source/format/integration_json_examples/simple.json");
-    }
+    URL resource = getClass().getResource("/integration_json_simple.json");
+    assertNotNull(resource);
+    File testJSONFile = new File(resource.getFile()).getCanonicalFile();
     File testOutFile = new File(testFolder, "testOut.arrow");
     File testRoundTripJSONFile = new File(testFolder, "testOut.json");
     testOutFile.delete();
@@ -211,12 +210,9 @@ public class TestIntegration {
 
   @Test
   public void testJSONRoundTripWithStruct() throws Exception {
-    File testJSONFile =
-        new File("../../docs/source/format/integration_json_examples/struct.json")
-            .getCanonicalFile();
-    if (!testJSONFile.exists()) {
-      testJSONFile = new File("../docs/source/format/integration_json_examples/struct.json");
-    }
+    URL resource = getClass().getResource("/integration_json_struct.json");
+    assertNotNull(resource);
+    File testJSONFile = new File(resource.getFile()).getCanonicalFile();
     File testOutFile = new File(testFolder, "testOutStruct.arrow");
     File testRoundTripJSONFile = new File(testFolder, "testOutStruct.json");
     testOutFile.delete();

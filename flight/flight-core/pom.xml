@@ -155,7 +155,7 @@ under the License.
           <argLine combine.self="override">--add-opens=org.apache.arrow.flight.core/org.apache.arrow.flight.perf.impl=protobuf.java --add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</argLine>
           <enableAssertions>false</enableAssertions>
           <systemPropertyVariables>
-            <arrow.test.dataRoot>${project.basedir}/../../../testing/data</arrow.test.dataRoot>
+            <arrow.test.dataRoot>${project.basedir}/../../testing/data</arrow.test.dataRoot>
           </systemPropertyVariables>
         </configuration>
       </plugin>
@@ -170,7 +170,7 @@ under the License.
               <goal>compile-custom</goal>
             </goals>
             <configuration>
-              <protoSourceRoot>${basedir}/../../../format/</protoSourceRoot>
+              <protoSourceRoot>${basedir}/../../arrow-format/</protoSourceRoot>
             </configuration>
           </execution>
           <execution>

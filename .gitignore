@@ -21,3 +21,4 @@ arrow-git.properties
 cmake_install.cmake
 install_manifest.txt
 target/
+/.mvn/.develocity/

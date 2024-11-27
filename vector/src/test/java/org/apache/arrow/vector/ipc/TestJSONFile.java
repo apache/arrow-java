@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -318,10 +319,9 @@ public class TestJSONFile extends BaseFileTest {
 
   @Test
   public void testSetStructLength() throws IOException {
-    File file = new File("../../docs/source/format/integration_json_examples/struct.json");
-    if (!file.exists()) {
-      file = new File("../docs/source/format/integration_json_examples/struct.json");
-    }
+    URL resource = getClass().getResource("/integration_json_struct.json");
+    assertNotNull(resource);
+    File file = new File(resource.getFile());
     try (BufferAllocator readerAllocator =
             allocator.newChildAllocator("reader", 0, Integer.MAX_VALUE);
         JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
