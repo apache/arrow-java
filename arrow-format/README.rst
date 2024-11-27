@@ -15,11 +15,5 @@
 .. specific language governing permissions and limitations
 .. under the License.
 
-Arrow Protocol Files
-====================
-
-This folder contains binary protocol definitions for the Arrow columnar format
-and other parts of the project, like the Flight RPC framework.
-
-For documentation about the Arrow format, see the `docs/source/format`
-directory.
+This is a copy of https://github.com/apache/arrow/tree/main/format at revision
+2e6fe1a4ccfc4ffc63e5d0dc09f972ebbca12426.
