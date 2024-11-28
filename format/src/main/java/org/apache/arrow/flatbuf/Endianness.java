@@ -30,4 +30,3 @@ public final class Endianness {
 
   public static String name(int e) { return names[e]; }
 }
-

@@ -51,9 +51,9 @@ package org.apache.arrow.vector.complex.impl;
  */
 @SuppressWarnings("unused")
 public class ${name}ReaderImpl extends AbstractFieldReader {
-  
+
   private final ${name}Vector vector;
-  
+
   public ${name}ReaderImpl(${name}Vector vector){
     super();
     this.vector = vector;
@@ -66,7 +66,7 @@ public class ${name}ReaderImpl extends AbstractFieldReader {
   public Field getField(){
     return vector.getField();
   }
-  
+
   public boolean isSet(){
     return !vector.isNull(idx());
   }
@@ -75,7 +75,7 @@ public class ${name}ReaderImpl extends AbstractFieldReader {
     ${minor.class?cap_first}WriterImpl impl = (${minor.class?cap_first}WriterImpl) writer;
     impl.vector.copyFromSafe(idx(), impl.idx(), vector);
   }
-  
+
   public void copyAsField(String name, StructWriter writer){
     ${minor.class?cap_first}WriterImpl impl = (${minor.class?cap_first}WriterImpl) writer.${lowerName}(name);
     impl.vector.copyFromSafe(idx(), impl.idx(), vector);
@@ -90,7 +90,7 @@ public class ${name}ReaderImpl extends AbstractFieldReader {
   public void read(Nullable${minor.class?cap_first}Holder h){
     vector.get(idx(), h);
   }
-  
+
   public ${friendlyType} read${safeType}(){
     return vector.getObject(idx());
   }
@@ -104,11 +104,11 @@ public class ${name}ReaderImpl extends AbstractFieldReader {
     return vector.get(idx());
   }
   </#if>
-  
+
   public void copyValue(FieldWriter w){
-    
+
   }
-  
+
   public Object readObject(){
     return (Object)vector.getObject(idx());
   }
@@ -126,7 +126,7 @@ package org.apache.arrow.vector.complex.reader;
  */
 @SuppressWarnings("unused")
 public interface ${name}Reader extends BaseReader{
-  
+
   public void read(${minor.class?cap_first}Holder h);
   public void read(Nullable${minor.class?cap_first}Holder h);
   public Object readObject();
@@ -135,7 +135,7 @@ public interface ${name}Reader extends BaseReader{
   public boolean isSet();
   public void copyAsValue(${minor.class}Writer writer);
   public void copyAsField(String name, ${minor.class}Writer writer);
-  
+
 }
 
 
@@ -143,5 +143,3 @@ public interface ${name}Reader extends BaseReader{
 </#list>
 </#list>
 </#list>
-
-

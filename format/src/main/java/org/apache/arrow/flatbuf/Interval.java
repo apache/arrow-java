@@ -64,4 +64,3 @@ public final class Interval extends Table {
     public Interval get(Interval obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

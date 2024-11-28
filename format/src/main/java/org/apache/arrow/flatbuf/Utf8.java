@@ -58,4 +58,3 @@ public final class Utf8 extends Table {
     public Utf8 get(Utf8 obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

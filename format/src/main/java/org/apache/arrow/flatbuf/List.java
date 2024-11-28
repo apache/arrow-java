@@ -55,4 +55,3 @@ public final class List extends Table {
     public List get(List obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

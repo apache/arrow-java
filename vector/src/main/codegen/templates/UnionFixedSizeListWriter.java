@@ -222,7 +222,7 @@ public class UnionFixedSizeListWriter extends AbstractFieldWriter {
     writer.write(holder);
     writer.setPosition(writer.idx() + 1);
   }
- 
+
   @Override
   public void write(Decimal256Holder holder) {
     if (writer.idx() >= (idx() + 1) * listSize) {

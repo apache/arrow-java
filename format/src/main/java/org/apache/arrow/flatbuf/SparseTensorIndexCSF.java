@@ -180,4 +180,3 @@ public final class SparseTensorIndexCSF extends Table {
     public SparseTensorIndexCSF get(SparseTensorIndexCSF obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

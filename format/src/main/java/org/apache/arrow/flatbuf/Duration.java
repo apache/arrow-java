@@ -64,4 +64,3 @@ public final class Duration extends Table {
     public Duration get(Duration obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

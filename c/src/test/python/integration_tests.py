@@ -356,7 +356,7 @@ class TestPythonIntegration(unittest.TestCase):
         self.round_trip_array(lambda: pa.array(
             [[], [0], [1, 2], [4, 5, 6]], pa.list_view(pa.int64())
             # disabled check_metadata since in Java API the listview
-            # internal field name ("item") is not preserved 
+            # internal field name ("item") is not preserved
             # during round trips (it becomes "$data$").
         ), check_metadata=False)
 
@@ -399,7 +399,7 @@ class TestPythonIntegration(unittest.TestCase):
                     return reader.read_next_batch()
 
         self.round_trip_record_batch(recreate_batch)
-    
+
     def test_runendencoded_array(self):
         # empty vector
         self.round_trip_array(lambda: pa.RunEndEncodedArray.from_arrays([], [], pa.run_end_encoded(pa.int64(), pa.int64())))

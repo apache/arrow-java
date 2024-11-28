@@ -68,4 +68,3 @@ public final class Int extends Table {
     public Int get(Int obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

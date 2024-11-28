@@ -173,9 +173,9 @@ abstract class AbstractFieldWriter extends AbstractBaseWriter implements FieldWr
 
   /**
    * This implementation returns {@code false}.
-   * <p>  
+   * <p>
    *   Must be overridden by struct writers.
-   * </p>  
+   * </p>
    */
   @Override
   public boolean isEmptyStruct() {

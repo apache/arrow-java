@@ -151,7 +151,7 @@ public class ComplexCopier {
         return (FieldWriter) writer.${uncappedName}(name);
       }
     </#if>
-    
+
     </#list></#list>
     case STRUCT:
       return (FieldWriter) writer.struct(name);

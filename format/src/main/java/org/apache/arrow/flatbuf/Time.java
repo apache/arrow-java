@@ -84,4 +84,3 @@ public final class Time extends Table {
     public Time get(Time obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

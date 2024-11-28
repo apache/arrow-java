@@ -189,4 +189,3 @@ public final class Timestamp extends Table {
     public Timestamp get(Timestamp obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

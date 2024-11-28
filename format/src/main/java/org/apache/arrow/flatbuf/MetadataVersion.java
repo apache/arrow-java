@@ -50,4 +50,3 @@ public final class MetadataVersion {
 
   public static String name(int e) { return names[e]; }
 }
-

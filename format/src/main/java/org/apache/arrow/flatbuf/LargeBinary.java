@@ -59,4 +59,3 @@ public final class LargeBinary extends Table {
     public LargeBinary get(LargeBinary obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

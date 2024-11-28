@@ -67,4 +67,3 @@ public final class FixedSizeList extends Table {
     public FixedSizeList get(FixedSizeList obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

@@ -60,4 +60,3 @@ public final class Struct_ extends Table {
     public Struct_ get(Struct_ obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

@@ -88,4 +88,3 @@ public final class Message extends Table {
     public Message get(Message obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

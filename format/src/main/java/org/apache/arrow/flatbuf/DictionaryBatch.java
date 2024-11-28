@@ -86,4 +86,3 @@ public final class DictionaryBatch extends Table {
     public DictionaryBatch get(DictionaryBatch obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

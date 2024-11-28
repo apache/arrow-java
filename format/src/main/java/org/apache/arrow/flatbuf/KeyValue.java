@@ -77,4 +77,3 @@ public final class KeyValue extends Table {
     public KeyValue get(KeyValue obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

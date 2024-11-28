@@ -58,4 +58,3 @@ public final class Binary extends Table {
     public Binary get(Binary obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

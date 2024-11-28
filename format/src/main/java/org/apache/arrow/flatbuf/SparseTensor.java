@@ -99,4 +99,3 @@ public final class SparseTensor extends Table {
     public SparseTensor get(SparseTensor obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

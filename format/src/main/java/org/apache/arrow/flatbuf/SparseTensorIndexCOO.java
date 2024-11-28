@@ -125,4 +125,3 @@ public final class SparseTensorIndexCOO extends Table {
     public SparseTensorIndexCOO get(SparseTensorIndexCOO obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

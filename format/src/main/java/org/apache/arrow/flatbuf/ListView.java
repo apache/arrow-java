@@ -60,4 +60,3 @@ public final class ListView extends Table {
     public ListView get(ListView obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

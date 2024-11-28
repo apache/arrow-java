@@ -95,4 +95,3 @@ public final class DictionaryEncoding extends Table {
     public DictionaryEncoding get(DictionaryEncoding obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

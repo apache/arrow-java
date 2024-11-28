@@ -54,4 +54,3 @@ public final class Feature {
    */
   public static final long COMPRESSED_BODY = 2L;
 }
-

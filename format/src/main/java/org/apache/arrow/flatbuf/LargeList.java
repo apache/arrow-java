@@ -59,4 +59,3 @@ public final class LargeList extends Table {
     public LargeList get(LargeList obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

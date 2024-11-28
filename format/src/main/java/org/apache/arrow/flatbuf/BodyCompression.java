@@ -80,4 +80,3 @@ public final class BodyCompression extends Table {
     public BodyCompression get(BodyCompression obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

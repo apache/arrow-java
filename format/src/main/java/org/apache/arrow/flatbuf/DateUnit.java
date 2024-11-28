@@ -26,4 +26,3 @@ public final class DateUnit {
 
   public static String name(int e) { return names[e]; }
 }
-

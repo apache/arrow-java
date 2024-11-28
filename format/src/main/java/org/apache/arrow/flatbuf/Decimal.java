@@ -88,4 +88,3 @@ public final class Decimal extends Table {
     public Decimal get(Decimal obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

@@ -333,7 +333,7 @@ public class ${mode}StructWriter extends AbstractFieldWriter {
               <#list minor.typeParams?reverse as typeParam>
                 <#assign constructorParams = constructorParams + [ typeParam.name ] />
               </#list>
-            </#if>    
+            </#if>
             new ${minor.arrowType}(${constructorParams?join(", ")}<#if minor.class?starts_with("Decimal")>, ${vectName}Vector.TYPE_WIDTH * 8</#if>)
           <#else>
             MinorType.${upperName}.getType()
@@ -347,7 +347,7 @@ public class ${mode}StructWriter extends AbstractFieldWriter {
           vector.setInitialCapacity(this.initialCapacity);
         }
         vector.allocateNewSafe();
-      } 
+      }
       writer.setPosition(idx());
       fields.put(handleCase(name), writer);
     } else {

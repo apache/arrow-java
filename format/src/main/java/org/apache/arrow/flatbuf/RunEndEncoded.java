@@ -36,7 +36,7 @@ import java.nio.ByteOrder;
 /**
  * Contains two child arrays, run_ends and values.
  * The run_ends child array must be a 16/32/64-bit integer array
- * which encodes the indices at which the run with the value in 
+ * which encodes the indices at which the run with the value in
  * each corresponding index in the values child array ends.
  * Like list/struct types, the value array can be of any type.
  */
@@ -62,4 +62,3 @@ public final class RunEndEncoded extends Table {
     public RunEndEncoded get(RunEndEncoded obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

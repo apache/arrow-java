@@ -40,4 +40,3 @@ public final class MessageHeader {
 
   public static String name(int e) { return names[e]; }
 }
-

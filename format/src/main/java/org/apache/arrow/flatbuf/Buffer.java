@@ -70,4 +70,3 @@ public final class Buffer extends Struct {
     public Buffer get(Buffer obj, int j) {  return obj.__assign(__element(j), bb); }
   }
 }
-

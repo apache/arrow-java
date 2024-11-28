@@ -31,12 +31,12 @@ package org.apache.arrow.vector.holders;
  * Source code generated using FreeMarker template ${.template_name}
  */
 public final class ${className} implements ValueHolder{
-  
+
     <#if mode.name == "Repeated">
-    
+
     /** The first index (inclusive) into the Vector. **/
     public int start;
-    
+
     /** The last index (exclusive) into the Vector. **/
     public int end;
 
@@ -46,7 +46,7 @@ public final class ${className} implements ValueHolder{
     <#else>
 
     public static final int WIDTH = ${type.width};
-    
+
     <#if mode.name == "Optional">public int isSet;
     <#else>public final int isSet = 1;</#if>
     <#assign fields = (minor.fields!type.fields) + (minor.typeParams![]) />

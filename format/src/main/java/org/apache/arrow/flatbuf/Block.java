@@ -68,4 +68,3 @@ public final class Block extends Struct {
     public Block get(Block obj, int j) {  return obj.__assign(__element(j), bb); }
   }
 }
-

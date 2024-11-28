@@ -55,4 +55,3 @@ public final class Bool extends Table {
     public Bool get(Bool obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

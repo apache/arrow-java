@@ -109,4 +109,3 @@ public final class Schema extends Table {
     public Schema get(Schema obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

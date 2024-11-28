@@ -81,4 +81,3 @@ public final class TensorDim extends Table {
     public TensorDim get(TensorDim obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

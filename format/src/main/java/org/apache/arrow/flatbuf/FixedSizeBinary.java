@@ -67,4 +67,3 @@ public final class FixedSizeBinary extends Table {
     public FixedSizeBinary get(FixedSizeBinary obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

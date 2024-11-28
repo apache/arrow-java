@@ -75,4 +75,3 @@ public final class FieldNode extends Struct {
     public FieldNode get(FieldNode obj, int j) {  return obj.__assign(__element(j), bb); }
   }
 }
-

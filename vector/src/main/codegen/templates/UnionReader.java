@@ -43,7 +43,7 @@ public class UnionReader extends AbstractFieldReader {
 
   private BaseReader[] readers = new BaseReader[NUM_SUPPORTED_TYPES];
   public UnionVector data;
-  
+
   public UnionReader(UnionVector data) {
     this.data = data;
   }

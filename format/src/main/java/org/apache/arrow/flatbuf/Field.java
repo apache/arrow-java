@@ -127,4 +127,3 @@ public final class Field extends Table {
     public Field get(Field obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

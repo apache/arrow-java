@@ -186,7 +186,7 @@ public ${eName}WriterImpl(${name}Vector vector) {
   }
   </#if>
 
-  
+
   public void writeNull() {
     vector.setNull(idx());
     vector.setValueCount(idx()+1);

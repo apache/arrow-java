@@ -34,12 +34,11 @@ message Token {
 
   // definition of entire flight.
   Perf definition = 1;
-  
+
   // inclusive start
   int64 start = 2;
-  
+
   // exclusive end
   int64 end = 3;
-  
-}
 
+}

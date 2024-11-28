@@ -98,4 +98,3 @@ public final class Tensor extends Table {
     public Tensor get(Tensor obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

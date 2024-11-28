@@ -21,11 +21,11 @@
 
 ## Did you find a bug?
 
-The Arrow Java project uses GitHub as a bug tracker.  To report a bug, sign in 
+The Arrow Java project uses GitHub as a bug tracker.  To report a bug, sign in
 to your GitHub account, navigate to [GitHub issues](https://github.com/apache/arrow-java/issues)
 and click on **New issue** .
 
-Before you create a new bug entry, we recommend you first search among 
+Before you create a new bug entry, we recommend you first search among
 existing Arrow issues in [GitHub](https://github.com/apache/arrow-java/issues).
 
 ## Did you write a patch that fixes a bug or brings an improvement?

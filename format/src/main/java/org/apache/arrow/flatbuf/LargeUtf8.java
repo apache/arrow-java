@@ -59,4 +59,3 @@ public final class LargeUtf8 extends Table {
     public LargeUtf8 get(LargeUtf8 obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

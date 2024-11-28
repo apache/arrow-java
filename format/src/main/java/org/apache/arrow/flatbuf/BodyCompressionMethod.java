@@ -39,4 +39,3 @@ public final class BodyCompressionMethod {
 
   public static String name(int e) { return names[e]; }
 }
-

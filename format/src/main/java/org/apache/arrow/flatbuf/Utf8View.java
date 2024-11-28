@@ -64,4 +64,3 @@ public final class Utf8View extends Table {
     public Utf8View get(Utf8View obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

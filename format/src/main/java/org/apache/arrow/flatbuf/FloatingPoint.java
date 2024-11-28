@@ -64,4 +64,3 @@ public final class FloatingPoint extends Table {
     public FloatingPoint get(FloatingPoint obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

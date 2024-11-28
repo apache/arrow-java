@@ -44,17 +44,17 @@ public interface BaseReader extends Positionable{
   public interface StructReader extends BaseReader, Iterable<String>{
     FieldReader reader(String name);
   }
-  
+
   public interface RepeatedStructReader extends StructReader{
     boolean next();
     int size();
     void copyAsValue(StructWriter writer);
   }
-  
+
   public interface ListReader extends BaseReader{
-    FieldReader reader(); 
+    FieldReader reader();
   }
-  
+
   public interface RepeatedListReader extends ListReader{
     boolean next();
     int size();
@@ -70,11 +70,11 @@ public interface BaseReader extends Positionable{
     int size();
     void copyAsValue(MapWriter writer);
   }
-  
-  public interface ScalarReader extends  
-  <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first /> ${name}Reader, </#list></#list> 
+
+  public interface ScalarReader extends
+  <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first /> ${name}Reader, </#list></#list>
   BaseReader {}
-  
+
   interface ComplexReader{
     StructReader rootAsStruct();
     ListReader rootAsList();
@@ -82,4 +82,3 @@ public interface BaseReader extends Positionable{
     boolean ok();
   }
 }
-

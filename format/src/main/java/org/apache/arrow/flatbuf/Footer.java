@@ -107,4 +107,3 @@ public final class Footer extends Table {
     public Footer get(Footer obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

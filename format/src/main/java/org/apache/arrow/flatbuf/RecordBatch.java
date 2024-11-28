@@ -137,4 +137,3 @@ public final class RecordBatch extends Table {
     public RecordBatch get(RecordBatch obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

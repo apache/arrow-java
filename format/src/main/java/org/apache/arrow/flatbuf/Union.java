@@ -81,4 +81,3 @@ public final class Union extends Table {
     public Union get(Union obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

@@ -58,4 +58,3 @@ public final class Null extends Table {
     public Null get(Null obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

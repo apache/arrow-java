@@ -64,4 +64,3 @@ public final class BinaryView extends Table {
     public BinaryView get(BinaryView obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

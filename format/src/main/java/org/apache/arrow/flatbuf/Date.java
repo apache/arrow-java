@@ -72,4 +72,3 @@ public final class Date extends Table {
     public Date get(Date obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
   }
 }
-

@@ -30,7 +30,7 @@ data:
   - 'INSERT INTO table1 VALUES (null);'
   - 'INSERT INTO table1 VALUES (null);'
   - 'INSERT INTO table1 VALUES (null);'
-     
+
 query: 'select null_field18 from table1;'
 
 drop: 'DROP table table1;'
