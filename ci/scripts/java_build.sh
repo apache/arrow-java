@@ -47,9 +47,15 @@ cp -r "${source_dir}/dev" "${build_dir}"
 # Instead of hardcoding the list of directories to copy, find pom.xml and then
 # crawl back up to the top.  GNU realpath has --relative-to but this does not
 # work on macOS
-for source_root in $(find "${source_dir}" -not \( -path "${source_dir}"/build -prune \) -type f -name pom.xml -exec python -c "import os.path; print(os.path.relpath('{}', '${source_dir}'))" \; |
-                         awk -F/ '{print $1}' |
-                         sort -u); do
+
+poms=$(find "${source_dir}" -not \( -path "${source_dir}"/build -prune \) -type f -name pom.xml)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    poms=$(echo "$poms" | xargs -n1 python -c "import os.path; print(os.path.relpath('{}', '${source_dir}'))")
+else
+    poms=$(echo "$poms" | xargs -n1 realpath -s --relative-to="${source_dir}")
+fi
+
+for source_root in $(echo "${poms}" | awk -F/ '{print $1}' | sort -u); do
     cp -r "${source_dir}/${source_root}" "${build_dir}"
 done
 
