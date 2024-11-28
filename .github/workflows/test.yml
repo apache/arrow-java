@@ -81,12 +81,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        - arch: AMD64
-          jdk: 11
-          macos: 13
-        - arch: AArch64
-          jdk: 11
-          macos: latest
+        include:
+          - arch: AMD64
+            jdk: 11
+            macos: 13
+          - arch: AArch64
+            jdk: 11
+            macos: latest
     steps:
       - name: Set up Java
         uses: actions/setup-java@v4
