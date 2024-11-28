@@ -48,7 +48,7 @@
 #  *  Functions have the same meaning when applied to the encoded type
 #
 # Note: if two types have a different range (e.g. string and large_string) then
-# they do not satisfy the above criteria and are not encodings. 
+# they do not satisfy the above criteria and are not encodings.
 #
 # These types will never have a Substrait equivalent.  In the Substrait point
 # of view these are execution details.
@@ -167,4 +167,3 @@ types:
     parameters:
       - name: unit
         type: string
-
