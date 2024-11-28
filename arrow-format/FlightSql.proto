@@ -1857,7 +1857,7 @@ message DoPutPreparedStatementResult {
   // statement should be considered invalid, and all subsequent requests for this prepared
   // statement must use this new handle.
   // The updated handle allows implementing query parameters with stateless services.
-  // 
+  //
   // When an updated handle is not provided by the server, clients should contiue
   // using the previous handle provided by `ActionCreatePreparedStatementResonse`.
   optional bytes prepared_statement_handle = 1;

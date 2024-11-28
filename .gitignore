@@ -26,4 +26,3 @@ cmake_install.cmake
 dependency-reduced-pom.xml
 install_manifest.txt
 target/
-/.mvn/.develocity/
