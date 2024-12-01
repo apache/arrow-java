@@ -43,7 +43,7 @@ fi
 if [ "${#projects[@]}" -gt 0 ]; then
   ${mvn} clean test \
          -Parrow-jni \
-         -pl "$(IFS=,; echo \"${projects[*]}\")" \
+         -pl "$(IFS=,; echo \""${projects[*]}"\")" \
          -Darrow.cpp.build.dir="${java_jni_dist_dir}"
 fi
 
