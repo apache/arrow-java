@@ -22,7 +22,6 @@ if [[ "${ARROW_JAVA_TEST:-ON}" != "ON" ]]; then
   exit
 fi
 
-arrow_dir=${1}
 source_dir=${1}
 build_dir=${2}
 java_jni_dist_dir=${3}
@@ -31,7 +30,7 @@ mvn="mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMave
 # Use `2 * ncores` threads
 mvn="${mvn} -T 2C"
 
-pushd ${build_dir}
+pushd "${build_dir}"
 
 ${mvn} -Darrow.test.dataRoot="${source_dir}/testing/data" clean test
 
@@ -44,12 +43,12 @@ fi
 if [ "${#projects[@]}" -gt 0 ]; then
   ${mvn} clean test \
          -Parrow-jni \
-         -pl $(IFS=,; echo "${projects[*]}") \
-         -Darrow.cpp.build.dir=${java_jni_dist_dir}
+         -pl "$(IFS=,; echo \"${projects[*]}\")" \
+         -Darrow.cpp.build.dir="${java_jni_dist_dir}"
 fi
 
 if [ "${ARROW_JAVA_CDATA}" = "ON" ]; then
-  ${mvn} clean test -Parrow-c-data -pl c -Darrow.c.jni.dist.dir=${java_jni_dist_dir}
+  ${mvn} clean test -Parrow-c-data -pl c -Darrow.c.jni.dist.dir="${java_jni_dist_dir}"
 fi
 
 popd
