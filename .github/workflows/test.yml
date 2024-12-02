@@ -47,7 +47,7 @@ jobs:
       matrix:
         jdk: [11, 17, 21, 22]
         maven: [3.9.6]
-        image: [java]
+        image: [java, conda-java-jni-cdata]
     env:
       JDK: ${{ matrix.jdk }}
       MAVEN: ${{ matrix.maven }}
