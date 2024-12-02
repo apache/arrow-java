@@ -35,7 +35,7 @@ services:
     #   docker compose build java
     #   docker compose run java
     # Parameters:
-    #   MAVEN: 3.9.6
+    #   MAVEN: 3.9.9
     #   JDK: 11, 17, 21
     image: ${ARCH}/maven:${MAVEN}-eclipse-temurin-${JDK}
     volumes:
@@ -51,7 +51,7 @@ services:
     #   docker compose build java-jni-cdata
     #   docker compose run java-jni-cdata
     # Parameters:
-    #   MAVEN: 3.9.6
+    #   MAVEN: 3.9.9
     #   JDK: 11, 17, 21
     image: ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
     build:
