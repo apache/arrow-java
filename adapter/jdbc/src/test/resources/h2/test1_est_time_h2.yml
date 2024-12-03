@@ -10,15 +10,10 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_est_time_h2'
-
 type: 'est_time'
-
 timezone: 'EST'
-
 vector: 'TIME_FIELD9'
-
 create: 'CREATE TABLE table1 (time_field9 TIME);'
-
 data:
   - 'INSERT INTO table1 VALUES (''12:45:35'');'
   - 'INSERT INTO table1 VALUES (''12:45:35'');'
@@ -30,11 +25,8 @@ data:
   - 'INSERT INTO table1 VALUES (''12:45:35'');'
   - 'INSERT INTO table1 VALUES (''12:45:35'');'
   - 'INSERT INTO table1 VALUES (''12:45:35'');'
-
 query: 'select time_field9 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
  - '63935000'
  - '63935000'

@@ -28,7 +28,6 @@
 volumes:
   maven-cache:
     name: maven-cache
-
 services:
   ubuntu:
     # Usage:
@@ -43,6 +42,7 @@ services:
       - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
     command:
       /bin/bash -c "
+
         /arrow-java/ci/scripts/java_build.sh /arrow-java /build &&
         /arrow-java/ci/scripts/java_test.sh /arrow-java /build"
 

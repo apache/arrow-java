@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_clob_h2'
-
 type: 'clob'
-
 vector: 'CLOB_FIELD15'
-
 create: 'CREATE TABLE table1 (clob_field15 CLOB);'
-
 data:
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to clob'');'
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to clob'');'
@@ -28,11 +24,8 @@ data:
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to clob'');'
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to clob'');'
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to clob'');'
-
 query: 'select CLOB_FIELD15 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
  - 'some text that needs to be converted to clob'
  - 'some text that needs to be converted to clob'
