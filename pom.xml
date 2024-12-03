@@ -399,19 +399,6 @@ under the License.
                 </pluginExecution>
                 <pluginExecution>
                   <pluginExecutionFilter>
-                    <groupId>org.apache.rat</groupId>
-                    <artifactId>apache-rat-plugin</artifactId>
-                    <versionRange>[0.10,)</versionRange>
-                    <goals>
-                      <goal>check</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <versionRange>[0,)</versionRange>
@@ -540,64 +527,6 @@ under the License.
     </pluginManagement>
 
     <plugins>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <excludeSubProjects>false</excludeSubProjects>
-          <excludes>
-            <exclude>**/dependency-reduced-pom.xml</exclude>
-            <exclude>**/*.log</exclude>
-            <exclude>**/*.css</exclude>
-            <exclude>**/*.js</exclude>
-            <exclude>**/*.md</exclude>
-            <exclude>**/*.eps</exclude>
-            <exclude>**/*.json</exclude>
-            <exclude>**/*.seq</exclude>
-            <exclude>**/*.parquet</exclude>
-            <exclude>**/*.sql</exclude>
-            <exclude>**/arrow-git.properties</exclude>
-            <exclude>**/*.csv</exclude>
-            <exclude>**/*.csvh</exclude>
-            <exclude>**/*.csvh-test</exclude>
-            <exclude>**/*.tsv</exclude>
-            <exclude>**/*.txt</exclude>
-            <exclude>**/*.ssv</exclude>
-            <exclude>**/arrow-*.conf</exclude>
-            <exclude>**/.buildpath</exclude>
-            <exclude>**/*.proto</exclude>
-            <exclude>**/*.fmpp</exclude>
-            <exclude>**/target/**</exclude>
-            <exclude>**/*.tdd</exclude>
-            <exclude>**/*.project</exclude>
-            <exclude>**/TAGS</exclude>
-            <exclude>**/*.checkstyle</exclude>
-            <exclude>**/.classpath</exclude>
-            <exclude>**/.factorypath</exclude>
-            <exclude>**/.settings/**</exclude>
-            <exclude>.*/**</exclude>
-            <exclude>**/*.patch</exclude>
-            <exclude>**/*.pb.cc</exclude>
-            <exclude>**/*.pb.h</exclude>
-            <exclude>**/*.linux</exclude>
-            <exclude>**/client/build/**</exclude>
-            <exclude>**/*.tbl</exclude>
-            <exclude>**/*.iml</exclude>
-            <exclude>**/flight.properties</exclude>
-            <exclude>**/*.idea/**</exclude>
-          </excludes>
-        </configuration>
-        <executions>
-          <execution>
-            <id>rat-checks</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-            <phase>validate</phase>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
