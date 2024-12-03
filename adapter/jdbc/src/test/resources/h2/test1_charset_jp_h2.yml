@@ -10,31 +10,22 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_charset_jp_h2'
-
 type: 'charset'
-
 vectors:
  - 'VARCHAR_FIELD13'
  - 'CHAR_FIELD16'
  - 'CLOB_FIELD15'
-
 rowCount: '5'
-
 charSet: 'SJIS'
-
 create: 'CREATE TABLE table1 (int_field1 INT, varchar_field13 VARCHAR(256), clob_field15 CLOB, char_field16 CHAR(23));'
-
 data:
   - 'INSERT INTO table1 VALUES (101,''varcharに変換する必要があるcharエンコーディングのテキスト'', ''charエンコーディングのあるテキストをclobに変換する必要がある'', ''charエンコーディングのあるcharテキスト'');'
   - 'INSERT INTO table1 VALUES (101,''varcharに変換する必要があるcharエンコーディングのテキスト'', ''charエンコーディングのあるテキストをclobに変換する必要がある'', ''charエンコーディングのあるcharテキスト'');'
   - 'INSERT INTO table1 VALUES (101,''varcharに変換する必要があるcharエンコーディングのテキスト'', ''charエンコーディングのあるテキストをclobに変換する必要がある'', ''charエンコーディングのあるcharテキスト'');'
   - 'INSERT INTO table1 VALUES (101,''varcharに変換する必要があるcharエンコーディングのテキスト'', ''charエンコーディングのあるテキストをclobに変換する必要がある'', ''charエンコーディングのあるcharテキスト'');'
   - 'INSERT INTO table1 VALUES (101,''varcharに変換する必要があるcharエンコーディングのテキスト'', ''charエンコーディングのあるテキストをclobに変換する必要がある'', ''charエンコーディングのあるcharテキスト'');'
-
 query: 'select varchar_field13, clob_field15, char_field16 from table1'
-
 drop: 'DROP table table1;'
-
 values:
  - 'VARCHAR_FIELD13=varcharに変換する必要があるcharエンコーディングのテキスト,varcharに変換する必要があるcharエンコーディングのテキスト,varcharに変換する必要があるcharエンコーディングのテキスト,
  			varcharに変換する必要があるcharエンコーディングのテキスト,varcharに変換する必要があるcharエンコーディングのテキスト'

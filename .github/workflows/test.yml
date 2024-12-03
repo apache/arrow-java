@@ -16,7 +16,6 @@
 # under the License.
 
 name: Test
-
 on:
   push:
     branches:
@@ -25,17 +24,13 @@ on:
     tags:
       - '**'
   pull_request:
-
 concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
   cancel-in-progress: true
-
 permissions:
   contents: read
-
 env:
   DOCKER_VOLUME_PREFIX: ".docker/"
-
 jobs:
   ubuntu:
     name: AMD64 Ubuntu 22.04 JDK ${{ matrix.jdk }} Maven ${{ matrix.maven }}
@@ -72,7 +67,6 @@ jobs:
             -e CI=true \
             -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
             ${{ matrix.image }}
-
   macos:
     name: ${{ matrix.arch }} macOS ${{ matrix.macos }} Java JDK ${{ matrix.jdk }}
     runs-on: macos-${{ matrix.macos }}
@@ -109,7 +103,6 @@ jobs:
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
         run: ci/scripts/java_test.sh $(pwd) $(pwd)/build
-
   windows:
     name: AMD64 Windows Server 2022 Java JDK ${{ matrix.jdk }}
     runs-on: windows-latest

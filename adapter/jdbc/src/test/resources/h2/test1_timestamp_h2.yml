@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_timestamp_h2'
-
 type: 'timestamp'
-
 vector: 'TIMESTAMP_FIELD11'
-
 create: 'CREATE TABLE table1 (timestamp_field11 TIMESTAMP);'
-
 data:
   - 'INSERT INTO table1 VALUES (''2018-02-12 12:45:35'');'
   - 'INSERT INTO table1 VALUES (''2018-02-12 12:45:35'');'
@@ -28,11 +24,8 @@ data:
   - 'INSERT INTO table1 VALUES (''2018-02-12 12:45:35'');'
   - 'INSERT INTO table1 VALUES (''2018-02-12 12:45:35'');'
   - 'INSERT INTO table1 VALUES (''2018-02-12 12:45:35'');'
-
 query: 'select timestamp_field11 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
  - '1518439535000'
  - '1518439535000'

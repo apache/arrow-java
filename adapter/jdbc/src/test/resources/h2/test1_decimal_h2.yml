@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_decimal_h2'
-
 type: 'decimal'
-
 vector: 'DECIMAL_FIELD6'
-
 create: 'CREATE TABLE table1 (decimal_field6 DECIMAL(20,2));'
-
 data:
   - 'INSERT INTO table1 VALUES (17345667789.23);'
   - 'INSERT INTO table1 VALUES (17345667789.23);'
@@ -28,11 +24,8 @@ data:
   - 'INSERT INTO table1 VALUES (17345667789.23);'
   - 'INSERT INTO table1 VALUES (17345667789.23);'
   - 'INSERT INTO table1 VALUES (17345667789.23);'
-
 query: 'select decimal_field6 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
  - '17345667789.23'
  - '17345667789.23'
