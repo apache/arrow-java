@@ -42,11 +42,13 @@ body:
 
 
         Thank you!
+
   - type: textarea
     id: description
     attributes:
       label: >
         Describe the usage question you have. Please include as many useful details as
         possible.
+
     validations:
       required: true
