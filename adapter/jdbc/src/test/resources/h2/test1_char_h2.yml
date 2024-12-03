@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_char_h2'
-
 type: 'char'
-
 vector: 'CHAR_FIELD16'
-
 create: 'CREATE TABLE table1 (char_field16 CHAR(14));'
-
 data:
   - 'INSERT INTO table1 VALUES (''some char text'');'
   - 'INSERT INTO table1 VALUES (''some char text'');'
@@ -28,19 +24,16 @@ data:
   - 'INSERT INTO table1 VALUES (''some char text'');'
   - 'INSERT INTO table1 VALUES (''some char text'');'
   - 'INSERT INTO table1 VALUES (''some char text'');'
-
 query: 'select char_field16 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
- - 'some char text'
- - 'some char text'
- - 'some char text'
- - 'some char text'
- - 'some char text'
- - 'some char text'
- - 'some char text'
- - 'some char text'
- - 'some char text'
- - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'
+  - 'some char text'

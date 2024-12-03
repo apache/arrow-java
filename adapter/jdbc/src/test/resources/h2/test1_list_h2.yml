@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_list_h2'
-
 type: 'list'
-
 vector: 'LIST_FIELD19'
-
 create: 'CREATE TABLE table1 (list_field19 INT ARRAY);'
-
 data:
   - 'INSERT INTO table1 VALUES (ARRAY[1, 2, 3]);'
   - 'INSERT INTO table1 VALUES (ARRAY[1, 2, 3]);'
@@ -28,19 +24,16 @@ data:
   - 'INSERT INTO table1 VALUES (ARRAY[1, 2, 3]);'
   - 'INSERT INTO table1 VALUES (ARRAY[1, 2, 3]);'
   - 'INSERT INTO table1 VALUES (ARRAY[1, 2, 3]);'
-
 query: 'select list_field19 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
- - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'
+  - '(1;2;3)'

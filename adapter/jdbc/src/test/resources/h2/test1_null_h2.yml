@@ -10,15 +10,10 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_null_h2'
-
 type: 'null'
-
 vector: 'NULL_FIELD18'
-
 create: 'CREATE TABLE table1 (null_field18 NULL);'
-
 rowCount: '10'
-
 data:
   - 'INSERT INTO table1 VALUES (null);'
   - 'INSERT INTO table1 VALUES (null);'
@@ -30,7 +25,5 @@ data:
   - 'INSERT INTO table1 VALUES (null);'
   - 'INSERT INTO table1 VALUES (null);'
   - 'INSERT INTO table1 VALUES (null);'
-
 query: 'select null_field18 from table1;'
-
 drop: 'DROP table table1;'

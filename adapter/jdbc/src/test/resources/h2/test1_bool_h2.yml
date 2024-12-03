@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_bool_h2'
-
 type: 'bool'
-
 vector: 'BOOL_FIELD2'
-
 create: 'CREATE TABLE table1 (bool_field2 BOOLEAN);'
-
 data:
   - 'INSERT INTO table1 VALUES (1);'
   - 'INSERT INTO table1 VALUES (1);'
@@ -28,19 +24,16 @@ data:
   - 'INSERT INTO table1 VALUES (1);'
   - 'INSERT INTO table1 VALUES (1);'
   - 'INSERT INTO table1 VALUES (1);'
-
 query: 'select bool_field2 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
- - 'true'
- - 'true'
- - 'true'
- - 'true'
- - 'true'
- - 'true'
- - 'true'
- - 'true'
- - 'true'
- - 'true'
+  - 'true'
+  - 'true'
+  - 'true'
+  - 'true'
+  - 'true'
+  - 'true'
+  - 'true'
+  - 'true'
+  - 'true'
+  - 'true'

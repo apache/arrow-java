@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_real_h2'
-
 type: 'real'
-
 vector: 'REAL_FIELD8'
-
 create: 'CREATE TABLE table1 (real_field8 REAL);'
-
 data:
   - 'INSERT INTO table1 VALUES (56478356785.345);'
   - 'INSERT INTO table1 VALUES (56478356785.345);'
@@ -28,11 +24,8 @@ data:
   - 'INSERT INTO table1 VALUES (56478356785.345);'
   - 'INSERT INTO table1 VALUES (56478356785.345);'
   - 'INSERT INTO table1 VALUES (56478356785.345);'
-
 query: 'select real_field8 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
  - '56478356785.345f'
  - '56478356785.345f'

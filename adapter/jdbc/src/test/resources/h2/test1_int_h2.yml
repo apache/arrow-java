@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_int_h2'
-
 type: 'int'
-
 vector: 'INT_FIELD1'
-
 create: 'CREATE TABLE table1 (int_field1 INT);'
-
 data:
   - 'INSERT INTO table1 VALUES (101);'
   - 'INSERT INTO table1 VALUES (101);'
@@ -28,7 +24,6 @@ data:
   - 'INSERT INTO table1 VALUES (101);'
   - 'INSERT INTO table1 VALUES (101);'
   - 'INSERT INTO table1 VALUES (101);'
-
 values:
   - '101'
   - '101'
@@ -40,7 +35,5 @@ values:
   - '101'
   - '101'
   - '101'
-
 query: 'select int_field1 from table1;'
-
 drop: 'DROP table table1;'

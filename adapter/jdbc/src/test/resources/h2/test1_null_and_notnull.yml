@@ -10,17 +10,11 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_null_and_notnull'
-
 type: 'nullnotnull'
-
 create: 'CREATE TABLE table1 (int_field_null INT, int_field_notnull INT NOT NULL);'
-
 data:
   - 'INSERT INTO table1 VALUES (0, 0);'
   - 'INSERT INTO table1 VALUES (1, 1);'
-
 rowCount: '2'
-
 query: 'select int_field_null, int_field_notnull from table1;'
-
 drop: 'DROP table table1;'
