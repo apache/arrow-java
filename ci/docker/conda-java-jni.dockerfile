@@ -18,7 +18,7 @@
 FROM ghcr.io/mamba-org/micromamba:ubuntu24.04
 
 ARG jdk=11
-ARG maven=3.8.7
+ARG maven=3.9.9
 
 RUN micromamba install -y \
         -c conda-forge \
