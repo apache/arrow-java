@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_double_h2'
-
 type: 'double'
-
 vector: 'DOUBLE_FIELD7'
-
 create: 'CREATE TABLE table1 (double_field7 DOUBLE);'
-
 data:
   - 'INSERT INTO table1 VALUES (56478356785.345);'
   - 'INSERT INTO table1 VALUES (56478356785.345);'
@@ -28,11 +24,8 @@ data:
   - 'INSERT INTO table1 VALUES (56478356785.345);'
   - 'INSERT INTO table1 VALUES (56478356785.345);'
   - 'INSERT INTO table1 VALUES (56478356785.345);'
-
 query: 'select double_field7 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
  - '56478356785.345'
  - '56478356785.345'

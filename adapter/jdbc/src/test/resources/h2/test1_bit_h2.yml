@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_bit_h2'
-
 type: 'bit'
-
 vector: 'BIT_FIELD17'
-
 create: 'CREATE TABLE table1 (bit_field17 BIT);'
-
 data:
   - 'INSERT INTO table1 VALUES (1);'
   - 'INSERT INTO table1 VALUES (1);'
@@ -28,11 +24,8 @@ data:
   - 'INSERT INTO table1 VALUES (1);'
   - 'INSERT INTO table1 VALUES (1);'
   - 'INSERT INTO table1 VALUES (1);'
-
 query: 'select bit_field17 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
  - '1'
  - '1'

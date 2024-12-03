@@ -10,18 +10,13 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_charset_h2'
-
 type: 'charset'
-
 vectors:
  - 'VARCHAR_FIELD13'
  - 'CHAR_FIELD16'
  - 'CLOB_FIELD15'
-
 rowCount: '10'
-
 create: 'CREATE TABLE table1 (int_field1 INT, varchar_field13 VARCHAR(256), clob_field15 CLOB, char_field16 CHAR(33));'
-
 data:
   - 'INSERT INTO table1 VALUES (101,''some text with char encoding that needs to be converted to varchar'', ''some text with char encoding that needs to be converted to clob'', ''some char text with char encoding'');'
   - 'INSERT INTO table1 VALUES (101,''some text with char encoding that needs to be converted to varchar'', ''some text with char encoding that needs to be converted to clob'', ''some char text with char encoding'');'
@@ -33,11 +28,8 @@ data:
   - 'INSERT INTO table1 VALUES (101,''some text with char encoding that needs to be converted to varchar'', ''some text with char encoding that needs to be converted to clob'', ''some char text with char encoding'');'
   - 'INSERT INTO table1 VALUES (101,''some text with char encoding that needs to be converted to varchar'', ''some text with char encoding that needs to be converted to clob'', ''some char text with char encoding'');'
   - 'INSERT INTO table1 VALUES (101,''some text with char encoding that needs to be converted to varchar'', ''some text with char encoding that needs to be converted to clob'', ''some char text with char encoding'');'
-
 query: 'select varchar_field13, clob_field15, char_field16 from table1'
-
 drop: 'DROP table table1;'
-
 values:
  - 'VARCHAR_FIELD13=some text with char encoding that needs to be converted to varchar,some text with char encoding that needs to be converted to varchar,
  			some text with char encoding that needs to be converted to varchar,some text with char encoding that needs to be converted to varchar,
