@@ -141,14 +141,14 @@ types:
   - name: decimal256
     structure: {}
     parameters:
-     - name: precision
-       type: integer
-       min: 0
-       max: 76
-     - name: scale
-       type: integer
-       min: 0
-       max: 76
+      - name: precision
+        type: integer
+        min: 0
+        max: 76
+      - name: scale
+        type: integer
+        min: 0
+        max: 76
   - name: large_list
     structure: {}
     parameters:
