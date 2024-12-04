@@ -38,7 +38,7 @@ case "$(uname)" in
     n_jobs=$(nproc)
     ;;
   Darwin)
-    n_jobs=$(sysctl -n hw.ncpu)
+    n_jobs=$(sysctl -n hw.logicalcpu)
     ;;
   *)
     n_jobs=${NPROC:-1}

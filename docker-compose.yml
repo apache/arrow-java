@@ -46,17 +46,17 @@ services:
         /arrow-java/ci/scripts/java_build.sh /arrow-java /build &&
         /arrow-java/ci/scripts/java_test.sh /arrow-java /build"
 
-  conda-java-jni-cdata:
+  conda-jni-cdata:
     # Usage:
-    #   docker compose build java-jni-cdata
-    #   docker compose run java-jni-cdata
+    #   docker compose build conda-jni-cdata
+    #   docker compose run conda-jni-cdata
     # Parameters:
     #   MAVEN: 3.9.9
     #   JDK: 11, 17, 21
     image: ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
     build:
       context: .
-      dockerfile: ci/docker/conda-java-jni.dockerfile
+      dockerfile: ci/docker/conda-jni.dockerfile
       cache_from:
         - ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
       args:
