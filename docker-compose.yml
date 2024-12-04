@@ -40,11 +40,9 @@ services:
     volumes:
       - .:/arrow-java:delegated
       - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
-    command:
+    command: |-
       /bin/bash -c "
-
-        /arrow-java/ci/scripts/java_build.sh /arrow-java /build &&
-        /arrow-java/ci/scripts/java_test.sh /arrow-java /build"
+      /arrow-java/ci/scripts/java_build.sh /arrow-java /build && /arrow-java/ci/scripts/java_test.sh /arrow-java /build"
 
   conda-jni-cdata:
     # Usage:
@@ -70,8 +68,4 @@ services:
       - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
     environment:
       ARROW_JAVA_CDATA: "ON"
-    command:
-      /bin/bash -c "
-        /arrow-java/ci/scripts/java_jni_build.sh /arrow-java /build/jni /build /jni &&
-        /arrow-java/ci/scripts/java_build.sh /arrow-java /build /jni &&
-        /arrow-java/ci/scripts/java_test.sh /arrow-java /build /jni"
+    command: /bin/bash -c " /arrow-java/ci/scripts/java_jni_build.sh /arrow-java /build/jni /build /jni && /arrow-java/ci/scripts/java_build.sh /arrow-java /build /jni && /arrow-java/ci/scripts/java_test.sh /arrow-java /build /jni"
