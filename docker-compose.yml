@@ -43,7 +43,6 @@ services:
     command: |-
       /bin/bash -c "
       /arrow-java/ci/scripts/java_build.sh /arrow-java /build && /arrow-java/ci/scripts/java_test.sh /arrow-java /build"
-
   conda-jni-cdata:
     # Usage:
     #   docker compose build conda-jni-cdata
