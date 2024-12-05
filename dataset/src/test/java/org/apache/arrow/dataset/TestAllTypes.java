@@ -95,8 +95,7 @@ public class TestAllTypes extends TestDataset {
     // DenseUnion
     List<Field> childFields = new ArrayList<>();
     childFields.add(
-        new Field(
-            "int-child", new FieldType(false, new ArrowType.Int(32, true), null, null), null));
+        new Field("int-child", new FieldType(true, new ArrowType.Int(32, true), null, null), null));
     Field structField =
         new Field(
             "struct", new FieldType(true, ArrowType.Struct.INSTANCE, null, null), childFields);

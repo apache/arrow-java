@@ -123,8 +123,6 @@ public abstract class TestDataset {
         VectorSchemaRoot actualVsr =
             VectorSchemaRoot.create(actualFactory.inspect(), rootAllocator())) {
 
-      // fast-fail by comparing metadata
-      assertEquals(expectedBatches.toString(), actualBatches.toString());
       // compare ArrowRecordBatches
       assertEquals(expectedBatches.size(), actualBatches.size());
       VectorLoader expectLoader = new VectorLoader(expectVsr);

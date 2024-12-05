@@ -1,0 +1,273 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: Test (JNI)
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!dependabot/**'
+    tags:
+      - '**'
+  pull_request:
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOCKER_VOLUME_PREFIX: ".docker/"
+
+jobs:
+  cpp-ubuntu:
+    name: Build C++ libraries ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
+    runs-on: ${{ matrix.platform.runs_on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - runs_on: ubuntu-latest
+            arch: "x86_64"
+            archery_arch: "amd64"
+            archery_arch_alias: "x86_64"
+            archery_arch_short: "amd64"
+    env:
+      # architecture name used for archery build
+      ARCH: ${{ matrix.platform.archery_arch }}
+      ARCH_ALIAS: ${{ matrix.platform.archery_arch_alias }}
+      ARCH_SHORT: ${{ matrix.platform.archery_arch_short }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout apache/arrow-java
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Checkout apache/arrow
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          repository: apache/arrow
+          fetch-depth: 0
+          path: arrow
+          submodules: recursive
+      - uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build C++ libraries
+        env:
+          VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
+        run: |
+          docker compose run vcpkg-jni
+      - name: Push Docker image
+        if: success() && github.event_name == 'push' && github.repository == 'apache/arrow-java' && github.ref_name == 'main'
+        run: |
+          docker push ghcr.io/apache/arrow-java-dev:amd64-vcpkg-jni
+      - name: Compress into single artifact to keep directory structure
+        run: tar -cvzf arrow-shared-libs-linux-${{ matrix.platform.arch }}.tar.gz dist/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ubuntu-shared-lib-${{ matrix.platform.arch }}
+          path: arrow-shared-libs-linux-${{ matrix.platform.arch }}.tar.gz
+
+  cpp-macos:
+    name: Build C++ libraries macOS ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
+    runs-on: ${{ matrix.platform.runs_on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { runs_on: macos-13, arch: "x86_64"}
+          - { runs_on: macos-14, arch: "aarch_64" }
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "14.0"
+    steps:
+      - name: Checkout apache/arrow-java
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Checkout apache/arrow
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          repository: apache/arrow
+          fetch-depth: 0
+          path: arrow
+          submodules: recursive
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          cache: 'pip'
+          python-version: 3.12
+      - name: Install Archery
+        run: pip install -e arrow/dev/archery[all]
+      - name: Install dependencies
+        run: |
+          # We want to use llvm@14 to avoid shared z3
+          # dependency. llvm@14 doesn't depend on z3 and llvm depends
+          # on z3. And Homebrew's z3 provides only shared library. It
+          # doesn't provides static z3 because z3's CMake doesn't accept
+          # building both shared and static libraries at once.
+          # See also: Z3_BUILD_LIBZ3_SHARED in
+          # https://github.com/Z3Prover/z3/blob/master/README-CMake.md
+          #
+          # If llvm is installed, Apache Arrow C++ uses llvm rather than
+          # llvm@14 because llvm is newer than llvm@14.
+          brew uninstall llvm || :
+
+          # Ensure updating python@XXX with the "--overwrite" option.
+          # If python@XXX is updated without "--overwrite", it causes
+          # a conflict error. Because Python 3 installed not by
+          # Homebrew exists in /usr/local on GitHub Actions. If
+          # Homebrew's python@XXX is updated without "--overwrite", it
+          # tries to replace /usr/local/bin/2to3 and so on and causes
+          # a conflict error.
+          brew update
+          for python_package in $(brew list | grep python@); do
+            brew install --overwrite ${python_package}
+          done
+          brew install --overwrite python
+
+          if [ "$(uname -m)" = "arm64" ]; then
+            # pkg-config formula is deprecated but it's still installed
+            # in GitHub Actions runner now. We can remove this once
+            # pkg-config formula is removed from GitHub Actions runner.
+            brew uninstall pkg-config || :
+            brew uninstall pkg-config@0.29.2 || :
+          fi
+
+          brew bundle --file=arrow/cpp/Brewfile
+          # We want to link aws-sdk-cpp statically but Homebrew's
+          # aws-sdk-cpp provides only shared library. If we have
+          # Homebrew's aws-sdk-cpp, our build mix Homebrew's
+          # aws-sdk-cpp and bundled aws-sdk-cpp. We uninstall Homebrew's
+          # aws-sdk-cpp to ensure using only bundled aws-sdk-cpp.
+          brew uninstall aws-sdk-cpp
+          # We want to use bundled RE2 for static linking. If
+          # Homebrew's RE2 is installed, its header file may be used.
+          # We uninstall Homebrew's RE2 to ensure using bundled RE2.
+          brew uninstall grpc || : # gRPC depends on RE2
+          brew uninstall grpc@1.54 || : # gRPC 1.54 may be installed too
+          brew uninstall re2
+          # We want to use bundled Protobuf for static linking. If
+          # Homebrew's Protobuf is installed, its library file may be
+          # used on test  We uninstall Homebrew's Protobuf to ensure using
+          # bundled Protobuf.
+          brew uninstall protobuf
+
+          brew bundle --file=Brewfile
+      - name: Build C++ libraries
+        run: |
+          set -e
+          # make brew Java available to CMake
+          export JAVA_HOME=$(brew --prefix openjdk@11)/libexec/openjdk.jdk/Contents/Home
+          ./ci/scripts/java_jni_macos_build.sh \
+            $GITHUB_WORKSPACE \
+            $GITHUB_WORKSPACE/arrow \
+            $GITHUB_WORKSPACE/arrow-java/cpp-build \
+            $GITHUB_WORKSPACE/dist
+      - name: Compress into single artifact to keep directory structure
+        run: tar -cvzf arrow-shared-libs-macos-${{ matrix.platform.arch }}.tar.gz dist/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-shared-lib-${{ matrix.platform.arch }}
+          path: arrow-shared-libs-macos-${{ matrix.platform.arch }}.tar.gz
+
+  java-jars:
+    name: Build JAR files
+    runs-on: ubuntu-latest
+    needs:
+      - cpp-ubuntu
+      - cpp-macos
+    steps:
+      - name: Checkout apache/arrow-java
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Checkout apache/arrow
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          repository: apache/arrow
+          fetch-depth: 0
+          path: arrow
+          submodules: recursive
+      - name: Download Libraries
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Decompress artifacts
+        run: |
+          mv artifacts/*/*.tar.gz .
+          tar -xvzf arrow-shared-libs-linux-x86_64.tar.gz
+          # tar -xvzf arrow-shared-libs-linux-aarch_64.tar.gz
+          tar -xvzf arrow-shared-libs-macos-x86_64.tar.gz
+          tar -xvzf arrow-shared-libs-macos-aarch_64.tar.gz
+          # tar -xvzf arrow-shared-libs-windows.tar.gz
+      - name: Test that shared libraries exist
+        run: |
+          set -x
+
+          test -f dist/arrow_cdata_jni/x86_64/libarrow_cdata_jni.so
+          test -f dist/arrow_dataset_jni/x86_64/libarrow_dataset_jni.so
+          test -f dist/arrow_orc_jni/x86_64/libarrow_orc_jni.so
+          test -f dist/gandiva_jni/x86_64/libgandiva_jni.so
+
+          # test -f dist/arrow_cdata_jni/aarch_64/libarrow_cdata_jni.so
+          # test -f dist/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.so
+          # test -f dist/arrow_orc_jni/aarch_64/libarrow_orc_jni.so
+          # test -f dist/gandiva_jni/aarch_64/libgandiva_jni.so
+
+          test -f dist/arrow_cdata_jni/x86_64/libarrow_cdata_jni.dylib
+          test -f dist/arrow_dataset_jni/x86_64/libarrow_dataset_jni.dylib
+          test -f dist/arrow_orc_jni/x86_64/libarrow_orc_jni.dylib
+          test -f dist/gandiva_jni/x86_64/libgandiva_jni.dylib
+
+          test -f dist/arrow_cdata_jni/aarch_64/libarrow_cdata_jni.dylib
+          test -f dist/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.dylib
+          test -f dist/arrow_orc_jni/aarch_64/libarrow_orc_jni.dylib
+          test -f dist/gandiva_jni/aarch_64/libgandiva_jni.dylib
+
+          # test -f dist/arrow_cdata_jni/x86_64/arrow_cdata_jni.dll
+          # test -f dist/arrow_dataset_jni/x86_64/arrow_dataset_jni.dll
+          # test -f dist/arrow_orc_jni/x86_64/arrow_orc_jni.dll
+      - name: Build bundled jar
+        env:
+          MAVEN_ARGS: >-
+            --no-transfer-progress
+        run: |
+          set -e
+          # mvn versions:set -DnewVersion={{ arrow.no_rc_snapshot_version }}
+          # mvn versions:set -DnewVersion={{ arrow.no_rc_snapshot_version }} -f bom
+          ./ci/scripts/java_full_build.sh \
+            $GITHUB_WORKSPACE \
+            $GITHUB_WORKSPACE/arrow \
+            $GITHUB_WORKSPACE/dist
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-jars
+          path: ${{ github.workspace }}/arrow-java/java-dist

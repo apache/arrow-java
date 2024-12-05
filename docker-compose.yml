@@ -31,6 +31,8 @@ volumes:
 
 services:
   ubuntu:
+    # Build and test arrow-java on Ubuntu.
+    #
     # Usage:
     #   docker compose build ubuntu
     #   docker compose run ubuntu
@@ -47,6 +49,10 @@ services:
         /arrow-java/ci/scripts/java_test.sh /arrow-java /build"
 
   conda-jni-cdata:
+    # Builds and tests just the C Data Interface JNI library and JARs.
+    # (No dependencies on arrow-cpp.)
+    # This build isn't meant for distribution. It's for testing only.
+    #
     # Usage:
     #   docker compose build conda-jni-cdata
     #   docker compose run conda-jni-cdata
@@ -75,3 +81,29 @@ services:
         /arrow-java/ci/scripts/java_jni_build.sh /arrow-java /build/jni /build /jni &&
         /arrow-java/ci/scripts/java_build.sh /arrow-java /build /jni &&
         /arrow-java/ci/scripts/java_test.sh /arrow-java /build /jni"
+
+  vcpkg-jni:
+    # Builds all the JNI libraries, but not the JARs.
+    # (Requires arrow-cpp.)
+    # The artifacts from this build are meant to be used for packaging.
+    #
+    # Usage:
+    #   docker compose build vcpkg-jni
+    #   docker compose run vcpkg-jni
+    image: ${REPO}:${ARCH}-vcpkg-jni
+    build:
+      context: .
+      dockerfile: ci/docker/vcpkg-jni.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-vcpkg-jni
+      args:
+        base: ${ARROW_REPO}:${ARCH}-python-${PYTHON}-wheel-manylinux-2014-vcpkg-${VCPKG}
+    volumes:
+      - .:/arrow-java:delegated
+      - ${ARROW_REPO_ROOT}:/arrow:delegated
+      - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
+    environment:
+      ARROW_JAVA_CDATA: "ON"
+    command:
+      ["git config --global --add safe.directory /arrow-java && \
+        /arrow-java/ci/scripts/java_jni_manylinux_build.sh /arrow-java /arrow /build /arrow-java/dist"]

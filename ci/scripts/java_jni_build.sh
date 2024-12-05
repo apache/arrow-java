@@ -16,7 +16,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -eo pipefail
+set -exo pipefail
 
 arrow_dir=${1}
 arrow_install_dir=${2}
@@ -58,7 +58,7 @@ cmake \
   -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD:-OFF}" \
   -DProtobuf_USE_STATIC_LIBS=ON \
   -GNinja \
-  "${JAVA_JNI_CMAKE_ARGS:-}" \
+  ${JAVA_JNI_CMAKE_ARGS:-} \
   "${arrow_dir}"
 export CMAKE_BUILD_PARALLEL_LEVEL=${n_jobs}
 cmake --build . --config "${CMAKE_BUILD_TYPE}"
