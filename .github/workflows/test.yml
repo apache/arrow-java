@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [11, 17, 21, 22]
+        jdk: [11, 17, 21, 23]
         maven: [3.9.9]
         image: [ubuntu, conda-jni-cdata]
         include:
