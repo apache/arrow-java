@@ -34,6 +34,7 @@ import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.LargeVarCharVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.compare.Range;
 import org.apache.arrow.vector.compare.RangeEqualsVisitor;
 import org.apache.arrow.vector.compare.TypeEqualsVisitor;
@@ -77,7 +78,6 @@ public class TestVectorAppender {
     final int length2 = 5;
     try (IntVector target = new IntVector("", allocator);
         IntVector delta = new IntVector("", allocator)) {
-
       target.allocateNew(length1);
       delta.allocateNew(length2);
 
@@ -104,7 +104,6 @@ public class TestVectorAppender {
     final int length2 = 5;
     try (BitVector target = new BitVector("", allocator);
         BitVector delta = new BitVector("", allocator)) {
-
       target.allocateNew(length1);
       delta.allocateNew(length2);
 
@@ -129,7 +128,6 @@ public class TestVectorAppender {
   public void testAppendEmptyFixedWidthVector() {
     try (IntVector target = new IntVector("", allocator);
         IntVector delta = new IntVector("", allocator)) {
-
       ValueVectorDataPopulator.setVector(target, 0, 1, 2, 3, 4, 5, 6, null, 8, 9);
 
       VectorAppender appender = new VectorAppender(target);
@@ -150,7 +148,6 @@ public class TestVectorAppender {
     final int length2 = 5;
     try (VarCharVector target = new VarCharVector("", allocator);
         VarCharVector delta = new VarCharVector("", allocator)) {
-
       target.allocateNew(5, length1);
       delta.allocateNew(5, length2);
 
@@ -172,10 +169,34 @@ public class TestVectorAppender {
   }
 
   @Test
+  public void testAppendVariableWidthViewVector() {
+    final int length1 = 10;
+    final int length2 = 5;
+    try (ViewVarCharVector target = new ViewVarCharVector("", allocator);
+        ViewVarCharVector delta = new ViewVarCharVector("", allocator)) {
+      target.setValueCount(length1);
+      delta.setValueCount(length2);
+
+      for (int i = 0; i < length1; i++) {
+        target.setSafe(i, (i + "xxxxxxxxxxxx").getBytes());
+      }
+
+      for (int i = 0; i < length2; i++) {
+        delta.setSafe(i, (i + "xxxxxxxxxxxx").getBytes());
+      }
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      assertEquals(15, target.getValueCount());
+      target.accept(new RangeEqualsVisitor(target, delta), new Range(10, 0, 5));
+    }
+  }
+
+  @Test
   public void testAppendEmptyVariableWidthVector() {
     try (VarCharVector target = new VarCharVector("", allocator);
         VarCharVector delta = new VarCharVector("", allocator)) {
-
       ValueVectorDataPopulator.setVector(
           target, "a0", "a1", "a2", "a3", null, "a5", "a6", "a7", "a8", "a9");
 
@@ -217,7 +238,6 @@ public class TestVectorAppender {
     final int length2 = 10;
     try (LargeVarCharVector target = new LargeVarCharVector("", allocator);
         LargeVarCharVector delta = new LargeVarCharVector("", allocator)) {
-
       target.allocateNew(5, length1);
       delta.allocateNew(5, length2);
 
@@ -242,7 +262,6 @@ public class TestVectorAppender {
   public void testAppendEmptyLargeVariableWidthVector() {
     try (LargeVarCharVector target = new LargeVarCharVector("", allocator);
         LargeVarCharVector delta = new LargeVarCharVector("", allocator)) {
-
       ValueVectorDataPopulator.setVector(target, "a0", null, "a2", "a3", null);
 
       VectorAppender appender = new VectorAppender(target);
@@ -261,7 +280,6 @@ public class TestVectorAppender {
     final int length2 = 2;
     try (ListVector target = ListVector.empty("target", allocator);
         ListVector delta = ListVector.empty("delta", allocator)) {
-
       target.allocateNew();
       ValueVectorDataPopulator.setVector(
           target,
@@ -339,7 +357,6 @@ public class TestVectorAppender {
   public void testAppendFixedSizeListVector() {
     try (FixedSizeListVector target = FixedSizeListVector.empty("target", 5, allocator);
         FixedSizeListVector delta = FixedSizeListVector.empty("delta", 5, allocator)) {
-
       target.allocateNew();
       ValueVectorDataPopulator.setVector(target, Arrays.asList(0, 1, 2, 3, 4), null);
       assertEquals(2, target.getValueCount());
@@ -365,7 +382,6 @@ public class TestVectorAppender {
   public void testAppendEmptyFixedSizeListVector() {
     try (FixedSizeListVector target = FixedSizeListVector.empty("target", 5, allocator);
         FixedSizeListVector delta = FixedSizeListVector.empty("delta", 5, allocator)) {
-
       ValueVectorDataPopulator.setVector(target, Arrays.asList(0, 1, 2, 3, 4), null);
       assertEquals(2, target.getValueCount());
 
@@ -386,7 +402,6 @@ public class TestVectorAppender {
   public void testAppendEmptyLargeListVector() {
     try (LargeListVector target = LargeListVector.empty("target", allocator);
         LargeListVector delta = LargeListVector.empty("delta", allocator)) {
-
       ValueVectorDataPopulator.setVector(target, Arrays.asList(0, 1, 2, 3, 4), null);
       assertEquals(2, target.getValueCount());
 
@@ -409,7 +424,6 @@ public class TestVectorAppender {
     final int length2 = 5;
     try (final StructVector target = StructVector.empty("target", allocator);
         final StructVector delta = StructVector.empty("delta", allocator)) {
-
       IntVector targetChild1 =
           target.addOrGet("f0", FieldType.nullable(new ArrowType.Int(32, true)), IntVector.class);
       VarCharVector targetChild2 =
@@ -457,7 +471,6 @@ public class TestVectorAppender {
   public void testAppendEmptyStructVector() {
     try (final StructVector target = StructVector.empty("target", allocator);
         final StructVector delta = StructVector.empty("delta", allocator)) {
-
       IntVector targetChild1 =
           target.addOrGet("f0", FieldType.nullable(new ArrowType.Int(32, true)), IntVector.class);
       VarCharVector targetChild2 =
@@ -495,7 +508,6 @@ public class TestVectorAppender {
 
     try (final UnionVector target = UnionVector.empty("target", allocator);
         final UnionVector delta = UnionVector.empty("delta", allocator)) {
-
       // alternating ints and big ints
       target.setType(0, Types.MinorType.INT);
       target.setType(1, Types.MinorType.BIGINT);
@@ -614,7 +626,6 @@ public class TestVectorAppender {
 
     try (final UnionVector target = UnionVector.empty("target", allocator);
         final UnionVector delta = UnionVector.empty("delta", allocator)) {
-
       // alternating ints and big ints
       target.setType(0, Types.MinorType.INT);
       target.setType(1, Types.MinorType.BIGINT);
@@ -790,7 +801,6 @@ public class TestVectorAppender {
   public void testAppendDenseUnionVector() {
     try (DenseUnionVector targetVector = getTargetVector();
         DenseUnionVector deltaVector = getDeltaVector()) {
-
       // append
       VectorAppender appender = new VectorAppender(targetVector);
       deltaVector.accept(appender, null);
@@ -800,7 +810,6 @@ public class TestVectorAppender {
     // test reverse append
     try (DenseUnionVector targetVector = getTargetVector();
         DenseUnionVector deltaVector = getDeltaVector()) {
-
       // append
       VectorAppender appender = new VectorAppender(deltaVector);
       targetVector.accept(appender, null);
@@ -831,7 +840,6 @@ public class TestVectorAppender {
   public void testAppendEmptyDenseUnionVector() {
     try (DenseUnionVector targetVector = getTargetVector();
         DenseUnionVector deltaVector = getEmptyDeltaVector()) {
-
       // append
       VectorAppender appender = new VectorAppender(targetVector);
       deltaVector.accept(appender, null);
@@ -904,7 +912,6 @@ public class TestVectorAppender {
     final int vectorLength = 10;
     try (IntVector target = new IntVector("", allocator);
         VarCharVector delta = new VarCharVector("", allocator)) {
-
       target.allocateNew(vectorLength);
       delta.allocateNew(vectorLength);
 
