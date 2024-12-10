@@ -24,16 +24,21 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.BaseValueVector;
+import org.apache.arrow.vector.BaseVariableWidthViewVector;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.LargeVarCharVector;
+import org.apache.arrow.vector.TestUtils;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.compare.Range;
 import org.apache.arrow.vector.compare.RangeEqualsVisitor;
 import org.apache.arrow.vector.compare.TypeEqualsVisitor;
@@ -166,6 +171,81 @@ public class TestVectorAppender {
         ValueVectorDataPopulator.setVector(
             expected, "a0", "a1", "a2", "a3", null, "a5", "a6", "a7", "a8", "a9", "a10", "a11",
             "a12", "a13", null);
+        assertVectorsEqual(expected, target);
+      }
+    }
+  }
+
+  @Test
+  public void testAppendVariableWidthViewVector() {
+    final int length1 = 10;
+    final int length2 = 5;
+    try (ViewVarCharVector target = new ViewVarCharVector("", allocator);
+        ViewVarCharVector delta = new ViewVarCharVector("", allocator)) {
+      target.allocateNew(5, length1);
+      delta.allocateNew(5, length2);
+
+      ValueVectorDataPopulator.setVector(
+          target, "a0", "a1", "a2", "a3", null, "a5", "a6", "a7", "a8", "a9");
+      ValueVectorDataPopulator.setVector(delta, "a10", "a11", "a12", "a13", null);
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      try (ViewVarCharVector expected = new ViewVarCharVector("expected", allocator)) {
+        expected.allocateNew();
+        ValueVectorDataPopulator.setVector(
+            expected, "a0", "a1", "a2", "a3", null, "a5", "a6", "a7", "a8", "a9", "a10", "a11",
+            "a12", "a13", null);
+        assertVectorsEqual(expected, target);
+      }
+    }
+  }
+
+  @Test
+  public void testAppendEmptyVariableWidthViewVector() {
+    try (ViewVarCharVector target = new ViewVarCharVector("", allocator);
+        ViewVarCharVector delta = new ViewVarCharVector("", allocator)) {
+      ValueVectorDataPopulator.setVector(
+          target, "a0", "a1", "a2", "a3", null, "a5", "a6", "a7", "a8", "a9");
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      try (ViewVarCharVector expected = new ViewVarCharVector("expected", allocator)) {
+        ValueVectorDataPopulator.setVector(
+            expected, "a0", "a1", "a2", "a3", null, "a5", "a6", "a7", "a8", "a9");
+        assertVectorsEqual(expected, target);
+      }
+    }
+  }
+
+  @Test
+  public void testAppendShortLongVariableWidthViewVector() {
+    try (ViewVarCharVector target = new ViewVarCharVector("", allocator);
+        ViewVarCharVector delta = new ViewVarCharVector("", allocator)) {
+      String[] targetValues =
+          IntStream.range(-5, 5)
+              .mapToObj(
+                  i -> TestUtils.generateRandomString(BaseVariableWidthViewVector.INLINE_SIZE + i))
+              .toArray(String[]::new);
+      ValueVectorDataPopulator.setVector(target, targetValues);
+
+      String[] deltaValues =
+          IntStream.range(-3, 3)
+              .mapToObj(
+                  i -> TestUtils.generateRandomString(BaseVariableWidthViewVector.INLINE_SIZE + i))
+              .toArray(String[]::new);
+      ValueVectorDataPopulator.setVector(delta, deltaValues);
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      try (ViewVarCharVector expected = new ViewVarCharVector("expected", allocator)) {
+        ValueVectorDataPopulator.setVector(
+            expected,
+            Stream.concat(Arrays.stream(targetValues), Arrays.stream(deltaValues))
+                .toArray(String[]::new));
         assertVectorsEqual(expected, target);
       }
     }
