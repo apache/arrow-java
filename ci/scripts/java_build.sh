@@ -22,16 +22,15 @@ if [[ "${ARROW_JAVA_BUILD:-ON}" != "ON" ]]; then
   exit
 fi
 
-arrow_dir=${1}
 source_dir=${1}
 build_dir=${2}
 java_jni_dist_dir=${3}
 
-: ${BUILD_DOCS_JAVA:=OFF}
+: "${BUILD_DOCS_JAVA:=OFF}"
 
 mvn="mvn -B -DskipTests -Drat.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 
-if [ $ARROW_JAVA_SKIP_GIT_PLUGIN ]; then
+if [ "$ARROW_JAVA_SKIP_GIT_PLUGIN" ]; then
   mvn="${mvn} -Dmaven.gitcommitid.skip=true"
 fi
 
@@ -50,13 +49,13 @@ cp -r "${source_dir}/dev" "${build_dir}"
 
 poms=$(find "${source_dir}" -not \( -path "${source_dir}"/build -prune \) -type f -name pom.xml)
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    poms=$(echo "$poms" | xargs -n1 python -c "import sys; import os.path; print(os.path.relpath(sys.argv[1], '${source_dir}'))")
+  poms=$(echo "$poms" | xargs -n1 python -c "import sys; import os.path; print(os.path.relpath(sys.argv[1], '${source_dir}'))")
 else
-    poms=$(echo "$poms" | xargs -n1 realpath -s --relative-to="${source_dir}")
+  poms=$(echo "$poms" | xargs -n1 realpath -s --relative-to="${source_dir}")
 fi
 
 for source_root in $(echo "${poms}" | awk -F/ '{print $1}' | sort -u); do
-    cp -r "${source_dir}/${source_root}" "${build_dir}"
+  cp -r "${source_dir}/${source_root}" "${build_dir}"
 done
 
 pushd "${build_dir}"
@@ -79,9 +78,9 @@ ${mvn} -T 2C clean install
 if [ "${BUILD_DOCS_JAVA}" == "ON" ]; then
   # HTTP pooling is turned of to avoid download issues https://issues.apache.org/jira/browse/ARROW-11633
   # GH-43378: Maven site plugins not compatible with multithreading
-  mkdir -p ${build_dir}/docs/java/reference
+  mkdir -p "${build_dir}"/docs/java/reference
   ${mvn} -Dcheckstyle.skip=true -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false clean install site
-  rsync -a target/site/apidocs/ ${build_dir}/docs/java/reference
+  rsync -a target/site/apidocs/ "${build_dir}"/docs/java/reference
 fi
 
 popd

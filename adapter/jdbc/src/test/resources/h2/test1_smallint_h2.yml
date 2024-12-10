@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_smallint_h2'
-
 type: 'small_int'
-
 vector: 'SMALLINT_FIELD4'
-
 create: 'CREATE TABLE table1 (smallint_field4 SMALLINT);'
-
 data:
   - 'INSERT INTO table1 VALUES (12000);'
   - 'INSERT INTO table1 VALUES (12000);'
@@ -28,19 +24,16 @@ data:
   - 'INSERT INTO table1 VALUES (12000);'
   - 'INSERT INTO table1 VALUES (12000);'
   - 'INSERT INTO table1 VALUES (12000);'
-
 query: 'select smallint_field4 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
- - '12000'
- - '12000'
- - '12000'
- - '12000'
- - '12000'
- - '12000'
- - '12000'
- - '12000'
- - '12000'
- - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
+  - '12000'
