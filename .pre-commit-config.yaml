@@ -50,7 +50,3 @@ repos:
           # The default args is "--write --simplify" but we don't use
           # "--simplify". Because it's conflicted will ShellCheck.
           - "--write"
-  - repo: https://github.com/google/yamlfmt
-    rev: v0.13.0
-    hooks:
-      - id: yamlfmt
