@@ -10,15 +10,10 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_pst_date_h2'
-
 type: 'pst_date'
-
 timezone: 'PST'
-
 vector: 'DATE_FIELD10'
-
 create: 'CREATE TABLE table1 (date_field10 DATE);'
-
 data:
   - 'INSERT INTO table1 VALUES (''2018-02-12'');'
   - 'INSERT INTO table1 VALUES (''2018-02-12'');'
@@ -30,19 +25,16 @@ data:
   - 'INSERT INTO table1 VALUES (''2018-02-12'');'
   - 'INSERT INTO table1 VALUES (''2018-02-12'');'
   - 'INSERT INTO table1 VALUES (''2018-02-12'');'
-
 query: 'select date_field10 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
- - '17574'
- - '17574'
- - '17574'
- - '17574'
- - '17574'
- - '17574'
- - '17574'
- - '17574'
- - '17574'
- - '17574'
+  - '17574'
+  - '17574'
+  - '17574'
+  - '17574'
+  - '17574'
+  - '17574'
+  - '17574'
+  - '17574'
+  - '17574'
+  - '17574'

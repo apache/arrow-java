@@ -10,34 +10,25 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_charset_kr_h2'
-
 type: 'charset'
-
 vectors:
- - 'VARCHAR_FIELD13'
- - 'CHAR_FIELD16'
- - 'CLOB_FIELD15'
-
+  - 'VARCHAR_FIELD13'
+  - 'CHAR_FIELD16'
+  - 'CLOB_FIELD15'
 rowCount: '5'
-
 charSet: 'EUC-KR'
-
 create: 'CREATE TABLE table1 (int_field1 INT, varchar_field13 VARCHAR(256), clob_field15 CLOB, char_field16 CHAR(22));'
-
 data:
   - 'INSERT INTO table1 VALUES (101,''char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.'', ''clob로 변환해야하는 char 인코딩을 가진 텍스트'', ''char 인코딩을 사용한 char 텍스트'');'
   - 'INSERT INTO table1 VALUES (101,''char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.'', ''clob로 변환해야하는 char 인코딩을 가진 텍스트'', ''char 인코딩을 사용한 char 텍스트'');'
   - 'INSERT INTO table1 VALUES (101,''char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.'', ''clob로 변환해야하는 char 인코딩을 가진 텍스트'', ''char 인코딩을 사용한 char 텍스트'');'
   - 'INSERT INTO table1 VALUES (101,''char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.'', ''clob로 변환해야하는 char 인코딩을 가진 텍스트'', ''char 인코딩을 사용한 char 텍스트'');'
   - 'INSERT INTO table1 VALUES (101,''char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.'', ''clob로 변환해야하는 char 인코딩을 가진 텍스트'', ''char 인코딩을 사용한 char 텍스트'');'
-
 query: 'select varchar_field13, clob_field15, char_field16 from table1'
-
 drop: 'DROP table table1;'
-
 values:
- - 'VARCHAR_FIELD13=char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.,char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.,char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.,
+  - 'VARCHAR_FIELD13=char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.,char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.,char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.,
  			char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.,char 인코딩을 사용하는 일부 텍스트를 varchar로 변환해야합니다.'
- - 'CLOB_FIELD15=clob로 변환해야하는 char 인코딩을 가진 텍스트,clob로 변환해야하는 char 인코딩을 가진 텍스트,clob로 변환해야하는 char 인코딩을 가진 텍스트,
+  - 'CLOB_FIELD15=clob로 변환해야하는 char 인코딩을 가진 텍스트,clob로 변환해야하는 char 인코딩을 가진 텍스트,clob로 변환해야하는 char 인코딩을 가진 텍스트,
  		 clob로 변환해야하는 char 인코딩을 가진 텍스트,clob로 변환해야하는 char 인코딩을 가진 텍스트'
- - 'CHAR_FIELD16=char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트'
+  - 'CHAR_FIELD16=char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트,char 인코딩을 사용한 char 텍스트'

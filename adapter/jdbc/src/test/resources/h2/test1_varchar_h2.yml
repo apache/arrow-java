@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_varchar_h2'
-
 type: 'varchar'
-
 vector: 'VARCHAR_FIELD13'
-
 create: 'CREATE TABLE table1 (varchar_field13 VARCHAR(256));'
-
 data:
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to varchar'');'
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to varchar'');'
@@ -28,19 +24,16 @@ data:
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to varchar'');'
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to varchar'');'
   - 'INSERT INTO table1 VALUES (''some text that needs to be converted to varchar'');'
-
 query: 'select varchar_field13 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
- - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'
+  - 'some text that needs to be converted to varchar'

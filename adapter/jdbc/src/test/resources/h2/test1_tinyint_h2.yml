@@ -10,13 +10,9 @@
 #language governing permissions and limitations under the License.
 
 name: 'test1_tinyint_h2'
-
 type: 'tinyint'
-
 vector: 'TINYINT_FIELD3'
-
 create: 'CREATE TABLE table1 (tinyint_field3 TINYINT);'
-
 data:
   - 'INSERT INTO table1 VALUES (45);'
   - 'INSERT INTO table1 VALUES (45);'
@@ -28,19 +24,16 @@ data:
   - 'INSERT INTO table1 VALUES (45);'
   - 'INSERT INTO table1 VALUES (45);'
   - 'INSERT INTO table1 VALUES (45);'
-
 query: 'select tinyint_field3 from table1;'
-
 drop: 'DROP table table1;'
-
 values:
- - '45'
- - '45'
- - '45'
- - '45'
- - '45'
- - '45'
- - '45'
- - '45'
- - '45'
- - '45'
+  - '45'
+  - '45'
+  - '45'
+  - '45'
+  - '45'
+  - '45'
+  - '45'
+  - '45'
+  - '45'
+  - '45'
