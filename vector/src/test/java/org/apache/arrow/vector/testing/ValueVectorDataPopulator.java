@@ -60,6 +60,7 @@ import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VariableWidthFieldVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.complex.BaseLargeRepeatedValueViewVector;
 import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.BaseRepeatedValueViewVector;
@@ -596,6 +597,18 @@ public class ValueVectorDataPopulator {
 
   /** Populate values for VarCharVector. */
   public static void setVector(VarCharVector vector, String... values) {
+    final int length = values.length;
+    vector.allocateNewSafe();
+    for (int i = 0; i < length; i++) {
+      if (values[i] != null) {
+        vector.setSafe(i, values[i].getBytes(StandardCharsets.UTF_8));
+      }
+    }
+    vector.setValueCount(length);
+  }
+
+  /** Populate values for ViewVarCharVector. */
+  public static void setVector(ViewVarCharVector vector, String... values) {
     final int length = values.length;
     vector.allocateNewSafe();
     for (int i = 0; i < length; i++) {
