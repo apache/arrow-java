@@ -102,7 +102,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
     }
 
     new AvaticaParameterBinder(
-            preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator())
+            preparedStatement, typedValues, ((ArrowFlightConnection) connection).getBufferAllocator())
         .bind(typedValues);
 
     if (statementHandle.signature == null) {
@@ -144,11 +144,13 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       throw new IllegalStateException("Prepared statement not found: " + statementHandle);
     }
 
-    final AvaticaParameterBinder binder =
-        new AvaticaParameterBinder(
-            preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator());
-    for (int i = 0; i < parameterValuesList.size(); i++) {
-      binder.bind(parameterValuesList.get(i), i);
+    if (parameterValuesList.size() > 0) {
+      final AvaticaParameterBinder binder =
+              new AvaticaParameterBinder(
+                      preparedStatement, parameterValuesList.get(0), ((ArrowFlightConnection) connection).getBufferAllocator());
+      for (int i = 0; i < parameterValuesList.size(); i++) {
+        binder.bind(parameterValuesList.get(i), i);
+      }
     }
 
     // Update query
