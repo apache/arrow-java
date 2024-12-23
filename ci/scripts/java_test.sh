@@ -42,9 +42,12 @@ if [ "${ARROW_JAVA_JNI}" = "ON" ]; then
 fi
 if [ "${#projects[@]}" -gt 0 ]; then
   ${mvn} clean test \
-         -Parrow-jni \
-         -pl "$(IFS=,; echo \""${projects[*]}"\")" \
-         -Darrow.cpp.build.dir="${java_jni_dist_dir}"
+    -Parrow-jni \
+    -pl "$(
+      IFS=,
+      echo \""${projects[*]}"\"
+    )" \
+    -Darrow.cpp.build.dir="${java_jni_dist_dir}"
 fi
 
 if [ "${ARROW_JAVA_CDATA}" = "ON" ]; then
