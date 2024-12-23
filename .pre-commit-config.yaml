@@ -25,7 +25,6 @@ repos:
       - id: check-added-large-files
       - id: file-contents-sorter
         files: .gitignore
-
   - repo: local
     hooks:
       - id: rat
@@ -39,7 +38,6 @@ repos:
               dev/release/run_rat.sh apache-arrow-go.tar.gz"
         always_run: true
         pass_filenames: false
-
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.10.0
     hooks:
@@ -52,7 +50,3 @@ repos:
           # The default args is "--write --simplify" but we don't use
           # "--simplify". Because it's conflicted will ShellCheck.
           - "--write"
-  - repo: https://github.com/google/yamlfmt
-    rev: v0.13.0
-    hooks:
-      - id: yamlfmt
