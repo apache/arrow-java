@@ -24,10 +24,13 @@ import static org.apache.calcite.avatica.util.DateTimeUtils.MILLIS_PER_DAY;
 import static org.apache.calcite.avatica.util.DateTimeUtils.unixDateToString;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
+
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessor;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
 import org.apache.arrow.driver.jdbc.utils.DateTimeUtils;
@@ -35,7 +38,9 @@ import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.ValueVector;
 
-/** Accessor for the Arrow types: {@link DateDayVector} and {@link DateMilliVector}. */
+/**
+ * Accessor for the Arrow types: {@link DateDayVector} and {@link DateMilliVector}.
+ */
 public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
 
   private final Getter getter;
@@ -45,9 +50,9 @@ public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link DateDayVector}.
    *
-   * @param vector an instance of a DateDayVector.
+   * @param vector             an instance of a DateDayVector.
    * @param currentRowSupplier the supplier to track the lines.
-   * @param setCursorWasNull the consumer to set if value was null.
+   * @param setCursorWasNull   the consumer to set if value was null.
    */
   public ArrowFlightJdbcDateVectorAccessor(
       DateDayVector vector,
@@ -62,7 +67,7 @@ public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link DateMilliVector}.
    *
-   * @param vector an instance of a DateMilliVector.
+   * @param vector             an instance of a DateMilliVector.
    * @param currentRowSupplier the supplier to track the lines.
    */
   public ArrowFlightJdbcDateVectorAccessor(
@@ -83,6 +88,19 @@ public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
   @Override
   public Object getObject() {
     return this.getDate(null);
+  }
+
+  @Override
+  public <T> T getObject(final Class<T> type) throws SQLException {
+    final Object value;
+    if (type == LocalDate.class) {
+      value = getLocalDate();
+    } else if (type == Date.class) {
+      value = getObject();
+    } else {
+      throw new SQLException("invalid class");
+    }
+    return !type.isPrimitive() && wasNull ? null : type.cast(value);
   }
 
   @Override
@@ -133,5 +151,9 @@ public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
     }
 
     throw new IllegalArgumentException("Invalid Arrow vector");
+  }
+
+  private LocalDate getLocalDate() {
+    return getDate(null).toLocalDate();
   }
 }

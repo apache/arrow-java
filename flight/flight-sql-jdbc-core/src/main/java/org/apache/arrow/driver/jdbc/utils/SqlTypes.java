@@ -120,7 +120,12 @@ public class SqlTypes {
       case Time:
         return Types.TIME;
       case Timestamp:
-        return Types.TIMESTAMP;
+        String tz = ((ArrowType.Timestamp) arrowType).getTimezone();
+        if (tz != null){
+          return Types.TIMESTAMP_WITH_TIMEZONE;
+        } else {
+          return Types.TIMESTAMP;
+        }
       case Bool:
         return Types.BOOLEAN;
       case Decimal:

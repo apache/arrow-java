@@ -20,11 +20,14 @@ import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdb
 import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeVectorGetter.Holder;
 import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeVectorGetter.createGetter;
 
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
+
 import org.apache.arrow.driver.jdbc.ArrowFlightJdbcTime;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessor;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
@@ -48,9 +51,9 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeNanoVector}.
    *
-   * @param vector an instance of a TimeNanoVector.
+   * @param vector             an instance of a TimeNanoVector.
    * @param currentRowSupplier the supplier to track the lines.
-   * @param setCursorWasNull the consumer to set if value was null.
+   * @param setCursorWasNull   the consumer to set if value was null.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
       TimeNanoVector vector,
@@ -65,9 +68,9 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeMicroVector}.
    *
-   * @param vector an instance of a TimeMicroVector.
+   * @param vector             an instance of a TimeMicroVector.
    * @param currentRowSupplier the supplier to track the lines.
-   * @param setCursorWasNull the consumer to set if value was null.
+   * @param setCursorWasNull   the consumer to set if value was null.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
       TimeMicroVector vector,
@@ -82,7 +85,7 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeMilliVector}.
    *
-   * @param vector an instance of a TimeMilliVector.
+   * @param vector             an instance of a TimeMilliVector.
    * @param currentRowSupplier the supplier to track the lines.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
@@ -98,7 +101,7 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeSecVector}.
    *
-   * @param vector an instance of a TimeSecVector.
+   * @param vector             an instance of a TimeSecVector.
    * @param currentRowSupplier the supplier to track the lines.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
@@ -122,6 +125,19 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   }
 
   @Override
+  public <T> T getObject(final Class<T> type) throws SQLException {
+    final Object value;
+    if (type == LocalTime.class) {
+      value = getLocalTime();
+    } else if (type == Time.class) {
+      value = getObject();
+    } else {
+      throw new SQLException("invalid class");
+    }
+    return !type.isPrimitive() && wasNull ? null : type.cast(value);
+  }
+
+  @Override
   public Time getTime(Calendar calendar) {
     fillHolder();
     if (this.wasNull) {
@@ -132,6 +148,10 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
     long milliseconds = this.timeUnit.toMillis(value);
 
     return new ArrowFlightJdbcTime(DateTimeUtils.applyCalendarOffset(milliseconds, calendar));
+  }
+
+  private LocalTime getLocalTime() {
+    return getTime(null).toLocalTime();
   }
 
   private void fillHolder() {
