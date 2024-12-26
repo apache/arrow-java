@@ -20,6 +20,7 @@ module org.apache.arrow.flight.core {
   exports org.apache.arrow.flight.auth;
   exports org.apache.arrow.flight.auth2;
   exports org.apache.arrow.flight.client;
+  exports org.apache.arrow.flight.grpc;
   exports org.apache.arrow.flight.impl;
   exports org.apache.arrow.flight.sql.impl;
 
