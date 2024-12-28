@@ -21,21 +21,29 @@ import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdb
 import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeStampVectorGetter.createGetter;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
+
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessor;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
 import org.apache.arrow.vector.TimeStampVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.util.DateUtility;
 
-/** Accessor for the Arrow types extending from {@link TimeStampVector}. */
+/**
+ * Accessor for the Arrow types extending from {@link TimeStampVector}.
+ */
 public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAccessor {
 
   private final TimeZone timeZone;
@@ -43,13 +51,18 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
   private final TimeUnit timeUnit;
   private final LongToLocalDateTime longToLocalDateTime;
   private final Holder holder;
+  private final boolean isZoned;
 
-  /** Functional interface used to convert a number (in any time resolution) to LocalDateTime. */
+  /**
+   * Functional interface used to convert a number (in any time resolution) to LocalDateTime.
+   */
   interface LongToLocalDateTime {
     LocalDateTime fromLong(long value);
   }
 
-  /** Instantiate a ArrowFlightJdbcTimeStampVectorAccessor for given vector. */
+  /**
+   * Instantiate a ArrowFlightJdbcTimeStampVectorAccessor for given vector.
+   */
   public ArrowFlightJdbcTimeStampVectorAccessor(
       TimeStampVector vector,
       IntSupplier currentRowSupplier,
@@ -58,6 +71,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     this.holder = new Holder();
     this.getter = createGetter(vector);
 
+    this.isZoned = getVectorIsZoned(vector);
     this.timeZone = getTimeZoneForVector(vector);
     this.timeUnit = getTimeUnitForVector(vector);
     this.longToLocalDateTime = getLongToLocalDateTimeForVector(vector, this.timeZone);
@@ -69,8 +83,54 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
   }
 
   @Override
+  public <T> T getObject(final Class<T> type) throws SQLException {
+    final Object value;
+    if (type == OffsetDateTime.class) {
+      value = getOffsetDateTime();
+    } else if (type == LocalDateTime.class) {
+      value = getLocalDateTime(null);
+    } else if (type == ZonedDateTime.class) {
+      value = getZonedDateTime();
+    } else if (type == Instant.class) {
+      value = getInstant();
+    } else if (type == Timestamp.class) {
+      value = getObject();
+    } else {
+      throw new SQLException("invalid class");
+    }
+    return !type.isPrimitive() && wasNull ? null : type.cast(value);
+  }
+
+  @Override
   public Object getObject() {
     return this.getTimestamp(null);
+  }
+
+  private ZonedDateTime getZonedDateTime() {
+    LocalDateTime localDateTime = getLocalDateTime(null);
+    if (localDateTime == null) {
+      return null;
+    }
+
+    return localDateTime.atZone(this.timeZone.toZoneId());
+  }
+
+  private OffsetDateTime getOffsetDateTime() {
+    LocalDateTime localDateTime = getLocalDateTime(null);
+    if (localDateTime == null) {
+      return null;
+    }
+    ZoneOffset offset = this.timeZone.toZoneId().getRules().getOffset(localDateTime);
+    return localDateTime.atOffset(offset);
+  }
+
+  private Instant getInstant() {
+    LocalDateTime localDateTime = getLocalDateTime(null);
+    if (localDateTime == null) {
+      return null;
+    }
+    ZoneOffset offset = this.timeZone.toZoneId().getRules().getOffset(localDateTime);
+    return localDateTime.toInstant(offset);
   }
 
   private LocalDateTime getLocalDateTime(Calendar calendar) {
@@ -85,7 +145,8 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
 
     LocalDateTime localDateTime = this.longToLocalDateTime.fromLong(value);
 
-    if (calendar != null) {
+    // Adjust timestamp to desired calendar (if provided) only if the column includes TZ info, otherwise treat as wall-clock time
+    if (calendar != null && this.isZoned) {
       TimeZone timeZone = calendar.getTimeZone();
       long millis = this.timeUnit.toMillis(value);
       localDateTime =
@@ -176,5 +237,12 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     }
 
     return TimeZone.getTimeZone(timezoneName);
+  }
+
+  protected static boolean getVectorIsZoned(TimeStampVector vector) {
+    ArrowType.Timestamp arrowType =
+        (ArrowType.Timestamp) vector.getField().getFieldType().getType();
+
+    return arrowType.getTimezone() != null;
   }
 }
