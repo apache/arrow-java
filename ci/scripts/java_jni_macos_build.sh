@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -22,11 +21,11 @@
 
 set -ex
 
-arrow_java_dir=${1}
-arrow_dir=${2}
-build_dir=${3}
-normalized_arch=$(arch)
-case ${normalized_arch} in
+arrow_java_dir="${1}"
+arrow_dir="${2}"
+build_dir="${3}"
+normalized_arch="$(arch)"
+case "${normalized_arch}" in
 arm64)
   normalized_arch=aarch_64
   ;;
@@ -35,28 +34,28 @@ i386)
   ;;
 esac
 # The directory where the final binaries will be stored when scripts finish
-dist_dir=${4}
+dist_dir="${4}"
 
 echo "=== Clear output directories and leftovers ==="
 # Clear output directories and leftovers
-rm -rf ${build_dir}
+rm -rf "${build_dir}"
 
 echo "=== Building Arrow C++ libraries ==="
-install_dir=${build_dir}/cpp-install
-: ${ARROW_ACERO:=ON}
+install_dir="${build_dir}/cpp-install"
+: "${ARROW_ACERO:=ON}"
 export ARROW_ACERO
-: ${ARROW_BUILD_TESTS:=ON}
-: ${ARROW_DATASET:=ON}
+: "${ARROW_BUILD_TESTS:=ON}"
+: "${ARROW_DATASET:=ON}"
 export ARROW_DATASET
-: ${ARROW_GANDIVA:=ON}
+: "${ARROW_GANDIVA:=ON}"
 export ARROW_GANDIVA
-: ${ARROW_ORC:=ON}
+: "${ARROW_ORC:=ON}"
 export ARROW_ORC
-: ${ARROW_PARQUET:=ON}
-: ${ARROW_S3:=ON}
-: ${ARROW_USE_CCACHE:=OFF}
-: ${CMAKE_BUILD_TYPE:=Release}
-: ${CMAKE_UNITY_BUILD:=ON}
+: "${ARROW_PARQUET:=ON}"
+: "${ARROW_S3:=ON}"
+: "${ARROW_USE_CCACHE:=OFF}"
+: "${CMAKE_BUILD_TYPE:=Release}"
+: "${CMAKE_UNITY_BUILD:=ON}"
 
 if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
   echo "=== ccache statistics before build ==="
@@ -71,30 +70,30 @@ mkdir -p "${build_dir}/cpp"
 pushd "${build_dir}/cpp"
 
 cmake \
-  -DARROW_ACERO=${ARROW_ACERO} \
+  -DARROW_ACERO="${ARROW_ACERO}" \
   -DARROW_BUILD_SHARED=OFF \
-  -DARROW_BUILD_TESTS=${ARROW_BUILD_TESTS} \
-  -DARROW_CSV=${ARROW_DATASET} \
-  -DARROW_DATASET=${ARROW_DATASET} \
-  -DARROW_SUBSTRAIT=${ARROW_DATASET} \
+  -DARROW_BUILD_TESTS="${ARROW_BUILD_TESTS}" \
+  -DARROW_CSV="${ARROW_DATASET}" \
+  -DARROW_DATASET="${ARROW_DATASET}" \
+  -DARROW_SUBSTRAIT="${ARROW_DATASET}" \
   -DARROW_DEPENDENCY_USE_SHARED=OFF \
-  -DARROW_GANDIVA=${ARROW_GANDIVA} \
+  -DARROW_GANDIVA="${ARROW_GANDIVA}" \
   -DARROW_GANDIVA_STATIC_LIBSTDCPP=ON \
-  -DARROW_JSON=${ARROW_DATASET} \
-  -DARROW_ORC=${ARROW_ORC} \
-  -DARROW_PARQUET=${ARROW_PARQUET} \
-  -DARROW_S3=${ARROW_S3} \
-  -DARROW_USE_CCACHE=${ARROW_USE_CCACHE} \
-  -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} \
-  -DCMAKE_INSTALL_PREFIX=${install_dir} \
-  -DCMAKE_UNITY_BUILD=${CMAKE_UNITY_BUILD} \
+  -DARROW_JSON="${ARROW_DATASET}" \
+  -DARROW_ORC="${ARROW_ORC}" \
+  -DARROW_PARQUET="${ARROW_PARQUET}" \
+  -DARROW_S3="${ARROW_S3}" \
+  -DARROW_USE_CCACHE="${ARROW_USE_CCACHE}" \
+  -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
+  -DCMAKE_INSTALL_PREFIX="${install_dir}" \
+  -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD}" \
   -DGTest_SOURCE=BUNDLED \
   -DPARQUET_BUILD_EXAMPLES=OFF \
   -DPARQUET_BUILD_EXECUTABLES=OFF \
   -DPARQUET_REQUIRE_ENCRYPTION=OFF \
   -Dre2_SOURCE=BUNDLED \
   -GNinja \
-  ${arrow_dir}/cpp
+  "${arrow_dir}/cpp"
 cmake --build . --target install
 
 if [ "${ARROW_BUILD_TESTS}" == "ON" ]; then
@@ -107,18 +106,18 @@ if [ "${ARROW_BUILD_TESTS}" == "ON" ]; then
     --exclude-regex "${exclude_tests}" \
     --label-regex unittest \
     --output-on-failure \
-    --parallel $(sysctl -n hw.ncpu) \
+    --parallel "$(sysctl -n hw.ncpu)" \
     --timeout 300
 fi
 
 popd
 
 export JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/protobuf_ep-install"
-${arrow_java_dir}/ci/scripts/java_jni_build.sh \
-  ${arrow_java_dir} \
-  ${install_dir} \
-  ${build_dir} \
-  ${dist_dir}
+"${arrow_java_dir}/ci/scripts/java_jni_build.sh" \
+  "${arrow_java_dir}" \
+  "${install_dir}" \
+  "${build_dir}" \
+  "${dist_dir}"
 
 if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
   echo "=== ccache statistics after build ==="
@@ -126,7 +125,7 @@ if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
 fi
 
 echo "=== Checking shared dependencies for libraries ==="
-pushd ${dist_dir}
+pushd "${dist_dir}"
 archery linking check-dependencies \
   --allow CoreFoundation \
   --allow Security \
@@ -140,8 +139,8 @@ archery linking check-dependencies \
   --allow libncurses \
   --allow libobjc \
   --allow libz \
-  arrow_cdata_jni/${normalized_arch}/libarrow_cdata_jni.dylib \
-  arrow_dataset_jni/${normalized_arch}/libarrow_dataset_jni.dylib \
-  arrow_orc_jni/${normalized_arch}/libarrow_orc_jni.dylib \
-  gandiva_jni/${normalized_arch}/libgandiva_jni.dylib
+  "arrow_cdata_jni/${normalized_arch}/libarrow_cdata_jni.dylib" \
+  "arrow_dataset_jni/${normalized_arch}/libarrow_dataset_jni.dylib" \
+  "arrow_orc_jni/${normalized_arch}/libarrow_orc_jni.dylib" \
+  "gandiva_jni/${normalized_arch}/libgandiva_jni.dylib"
 popd

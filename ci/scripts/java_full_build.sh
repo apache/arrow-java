@@ -19,54 +19,56 @@
 
 set -e
 
-arrow_java_dir=${1}
-arrow_dir=${2}
-dist_dir=${3}
+arrow_java_dir="${1}"
+arrow_dir="${2}"
+dist_dir="${3}"
 
-export ARROW_TEST_DATA=${arrow_dir}/testing/data
+export ARROW_TEST_DATA="${arrow_dir}/testing/data"
 
-pushd ${arrow_java_dir}
+pushd "${arrow_java_dir}"
 
 # Ensure that there is no old jar
 # inside the maven repository
 maven_repo=~/.m2/repository/org/apache/arrow
-if [ -d $maven_repo ]; then
-    find $maven_repo \
-      "(" -name "*.jar" -o -name "*.zip" -o -name "*.pom" ")" \
-      -exec echo {} ";" \
-      -exec rm -rf {} ";"
+if [ -d "$maven_repo" ]; then
+  find "$maven_repo" \
+    "(" -name "*.jar" -o -name "*.zip" -o -name "*.pom" ")" \
+    -exec echo {} ";" \
+    -exec rm -rf {} ";"
 fi
 
 # generate dummy GPG key for -Papache-release.
 # -Papache-release generates signs (*.asc) of artifacts.
 # We don't use these signs in our release process.
-(echo "Key-Type: RSA"; \
- echo "Key-Length: 4096"; \
- echo "Name-Real: Build"; \
- echo "Name-Email: build@example.com"; \
- echo "%no-protection") | \
+(
+  echo "Key-Type: RSA"
+  echo "Key-Length: 4096"
+  echo "Name-Real: Build"
+  echo "Name-Email: build@example.com"
+  echo "%no-protection"
+) |
   gpg --full-generate-key --batch
 
 # build the entire project
 mvn clean \
-    install \
-    -Papache-release \
-    -Parrow-c-data \
-    -Parrow-jni \
-    -Darrow.cpp.build.dir=$dist_dir \
-    -Darrow.c.jni.dist.dir=$dist_dir \
-    --no-transfer-progress
+  install \
+  -Papache-release \
+  -Parrow-c-data \
+  -Parrow-jni \
+  -Darrow.cpp.build.dir="$dist_dir" \
+  -Darrow.c.jni.dist.dir="$dist_dir" \
+  --no-transfer-progress
 
 # copy all jar, zip and pom files to the distribution folder
 find ~/.m2/repository/org/apache/arrow \
-     "(" \
-     -name "*.jar" -o \
-     -name "*.json" -o \
-     -name "*.pom" -o \
-     -name "*.xml" -o \
-     -name "*.zip" \
-     ")" \
-     -exec echo {} ";" \
-     -exec cp {} $dist_dir ";"
+  "(" \
+  -name "*.jar" -o \
+  -name "*.json" -o \
+  -name "*.pom" -o \
+  -name "*.xml" -o \
+  -name "*.zip" \
+  ")" \
+  -exec echo "{}" ";" \
+  -exec cp "{}" "$dist_dir" ";"
 
 popd

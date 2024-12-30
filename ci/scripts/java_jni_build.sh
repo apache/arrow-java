@@ -47,6 +47,7 @@ esac
 
 : "${ARROW_JAVA_BUILD_TESTS:=${ARROW_BUILD_TESTS:-OFF}}"
 : "${CMAKE_BUILD_TYPE:=release}"
+read -ra EXTRA_CMAKE_OPTIONS <<<"${JAVA_JNI_CMAKE_ARGS:-}"
 cmake \
   -DARROW_JAVA_JNI_ENABLE_DATASET="${ARROW_DATASET:-OFF}" \
   -DARROW_JAVA_JNI_ENABLE_GANDIVA="${ARROW_GANDIVA:-OFF}" \
@@ -58,7 +59,7 @@ cmake \
   -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD:-OFF}" \
   -DProtobuf_USE_STATIC_LIBS=ON \
   -GNinja \
-  ${JAVA_JNI_CMAKE_ARGS:-} \
+  "${EXTRA_CMAKE_OPTIONS[@]}" \
   "${arrow_dir}"
 export CMAKE_BUILD_PARALLEL_LEVEL=${n_jobs}
 cmake --build . --config "${CMAKE_BUILD_TYPE}"
