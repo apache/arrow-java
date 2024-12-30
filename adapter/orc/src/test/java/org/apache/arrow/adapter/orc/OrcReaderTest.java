@@ -38,6 +38,7 @@ import org.apache.orc.OrcFile;
 import org.apache.orc.TypeDescription;
 import org.apache.orc.Writer;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -53,6 +54,7 @@ public class OrcReaderTest {
     allocator = new RootAllocator(MAX_ALLOCATION);
   }
 
+  @Disabled("ORC is flaky: https://github.com/apache/arrow-java/pull/449")
   @Test
   public void testOrcJniReader() throws Exception {
     TypeDescription schema = TypeDescription.fromString("struct<x:int,y:string>");
