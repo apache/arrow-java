@@ -160,7 +160,7 @@ public class TestVariableWidthViewVector {
     try (final ViewVarCharVector viewVarCharVector = new ViewVarCharVector("myvector", allocator)) {
       viewVarCharVector.allocateNew(48, 4);
       final int valueCount = 4;
-      String str4 = generateRandomString(34);
+      String str4 = TestUtils.generateRandomString(34);
       viewVarCharVector.set(0, STR1);
       viewVarCharVector.set(1, STR2);
       viewVarCharVector.set(2, STR3);
@@ -216,7 +216,7 @@ public class TestVariableWidthViewVector {
     try (final ViewVarCharVector viewVarCharVector = new ViewVarCharVector("myvector", allocator)) {
       viewVarCharVector.allocateNew(48, 4);
       final int valueCount = 4;
-      String str4 = generateRandomString(35);
+      String str4 = TestUtils.generateRandomString(35);
       viewVarCharVector.set(0, STR1);
       viewVarCharVector.set(1, STR2);
       viewVarCharVector.set(2, STR3);
@@ -271,7 +271,7 @@ public class TestVariableWidthViewVector {
   public void testSetSafe() {
     try (final ViewVarCharVector viewVarCharVector = new ViewVarCharVector("myvector", allocator)) {
       viewVarCharVector.allocateNew(1, 1);
-      byte[] str6 = generateRandomString(40).getBytes();
+      byte[] str6 = TestUtils.generateRandomString(40).getBytes();
       final List<byte[]> strings = List.of(STR0, STR1, STR2, STR3, STR4, STR5, str6);
 
       // set data to a position out of capacity index
@@ -305,8 +305,8 @@ public class TestVariableWidthViewVector {
     try (final ViewVarCharVector viewVarCharVector = new ViewVarCharVector("myvector", allocator)) {
       viewVarCharVector.allocateNew(128, 6);
       final int valueCount = 6;
-      String str4 = generateRandomString(35);
-      String str6 = generateRandomString(40);
+      String str4 = TestUtils.generateRandomString(35);
+      String str6 = TestUtils.generateRandomString(40);
       viewVarCharVector.set(0, STR1);
       viewVarCharVector.set(1, STR2);
       viewVarCharVector.set(2, STR3);
@@ -405,7 +405,7 @@ public class TestVariableWidthViewVector {
         setAndCheck(viewVarCharVector, i, strings.get(size - i - 1), stringHolder);
       }
 
-      String longString = generateRandomString(128);
+      String longString = TestUtils.generateRandomString(128);
       setAndCheck(viewVarCharVector, 6, longString.getBytes(), stringHolder);
     }
   }
@@ -441,7 +441,7 @@ public class TestVariableWidthViewVector {
         setAndCheck(viewVarBinaryVector, i, strings.get(size - i - 1), holder);
       }
 
-      String longString = generateRandomString(128);
+      String longString = TestUtils.generateRandomString(128);
       setAndCheck(viewVarBinaryVector, 6, longString.getBytes(), holder);
     }
   }
@@ -1169,7 +1169,7 @@ public class TestVariableWidthViewVector {
       vector.setValueCount(5);
 
       // overwrite index 2 with a long string
-      String longString = generateRandomString(128);
+      String longString = TestUtils.generateRandomString(128);
       byte[] longStringBytes = longString.getBytes(StandardCharsets.UTF_8);
       // since the append-only approach is used and the remaining capacity
       // is not enough to store the new string; a new buffer will be allocated.
@@ -1373,7 +1373,7 @@ public class TestVariableWidthViewVector {
       // since a new buffer is added to the dataBuffers
       final ArrowBuf currentDataBuf = vector.dataBuffers.get(0);
       final long remainingCapacity = currentDataBuf.capacity() - currentDataBuf.writerIndex();
-      String longerString = generateRandomString(35);
+      String longerString = TestUtils.generateRandomString(35);
       byte[] longerStringBytes = longerString.getBytes(StandardCharsets.UTF_8);
       assertTrue(remainingCapacity < longerStringBytes.length);
 
@@ -1406,7 +1406,7 @@ public class TestVariableWidthViewVector {
       // the remaining capacity is enough to store in the same data buffer
       final ArrowBuf currentDataBuf = vector.dataBuffers.get(0);
       final long remainingCapacity = currentDataBuf.capacity() - currentDataBuf.writerIndex();
-      String longerString = generateRandomString(24);
+      String longerString = TestUtils.generateRandomString(24);
       byte[] longerStringBytes = longerString.getBytes(StandardCharsets.UTF_8);
       assertTrue(remainingCapacity > longerStringBytes.length);
 
@@ -1505,7 +1505,7 @@ public class TestVariableWidthViewVector {
       vector.setValueCount(5);
 
       // overwrite index 2 with a long string
-      String longString = generateRandomString(128);
+      String longString = TestUtils.generateRandomString(128);
       byte[] longStringBytes = longString.getBytes(StandardCharsets.UTF_8);
 
       vector.setSafe(2, longStringBytes);
@@ -1671,7 +1671,7 @@ public class TestVariableWidthViewVector {
       vector.setSafe(2, STR7);
       vector.setValueCount(3);
 
-      String longerString = generateRandomString(35);
+      String longerString = TestUtils.generateRandomString(35);
       byte[] longerStringBytes = longerString.getBytes(StandardCharsets.UTF_8);
 
       vector.setSafe(1, longerStringBytes);
@@ -1697,7 +1697,7 @@ public class TestVariableWidthViewVector {
       vector.setSafe(4, STR6);
       vector.setValueCount(5);
 
-      String longerString = generateRandomString(24);
+      String longerString = TestUtils.generateRandomString(24);
       byte[] longerStringBytes = longerString.getBytes(StandardCharsets.UTF_8);
 
       vector.setSafe(2, longerStringBytes);
@@ -1869,7 +1869,7 @@ public class TestVariableWidthViewVector {
       // to avoid re-allocation. This is to test copyFrom() without re-allocation.
       final int numberOfValues = initialCapacity / 2 / ViewVarCharVector.ELEMENT_SIZE;
 
-      final String prefixString = generateRandomString(12);
+      final String prefixString = TestUtils.generateRandomString(12);
 
       for (int i = 0; i < numberOfValues; i++) {
         if (i % 3 == 0) {
@@ -1965,7 +1965,7 @@ public class TestVariableWidthViewVector {
 
       final int numberOfValues = initialCapacity / ViewVarCharVector.ELEMENT_SIZE;
 
-      final String prefixString = generateRandomString(12);
+      final String prefixString = TestUtils.generateRandomString(12);
 
       for (int i = 0; i < numberOfValues; i++) {
         if (i % 3 == 0) {
@@ -2746,7 +2746,7 @@ public class TestVariableWidthViewVector {
    */
   @Test
   public void testSplitAndTransferWithMultipleDataBuffers() {
-    final String str4 = generateRandomString(35);
+    final String str4 = TestUtils.generateRandomString(35);
     final byte[][] data = new byte[][] {STR1, STR2, STR3, str4.getBytes(StandardCharsets.UTF_8)};
     final int startIndex = 1;
     final int length = 3;
@@ -2850,14 +2850,5 @@ public class TestVariableWidthViewVector {
         assertArrayEquals(STR6, vector4.get(5));
       }
     }
-  }
-
-  private String generateRandomString(int length) {
-    Random random = new Random();
-    StringBuilder sb = new StringBuilder(length);
-    for (int i = 0; i < length; i++) {
-      sb.append(random.nextInt(10)); // 0-9
-    }
-    return sb.toString();
   }
 }
