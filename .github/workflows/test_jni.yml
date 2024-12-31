@@ -47,13 +47,9 @@ jobs:
           - runs_on: ubuntu-latest
             arch: "x86_64"
             archery_arch: "amd64"
-            archery_arch_alias: "x86_64"
-            archery_arch_short: "amd64"
     env:
       # architecture name used for archery build
       ARCH: ${{ matrix.platform.archery_arch }}
-      ARCH_ALIAS: ${{ matrix.platform.archery_arch_alias }}
-      ARCH_SHORT: ${{ matrix.platform.archery_arch_short }}
     permissions:
       contents: read
       packages: write
@@ -76,8 +72,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build C++ libraries
-        env:
-          VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
         run: |
           docker compose run vcpkg-jni
       - name: Push Docker image
@@ -183,7 +177,7 @@ jobs:
           set -e
           # make brew Java available to CMake
           export JAVA_HOME=$(brew --prefix openjdk@11)/libexec/openjdk.jdk/Contents/Home
-          ./ci/scripts/java_jni_macos_build.sh \
+          ./ci/scripts/jni_macos_build.sh \
             $GITHUB_WORKSPACE \
             $GITHUB_WORKSPACE/arrow \
             $GITHUB_WORKSPACE/arrow-java/cpp-build \
@@ -262,7 +256,7 @@ jobs:
           set -e
           # mvn versions:set -DnewVersion={{ arrow.no_rc_snapshot_version }}
           # mvn versions:set -DnewVersion={{ arrow.no_rc_snapshot_version }} -f bom
-          ./ci/scripts/java_full_build.sh \
+          ./ci/scripts/jni_full_build.sh \
             $GITHUB_WORKSPACE \
             $GITHUB_WORKSPACE/arrow \
             $GITHUB_WORKSPACE/dist

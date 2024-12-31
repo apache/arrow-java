@@ -78,7 +78,7 @@ services:
       ARROW_JAVA_CDATA: "ON"
     command:
       /bin/bash -c "
-        /arrow-java/ci/scripts/java_jni_build.sh /arrow-java /build/jni /build /jni &&
+        /arrow-java/ci/scripts/jni_build.sh /arrow-java /build/jni /build /jni &&
         /arrow-java/ci/scripts/java_build.sh /arrow-java /build /jni &&
         /arrow-java/ci/scripts/java_test.sh /arrow-java /build /jni"
 
@@ -106,4 +106,4 @@ services:
       ARROW_JAVA_CDATA: "ON"
     command:
       ["git config --global --add safe.directory /arrow-java && \
-        /arrow-java/ci/scripts/java_jni_manylinux_build.sh /arrow-java /arrow /build /arrow-java/dist"]
+        /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build /arrow-java/dist"]
