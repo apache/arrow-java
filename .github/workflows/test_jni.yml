@@ -77,7 +77,7 @@ jobs:
       - name: Push Docker image
         if: success() && github.event_name == 'push' && github.repository == 'apache/arrow-java' && github.ref_name == 'main'
         run: |
-          docker push ghcr.io/apache/arrow-java-dev:amd64-vcpkg-jni
+          docker compose push vcpkg-jni
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf arrow-shared-libs-linux-${{ matrix.platform.arch }}.tar.gz dist/
       - name: Upload artifacts
