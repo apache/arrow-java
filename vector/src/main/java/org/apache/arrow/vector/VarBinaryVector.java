@@ -128,7 +128,15 @@ public final class VarBinaryVector extends BaseVariableWidthVector
    */
   @Override
   public byte[] getObject(int index) {
-    return get(index);
+    if (isSet(index) == 0) {
+      return null;
+    }
+
+    final int startOffset = getStartOffset(index);
+    final int dataLength = getEndOffset(index) - startOffset;
+    final byte[] result = new byte[dataLength];
+    valueBuffer.getBytes(startOffset, result, 0, dataLength);
+    return result;
   }
 
   /**

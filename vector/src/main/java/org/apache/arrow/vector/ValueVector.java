@@ -264,7 +264,7 @@ public interface ValueVector extends Closeable, Iterable<ValueVector> {
    * Get friendly type object from the vector.
    *
    * @param index index of object to get
-   * @return friendly type object
+   * @return friendly type object, null if value is unset
    */
   Object getObject(int index);
 

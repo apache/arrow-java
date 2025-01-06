@@ -117,7 +117,7 @@ public final class VarCharVector extends BaseVariableWidthVector
   @Override
   public Text getObject(int index) {
     assert index >= 0;
-    if (NULL_CHECKING_ENABLED && isSet(index) == 0) {
+    if (isSet(index) == 0) {
       return null;
     }
 

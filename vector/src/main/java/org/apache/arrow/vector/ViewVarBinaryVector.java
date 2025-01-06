@@ -122,7 +122,10 @@ public final class ViewVarBinaryVector extends BaseVariableWidthViewVector
    */
   @Override
   public byte[] getObject(int index) {
-    return get(index);
+    if(isSet(index) == 0) {
+      return null;
+    }
+    return getData(index);
   }
 
   /**

@@ -16,6 +16,8 @@
  */
 package org.apache.arrow.vector;
 
+import static org.apache.arrow.vector.NullCheckingForGet.NULL_CHECKING_ENABLED;
+
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.ReusableBuffer;
 import org.apache.arrow.vector.complex.impl.LargeVarBinaryReaderImpl;
@@ -95,7 +97,7 @@ public final class LargeVarBinaryVector extends BaseLargeVariableWidthVector
    */
   public byte[] get(int index) {
     assert index >= 0;
-    if (isSet(index) == 0) {
+    if (NULL_CHECKING_ENABLED && isSet(index) == 0) {
       return null;
     }
     final long startOffset = getStartOffset(index);
@@ -127,7 +129,14 @@ public final class LargeVarBinaryVector extends BaseLargeVariableWidthVector
    */
   @Override
   public byte[] getObject(int index) {
-    return get(index);
+    if (isSet(index) == 0) {
+      return null;
+    }
+    final long startOffset = getStartOffset(index);
+    final long dataLength = getEndOffset(index) - startOffset;
+    final byte[] result = new byte[(int) dataLength];
+    valueBuffer.getBytes(startOffset, result, 0, (int) dataLength);
+    return result;
   }
 
   /**

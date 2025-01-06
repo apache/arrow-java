@@ -101,7 +101,7 @@ public final class LargeVarCharVector extends BaseLargeVariableWidthVector
   @Override
   public byte[] get(int index) {
     assert index >= 0;
-    if (isSet(index) == 0) {
+    if (NULL_CHECKING_ENABLED && isSet(index) == 0) {
       return null;
     }
     final long startOffset = getStartOffset(index);
@@ -120,7 +120,7 @@ public final class LargeVarCharVector extends BaseLargeVariableWidthVector
   @Override
   public Text getObject(int index) {
     assert index >= 0;
-    if (NULL_CHECKING_ENABLED && isSet(index) == 0) {
+    if (isSet(index) == 0) {
       return null;
     }
 

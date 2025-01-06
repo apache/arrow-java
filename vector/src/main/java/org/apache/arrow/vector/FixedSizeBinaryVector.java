@@ -149,7 +149,10 @@ public class FixedSizeBinaryVector extends BaseFixedWidthVector
    */
   @Override
   public byte[] getObject(int index) {
-    return get(index);
+    if (isSet(index) == 0) {
+      return null;
+    }
+    return get(valueBuffer, index, byteWidth);
   }
 
   public int getByteWidth() {
