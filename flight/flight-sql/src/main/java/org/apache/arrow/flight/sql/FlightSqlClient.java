@@ -92,7 +92,7 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.VectorSchemaRoot;
-import org.apache.arrow.vector.ipc.ArrowStreamReader;
+import org.apache.arrow.vector.ipc.ArrowReader;
 import org.apache.arrow.vector.ipc.ReadChannel;
 import org.apache.arrow.vector.ipc.message.MessageSerializer;
 import org.apache.arrow.vector.types.pojo.Schema;
@@ -236,7 +236,7 @@ public class FlightSqlClient implements AutoCloseable {
    * @return the number of rows affected.
    */
   public long executeIngest(
-      final ArrowStreamReader dataReader,
+      final ArrowReader dataReader,
       final ExecuteIngestOptions ingestOptions,
       final CallOption... options) {
     return executeIngest(dataReader, ingestOptions, /*transaction*/ null, options);
@@ -270,7 +270,7 @@ public class FlightSqlClient implements AutoCloseable {
    * @return the number of rows affected.
    */
   public long executeIngest(
-      final ArrowStreamReader dataReader,
+      final ArrowReader dataReader,
       final ExecuteIngestOptions ingestOptions,
       Transaction transaction,
       final CallOption... options) {
