@@ -97,7 +97,7 @@ public final class ViewVarBinaryVector extends BaseVariableWidthViewVector
   public byte[] get(int index) {
     assert index >= 0;
     if (NULL_CHECKING_ENABLED && isSet(index) == 0) {
-      throw new IllegalStateException("Value at index is null");
+      return null;
     }
     return getData(index);
   }

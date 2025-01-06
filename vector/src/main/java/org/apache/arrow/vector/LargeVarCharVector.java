@@ -102,7 +102,7 @@ public final class LargeVarCharVector extends BaseLargeVariableWidthVector
   public byte[] get(int index) {
     assert index >= 0;
     if (NULL_CHECKING_ENABLED && isSet(index) == 0) {
-      throw new IllegalStateException("Value at index is null");
+      return null;
     }
     final long startOffset = getStartOffset(index);
     final long dataLength = getEndOffset(index) - startOffset;
