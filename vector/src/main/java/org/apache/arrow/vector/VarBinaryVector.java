@@ -97,7 +97,7 @@ public final class VarBinaryVector extends BaseVariableWidthVector
   public byte[] get(int index) {
     assert index >= 0;
     if (NULL_CHECKING_ENABLED && isSet(index) == 0) {
-      return null;
+      throw new IllegalStateException("Value at index is null");
     }
     final int startOffset = getStartOffset(index);
     final int dataLength = getEndOffset(index) - startOffset;
