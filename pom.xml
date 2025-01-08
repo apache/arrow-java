@@ -79,15 +79,15 @@ under the License.
   </modules>
 
   <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
-    <connection>scm:git:https://github.com/apache/arrow.git</connection>
-    <developerConnection>scm:git:https://github.com/apache/arrow.git</developerConnection>
+    <connection>scm:git:https://github.com/apache/arrow-java.git</connection>
+    <developerConnection>scm:git:https://github.com/apache/arrow-java.git</developerConnection>
     <tag>main</tag>
-    <url>https://github.com/apache/arrow/tree/${project.scm.tag}</url>
+    <url>https://github.com/apache/arrow-java/tree/${project.scm.tag}</url>
   </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/apache/arrow/issues</url>
+    <url>https://github.com/apache/arrow-java/issues</url>
   </issueManagement>
 
   <properties>
