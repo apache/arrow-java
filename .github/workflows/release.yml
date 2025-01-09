@@ -15,13 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: RC
+name: Release
 on:
   push:
     tags:
       - '*'
       - '!*-rc*'
-  pull_request:
 concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
   cancel-in-progress: true
