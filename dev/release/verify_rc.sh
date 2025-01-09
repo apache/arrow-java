@@ -124,7 +124,7 @@ ensure_source_directory() {
 }
 
 test_source_distribution() {
-  if [ ${VERIFY_SOURCE} -le 0 ]; then
+  if [ "${VERIFY_SOURCE}" -le 0 ]; then
     return 0
   fi
 
@@ -135,7 +135,7 @@ test_source_distribution() {
 }
 
 test_binary_distribution() {
-  if [ ${VERIFY_SOURCE} -le 0 ]; then
+  if [ "${VERIFY_BINARY}" -le 0 ]; then
     return 0
   fi
 

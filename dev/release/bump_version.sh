@@ -33,8 +33,8 @@ version=$1
 
 cd "${SOURCE_TOP_DIR}"
 
-git switch -c bump-version-${version}
-mvn versions:set -DnewVersion=${version} -DprocessAllModules -DgenerateBackupPoms=false
+git switch -c "bump-version-${version}"
+mvn versions:set "-DnewVersion=${version}" -DprocessAllModules -DgenerateBackupPoms=false
 case "${version}" in
 *-SNAPSHOT)
   tag=main
@@ -43,8 +43,8 @@ case "${version}" in
   tag=v${version}
   ;;
 esac
-mvn versions:set-scm-tag -DnewTag=${tag} -DgenerateBackupPoms=false -pl :arrow-java-root
-mvn versions:set-scm-tag -DnewTag=${tag} -DgenerateBackupPoms=false -pl :arrow-bom
+mvn versions:set-scm-tag "-DnewTag=${tag}" -DgenerateBackupPoms=false -pl :arrow-java-root
+mvn versions:set-scm-tag "-DnewTag=${tag}" -DgenerateBackupPoms=false -pl :arrow-bom
 git add "pom.xml"
 git add "**/pom.xml"
 git commit -m "MINOR: Bump version to ${version}"
