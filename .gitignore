@@ -13,6 +13,7 @@
 .settings/
 /*-build/
 /.mvn/.develocity/
+/apache-arrow-java.tar.gz
 /build/
 /dev/release/apache-rat-0.16.1.jar
 /dev/release/filtered_rat.txt
