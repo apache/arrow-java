@@ -59,11 +59,11 @@ version=$(grep -o '^  <version>.*</version>' "pom.xml" |
     -e 's,</version>$,,')
 
 case "${version}" in
-  *-SNAPSHOT)
-    echo "Version isn't bumped: ${version}"
-    echo "Run dev/release/bump_version.sh before you run this script."
-    exit 1
-    ;;
+*-SNAPSHOT)
+  echo "Version isn't bumped: ${version}"
+  echo "Run dev/release/bump_version.sh before you run this script."
+  exit 1
+  ;;
 esac
 
 rc_tag="v${version}-rc${rc}"

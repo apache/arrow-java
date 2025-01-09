@@ -36,12 +36,12 @@ cd "${SOURCE_TOP_DIR}"
 git switch -c bump-version-${version}
 mvn versions:set -DnewVersion=${version} -DprocessAllModules -DgenerateBackupPoms=false
 case "${version}" in
-  *-SNAPSHOT)
-    tag=main
-    ;;
-  *)
-    tag=v${version}
-    ;;
+*-SNAPSHOT)
+  tag=main
+  ;;
+*)
+  tag=v${version}
+  ;;
 esac
 mvn versions:set-scm-tag -DnewTag=${tag} -DgenerateBackupPoms=false -pl :arrow-java-root
 mvn versions:set-scm-tag -DnewTag=${tag} -DgenerateBackupPoms=false -pl :arrow-bom
