@@ -128,8 +128,8 @@ test_source_distribution() {
     return 0
   fi
 
-  "${TOP_SOURCE_DIR}/ci/scripts/build.sh" "$(pwd)"
-  "${TOP_SOURCE_DIR}/ci/scripts/test.sh" "$(pwd)"
+  "${TOP_SOURCE_DIR}/ci/scripts/build.sh" "$(pwd)" build jni_dist
+  "${TOP_SOURCE_DIR}/ci/scripts/test.sh" "$(pwd)" build jni_dist
   # TODO: JNI test
   # TODO: Integration test
 }
