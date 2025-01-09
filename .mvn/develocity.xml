@@ -26,14 +26,12 @@
         <allowUntrusted>false</allowUntrusted>
     </server>
     <buildScan>
-        <capture>
-            <fileFingerprints>true</fileFingerprints>
-            <buildLogging>true</buildLogging>
-            <testLogging>true</testLogging>
-        </capture>
         <backgroundBuildScanUpload>#{isFalse(env['CI'])}</backgroundBuildScanUpload>
-        <publishing><onlyIf>true</onlyIf></publishing>
-        <publishIfAuthenticated>true</publishIfAuthenticated>
+        <publishing>
+            <onlyIf>
+                <![CDATA[authenticated]]>
+            </onlyIf>
+        </publishing>
         <obfuscation>
             <ipAddresses>#{{'0.0.0.0'}}</ipAddresses>
         </obfuscation>
