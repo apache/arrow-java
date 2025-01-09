@@ -1,0 +1,141 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: RC
+on:
+  push:
+    branches:
+      - '**'
+      - '!dependabot/**'
+    tags:
+      - '*-rc*'
+  pull_request:
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  archive:
+    name: Archive
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          submodules: recursive
+      - name: Prepare for tag
+        if: github.ref_type == 'tag'
+        run: |
+          version=${GITHUB_REF_NAME%-rc*}
+          version=${version#v}
+          rc=${GITHUB_REF_NAME#*-rc}
+          echo "VERSION=${version}" >> ${GITHUB_ENV}
+          echo "RC=${rc}" >> ${GITHUB_ENV}
+      - name: Prepare for branch
+        if: github.ref_type == 'branch'
+        run: |
+          version=$(grep -o '^  <version>.*</version>' "pom.xml" |
+            sed \
+              -e 's,^  <version>,,' \
+              -e 's,</version>$,,')
+          rc=$(date +%Y%m%d)
+          echo "VERSION=${version}" >> ${GITHUB_ENV}
+          echo "RC=${rc}" >> ${GITHUB_ENV}
+      - name: Archive
+        run: |
+          id="apache-arrow-java-${VERSION}"
+          tar_gz="${id}.tar.gz"
+          echo "TAR_GZ=${tar_gz}" >> ${GITHUB_ENV}
+          git archive HEAD --prefix "${id}/" --output "${tar_gz}"
+          sha256sum "${tar_gz}" > "${tar_gz}.sha256"
+          sha512sum "${tar_gz}" > "${tar_gz}.sha512"
+      - name: Audit
+        run: |
+          dev/release/run_rat.sh "${TAR_GZ}"
+      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+        with:
+          name: archive
+          path: |
+            apache-arrow-java-*
+  verify:
+    name: Verify
+    needs:
+      - archive
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          submodules: recursive
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: archive
+      - name: Verify
+        run: |
+          tar_gz=$(echo apache-arrow-java-*.tar.gz)
+          version=${tar_gz#apache-arrow-java-}
+          version=${version%.tar.gz}
+          # rc isn't used with VERIFY_DOWNLOAD=0
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            rc="${GITHUB_REF_NAME#*-rc}"
+          else
+            rc=$(date +%Y%m%d)
+          fi
+          VERIFY_DEFAULT=0 \
+            VERIFY_SOURCE=1 \
+            dev/release/verify_rc.sh "${version}" "${rc}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  upload:
+    name: Upload
+    if: github.ref_type == 'tag'
+    needs:
+      - verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          submodules: recursive
+      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: archive
+      - name: Upload
+        run: |
+          # TODO: Add support for release note
+          version=${GITHUB_REF_NAME%-rc*}
+          version=${version#v}
+          rc=${GITHUB_REF_NAME#*-rc}
+          gh release create ${GITHUB_REF_NAME} \
+            --notes "TODO" \
+            --prerelease \
+            --title "Apache Arrow Java ${version} RC${rc}" \
+            --verify-tag \
+            apache-arrow-java-*.tar.gz \
+            apache-arrow-java-*.tar.gz.sha*
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
