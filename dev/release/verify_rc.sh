@@ -119,7 +119,7 @@ ensure_source_directory() {
       "${ARCHIVE_BASE_NAME}/testing"
   fi
 
-  ARROW_TEST_DATA="${ARCHIVE_BASE_NAME}/testing/data"
+  ARROW_TEST_DATA="$(pwd)/${ARCHIVE_BASE_NAME}/testing/data"
   export ARROW_TEST_DATA
 }
 
