@@ -25,12 +25,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.common.collect.ImmutableSet;
 import java.nio.charset.StandardCharsets;
@@ -641,6 +636,139 @@ public class ResultSetTest {
         // Assert
         assertEquals(resultData.getRowCount(), actualData.size());
         assertTrue(actualData.contains(((IntVector) resultData.getVector(0)).get(0)));
+      }
+    }
+  }
+
+  @Test
+  public void testFallbackUnresolvableFlightServer() throws Exception {
+    final Schema schema =
+        new Schema(
+            Collections.singletonList(Field.nullable("int_column", Types.MinorType.INT.getType())));
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+        VectorSchemaRoot resultData = VectorSchemaRoot.create(schema, allocator)) {
+      resultData.setRowCount(1);
+      ((IntVector) resultData.getVector(0)).set(0, 1);
+
+      try (final FallbackFlightSqlProducer rootProducer =
+              new FallbackFlightSqlProducer(resultData);
+          FlightServer rootServer =
+              FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), rootProducer)
+                  .build()
+                  .start();
+          Connection newConnection =
+              DriverManager.getConnection(
+                  String.format(
+                      "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false",
+                      rootServer.getLocation().getUri().getHost(), rootServer.getPort()))) {
+        // This first attempt should take a measurable amount of time.
+        long start = System.nanoTime();
+        try (Statement newStatement = newConnection.createStatement()) {
+          try (ResultSet result = newStatement.executeQuery("fallback with unresolvable")) {
+            List<Integer> actualData = new ArrayList<>();
+            while (result.next()) {
+              actualData.add(result.getInt(1));
+            }
+
+            // Assert
+            assertEquals(resultData.getRowCount(), actualData.size());
+            assertTrue(actualData.contains(((IntVector) resultData.getVector(0)).get(0)));
+          }
+        }
+        long attempt1 = System.nanoTime();
+        double elapsedMs = (attempt1 - start) / 1_000_000.;
+        assertTrue(
+            elapsedMs >= 5000.,
+            String.format(
+                "Expected first attempt to hit the timeout, but only %f ms elapsed", elapsedMs));
+
+        // Once the client cache is implemented (GH-661), this second attempt should take less time,
+        // since the failure from before should be cached.
+        start = System.nanoTime();
+        try (Statement newStatement = newConnection.createStatement()) {
+          try (ResultSet result = newStatement.executeQuery("fallback with unresolvable")) {
+            List<Integer> actualData = new ArrayList<>();
+            while (result.next()) {
+              actualData.add(result.getInt(1));
+            }
+
+            // Assert
+            assertEquals(resultData.getRowCount(), actualData.size());
+            assertTrue(actualData.contains(((IntVector) resultData.getVector(0)).get(0)));
+          }
+        }
+        attempt1 = System.nanoTime();
+        elapsedMs = (attempt1 - start) / 1_000_000.;
+        // TODO(GH-661): this assertion should be flipped to assertTrue.
+        assertFalse(
+            elapsedMs < 5000.,
+            String.format("Expected second attempt to be the same, but %f ms elapsed", elapsedMs));
+      }
+    }
+  }
+
+  @Test
+  public void testFallbackUnresolvableFlightServerDisableCache() throws Exception {
+    final Schema schema =
+        new Schema(
+            Collections.singletonList(Field.nullable("int_column", Types.MinorType.INT.getType())));
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+        VectorSchemaRoot resultData = VectorSchemaRoot.create(schema, allocator)) {
+      resultData.setRowCount(1);
+      ((IntVector) resultData.getVector(0)).set(0, 1);
+
+      try (final FallbackFlightSqlProducer rootProducer =
+              new FallbackFlightSqlProducer(resultData);
+          FlightServer rootServer =
+              FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), rootProducer)
+                  .build()
+                  .start();
+          Connection newConnection =
+              DriverManager.getConnection(
+                  String.format(
+                      "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false&useClientCache=false",
+                      rootServer.getLocation().getUri().getHost(), rootServer.getPort()))) {
+        // This first attempt should take a measurable amount of time.
+        long start = System.nanoTime();
+        try (Statement newStatement = newConnection.createStatement()) {
+          try (ResultSet result = newStatement.executeQuery("fallback with unresolvable")) {
+            List<Integer> actualData = new ArrayList<>();
+            while (result.next()) {
+              actualData.add(result.getInt(1));
+            }
+
+            // Assert
+            assertEquals(resultData.getRowCount(), actualData.size());
+            assertTrue(actualData.contains(((IntVector) resultData.getVector(0)).get(0)));
+          }
+        }
+        long attempt1 = System.nanoTime();
+        double elapsedMs = (attempt1 - start) / 1_000_000.;
+        assertTrue(
+            elapsedMs >= 5000.,
+            String.format(
+                "Expected first attempt to hit the timeout, but only %f ms elapsed", elapsedMs));
+
+        // This second attempt should take a long time still, since we disabled the cache.
+        start = System.nanoTime();
+        try (Statement newStatement = newConnection.createStatement()) {
+          try (ResultSet result = newStatement.executeQuery("fallback with unresolvable")) {
+            List<Integer> actualData = new ArrayList<>();
+            while (result.next()) {
+              actualData.add(result.getInt(1));
+            }
+
+            // Assert
+            assertEquals(resultData.getRowCount(), actualData.size());
+            assertTrue(actualData.contains(((IntVector) resultData.getVector(0)).get(0)));
+          }
+        }
+        attempt1 = System.nanoTime();
+        elapsedMs = (attempt1 - start) / 1_000_000.;
+        assertTrue(
+            elapsedMs >= 5000.,
+            String.format(
+                "Expected second attempt to hit the timeout, but only %f ms elapsed", elapsedMs));
       }
     }
   }

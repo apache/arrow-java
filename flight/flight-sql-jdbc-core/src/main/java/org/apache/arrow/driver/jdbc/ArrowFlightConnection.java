@@ -113,6 +113,7 @@ public final class ArrowFlightConnection extends AvaticaConnection {
           .withRetainCookies(config.retainCookies())
           .withRetainAuth(config.retainAuth())
           .withCatalog(config.getCatalog())
+          .withConnectTimeout(config.getConnectTimeout())
           .build();
     } catch (final SQLException e) {
       try {

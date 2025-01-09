@@ -147,6 +147,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     assertNull(builder.clientCertificatePath);
     assertNull(builder.clientKeyPath);
     assertEquals(Optional.empty(), builder.catalog);
+    assertNull(builder.connectTimeout);
   }
 
   @Test

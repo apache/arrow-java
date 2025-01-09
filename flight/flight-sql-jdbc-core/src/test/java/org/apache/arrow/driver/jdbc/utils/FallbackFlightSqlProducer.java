@@ -109,6 +109,16 @@ public class FallbackFlightSqlProducer extends BasicFlightSqlProducer {
                       Location.forGrpcInsecure("localhost", 9999),
                       Location.reuseConnection())
                   .build());
+    } else if (query.equals("fallback with unresolvable")) {
+      endpoints =
+          Collections.singletonList(
+              FlightEndpoint.builder(
+                      ticket,
+                      // Inaccessible IP
+                      // https://stackoverflow.com/questions/10456044/what-is-a-good-invalid-ip-address-to-use-for-unit-tests
+                      Location.forGrpcInsecure("203.0.113.0", 9999),
+                      Location.reuseConnection())
+                  .build());
     } else {
       throw CallStatus.UNIMPLEMENTED.withDescription(query).toRuntimeException();
     }
