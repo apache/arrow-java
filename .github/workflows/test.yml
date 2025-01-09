@@ -71,7 +71,7 @@ jobs:
       - name: Execute Docker Build
         env:
           # Enables build caching, but not strictly required
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: |
           docker compose run \
             -e CI=true \
@@ -107,12 +107,12 @@ jobs:
       - name: Build
         shell: bash
         env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: ci/scripts/build.sh $(pwd) $(pwd)/build
       - name: Test
         shell: bash
         env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: ci/scripts/test.sh $(pwd) $(pwd)/build
 
   windows:
@@ -138,12 +138,12 @@ jobs:
       - name: Build
         shell: bash
         env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: ci/scripts/build.sh $(pwd) $(pwd)/build
       - name: Test
         shell: bash
         env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.GE_ACCESS_TOKEN }}
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: ci/scripts/test.sh $(pwd) $(pwd)/build
 
   integration:
