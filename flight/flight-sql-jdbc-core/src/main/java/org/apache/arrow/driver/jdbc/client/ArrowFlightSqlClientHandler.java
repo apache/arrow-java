@@ -33,6 +33,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.apache.arrow.driver.jdbc.client.utils.ClientAuthenticationUtils;
+import org.apache.arrow.driver.jdbc.client.utils.FlightClientCache;
+import org.apache.arrow.driver.jdbc.client.utils.FlightLocationQueue;
 import org.apache.arrow.flight.CallOption;
 import org.apache.arrow.flight.CallStatus;
 import org.apache.arrow.flight.CloseSessionRequest;
@@ -75,21 +77,27 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   // JDBC connection string query parameter
   private static final String CATALOG = "catalog";
 
+  private final String cacheKey;
   private final FlightSqlClient sqlClient;
   private final Set<CallOption> options = new HashSet<>();
   private final Builder builder;
   private final Optional<String> catalog;
+  private final @Nullable FlightClientCache flightClientCache;
 
   ArrowFlightSqlClientHandler(
+      final String cacheKey,
       final FlightSqlClient sqlClient,
       final Builder builder,
       final Collection<CallOption> credentialOptions,
-      final Optional<String> catalog) {
+      final Optional<String> catalog,
+      final @Nullable FlightClientCache flightClientCache) {
     this.options.addAll(builder.options);
     this.options.addAll(credentialOptions);
+    this.cacheKey = Preconditions.checkNotNull(cacheKey);
     this.sqlClient = Preconditions.checkNotNull(sqlClient);
     this.builder = builder;
     this.catalog = catalog;
+    this.flightClientCache = flightClientCache;
   }
 
   /**
@@ -101,12 +109,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    * @return a new {@link ArrowFlightSqlClientHandler}.
    */
   static ArrowFlightSqlClientHandler createNewHandler(
+      final String cacheKey,
       final FlightClient client,
       final Builder builder,
       final Collection<CallOption> options,
-      final Optional<String> catalog) {
+      final Optional<String> catalog,
+      final @Nullable FlightClientCache flightClientCache) {
     final ArrowFlightSqlClientHandler handler =
-        new ArrowFlightSqlClientHandler(new FlightSqlClient(client), builder, options, catalog);
+        new ArrowFlightSqlClientHandler(
+            cacheKey, new FlightSqlClient(client), builder, options, catalog, flightClientCache);
     handler.setSetCatalogInSessionIfPresent();
     return handler;
   }
@@ -148,9 +159,14 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           // location
           // is the same as the original connection's Location and skip creating a FlightClient in
           // that scenario.
+          // Also copy the cache to the client so we can share a cache. Cache needs to cache
+          // negative attempts too.
           List<Exception> exceptions = new ArrayList<>();
           CloseableEndpointStreamPair stream = null;
-          for (Location location : endpoint.getLocations()) {
+          FlightLocationQueue locations =
+              new FlightLocationQueue(flightClientCache, endpoint.getLocations());
+          while (locations.hasNext()) {
+            Location location = locations.next();
             final URI endpointUri = location.getUri();
             if (endpointUri.getScheme().equals(LocationSchemes.REUSE_CONNECTION)) {
               stream =
@@ -163,6 +179,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                     .withHost(endpointUri.getHost())
                     .withPort(endpointUri.getPort())
                     .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS))
+                    .withClientCache(flightClientCache)
                     .withConnectTimeout(builder.connectTimeout);
 
             ArrowFlightSqlClientHandler endpointHandler = null;
@@ -177,12 +194,29 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
               stream.getStream().getSchema();
             } catch (Exception ex) {
               if (endpointHandler != null) {
+                // If the exception is related to connectivity, mark the client as a dud.
+                if (flightClientCache != null) {
+                  if (ex instanceof FlightRuntimeException
+                      && ((FlightRuntimeException) ex).status().code()
+                          == FlightStatusCode.UNAVAILABLE
+                      &&
+                      // IOException covers SocketException and Netty's (private)
+                      // AnnotatedSocketException
+                      // We are looking for things like "Network is unreachable"
+                      ex.getCause() instanceof IOException) {
+                    flightClientCache.markLocationAsDud(location.toString());
+                  }
+                }
+
                 AutoCloseables.close(endpointHandler);
               }
               exceptions.add(ex);
               continue;
             }
 
+            if (flightClientCache != null) {
+              flightClientCache.markLocationAsReachable(location.toString());
+            }
             break;
           }
           if (stream != null) {
@@ -549,6 +583,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting Optional<String> catalog = Optional.empty();
 
+    @VisibleForTesting @Nullable FlightClientCache flightClientCache;
+
     @VisibleForTesting @Nullable Duration connectTimeout;
 
     // These two middleware are for internal use within build() and should not be exposed by builder
@@ -833,9 +869,18 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       return this;
     }
 
+    public Builder withClientCache(FlightClientCache flightClientCache) {
+      this.flightClientCache = flightClientCache;
+      return this;
+    }
+
     public Builder withConnectTimeout(Duration connectTimeout) {
       this.connectTimeout = connectTimeout;
       return this;
+    }
+
+    public String getCacheKey() {
+      return getLocation().toString();
     }
 
     /** Get the location that this client will connect to. */
@@ -931,7 +976,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                   options.toArray(new CallOption[0])));
         }
         return ArrowFlightSqlClientHandler.createNewHandler(
-            client, this, credentialOptions, catalog);
+            getCacheKey(), client, this, credentialOptions, catalog, flightClientCache);
 
       } catch (final IllegalArgumentException
           | GeneralSecurityException

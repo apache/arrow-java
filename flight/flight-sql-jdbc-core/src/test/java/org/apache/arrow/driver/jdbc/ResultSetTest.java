@@ -699,10 +699,9 @@ public class ResultSetTest {
         }
         attempt1 = System.nanoTime();
         elapsedMs = (attempt1 - start) / 1_000_000.;
-        // TODO(GH-661): this assertion should be flipped to assertTrue.
-        assertFalse(
+        assertTrue(
             elapsedMs < 5000.,
-            String.format("Expected second attempt to be the same, but %f ms elapsed", elapsedMs));
+            String.format("Expected second attempt to be faster, but %f ms elapsed", elapsedMs));
       }
     }
   }
