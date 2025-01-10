@@ -44,7 +44,8 @@ case "${git_origin_url}" in
   ;;
 esac
 
-git switch -c "bump-version-${version}" main
+branch="bump-version-${version}"
+git switch -c "${branch}" main
 mvn versions:set "-DnewVersion=${version}" -DprocessAllModules -DgenerateBackupPoms=false
 case "${version}" in
 *-SNAPSHOT)
@@ -59,5 +60,5 @@ mvn versions:set-scm-tag "-DnewTag=${tag}" -DgenerateBackupPoms=false -pl :arrow
 git add "pom.xml"
 git add "**/pom.xml"
 git commit -m "MINOR: Bump version to ${version}"
-git push origin
+git push origin "${branch}"
 gh pr create --fill --repo apache/arrow-java
