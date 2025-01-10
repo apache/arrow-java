@@ -50,7 +50,7 @@ fi
 if [ "${RELEASE_PULL}" -gt 0 ]; then
   echo "Ensure using the latest commit"
   git checkout main
-  git pull --rebase --prune
+  git pull --ff-only
 fi
 
 version=$(grep -o '^  <version>.*</version>' "pom.xml" |
