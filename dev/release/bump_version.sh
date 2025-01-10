@@ -33,7 +33,7 @@ version=$1
 
 cd "${SOURCE_TOP_DIR}"
 
-git switch -c "bump-version-${version}"
+git switch -c "bump-version-${version}" main
 mvn versions:set "-DnewVersion=${version}" -DprocessAllModules -DgenerateBackupPoms=false
 case "${version}" in
 *-SNAPSHOT)
