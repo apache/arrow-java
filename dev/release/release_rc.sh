@@ -41,7 +41,7 @@ cd "${SOURCE_TOP_DIR}"
 if [ "${RELEASE_PULL}" -gt 0 ] || [ "${RELEASE_PUSH_TAG}" -gt 0 ]; then
   git_origin_url="$(git remote get-url origin)"
   case "${git_origin_url}" in
-  git@github.com:apache/arrow-java.git|https://github.com/apache/arrow-java.git)
+  git@github.com:apache/arrow-java.git | https://github.com/apache/arrow-java.git)
     : # OK
     ;;
   *)
