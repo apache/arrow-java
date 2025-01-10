@@ -40,10 +40,15 @@ cd "${SOURCE_TOP_DIR}"
 
 if [ "${RELEASE_PULL}" -gt 0 ] || [ "${RELEASE_PUSH_TAG}" -gt 0 ]; then
   git_origin_url="$(git remote get-url origin)"
-  if [ "${git_origin_url}" != "git@github.com:apache/arrow-java.git" ]; then
+  case "${git_origin_url}" in
+  git@github.com:apache/arrow-java.git|https://github.com/apache/arrow-java.git)
+    : # OK
+    ;;
+  *)
     echo "This script must be ran with working copy of apache/arrow-java."
     echo "The origin's URL: ${git_origin_url}"
     exit 1
+    ;;
   fi
 fi
 
