@@ -31,11 +31,16 @@ rc=$2
 git_origin_url="$(git remote get-url origin)"
 repository="${git_origin_url#*github.com?}"
 repository="${repository%.git}"
-if [ "${git_origin_url}" != "git@github.com:apache/arrow-java.git" ]; then
+case "${git_origin_url}" in
+git@github.com:apache/arrow-java.git | https://github.com/apache/arrow-java.git)
+  : # OK
+  ;;
+*)
   echo "This script must be ran with working copy of apache/arrow-java."
   echo "The origin's URL: ${git_origin_url}"
   exit 1
-fi
+  ;;
+esac
 
 tag="v${version}"
 rc_tag="${tag}-rc${rc}"
