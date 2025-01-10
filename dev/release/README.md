@@ -22,10 +22,34 @@
 ## Overview
 
   1. Test the revision to be released
-  2. Bump version by `dev/release/bump_version.sh X.Y.Z`
+  2. Bump version (detailed later)
   3. Prepare RC and vote (detailed later)
   4. Publish (detailed later)
   5. Bump version by `dev/release/bump_version.sh X.Y.Z-SNAPSHOT`
+
+### Bump version
+
+Run `dev/release/bump_version.sh` on a working copy of your fork not
+`git@github.com:apache/arrow-java`:
+
+```console
+$ git clone git@github.com:${YOUR_GITHUB_ACCOUNT}/arrow-java.git arrow-java.${YOUR_GITHUB_ACCOUNT}
+$ cd arrow-java.${YOUR_GITHUB_ACCOUNT}
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh ${NEW_VERSION}
+```
+
+Here is an example to bump version to 19.0.0:
+
+```
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh 19.0.0
+```
+
+It creates a feature branch and adds a commit that bumps version. This
+opens a pull request from the feature branch by `gh gr create`. So you
+need `gh` command and GitHub personal access token.
+
+See also:
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
 ### Prepare RC and vote
 
@@ -34,6 +58,7 @@ Run `dev/release/release_rc.sh` on a working copy of
 
 ```console
 $ git clone git@github.com:apache/arrow-java.git
+$ cd arrow-java
 $ dev/release/release_rc.sh ${RC}
 (Send a vote email to dev@arrow.apache.org.
  You can use a draft shown by release_rc.sh for the email.)
