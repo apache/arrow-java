@@ -45,9 +45,10 @@ jobs:
           gh release download ${latest_rc_tag} --dir dists
       - name: Create GitHub Release
         run: |
+          # GH-499: How to create release notes?
           version=${GITHUB_REF_NAME#v}
           gh release create ${GITHUB_REF_NAME} \
-            --notes "TODO" \
+            --generate-notes \
             --title "Apache Arrow Java ${version}" \
             --verify-tag \
             dists/*

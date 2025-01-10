@@ -124,12 +124,12 @@ jobs:
           name: archive
       - name: Upload
         run: |
-          # TODO: Add support for release note
+          # GH-499: How to create release notes?
           version=${GITHUB_REF_NAME%-rc*}
           version=${version#v}
           rc=${GITHUB_REF_NAME#*-rc}
           gh release create ${GITHUB_REF_NAME} \
-            --notes "TODO" \
+            --generate-notes \
             --prerelease \
             --title "Apache Arrow Java ${version} RC${rc}" \
             --verify-tag \
