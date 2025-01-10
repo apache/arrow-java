@@ -51,6 +51,9 @@ need `gh` command and GitHub personal access token.
 See also:
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
+We need to merge the pull request before we cut RC. If we try cut RC
+without merging the pull request, the script to cut RC is failed.
+
 ### Prepare RC and vote
 
 Run `dev/release/release_rc.sh` on a working copy of
