@@ -65,7 +65,7 @@ pushd "${dist_base_dir}"
 svn add .
 svn ci -m "Apache Arrow Java ${version}"
 popd
-rm -rf "${dist_dir}"
+rm -rf "${dist_base_dir}"
 
 echo "Keep only the latest versions"
 old_releases=$(
