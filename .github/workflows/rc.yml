@@ -106,8 +106,6 @@ jobs:
           VERIFY_DEFAULT=0 \
             VERIFY_SOURCE=1 \
             dev/release/verify_rc.sh "${version}" "${rc}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   upload:
     name: Upload
     if: github.ref_type == 'tag'
