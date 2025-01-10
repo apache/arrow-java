@@ -22,12 +22,12 @@
 ## Overview
 
   1. Test the revision to be released
-  2. Bump version (detailed later)
+  2. Bump version for new release (detailed later)
   3. Prepare RC and vote (detailed later)
   4. Publish (detailed later)
-  5. Bump version by `dev/release/bump_version.sh X.Y.Z-SNAPSHOT`
+  5. Bump version for new development (detailed later)
 
-### Bump version
+### Bump version for new release
 
 Run `dev/release/bump_version.sh` on a working copy of your fork not
 `git@github.com:apache/arrow-java`:
@@ -51,8 +51,8 @@ need `gh` command and GitHub personal access token.
 See also:
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 
-We need to merge the pull request before we cut RC. If we try cut RC
-without merging the pull request, the script to cut RC is failed.
+We need to merge the pull request before we cut a RC. If we try cut a
+RC without merging the pull request, the script to cut a RC is failed.
 
 ### Prepare RC and vote
 
@@ -125,7 +125,30 @@ $ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release.sh 19.0.0 1
 Add the release to ASF's report database via [Apache Committee Report
 Helper](https://reporter.apache.org/addrelease.html?arrow).
 
-### Verify
+### Bump version for new development
+
+We should bump version in the main branch for new development after we
+release a new version.
+
+Run `dev/release/bump_version.sh` on a working copy of your fork not
+`git@github.com:apache/arrow-java`:
+
+```console
+$ git clone git@github.com:${YOUR_GITHUB_ACCOUNT}/arrow-java.git arrow-java.${YOUR_GITHUB_ACCOUNT}
+$ cd arrow-java.${YOUR_GITHUB_ACCOUNT}
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh ${NEW_VERSION}-SNAPSHOT
+```
+
+Here is an example to bump version to 19.0.1-SNAPSHOT:
+
+```
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh 19.0.0-SNAPSHOT
+```
+
+It creates a feature branch and adds a commit that bumps version. This
+opens a pull request from the feature branch by `gh pr create`.
+
+## Verify
 
 We have a script to verify a RC.
 
