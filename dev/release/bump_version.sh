@@ -60,5 +60,5 @@ mvn versions:set-scm-tag "-DnewTag=${tag}" -DgenerateBackupPoms=false -pl :arrow
 git add "pom.xml"
 git add "**/pom.xml"
 git commit -m "MINOR: Bump version to ${version}"
-git push origin "${branch}"
+git push --set-upstream origin "${branch}"
 gh pr create --fill --repo apache/arrow-java
