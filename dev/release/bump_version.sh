@@ -33,6 +33,17 @@ version=$1
 
 cd "${SOURCE_TOP_DIR}"
 
+git_origin_url="$(git remote get-url origin)"
+case "${git_origin_url}" in
+*apache/arrow-java*)
+  echo "You must use your fork: ${git_origin_url}"
+  exit 1
+  ;;
+*)
+  : # OK
+  ;;
+esac
+
 git switch -c "bump-version-${version}" main
 mvn versions:set "-DnewVersion=${version}" -DprocessAllModules -DgenerateBackupPoms=false
 case "${version}" in
@@ -48,4 +59,5 @@ mvn versions:set-scm-tag "-DnewTag=${tag}" -DgenerateBackupPoms=false -pl :arrow
 git add "pom.xml"
 git add "**/pom.xml"
 git commit -m "MINOR: Bump version to ${version}"
+git push origin
 gh pr create --fill --repo apache/arrow-java
