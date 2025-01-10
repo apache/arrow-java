@@ -94,7 +94,8 @@ their ASF account. e.g.:
 ```console
 $ svn co https://dist.apache.org/repos/dist/dev/arrow
 $ cd arrow
-$ editor KEYS
+$ head KEYS
+(This shows how to update KEYS)
 $ svn ci KEYS
 ```
 
