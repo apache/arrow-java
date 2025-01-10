@@ -59,7 +59,7 @@ Run `dev/release/release_rc.sh` on a working copy of
 ```console
 $ git clone git@github.com:apache/arrow-java.git
 $ cd arrow-java
-$ dev/release/release_rc.sh ${RC}
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh ${RC}
 (Send a vote email to dev@arrow.apache.org.
  You can use a draft shown by release_rc.sh for the email.)
 ```
