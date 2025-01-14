@@ -51,7 +51,7 @@ git push origin "${tag}"
 release_id="apache-arrow-java-${version}"
 dist_url="https://dist.apache.org/repos/dist/release/arrow"
 dist_base_dir="dev/release/dist"
-dist_dir="dev/release/dist/${release_id}"
+dist_dir="${dist_base_dir}/${release_id}"
 echo "Checking out ${dist_url}"
 rm -rf "${dist_base_dir}"
 svn co --depth=empty "${dist_url}" "${dist_base_dir}"
@@ -62,7 +62,7 @@ gh release download "${rc_tag}" \
 
 echo "Uploading to release/"
 pushd "${dist_base_dir}"
-svn add .
+svn add "${release_id}"
 svn ci -m "Apache Arrow Java ${version}"
 popd
 rm -rf "${dist_base_dir}"
