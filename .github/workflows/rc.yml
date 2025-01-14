@@ -32,8 +32,8 @@ concurrency:
 permissions:
   contents: read
 jobs:
-  archive:
-    name: Archive
+  source:
+    name: Source
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -70,15 +70,269 @@ jobs:
       - name: Audit
         run: |
           dev/release/run_rat.sh "${TAR_GZ}"
-      - uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
+      - name: Upload source archive
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
-          name: archive
+          name: release-source
           path: |
             apache-arrow-java-*
+  jni-ubuntu:
+    name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
+    runs-on: ${{ matrix.platform.runs_on }}
+    needs:
+      - source
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - runs_on: ubuntu-latest
+            arch: "x86_64"
+            archery_arch: "amd64"
+    env:
+      # architecture name used for archery build
+      ARCH: ${{ matrix.platform.archery_arch }}
+      DOCKER_VOLUME_PREFIX: .docker/
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download source archive
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: release-source
+      - name: Extract Download the latest Apache Arrow C++
+        run: |
+          tar -xf apache-arrow-java-*.tar.gz --strip-components=1
+      - name: Download the latest Apache Arrow C++
+        run: |
+          ci/scripts/download_cpp.sh
+      - name: Checkout apache/arrow-testing
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow-testing
+          path: arrow/testing
+      - name: Checkout apache/parquet-testing
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/parquet-testing
+          path: arrow/cpp/submodules/parquet-testing
+      - uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Cache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: .docker
+          key: jni-linux-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
+          restore-keys: jni-linux-${{ matrix.platform.arch }}-
+      - name: Build C++ libraries
+        run: |
+          docker compose run vcpkg-jni
+      - name: Push Docker image
+        if: success() && github.event_name == 'push' && github.repository == 'apache/arrow-java' && github.ref_name == 'main'
+        run: |
+          docker compose push vcpkg-jni
+      - name: Compress into single artifact to keep directory structure
+        run: tar -cvzf jni-linux-${{ matrix.platform.arch }}.tar.gz jni/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: jni-linux-${{ matrix.platform.arch }}
+          path: jni-linux-${{ matrix.platform.arch }}.tar.gz
+  jni-macos:
+    name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
+    runs-on: ${{ matrix.platform.runs_on }}
+    needs:
+      - source
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - { runs_on: macos-13, arch: "x86_64"}
+          - { runs_on: macos-14, arch: "aarch_64" }
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "14.0"
+    steps:
+      - name: Download source archive
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: release-source
+      - name: Extract Download the latest Apache Arrow C++
+        run: |
+          tar -xf apache-arrow-java-*.tar.gz --strip-components=1
+      # We need 19.0.0 for latest Boost support
+      - name: Download the latest RC Apache Arrow C++
+        run: |
+          ci/scripts/download_cpp.sh latest-rc
+      - name: Checkout apache/arrow-testing
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow-testing
+          path: arrow/testing
+      - name: Checkout apache/parquet-testing
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/parquet-testing
+          path: arrow/cpp/submodules/parquet-testing
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          cache: 'pip'
+          python-version: 3.12
+      - name: Install Archery
+        run: pip install -e arrow/dev/archery[all]
+      - name: Install dependencies
+        run: |
+          # We want to use llvm@14 to avoid shared z3
+          # dependency. llvm@14 doesn't depend on z3 and llvm depends
+          # on z3. And Homebrew's z3 provides only shared library. It
+          # doesn't provides static z3 because z3's CMake doesn't accept
+          # building both shared and static libraries at once.
+          # See also: Z3_BUILD_LIBZ3_SHARED in
+          # https://github.com/Z3Prover/z3/blob/master/README-CMake.md
+          #
+          # If llvm is installed, Apache Arrow C++ uses llvm rather than
+          # llvm@14 because llvm is newer than llvm@14.
+          brew uninstall llvm || :
+
+          # Ensure updating python@XXX with the "--overwrite" option.
+          # If python@XXX is updated without "--overwrite", it causes
+          # a conflict error. Because Python 3 installed not by
+          # Homebrew exists in /usr/local on GitHub Actions. If
+          # Homebrew's python@XXX is updated without "--overwrite", it
+          # tries to replace /usr/local/bin/2to3 and so on and causes
+          # a conflict error.
+          brew update
+          for python_package in $(brew list | grep python@); do
+            brew install --overwrite ${python_package}
+          done
+          brew install --overwrite python
+
+          if [ "$(uname -m)" = "arm64" ]; then
+            # pkg-config formula is deprecated but it's still installed
+            # in GitHub Actions runner now. We can remove this once
+            # pkg-config formula is removed from GitHub Actions runner.
+            brew uninstall pkg-config || :
+            brew uninstall pkg-config@0.29.2 || :
+          fi
+
+          brew bundle --file=arrow/cpp/Brewfile
+          # We want to link aws-sdk-cpp statically but Homebrew's
+          # aws-sdk-cpp provides only shared library. If we have
+          # Homebrew's aws-sdk-cpp, our build mix Homebrew's
+          # aws-sdk-cpp and bundled aws-sdk-cpp. We uninstall Homebrew's
+          # aws-sdk-cpp to ensure using only bundled aws-sdk-cpp.
+          brew uninstall aws-sdk-cpp
+          # We want to use bundled RE2 for static linking. If
+          # Homebrew's RE2 is installed, its header file may be used.
+          # We uninstall Homebrew's RE2 to ensure using bundled RE2.
+          brew uninstall grpc || : # gRPC depends on RE2
+          brew uninstall grpc@1.54 || : # gRPC 1.54 may be installed too
+          brew uninstall re2
+          # We want to use bundled Protobuf for static linking. If
+          # Homebrew's Protobuf is installed, its library file may be
+          # used on test  We uninstall Homebrew's Protobuf to ensure using
+          # bundled Protobuf.
+          brew uninstall protobuf
+
+          brew bundle --file=Brewfile
+      - name: Prepare ccache
+        run: |
+          echo "CCACHE_DIR=${PWD}/ccache" >> ${GITHUB_ENV}
+      - name: Cache ccache
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ccache
+          key: jni-macos-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
+          restore-keys: jni-macos-${{ matrix.platform.arch }}-
+      - name: Build C++ libraries
+        run: |
+          set -e
+          # make brew Java available to CMake
+          export JAVA_HOME=$(brew --prefix openjdk@11)/libexec/openjdk.jdk/Contents/Home
+          ci/scripts/jni_macos_build.sh . arrow build jni
+      - name: Compress into single artifact to keep directory structure
+        run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
+      - name: Upload artifacts
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: jni-macos-${{ matrix.platform.arch }}
+          path: jni-macos-${{ matrix.platform.arch }}.tar.gz
+  binaries:
+    name: Binaries
+    runs-on: ubuntu-latest
+    needs:
+      - jni-ubuntu
+      - jni-macos
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          path: artifacts
+      - name: Decompress artifacts
+        run: |
+          mv artifacts/*/*.tar.gz .
+          tar -xf apache-arrow-java-*.tar.gz --strip-components=1
+          tar -xvzf jni-linux-x86_64.tar.gz
+          # tar -xvzf jni-linux-aarch_64.tar.gz
+          tar -xvzf jni-macos-x86_64.tar.gz
+          tar -xvzf jni-macos-aarch_64.tar.gz
+          # tar -xvzf jni-windows.tar.gz
+      - name: Test that shared libraries exist
+        run: |
+          set -x
+
+          test -f jni/arrow_cdata_jni/x86_64/libarrow_cdata_jni.so
+          test -f jni/arrow_dataset_jni/x86_64/libarrow_dataset_jni.so
+          test -f jni/arrow_orc_jni/x86_64/libarrow_orc_jni.so
+          test -f jni/gandiva_jni/x86_64/libgandiva_jni.so
+
+          # test -f jni/arrow_cdata_jni/aarch_64/libarrow_cdata_jni.so
+          # test -f jni/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.so
+          # test -f jni/arrow_orc_jni/aarch_64/libarrow_orc_jni.so
+          # test -f jni/gandiva_jni/aarch_64/libgandiva_jni.so
+
+          test -f jni/arrow_cdata_jni/x86_64/libarrow_cdata_jni.dylib
+          test -f jni/arrow_dataset_jni/x86_64/libarrow_dataset_jni.dylib
+          test -f jni/arrow_orc_jni/x86_64/libarrow_orc_jni.dylib
+          test -f jni/gandiva_jni/x86_64/libgandiva_jni.dylib
+
+          test -f jni/arrow_cdata_jni/aarch_64/libarrow_cdata_jni.dylib
+          test -f jni/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.dylib
+          test -f jni/arrow_orc_jni/aarch_64/libarrow_orc_jni.dylib
+          test -f jni/gandiva_jni/aarch_64/libgandiva_jni.dylib
+
+          # test -f jni/arrow_cdata_jni/x86_64/arrow_cdata_jni.dll
+          # test -f jni/arrow_dataset_jni/x86_64/arrow_dataset_jni.dll
+          # test -f jni/arrow_orc_jni/x86_64/arrow_orc_jni.dll
+      - name: Checkout apache/arrow-testing
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow-testing
+          path: testing
+      - name: Cache ~/.m2
+        uses: actions/cache@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        with:
+          path: ~/.m2
+          key: binaries-build-${{ hashFiles('**/*.java', '**/pom.xml') }}
+          restore-keys: binaries-build-
+      - name: Build bundled JAR
+        env:
+          MAVEN_ARGS: >-
+            --no-transfer-progress
+        run: |
+          ci/scripts/jni_full_build.sh . jni binaries
+      - name: Upload artifacts
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: release-binaries
+          path: binaries/*
   verify:
     name: Verify
     needs:
-      - archive
+      - binaries
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -87,15 +341,13 @@ jobs:
           - macos-latest
           - ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Download release artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          submodules: recursive
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-        with:
-          name: archive
+          pattern: release-*
       - name: Verify
         run: |
+          mv release-source/* ./
           tar_gz=$(echo apache-arrow-java-*.tar.gz)
           version=${tar_gz#apache-arrow-java-}
           version=${version%.tar.gz}
@@ -105,37 +357,40 @@ jobs:
           else
             rc=$(date +%Y%m%d)
           fi
-          VERIFY_DEFAULT=0 \
-            VERIFY_SOURCE=1 \
-            dev/release/verify_rc.sh "${version}" "${rc}"
+          tar -xf ${tar_gz}
+          export VERIFY_DEFAULT=0
+          export VERIFY_BINARY=1
+          export VERIFY_SOURCE=1
+          cd apache-arrow-java-*
+          mv ../${tar_gz}* ./
+          mv ../release-binaries binaries
+          dev/release/verify_rc.sh "${version}" "${rc}"
   upload:
     name: Upload
-    if: github.ref_type == 'tag'
+    # if: github.ref_type == 'tag'
     needs:
       - verify
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Download release artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          submodules: recursive
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
-        with:
-          name: archive
+          pattern: release-*
+          path: artifacts
       - name: Upload
         run: |
           # GH-499: How to create release notes?
           version=${GITHUB_REF_NAME%-rc*}
           version=${version#v}
           rc=${GITHUB_REF_NAME#*-rc}
-          gh release create ${GITHUB_REF_NAME} \
+          echo gh release create ${GITHUB_REF_NAME} \
             --generate-notes \
             --prerelease \
+            --repo ${{ github.repository }} \
             --title "Apache Arrow Java ${version} RC${rc}" \
             --verify-tag \
-            apache-arrow-java-*.tar.gz \
-            apache-arrow-java-*.tar.gz.sha*
+            artifacts/*/*
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

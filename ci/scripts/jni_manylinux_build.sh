@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -21,8 +22,8 @@
 
 set -exo pipefail
 
-arrow_java_dir="${1}"
-arrow_dir="${2}"
+source_dir="$(cd "${1}" && pwd)"
+arrow_dir="$(cd "${2}" && pwd)"
 build_dir="${3}"
 normalized_arch="$(arch)"
 case "${normalized_arch}" in
@@ -41,12 +42,15 @@ echo "=== Clear output directories and leftovers ==="
 rm -rf "${build_dir}"
 rm -rf "${dist_dir}"
 
+mkdir -p "${build_dir}"
+build_dir="$(cd "${build_dir}" && pwd)"
+
 echo "=== Building Arrow C++ libraries ==="
 devtoolset_version="$(rpm -qa "devtoolset-*-gcc" --queryformat '%{VERSION}' | grep -o "^[0-9]*")"
 devtoolset_include_cpp="/opt/rh/devtoolset-${devtoolset_version}/root/usr/include/c++/${devtoolset_version}"
 : "${ARROW_ACERO:=ON}"
 export ARROW_ACERO
-: "${ARROW_BUILD_TESTS:=OFF}"
+: "${ARROW_BUILD_TESTS:=ON}"
 : "${ARROW_DATASET:=ON}"
 export ARROW_DATASET
 : "${ARROW_GANDIVA:=ON}"
@@ -59,7 +63,7 @@ export ARROW_GANDIVA
 export ARROW_ORC
 : "${ARROW_PARQUET:=ON}"
 : "${ARROW_S3:=ON}"
-: "${ARROW_USE_CCACHE:=OFF}"
+: "${ARROW_USE_CCACHE:=ON}"
 : "${CMAKE_BUILD_TYPE:=release}"
 : "${CMAKE_UNITY_BUILD:=ON}"
 : "${VCPKG_ROOT:=/opt/vcpkg}"
@@ -77,9 +81,11 @@ export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
 export AWS_EC2_METADATA_DISABLED=TRUE
 
 mkdir -p "${build_dir}/cpp"
-pushd "${build_dir}/cpp"
+install_dir="${build_dir}/cpp-install"
 
 cmake \
+  -S "${arrow_dir}/cpp" \
+  -B "${build_dir}/cpp" \
   -DARROW_ACERO="${ARROW_ACERO}" \
   -DARROW_BUILD_SHARED=OFF \
   -DARROW_BUILD_TESTS="${ARROW_BUILD_TESTS}" \
@@ -100,7 +106,7 @@ cmake \
   -DARROW_S3="${ARROW_S3}" \
   -DARROW_USE_CCACHE="${ARROW_USE_CCACHE}" \
   -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
-  -DCMAKE_INSTALL_PREFIX="${ARROW_HOME}" \
+  -DCMAKE_INSTALL_PREFIX="${install_dir}" \
   -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD}" \
   -DGTest_SOURCE=BUNDLED \
   -DORC_SOURCE=BUNDLED \
@@ -110,9 +116,9 @@ cmake \
   -DPARQUET_REQUIRE_ENCRYPTION=OFF \
   -DVCPKG_MANIFEST_MODE=OFF \
   -DVCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}" \
-  -GNinja \
-  "${arrow_dir}/cpp"
-ninja install
+  -GNinja
+cmake --build "${build_dir}/cpp"
+cmake --install "${build_dir}/cpp"
 
 if [ "${ARROW_BUILD_TESTS}" = "ON" ]; then
   # MinIO is required
@@ -138,17 +144,16 @@ if [ "${ARROW_BUILD_TESTS}" = "ON" ]; then
     --label-regex unittest \
     --output-on-failure \
     --parallel "$(nproc)" \
+    --test-dir "${build_dir}/cpp" \
     --timeout 300
 fi
-
-popd
 
 JAVA_JNI_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 JAVA_JNI_CMAKE_ARGS="${JAVA_JNI_CMAKE_ARGS} -DVCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
 export JAVA_JNI_CMAKE_ARGS
-"${arrow_java_dir}/ci/scripts/jni_build.sh" \
-  "${arrow_java_dir}" \
-  "${ARROW_HOME}" \
+"${source_dir}/ci/scripts/jni_build.sh" \
+  "${source_dir}" \
+  "${install_dir}" \
   "${build_dir}" \
   "${dist_dir}"
 

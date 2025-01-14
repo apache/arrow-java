@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -21,8 +22,8 @@
 
 set -ex
 
-arrow_java_dir="${1}"
-arrow_dir="${2}"
+source_dir="$(cd "${1}" && pwd)"
+arrow_dir="$(cd "${2}" && pwd)"
 build_dir="${3}"
 normalized_arch="$(arch)"
 case "${normalized_arch}" in
@@ -39,6 +40,10 @@ dist_dir="${4}"
 echo "=== Clear output directories and leftovers ==="
 # Clear output directories and leftovers
 rm -rf "${build_dir}"
+rm -rf "${dist_dir}"
+
+mkdir -p "${build_dir}"
+build_dir="$(cd "${build_dir}" && pwd)"
 
 echo "=== Building Arrow C++ libraries ==="
 install_dir="${build_dir}/cpp-install"
@@ -53,7 +58,7 @@ export ARROW_GANDIVA
 export ARROW_ORC
 : "${ARROW_PARQUET:=ON}"
 : "${ARROW_S3:=ON}"
-: "${ARROW_USE_CCACHE:=OFF}"
+: "${ARROW_USE_CCACHE:=ON}"
 : "${CMAKE_BUILD_TYPE:=Release}"
 : "${CMAKE_UNITY_BUILD:=ON}"
 
@@ -66,10 +71,9 @@ export ARROW_TEST_DATA="${arrow_dir}/testing/data"
 export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
 export AWS_EC2_METADATA_DISABLED=TRUE
 
-mkdir -p "${build_dir}/cpp"
-pushd "${build_dir}/cpp"
-
 cmake \
+  -S "${arrow_dir}/cpp" \
+  -B "${build_dir}/cpp" \
   -DARROW_ACERO="${ARROW_ACERO}" \
   -DARROW_BUILD_SHARED=OFF \
   -DARROW_BUILD_TESTS="${ARROW_BUILD_TESTS}" \
@@ -84,6 +88,7 @@ cmake \
   -DARROW_PARQUET="${ARROW_PARQUET}" \
   -DARROW_S3="${ARROW_S3}" \
   -DARROW_USE_CCACHE="${ARROW_USE_CCACHE}" \
+  -DAWSSDK_SOURCE=BUNDLED \
   -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
   -DCMAKE_INSTALL_PREFIX="${install_dir}" \
   -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD}" \
@@ -92,9 +97,8 @@ cmake \
   -DPARQUET_BUILD_EXECUTABLES=OFF \
   -DPARQUET_REQUIRE_ENCRYPTION=OFF \
   -Dre2_SOURCE=BUNDLED \
-  -GNinja \
-  "${arrow_dir}/cpp"
-cmake --build . --target install
+  -GNinja
+cmake --build "${build_dir}/cpp" --target install
 
 if [ "${ARROW_BUILD_TESTS}" == "ON" ]; then
   # MinIO is required
@@ -107,14 +111,13 @@ if [ "${ARROW_BUILD_TESTS}" == "ON" ]; then
     --label-regex unittest \
     --output-on-failure \
     --parallel "$(sysctl -n hw.ncpu)" \
+    --test-dir "${build_dir}/cpp" \
     --timeout 300
 fi
 
-popd
-
 export JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/protobuf_ep-install"
-"${arrow_java_dir}/ci/scripts/jni_build.sh" \
-  "${arrow_java_dir}" \
+"${source_dir}/ci/scripts/jni_build.sh" \
+  "${source_dir}" \
   "${install_dir}" \
   "${build_dir}" \
   "${dist_dir}"

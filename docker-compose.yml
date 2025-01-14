@@ -26,6 +26,8 @@
 # $ ARCH=arm64v8 docker compose run java
 
 volumes:
+  ccache-cache:
+    name: ccache-cache
   maven-cache:
     name: maven-cache
 
@@ -101,9 +103,11 @@ services:
     volumes:
       - .:/arrow-java:delegated
       - ${ARROW_REPO_ROOT}:/arrow:delegated
+      - ${DOCKER_VOLUME_PREFIX}ccache:/ccache:delegated
       - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
     environment:
       ARROW_JAVA_CDATA: "ON"
+      CCACHE_DIR: "/ccache"
     command:
       ["git config --global --add safe.directory /arrow-java && \
-        /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build /arrow-java/dist"]
+        /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build /arrow-java/jni"]

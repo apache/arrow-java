@@ -19,16 +19,13 @@
 
 set -e
 
-arrow_java_dir="${1}"
-arrow_dir="${2}"
+source_dir="$(cd "${1}" && pwd)"
+jni_build_dir="$(cd "${2}" && pwd)"
 dist_dir="${3}"
+mkdir -p "${dist_dir}"
+dist_dir="$(cd "${dist_dir}" && pwd)"
 
-export ARROW_TEST_DATA="${arrow_dir}/testing/data"
-
-pushd "${arrow_java_dir}"
-
-# Ensure that there is no old jar
-# inside the maven repository
+# Ensure that there is no old artifacts inside the maven repository
 maven_repo=~/.m2/repository/org/apache/arrow
 if [ -d "$maven_repo" ]; then
   find "$maven_repo" \
@@ -37,7 +34,7 @@ if [ -d "$maven_repo" ]; then
     -exec rm -rf {} ";"
 fi
 
-# generate dummy GPG key for -Papache-release.
+# Generate dummy GPG key for -Papache-release.
 # -Papache-release generates signs (*.asc) of artifacts.
 # We don't use these signs in our release process.
 (
@@ -49,15 +46,17 @@ fi
 ) |
   gpg --full-generate-key --batch
 
+pushd "${source_dir}"
 # build the entire project
 mvn clean \
   install \
   -Papache-release \
   -Parrow-c-data \
   -Parrow-jni \
-  -Darrow.cpp.build.dir="$dist_dir" \
-  -Darrow.c.jni.dist.dir="$dist_dir" \
+  -Darrow.cpp.build.dir="${jni_build_dir}" \
+  -Darrow.c.jni.dist.dir="${jni_build_dir}" \
   --no-transfer-progress
+popd
 
 # copy all jar, zip and pom files to the distribution folder
 find ~/.m2/repository/org/apache/arrow \
@@ -69,6 +68,4 @@ find ~/.m2/repository/org/apache/arrow \
   -name "*.zip" \
   ")" \
   -exec echo "{}" ";" \
-  -exec cp "{}" "$dist_dir" ";"
-
-popd
+  -exec cp "{}" "${dist_dir}" ";"

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -16,9 +17,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -exo pipefail
+set -euxo pipefail
 
-arrow_dir=${1}
+source_dir=${1}
 arrow_install_dir=${2}
 build_dir=${3}/java_jni
 # The directory where the final binaries will be stored when scripts finish
@@ -30,8 +31,6 @@ echo "=== Clear output directories and leftovers ==="
 rm -rf "${build_dir}"
 
 echo "=== Building Arrow Java C Data Interface native library ==="
-mkdir -p "${build_dir}"
-pushd "${build_dir}"
 
 case "$(uname)" in
 Linux)
@@ -49,6 +48,8 @@ esac
 : "${CMAKE_BUILD_TYPE:=release}"
 read -ra EXTRA_CMAKE_OPTIONS <<<"${JAVA_JNI_CMAKE_ARGS:-}"
 cmake \
+  -S "${source_dir}" \
+  -B "${build_dir}" \
   -DARROW_JAVA_JNI_ENABLE_DATASET="${ARROW_DATASET:-OFF}" \
   -DARROW_JAVA_JNI_ENABLE_GANDIVA="${ARROW_GANDIVA:-OFF}" \
   -DARROW_JAVA_JNI_ENABLE_ORC="${ARROW_ORC:-OFF}" \
@@ -59,18 +60,16 @@ cmake \
   -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD:-OFF}" \
   -DProtobuf_USE_STATIC_LIBS=ON \
   -GNinja \
-  "${EXTRA_CMAKE_OPTIONS[@]}" \
-  "${arrow_dir}"
-export CMAKE_BUILD_PARALLEL_LEVEL=${n_jobs}
-cmake --build . --config "${CMAKE_BUILD_TYPE}"
+  "${EXTRA_CMAKE_OPTIONS[@]}"
+cmake --build "${build_dir}"
 if [ "${ARROW_JAVA_BUILD_TESTS}" = "ON" ]; then
   ctest \
     --output-on-failure \
     --parallel "${n_jobs}" \
+    --test-dir "${build_dir}" \
     --timeout 300
 fi
-cmake --build . --config "${CMAKE_BUILD_TYPE}" --target install
-popd
+cmake --build "${build_dir}" --target install
 
 mkdir -p "${dist_dir}"
 # For Windows. *.dll are installed into bin/ on Windows.
