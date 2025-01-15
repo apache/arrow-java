@@ -31,6 +31,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
@@ -71,7 +72,9 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     this.holder = new Holder();
     this.getter = createGetter(vector);
 
+    // whether the vector included TZ info
     this.isZoned = getVectorIsZoned(vector);
+    // non-null, either the vector TZ or default to UTC
     this.timeZone = getTimeZoneForVector(vector);
     this.timeUnit = getTimeUnitForVector(vector);
     this.longToLocalDateTime = getLongToLocalDateTimeForVector(vector, this.timeZone);
@@ -231,11 +234,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     ArrowType.Timestamp arrowType =
         (ArrowType.Timestamp) vector.getField().getFieldType().getType();
 
-    String timezoneName = arrowType.getTimezone();
-    if (timezoneName == null) {
-      return TimeZone.getTimeZone("UTC");
-    }
-
+    String timezoneName = Objects.requireNonNullElse(arrowType.getTimezone(), "UTC");
     return TimeZone.getTimeZone(timezoneName);
   }
 
