@@ -120,6 +120,34 @@ cmake \
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
 
+if [ "${ARROW_RUN_TESTS:-OFF}" = "ON" ]; then
+  # MinIO is required
+  exclude_tests="arrow-s3fs-test"
+  case $(arch) in
+  aarch64)
+    # GCS testbench is crashed on aarch64:
+    # ImportError: ../grpc/_cython/cygrpc.cpython-38-aarch64-linux-gnu.so:
+    # undefined symbol: vtable for std::__cxx11::basic_ostringstream<
+    #   char, std::char_traits<char>, std::allocator<char> >
+    exclude_tests="${exclude_tests}|arrow-gcsfs-test"
+    ;;
+  esac
+  # unstable
+  exclude_tests="${exclude_tests}|arrow-acero-asof-join-node-test"
+  exclude_tests="${exclude_tests}|arrow-acero-hash-join-node-test"
+  # external dependency
+  exclude_tests="${exclude_tests}|arrow-gcsfs-test"
+  # strptime
+  exclude_tests="${exclude_tests}|arrow-utility-test"
+  ctest \
+    --exclude-regex "${exclude_tests}" \
+    --label-regex unittest \
+    --output-on-failure \
+    --parallel "$(nproc)" \
+    --test-dir "${build_dir}/cpp" \
+    --timeout 300
+fi
+
 JAVA_JNI_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 JAVA_JNI_CMAKE_ARGS="${JAVA_JNI_CMAKE_ARGS} -DVCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
 export JAVA_JNI_CMAKE_ARGS
