@@ -361,7 +361,7 @@ jobs:
           export VERIFY_DEFAULT=0
           export VERIFY_BINARY=1
           export VERIFY_SOURCE=1
-          cd apache-arrow-java-*
+          cd apache-arrow-java-${version}
           mv ../${tar_gz}* ./
           mv ../release-binaries binaries
           dev/release/verify_rc.sh "${version}" "${rc}"
