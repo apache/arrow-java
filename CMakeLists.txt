@@ -66,7 +66,10 @@ add_library(jni INTERFACE IMPORTED)
 set_target_properties(jni PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
 
 include(CTest)
-if(BUILD_TESTING)
+if(BUILD_TESTING AND
+    (ARROW_JAVA_JNI_ENABLE_DATASET OR
+      ARROW_JAVA_JNI_ENABLE_GANDIVA OR
+      ARROW_JAVA_JNI_ENABLE_ORC))
   find_package(ArrowTesting REQUIRED)
   find_package(GTest REQUIRED)
   add_library(arrow_java_test INTERFACE IMPORTED)
