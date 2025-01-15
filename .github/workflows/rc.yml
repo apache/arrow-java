@@ -367,7 +367,7 @@ jobs:
           dev/release/verify_rc.sh "${version}" "${rc}"
   upload:
     name: Upload
-    # if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag'
     needs:
       - verify
     runs-on: ubuntu-latest
@@ -385,7 +385,7 @@ jobs:
           version=${GITHUB_REF_NAME%-rc*}
           version=${version#v}
           rc=${GITHUB_REF_NAME#*-rc}
-          echo gh release create ${GITHUB_REF_NAME} \
+          gh release create ${GITHUB_REF_NAME} \
             --generate-notes \
             --prerelease \
             --repo ${{ github.repository }} \
