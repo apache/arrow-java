@@ -83,6 +83,9 @@ rc_hash="$(git rev-list --max-count=1 "${rc_tag}")"
 id="apache-arrow-java-${version}"
 tar_gz="${id}.tar.gz"
 
+artifacts_dir="apache-arrow-java-${version}-rc${rc}"
+signed_artifacts_dir="${artifacts_dir}-signed"
+
 if [ "${RELEASE_SIGN}" -gt 0 ]; then
   git_origin_url="$(git remote get-url origin)"
   repository="${git_origin_url#*github.com?}"
@@ -105,23 +108,34 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
   echo "Found GitHub Actions workflow with ID: ${run_id}"
   gh run watch --repo "${repository}" --exit-status "${run_id}"
 
-  echo "Downloading .tar.gz from GitHub Releases"
+  echo "Downloading artifacts from GitHub Releases"
   gh release download "${rc_tag}" \
-    --dir . \
-    --pattern "${tar_gz}" \
+    --dir "${artifacts_dir}" \
     --repo "${repository}" \
     --skip-existing
 
-  echo "Signing tar.gz and creating checksums"
-  gpg --armor --output "${tar_gz}.asc" --detach-sig "${tar_gz}"
+  echo "Signing artifacts"
+  rm -rf "${signed_artifacts_dir}"
+  mkdir -p "${signed_artifacts_dir}"
+  for artifact in ${artifacts_dir}/*; do
+    case "${artifact}" in
+    *.asc | *.sha256 | *.sha512)
+      continue
+      ;;
+    esac
+    gpg --armor \
+      --detach-sig \
+      --output "${signed_artifacts_dir}/$(basename "${artifact}").asc" \
+      "${artifact}"
+  done
 fi
 
 if [ "${RELEASE_UPLOAD}" -gt 0 ]; then
   echo "Uploading signature"
   gh release upload "${rc_tag}" \
     --clobber \
-    --repo "${repository}" \
-    "${tar_gz}.asc"
+    --repo "${repository:-kou/arrow-java}" \
+    ${signed_artifacts_dir}/*.asc
 fi
 
 echo "Draft email for dev@arrow.apache.org mailing list"

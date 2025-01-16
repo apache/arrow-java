@@ -17,11 +17,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -e
+set -eu
 
 source_dir="$(cd "${1}" && pwd)"
 jni_build_dir="$(cd "${2}" && pwd)"
 dist_dir="${3}"
+rm -rf "${dist_dir}"
 mkdir -p "${dist_dir}"
 dist_dir="$(cd "${dist_dir}" && pwd)"
 
@@ -69,3 +70,8 @@ find ~/.m2/repository/org/apache/arrow \
   ")" \
   -exec echo "{}" ";" \
   -exec cp "{}" "${dist_dir}" ";"
+
+for artifact in ${dist_dir}/*; do
+  sha256sum "${artifact}" >"${artifact}.sha256"
+  sha512sum "${artifact}" >"${artifact}.sha512"
+done
