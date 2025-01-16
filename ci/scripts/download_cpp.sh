@@ -47,6 +47,6 @@ fi
 if [ -z "${url}" ]; then
   url="https://www.apache.org/dyn/closer.lua?action=download&filename=arrow/arrow-${version}/apache-arrow-${version}.tar.gz"
 fi
-wget --output-document "apache-arrow-${version}.tar.gz" "${url}"
+curl --location --output "apache-arrow-${version}.tar.gz" "${url}"
 tar xf "apache-arrow-${version}.tar.gz"
 mv "apache-arrow-${version}" arrow

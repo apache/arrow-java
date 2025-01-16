@@ -20,8 +20,12 @@
 # This script is like java_jni_build.sh, but is meant for release artifacts
 # and hardcodes assumptions about the environment it is being run in.
 
-set -ex
+set -euo pipefail
 
+# shellcheck source=ci/scripts/util_log.sh
+. "$(dirname "${0}")/util_log.sh"
+
+github_actions_group_begin "Prepare arguments"
 source_dir="$(cd "${1}" && pwd)"
 arrow_dir="$(cd "${2}" && pwd)"
 build_dir="${3}"
@@ -36,20 +40,29 @@ i386)
 esac
 # The directory where the final binaries will be stored when scripts finish
 dist_dir="${4}"
+github_actions_group_end
 
-echo "=== Clear output directories and leftovers ==="
-# Clear output directories and leftovers
+github_actions_group_begin "Clear output directories and leftovers"
 rm -rf "${build_dir}"
 rm -rf "${dist_dir}"
 
 mkdir -p "${build_dir}"
 build_dir="$(cd "${build_dir}" && pwd)"
+github_actions_group_end
 
-echo "=== Building Arrow C++ libraries ==="
+: "${ARROW_USE_CCACHE:=ON}"
+if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
+  github_actions_group_begin "ccache statistics before build"
+  ccache -sv 2>/dev/null || ccache -s
+  github_actions_group_end
+fi
+
+github_actions_group_begin "Building Arrow C++ libraries"
 install_dir="${build_dir}/cpp-install"
 : "${ARROW_ACERO:=ON}"
 export ARROW_ACERO
 : "${ARROW_BUILD_TESTS:=ON}"
+export ARROW_BUILD_TESTS
 : "${ARROW_DATASET:=ON}"
 export ARROW_DATASET
 : "${ARROW_GANDIVA:=ON}"
@@ -58,14 +71,8 @@ export ARROW_GANDIVA
 export ARROW_ORC
 : "${ARROW_PARQUET:=ON}"
 : "${ARROW_S3:=ON}"
-: "${ARROW_USE_CCACHE:=ON}"
 : "${CMAKE_BUILD_TYPE:=Release}"
 : "${CMAKE_UNITY_BUILD:=ON}"
-
-if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
-  echo "=== ccache statistics before build ==="
-  ccache -sv 2>/dev/null || ccache -s
-fi
 
 export ARROW_TEST_DATA="${arrow_dir}/testing/data"
 export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
@@ -99,8 +106,10 @@ cmake \
   -Dre2_SOURCE=BUNDLED \
   -GNinja
 cmake --build "${build_dir}/cpp" --target install
+github_actions_group_end
 
 if [ "${ARROW_RUN_TESTS:-}" == "ON" ]; then
+  github_actions_group_begin "Running Arrow C++ libraries tests"
   # MinIO is required
   exclude_tests="arrow-s3fs-test"
   # unstable
@@ -113,6 +122,7 @@ if [ "${ARROW_RUN_TESTS:-}" == "ON" ]; then
     --parallel "$(sysctl -n hw.ncpu)" \
     --test-dir "${build_dir}/cpp" \
     --timeout 300
+  github_actions_group_end
 fi
 
 export JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/protobuf_ep-install"
@@ -123,11 +133,12 @@ export JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/protobuf_ep-install
   "${dist_dir}"
 
 if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
-  echo "=== ccache statistics after build ==="
+  github_actions_group_begin "ccache statistics after build"
   ccache -sv 2>/dev/null || ccache -s
+  github_actions_group_end
 fi
 
-echo "=== Checking shared dependencies for libraries ==="
+github_actions_group_begin "Checking shared dependencies for libraries"
 pushd "${dist_dir}"
 archery linking check-dependencies \
   --allow CoreFoundation \
@@ -147,3 +158,4 @@ archery linking check-dependencies \
   "arrow_orc_jni/${normalized_arch}/libarrow_orc_jni.dylib" \
   "gandiva_jni/${normalized_arch}/libgandiva_jni.dylib"
 popd
+github_actions_group_end

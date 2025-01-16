@@ -17,20 +17,25 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -euxo pipefail
+set -euo pipefail
 
+# shellcheck source=ci/scripts/util_log.sh
+. "$(dirname "${0}")/util_log.sh"
+
+github_actions_group_begin "Prepare arguments"
 source_dir=${1}
 arrow_install_dir=${2}
 build_dir=${3}/java_jni
 # The directory where the final binaries will be stored when scripts finish
 dist_dir=${4}
 prefix_dir="${build_dir}/java-jni"
+github_actions_group_end
 
-echo "=== Clear output directories and leftovers ==="
-# Clear output directories and leftovers
+github_actions_group_begin "Clear output directories and leftovers"
 rm -rf "${build_dir}"
+github_actions_group_end
 
-echo "=== Building Arrow Java C Data Interface native library ==="
+github_actions_group_begin "Building Arrow Java C Data Interface native library"
 
 case "$(uname)" in
 Linux)
@@ -71,6 +76,9 @@ if [ "${ARROW_JAVA_BUILD_TESTS}" = "ON" ]; then
 fi
 cmake --build "${build_dir}" --target install
 
+github_actions_group_end
+
+github_actions_group_begin "Copying artifacts"
 mkdir -p "${dist_dir}"
 # For Windows. *.dll are installed into bin/ on Windows.
 if [ -d "${prefix_dir}/bin" ]; then
@@ -78,3 +86,4 @@ if [ -d "${prefix_dir}/bin" ]; then
 else
   mv "${prefix_dir}"/lib/* "${dist_dir}"/
 fi
+github_actions_group_end
