@@ -131,7 +131,7 @@ if [ "${RELEASE_UPLOAD}" -gt 0 ]; then
   echo "Uploading signature"
   gh release upload "${rc_tag}" \
     --clobber \
-    --repo "${repository:-kou/arrow-java}" \
+    --repo "${repository}" \
     "${signed_artifacts_dir}"/*.asc
 fi
 
