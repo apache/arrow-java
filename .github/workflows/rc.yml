@@ -162,10 +162,9 @@ jobs:
       - name: Extract Download the latest Apache Arrow C++
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      # We need 19.0.0 for latest Boost support
-      - name: Download the latest RC Apache Arrow C++
+      - name: Download the latest Apache Arrow C++
         run: |
-          ci/scripts/download_cpp.sh latest-rc
+          ci/scripts/download_cpp.sh
       - name: Checkout apache/arrow-testing
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
