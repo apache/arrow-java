@@ -71,7 +71,7 @@ find ~/.m2/repository/org/apache/arrow \
   -exec echo "{}" ";" \
   -exec cp "{}" "${dist_dir}" ";"
 
-for artifact in ${dist_dir}/*; do
+for artifact in "${dist_dir}"/*; do
   sha256sum "${artifact}" >"${artifact}.sha256"
   sha512sum "${artifact}" >"${artifact}.sha512"
 done

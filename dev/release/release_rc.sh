@@ -80,9 +80,6 @@ fi
 
 rc_hash="$(git rev-list --max-count=1 "${rc_tag}")"
 
-id="apache-arrow-java-${version}"
-tar_gz="${id}.tar.gz"
-
 artifacts_dir="apache-arrow-java-${version}-rc${rc}"
 signed_artifacts_dir="${artifacts_dir}-signed"
 
@@ -117,7 +114,7 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
   echo "Signing artifacts"
   rm -rf "${signed_artifacts_dir}"
   mkdir -p "${signed_artifacts_dir}"
-  for artifact in ${artifacts_dir}/*; do
+  for artifact in "${artifacts_dir}"/*; do
     case "${artifact}" in
     *.asc | *.sha256 | *.sha512)
       continue
@@ -135,7 +132,7 @@ if [ "${RELEASE_UPLOAD}" -gt 0 ]; then
   gh release upload "${rc_tag}" \
     --clobber \
     --repo "${repository:-kou/arrow-java}" \
-    ${signed_artifacts_dir}/*.asc
+    "${signed_artifacts_dir}"/*.asc
 fi
 
 echo "Draft email for dev@arrow.apache.org mailing list"
