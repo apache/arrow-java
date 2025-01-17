@@ -79,7 +79,7 @@ jobs:
   jni-linux:
     name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
     runs-on: ${{ matrix.platform.runs_on }}
-    timeout-minutes: 240
+    timeout-minutes: 120
     needs:
       - source
     strategy:
