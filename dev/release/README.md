@@ -56,30 +56,13 @@ RC without merging the pull request, the script to cut a RC is failed.
 
 ### Prepare RC and vote
 
-Run `dev/release/release_rc.sh` on a working copy of
-`git@github.com:apache/arrow-java` not your fork:
-
-```console
-$ git clone git@github.com:apache/arrow-java.git
-$ cd arrow-java
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh ${RC}
-(Send a vote email to dev@arrow.apache.org.
- You can use a draft shown by release_rc.sh for the email.)
-```
-
-Here is an example to release RC1:
-
-```console
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh 1
-```
-
-The argument of `release_rc.sh` is the RC number. If RC1 has a
-problem, we'll increment the RC number such as RC2, RC3 and so on.
+You can use `dev/release/release_rc.sh`.
 
 Requirements to run `release_rc.sh`:
 
   * You must be an Apache Arrow committer or PMC member
   * You must prepare your PGP key for signing
+  * You must configure Maven
 
 If you don't have a PGP key,
 https://infra.apache.org/release-signing.html#generate may be helpful.
@@ -101,6 +84,37 @@ $ head KEYS
 (This shows how to update KEYS)
 $ svn ci KEYS
 ```
+
+Configure Maven to publish artifacts to Apache repositories. You will
+need to setup a master password at `~/.m2/settings-security.xml` and
+`~/.m2/settings.xml` as specified on [the Apache
+guide](https://infra.apache.org/publishing-maven-artifacts.html). It
+can be tested with the following command:
+
+```bash
+# You might need to export GPG_TTY=$(tty) to properly prompt for a passphrase
+mvn clean install -Papache-release
+```
+
+Run `dev/release/release_rc.sh` on a working copy of
+`git@github.com:apache/arrow-java` not your fork:
+
+```console
+$ git clone git@github.com:apache/arrow-java.git
+$ cd arrow-java
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh ${RC}
+(Send a vote email to dev@arrow.apache.org.
+ You can use a draft shown by release_rc.sh for the email.)
+```
+
+Here is an example to release RC1:
+
+```console
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh 1
+```
+
+The argument of `release_rc.sh` is the RC number. If RC1 has a
+problem, we'll increment the RC number such as RC2, RC3 and so on.
 
 ### Publish
 

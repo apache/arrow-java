@@ -16,6 +16,7 @@
 /apache-arrow-java-*
 /apache-arrow-java.tar.gz
 /build/
+/dev/release/.env
 /dev/release/apache-rat-0.16.1.jar
 /dev/release/filtered_rat.txt
 /dev/release/rat.xml

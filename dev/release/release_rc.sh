@@ -84,6 +84,13 @@ artifacts_dir="apache-arrow-java-${version}-rc${rc}"
 signed_artifacts_dir="${artifacts_dir}-signed"
 
 if [ "${RELEASE_SIGN}" -gt 0 ]; then
+  if [ ! -f "${SOURCE_DIR}/.env" ]; then
+    echo "You must create ${SOURCE_DIR}/.env"
+    echo "You can use ${SOURCE_DIR}/.env.example as template"
+    exit 1
+  fi
+  . "${SOURCE_DIR}/.env"
+
   git_origin_url="$(git remote get-url origin)"
   repository="${git_origin_url#*github.com?}"
   repository="${repository%.git}"
@@ -120,12 +127,29 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
       continue
       ;;
     esac
-    gpg --armor \
+    gpg \
+      --armor \
       --detach-sig \
+      --local-user "${GPG_KEY_ID}" \
       --output "${signed_artifacts_dir}/$(basename "${artifact}").asc" \
       "${artifact}"
   done
 fi
+
+# arrow-c-data-18.2.0-sources.jar ->
+# jar
+extract_type() {
+  local path="$1"
+  echo "${path}" | grep -o "[^.]*$"
+}
+
+# arrow-c-data-18.2.0-sources.jar arrow-c-data-18.2.0 ->
+# sources
+extract_classifier() {
+  local path="$1"
+  local base="$2"
+  basename "${path}" | sed -e "s/^${base}-//g" -e "s/\.[^.]*$//g"
+}
 
 if [ "${RELEASE_UPLOAD}" -gt 0 ]; then
   echo "Uploading signature"
@@ -133,8 +157,73 @@ if [ "${RELEASE_UPLOAD}" -gt 0 ]; then
     --clobber \
     --repo "${repository}" \
     "${signed_artifacts_dir}"/*.asc
+
+  echo "Uploading packages"
+  for pom in "${artifacts_dir}"/*.pom; do
+    base=$(basename "${pom}" .pom)
+    files=()
+    types=()
+    classifiers=()
+    args=()
+    args+=(deploy:deploy-file)
+    args+=(-Durl=https://repository.apache.org/service/local/staging/deploy/maven2)
+    args+=(-DrepositoryId=apache.releases.https)
+    args+=(-DretryFailedDeploymentCount=10)
+    args+=(-DpomFile="${pom}")
+    if [ -f "${artifacts_dir}/${base}.jar" ]; then
+      jar="${artifacts_dir}/${base}.jar"
+      args+=(-Dfile="${jar}")
+      files+=("${signed_artifacts_dir}/${base}.jar.asc")
+      types+=("jar.asc")
+      classifiers+=("")
+    else
+      args+=(-Dfile="${pom}")
+    fi
+    files+=("${signed_artifacts_dir}/${base}.pom.asc")
+    types+=("pom.asc")
+    classifiers+=("")
+    if [ "$(echo "${artifacts_dir}/${base}"-*)" != "${artifacts_dir}/${base}-*" ]; then
+      for other_file in "${artifacts_dir}/${base}"-*; do
+        type="$(extract_type "${other_file}")"
+        case "${type}" in
+        sha256 | sha512)
+          continue
+          ;;
+        esac
+        classifier=$(extract_classifier "${other_file}" "${base}")
+        files+=("${other_file}")
+        types+=("${type}")
+        classifiers+=("${classifier}")
+        other_file_base="$(basename "${other_file}")"
+        files+=("${signed_artifacts_dir}/${other_file_base}.asc")
+        types+=("${type}.asc")
+        classifiers+=("${classifier}")
+      done
+    fi
+    args+=(-Dfiles="$(
+      IFS=,
+      echo "${files[*]}"
+    )")
+    args+=(-Dtypes="$(
+      IFS=,
+      echo "${types[*]}"
+    )")
+    args+=(-Dclassifiers="$(
+      IFS=,
+      echo "${classifiers[*]}"
+    )")
+    mvn "${args[@]}"
+  done
+
+  echo
+  echo "Success!"
+  echo "Press the 'Close' button manually by Web interface:"
+  echo "    https://repository.apache.org/#stagingRepositories"
+  echo "It publishes the artifacts to the staging repository:"
+  echo "    https://repository.apache.org/content/repositories/staging/org/apache/arrow/"
 fi
 
+echo
 echo "Draft email for dev@arrow.apache.org mailing list"
 echo ""
 echo "---------------------------------------------------------"
