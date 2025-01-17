@@ -79,6 +79,7 @@ jobs:
   jni-linux:
     name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
     runs-on: ${{ matrix.platform.runs_on }}
+    timeout-minutes: 240
     needs:
       - source
     strategy:
@@ -88,6 +89,9 @@ jobs:
           - runs_on: ubuntu-latest
             arch: "x86_64"
             archery_arch: "amd64"
+          - runs_on: ubuntu-24.04-arm
+            arch: "aarch_64"
+            archery_arch: "arm64v8"
     env:
       # architecture name used for archery build
       ARCH: ${{ matrix.platform.archery_arch }}
@@ -144,6 +148,7 @@ jobs:
   jni-macos:
     name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
     runs-on: ${{ matrix.platform.runs_on }}
+    timeout-minutes: 45
     needs:
       - source
     strategy:
@@ -262,6 +267,7 @@ jobs:
   jni-windows:
     name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
     runs-on: ${{ matrix.platform.runs_on }}
+    timeout-minutes: 45
     needs:
       - source
     strategy:
@@ -346,7 +352,7 @@ jobs:
           mv artifacts/*/*.tar.gz .
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
           tar -xvzf jni-linux-x86_64.tar.gz
-          # tar -xvzf jni-linux-aarch_64.tar.gz
+          tar -xvzf jni-linux-aarch_64.tar.gz
           tar -xvzf jni-macos-x86_64.tar.gz
           tar -xvzf jni-macos-aarch_64.tar.gz
           tar -xvzf jni-windows-x86_64.tar.gz
@@ -359,10 +365,10 @@ jobs:
           test -f jni/arrow_orc_jni/x86_64/libarrow_orc_jni.so
           test -f jni/gandiva_jni/x86_64/libgandiva_jni.so
 
-          # test -f jni/arrow_cdata_jni/aarch_64/libarrow_cdata_jni.so
-          # test -f jni/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.so
-          # test -f jni/arrow_orc_jni/aarch_64/libarrow_orc_jni.so
-          # test -f jni/gandiva_jni/aarch_64/libgandiva_jni.so
+          test -f jni/arrow_cdata_jni/aarch_64/libarrow_cdata_jni.so
+          test -f jni/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.so
+          test -f jni/arrow_orc_jni/aarch_64/libarrow_orc_jni.so
+          test -f jni/gandiva_jni/aarch_64/libgandiva_jni.so
 
           test -f jni/arrow_cdata_jni/x86_64/libarrow_cdata_jni.dylib
           test -f jni/arrow_dataset_jni/x86_64/libarrow_dataset_jni.dylib
