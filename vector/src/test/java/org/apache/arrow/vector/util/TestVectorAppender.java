@@ -241,6 +241,7 @@ public class TestVectorAppender {
       VectorAppender appender = new VectorAppender(target);
       delta.accept(appender, null);
 
+      assertEquals(2, target.getDataBuffers().size());
       try (ViewVarCharVector expected = new ViewVarCharVector("expected", allocator)) {
         ValueVectorDataPopulator.setVector(
             expected,
