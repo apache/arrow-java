@@ -49,7 +49,7 @@ fi
 
 pushd "${source_dir}"
 # build the entire project
-mvn clean \
+mvn \
   --no-transfer-progress \
   -Darrow.c.jni.dist.dir="${jni_build_dir}" \
   -Darrow.cpp.build.dir="${jni_build_dir}" \
@@ -59,6 +59,7 @@ mvn clean \
   -Papache-release \
   -Parrow-c-data \
   -Parrow-jni \
+  clean \
   install \
   site
 popd
