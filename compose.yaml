@@ -110,4 +110,4 @@ services:
       CCACHE_DIR: "/ccache"
     command:
       ["git config --global --add safe.directory /arrow-java && \
-        /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build /arrow-java/jni"]
+        /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build/java /arrow-java/jni"]
