@@ -100,14 +100,6 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: Prepare
-        run: |
-          if [ ${{ matrix.platform.arch }} = "x86_64" ]; then
-            ARROW_JAVA_BUILD_DOCS=ON
-          else
-            ARROW_JAVA_BUILD_DOCS=ON
-          fi
-          echo "ARROW_JAVA_BUILD_DOCS=${ARROW_JAVA_BUILD_DOCS}" >> ${GITHUB_ENV}
       - name: Download source archive
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
@@ -141,11 +133,7 @@ jobs:
           restore-keys: jni-linux-${{ matrix.platform.arch }}-
       - name: Build
         run: |
-          mkdir -p build
-          docker compose run \
-            --env ARROW_JAVA_BUILD_DOCS=${ARROW_JAVA_BUILD_DOCS} \
-            --volume "${PWD}/build/:/build/" \
-            vcpkg-jni
+          docker compose run vcpkg-jni
       - name: Push Docker image
         if: success() && github.event_name == 'push' && github.repository == 'apache/arrow-java' && github.ref_name == 'main'
         run: |
@@ -157,15 +145,6 @@ jobs:
         with:
           name: jni-linux-${{ matrix.platform.arch }}
           path: jni-linux-${{ matrix.platform.arch }}.tar.gz
-      - name: Compress docs
-        if: env.ARROW_JAVA_BUILD_DOCS == 'ON'
-        run: tar -cvzf docs.tar.gz -C build/java docs
-      - name: Upload artifacts
-        if: env.ARROW_JAVA_BUILD_DOCS == 'ON'
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
-        with:
-          name: release-docs-${{ matrix.platform.arch }}
-          path: docs.tar.gz
   jni-macos:
     name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
     runs-on: ${{ matrix.platform.runs_on }}
@@ -415,17 +394,24 @@ jobs:
           path: ~/.m2
           key: binaries-build-${{ hashFiles('**/*.java', '**/pom.xml') }}
           restore-keys: binaries-build-
-      - name: Build bundled JAR
-        env:
-          MAVEN_ARGS: >-
-            --no-transfer-progress
+      - name: Build bundled JAR and docs
         run: |
           ci/scripts/jni_full_build.sh . jni binaries
-      - name: Upload artifacts
+      - name: Prepare docs
+        run: |
+          mkdir -p docs
+          cp -a target/site/apidocs docs/reference
+          tar -cvzf docs.tar.gz docs
+      - name: Upload binaries
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: release-binaries
           path: binaries/*
+      - name: Upload docs
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: release-docs
+          path: docs.tar.gz
   verify:
     name: Verify
     needs:

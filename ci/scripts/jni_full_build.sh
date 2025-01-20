@@ -50,13 +50,17 @@ fi
 pushd "${source_dir}"
 # build the entire project
 mvn clean \
-  install \
+  --no-transfer-progress \
+  -Darrow.c.jni.dist.dir="${jni_build_dir}" \
+  -Darrow.cpp.build.dir="${jni_build_dir}" \
+  -Dcheckstyle.skip=true \
+  -Dhttp.keepAlive=false \
+  -Dmaven.wagon.http.pool=false \
   -Papache-release \
   -Parrow-c-data \
   -Parrow-jni \
-  -Darrow.cpp.build.dir="${jni_build_dir}" \
-  -Darrow.c.jni.dist.dir="${jni_build_dir}" \
-  --no-transfer-progress
+  install \
+  site
 popd
 
 # copy all jar, zip and pom files to the distribution folder
