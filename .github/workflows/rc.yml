@@ -107,7 +107,7 @@ jobs:
           else
             ARROW_JAVA_BUILD_DOCS=ON
           fi
-          echo "ARROW_JAVA_BUILD_DOCS=${ARROW_JAVA_BUILD_DOCS}" >> ${GIHUTB_ENV}
+          echo "ARROW_JAVA_BUILD_DOCS=${ARROW_JAVA_BUILD_DOCS}" >> ${GITHUB_ENV}
       - name: Download source archive
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
