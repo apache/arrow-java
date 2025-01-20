@@ -141,6 +141,7 @@ jobs:
           restore-keys: jni-linux-${{ matrix.platform.arch }}-
       - name: Build
         run: |
+          mkdir -p build
           docker compose run \
             --env ARROW_JAVA_BUILD_DOCS=${ARROW_JAVA_BUILD_DOCS} \
             --volume "${PWD}/build/:/build/" \
