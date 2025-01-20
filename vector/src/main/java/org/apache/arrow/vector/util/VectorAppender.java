@@ -262,7 +262,10 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
 
     // make sure there is enough capacity
     while (targetVector.getValueCapacity() < newValueCount) {
-      targetVector.reAlloc();
+      // Do not call BaseVariableWidthViewVector#reAlloc() here,
+      // because reallocViewDataBuffer() is always unnecessary
+      ((BaseVariableWidthViewVector) targetVector).reallocValidityBuffer();
+      ((BaseVariableWidthViewVector) targetVector).reallocViewBuffer();
     }
 
     // append validity buffer

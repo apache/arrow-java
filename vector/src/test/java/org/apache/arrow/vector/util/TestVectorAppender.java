@@ -253,6 +253,42 @@ public class TestVectorAppender {
   }
 
   @Test
+  public void testAppendLongVariableWidthViewVector() {
+    try (ViewVarCharVector target = new ViewVarCharVector("", allocator);
+        ViewVarCharVector delta = new ViewVarCharVector("", allocator)) {
+
+      String[] targetValues = randomLongViewVarCharVector(target);
+      String[] deltaValues = randomLongViewVarCharVector(delta);
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      assertEquals(4, target.getDataBuffers().size());
+      try (ViewVarCharVector expected = new ViewVarCharVector("expected", allocator)) {
+        ValueVectorDataPopulator.setVector(
+            expected,
+            Stream.concat(Arrays.stream(targetValues), Arrays.stream(deltaValues))
+                .toArray(String[]::new));
+        assertVectorsEqual(expected, target);
+      }
+    }
+  }
+
+  private static String[] randomLongViewVarCharVector(ViewVarCharVector target) {
+    assertEquals(0, target.getDataBuffers().size());
+    int initial = 64;
+    int stringCount = 128;
+    target.setInitialCapacity(initial);
+    String[] targetValues =
+        IntStream.range(0, stringCount)
+            .mapToObj(i -> TestUtils.generateRandomString(BaseVariableWidthViewVector.ELEMENT_SIZE))
+            .toArray(String[]::new);
+    ValueVectorDataPopulator.setVector(target, targetValues);
+    assertEquals(2, target.getDataBuffers().size());
+    return targetValues;
+  }
+
+  @Test
   public void testAppendEmptyVariableWidthVector() {
     try (VarCharVector target = new VarCharVector("", allocator);
         VarCharVector delta = new VarCharVector("", allocator)) {
