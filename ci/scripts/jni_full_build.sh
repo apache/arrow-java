@@ -53,14 +53,21 @@ mvn \
   --no-transfer-progress \
   -Darrow.c.jni.dist.dir="${jni_build_dir}" \
   -Darrow.cpp.build.dir="${jni_build_dir}" \
-  -Dcheckstyle.skip=true \
-  -Dhttp.keepAlive=false \
-  -Dmaven.wagon.http.pool=false \
   -Papache-release \
   -Parrow-c-data \
   -Parrow-jni \
   clean \
   install \
+# build docs
+mvn \
+  --no-transfer-progress \
+  -Darrow.c.jni.dist.dir="${jni_build_dir}" \
+  -Darrow.cpp.build.dir="${jni_build_dir}" \
+  -Dcheckstyle.skip=true \
+  -Dhttp.keepAlive=false \
+  -Dmaven.wagon.http.pool=false \
+  -Parrow-c-data \
+  -Parrow-jni \
   site
 popd
 
