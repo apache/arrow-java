@@ -120,11 +120,12 @@ problem, we'll increment the RC number such as RC2, RC3 and so on.
 
 We need to do the followings to publish a new release:
 
-  * Publish to apache.org
+  * Publish the source archive to apache.org
+  * Publish the binary artifacts to repository.apache.org
 
 Run `dev/release/release.sh` on a working copy of
-`git@github.com:apache/arrow-java` not your fork to publish to
-apache.org:
+`git@github.com:apache/arrow-java` not your fork to publish the source
+archive to apache.org:
 
 ```console
 $ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release.sh ${VERSION} ${RC}
@@ -138,6 +139,15 @@ $ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release.sh 19.0.0 1
 
 Add the release to ASF's report database via [Apache Committee Report
 Helper](https://reporter.apache.org/addrelease.html?arrow).
+
+You need to do the followings to publish the binary artifacts to
+repository.apache.org:
+
+* Logon to the Apache repository:
+  https://repository.apache.org/#stagingRepositories
+* Select the Arrow staging repository you created for RC:
+  `orgapachearrow-XXXX`
+* Click the `release` button
 
 ### Bump version for new development
 
