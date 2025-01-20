@@ -61,7 +61,9 @@ pushd "${build_dir}"
 
 # TODO: ARROW_JAVA_SHADE_FLATBUFFERS isn't used for our artifacts. Do
 # we need this?
-# See also: https://github.com/apache/arrow/issues/22021
+# See also:
+# * https://github.com/apache/arrow/issues/22021
+# * https://github.com/apache/arrow-java/issues/67
 if [ "${ARROW_JAVA_SHADE_FLATBUFFERS:-OFF}" == "ON" ]; then
   mvn="${mvn} -Pshade-flatbuffers"
 fi
