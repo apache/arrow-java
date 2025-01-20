@@ -184,7 +184,7 @@ jobs:
         with:
           path: .docker
           key: integration-conda-${{ hashFiles('cpp/**') }}
-          restore-keys: conda-
+          restore-keys: integration-conda-
       - name: Setup Python
         uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
