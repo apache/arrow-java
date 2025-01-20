@@ -108,12 +108,12 @@ jobs:
         shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/build.sh $(pwd) $(pwd)/build
+        run: ci/scripts/build.sh . build jni
       - name: Test
         shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/test.sh $(pwd) $(pwd)/build
+        run: ci/scripts/test.sh . build jni
 
   windows:
     name: AMD64 Windows Server 2022 Java JDK ${{ matrix.jdk }}
@@ -139,12 +139,12 @@ jobs:
         shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/build.sh $(pwd) $(pwd)/build
+        run: ci/scripts/build.sh . build jni
       - name: Test
         shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/test.sh $(pwd) $(pwd)/build
+        run: ci/scripts/test.sh . build jni
 
   integration:
     name: AMD64 integration
