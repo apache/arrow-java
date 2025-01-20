@@ -57,7 +57,7 @@ mvn \
   -Parrow-c-data \
   -Parrow-jni \
   clean \
-  install \
+  install
 # build docs
 mvn \
   --no-transfer-progress \
