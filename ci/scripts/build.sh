@@ -17,21 +17,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -eo pipefail
+set -euo pipefail
 
 if [[ "${ARROW_JAVA_BUILD:-ON}" != "ON" ]]; then
   exit
 fi
 
 source_dir=${1}
-build_dir=${2}
+build_dir=${2}/java
 java_jni_dist_dir=${3}
-
-: "${BUILD_DOCS_JAVA:=OFF}"
 
 mvn="mvn -B -DskipTests -Drat.skip=true -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 
-if [ "$ARROW_JAVA_SKIP_GIT_PLUGIN" ]; then
+if [ "${ARROW_JAVA_SKIP_GIT_PLUGIN:-OFF}" = "ON" ]; then
   mvn="${mvn} -Dmaven.gitcommitid.skip=true"
 fi
 
@@ -61,27 +59,38 @@ done
 
 pushd "${build_dir}"
 
-if [ "${ARROW_JAVA_SHADE_FLATBUFFERS}" == "ON" ]; then
+# TODO: ARROW_JAVA_SHADE_FLATBUFFERS isn't used for our artifacts. Do
+# we need this?
+# See also: https://github.com/apache/arrow/issues/22021
+if [ "${ARROW_JAVA_SHADE_FLATBUFFERS:-OFF}" == "ON" ]; then
   mvn="${mvn} -Pshade-flatbuffers"
 fi
 
-if [ "${ARROW_JAVA_CDATA}" = "ON" ]; then
+if [ "${ARROW_JAVA_CDATA:-OFF}" = "ON" ]; then
   mvn="${mvn} -Darrow.c.jni.dist.dir=${java_jni_dist_dir} -Parrow-c-data"
 fi
 
-if [ "${ARROW_JAVA_JNI}" = "ON" ]; then
+if [ "${ARROW_JAVA_JNI:-OFF}" = "ON" ]; then
   mvn="${mvn} -Darrow.cpp.build.dir=${java_jni_dist_dir} -Parrow-jni"
 fi
 
 # Use `2 * ncores` threads
 ${mvn} -T 2C clean install
 
-if [ "${BUILD_DOCS_JAVA}" == "ON" ]; then
-  # HTTP pooling is turned of to avoid download issues https://issues.apache.org/jira/browse/ARROW-11633
-  # GH-43378: Maven site plugins not compatible with multithreading
-  mkdir -p "${build_dir}"/docs/java/reference
-  ${mvn} -Dcheckstyle.skip=true -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false clean install site
-  rsync -a target/site/apidocs/ "${build_dir}"/docs/java/reference
+if [ "${ARROW_JAVA_BUILD_DOCS:-OFF}" == "ON" ]; then
+  # HTTP pooling is turned off to avoid download issues:
+  # https://github.com/apache/arrow/issues/27496
+  #
+  # Maven site plugins not compatible with multithreading:
+  # https://github.com/apache/arrow/issues/43378
+  ${mvn} \
+    -Dcheckstyle.skip=true \
+    -Dhttp.keepAlive=false \
+    -Dmaven.wagon.http.pool=false \
+    site
+  rm -rf docs/reference
+  mkdir -p docs
+  cp -a target/site/apidocs/ docs/reference
 fi
 
 popd

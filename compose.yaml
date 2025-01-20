@@ -47,8 +47,30 @@ services:
       - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
     command:
       /bin/bash -c "
-        /arrow-java/ci/scripts/build.sh /arrow-java /build &&
-        /arrow-java/ci/scripts/test.sh /arrow-java /build"
+        /arrow-java/ci/scripts/build.sh /arrow-java /build /jni &&
+        /arrow-java/ci/scripts/test.sh /arrow-java /build /jni"
+
+  docs:
+    # Build docs.
+    #
+    # Usage:
+    #   docker compose build docs
+    #   docker compose run docs
+    # Parameters:
+    #   MAVEN: 3.9.9
+    #   JDK: 11, 17, 21
+    image: ${ARCH}/maven:${MAVEN}-eclipse-temurin-${JDK}
+    volumes:
+      - .:/arrow-java:delegated
+      - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
+    environment:
+      ARROW_JAVA_BUILD_DOCS: "ON"
+      ARROW_JAVA_SKIP_GIT_PLUGIN: "ON"
+    command:
+      - /arrow-java/ci/scripts/build.sh
+      - /arrow-java
+      - /build
+      - /jni
 
   conda-jni-cdata:
     # Builds and tests just the C Data Interface JNI library and JARs.
@@ -103,7 +125,7 @@ services:
     volumes:
       - .:/arrow-java:delegated
       - ${ARROW_REPO_ROOT}:/arrow:delegated
-      - ${DOCKER_VOLUME_PREFIX}ccache:/ccache:delegated
+      - ${DOCKER_VOLUME_PREFIX}ccache-cache:/ccache:delegated
       - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
     environment:
       ARROW_JAVA_CDATA: "ON"
