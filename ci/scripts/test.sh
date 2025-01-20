@@ -24,7 +24,7 @@ if [[ "${ARROW_JAVA_TEST:-ON}" != "ON" ]]; then
 fi
 
 source_dir="$(cd "${1}" && pwd)"
-build_dir=${2}/java
+build_dir=${2}
 java_jni_dist_dir=${3}
 
 if [ -d "${java_jni_dist_dir}" ]; then
