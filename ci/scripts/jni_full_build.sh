@@ -17,15 +17,21 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -eu
+set -euo pipefail
 
+# shellcheck source=ci/scripts/util_log.sh
+. "$(dirname "${0}")/util_log.sh"
+
+github_actions_group_begin "Prepare arguments"
 source_dir="$(cd "${1}" && pwd)"
 jni_build_dir="$(cd "${2}" && pwd)"
 dist_dir="${3}"
 rm -rf "${dist_dir}"
 mkdir -p "${dist_dir}"
 dist_dir="$(cd "${dist_dir}" && pwd)"
+github_actions_group_end
 
+github_actions_group_begin "Clear old artifacts"
 # Ensure that there is no old artifacts inside the maven repository
 maven_repo=~/.m2/repository/org/apache/arrow
 if [ -d "$maven_repo" ]; then
@@ -34,7 +40,9 @@ if [ -d "$maven_repo" ]; then
     -exec echo {} ";" \
     -exec rm -rf {} ";"
 fi
+github_actions_group_end
 
+github_actions_group_begin "Generate dummy GPG key"
 # Generate dummy GPG key for -Papache-release.
 # -Papache-release generates signs (*.asc) of artifacts.
 # We don't use these signs in our release process.
@@ -46,8 +54,10 @@ fi
   echo "%no-protection"
 ) |
   gpg --full-generate-key --batch
+github_actions_group_end
 
 pushd "${source_dir}"
+github_actions_group_begin "Build .jar"
 # build the entire project
 mvn \
   --no-transfer-progress \
@@ -58,6 +68,8 @@ mvn \
   -Parrow-jni \
   clean \
   install
+github_actions_group_end
+github_actions_group_begin "Build docs"
 # build docs
 mvn \
   --no-transfer-progress \
@@ -69,8 +81,10 @@ mvn \
   -Parrow-c-data \
   -Parrow-jni \
   site
+github_actions_group_end
 popd
 
+github_actions_group_begin "Prepare artifacts"
 # copy all jar, zip and pom files to the distribution folder
 find ~/.m2/repository/org/apache/arrow \
   "(" \
@@ -87,3 +101,4 @@ for artifact in "${dist_dir}"/*; do
   sha256sum "${artifact}" >"${artifact}.sha256"
   sha512sum "${artifact}" >"${artifact}.sha512"
 done
+github_actions_group_end
