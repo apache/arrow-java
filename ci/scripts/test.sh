@@ -23,9 +23,13 @@ if [[ "${ARROW_JAVA_TEST:-ON}" != "ON" ]]; then
   exit
 fi
 
-source_dir=${1}
+source_dir="$(cd "${1}" && pwd)"
 build_dir=${2}/java
 java_jni_dist_dir=${3}
+
+if [ -d "${java_jni_dist_dir}" ]; then
+  java_jni_dist_dir="$(cd "${java_jni_dist_dir}" && pwd)"
+fi
 
 mvn="mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 # Use `2 * ncores` threads
