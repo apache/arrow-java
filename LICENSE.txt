@@ -205,13 +205,13 @@
 vector/src/main/java/org/apache/arrow/vector/util/IntObjectHashMap.java
 vector/src/main/java/org/apache/arrow/vector/util/IntObjectMap.java
 
-These file are derived from code from Netty, which is made available under the
+These file are derived from code from Netty(4.1.117), which is made available under the
 Apache License 2.0.
 
 --------------------------------------------------------------------------------
 memory/memory-core/src/main/java/org/apache/arrow/util/Preconditions.java
 
-This product includes software from Google Guava, which is made available under the
+This product includes software from Google Guava(33.4.0), which is made available under the
 Apache License 2.0.
   * Copyright (C) 2007 The Guava Authors
   * https://github.com/google/guava

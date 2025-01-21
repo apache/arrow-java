@@ -739,6 +739,11 @@ under the License.
               <file>${maven.multiModuleProjectDirectory}/dev/license/asf-java.license</file>
               <delimiter>package</delimiter>
             </licenseHeader>
+            <excludes>
+              <exclude>**/Preconditions.java</exclude>
+              <exclude>**/IntObjectMap.java</exclude>
+              <exclude>**/IntObjectHashMap.java</exclude>
+            </excludes>
           </java>
         </configuration>
         <executions>

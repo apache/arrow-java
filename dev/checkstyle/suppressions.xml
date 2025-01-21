@@ -37,7 +37,7 @@
   <suppress checks="Header" files="AutoCloseables.java|Collections2.java" />
 
   <!-- no license file in vendored dependencies -->
-  <suppress checks="Header" files="IntObjectMap.java|IntObjectHashMap.java" />
+  <suppress checks="Header" files="IntObjectMap.java|IntObjectHashMap.java|Preconditions.java" />
 
   <!-- Suppress certain checks requiring many code changes, that add little benefit -->
   <suppress checks="NoFinalizer|OverloadMethodsDeclarationOrder|VariableDeclarationUsageDistance" files=".*" />
