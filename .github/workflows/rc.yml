@@ -412,6 +412,39 @@ jobs:
         with:
           name: release-docs
           path: docs.tar.gz
+  docs:
+    name: Docs
+    needs:
+      - source
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          cache: 'pip'
+      - name: Download source archive
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: release-source
+      - name: Extract source archive
+        run: |
+          tar -xf apache-arrow-java-*.tar.gz --strip-components=1
+      - name: Build
+        run: |
+          cd docs
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          make html
+      - name: Compress into single artifact to keep directory structure
+        run: tar -cvzf docs.tar.gz -C docs/build html
+      - name: Upload artifacts
+        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: release-sphinx-docs
+          path: docs.tar.gz
   verify:
     name: Verify
     needs:
@@ -452,6 +485,7 @@ jobs:
     name: Upload
     if: github.ref_type == 'tag'
     needs:
+      - docs
       - verify
     runs-on: ubuntu-latest
     permissions:

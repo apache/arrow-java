@@ -20,6 +20,7 @@
 /dev/release/apache-rat-0.16.1.jar
 /dev/release/filtered_rat.txt
 /dev/release/rat.xml
+/docs/build/
 CMakeCache.txt
 CMakeFiles/
 Makefile
