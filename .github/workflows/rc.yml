@@ -108,8 +108,15 @@ jobs:
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
       - name: Download the latest Apache Arrow C++
+        if: github.event_name != 'schedule'
         run: |
           ci/scripts/download_cpp.sh
+      - name: Checkout Apache Arrow C++
+        if: github.event_name == 'schedule'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow
+          path: arrow
       - name: Checkout apache/arrow-testing
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -168,8 +175,15 @@ jobs:
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
       - name: Download the latest Apache Arrow C++
+        if: github.event_name != 'schedule'
         run: |
           ci/scripts/download_cpp.sh
+      - name: Checkout Apache Arrow C++
+        if: github.event_name == 'schedule'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow
+          path: arrow
       - name: Checkout apache/arrow-testing
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -286,9 +300,16 @@ jobs:
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
       - name: Download the latest Apache Arrow C++
+        if: github.event_name != 'schedule'
         shell: bash
         run: |
           ci/scripts/download_cpp.sh
+      - name: Checkout Apache Arrow C++
+        if: github.event_name == 'schedule'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow
+          path: arrow
       - name: Set up Java
         uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4.6.0
         with:
