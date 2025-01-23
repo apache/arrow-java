@@ -444,7 +444,7 @@ jobs:
           make html
           tar -xf ../reference.tar.gz -C build/html
       - name: Compress into single artifact to keep directory structure
-        run: tar -cvzf docs.tar.gz -C docs/build html
+        run: tar -cvzf html.tar.gz -C docs/build html
       - name: Upload artifacts
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
