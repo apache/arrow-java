@@ -47,7 +47,7 @@ public class VariableWidthViewVectorBenchmarks {
 
   private static final int ALLOCATOR_CAPACITY = 1024 * 1024;
 
-  private static byte[] bytes = VariableWidthVectorBenchmarks.class.getName().getBytes();
+  private static byte[] bytes = VariableWidthVectorBenchmarkConstants.LONG_VALUE.getBytes();
   private ArrowBuf arrowBuff;
 
   private BufferAllocator allocator;

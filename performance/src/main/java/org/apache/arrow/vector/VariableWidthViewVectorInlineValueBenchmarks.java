@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector;
 
+import java.util.concurrent.TimeUnit;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -35,8 +36,6 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
-import java.util.concurrent.TimeUnit;
-
 /** Benchmarks for {@link BaseVariableWidthVector}. */
 @State(Scope.Benchmark)
 public class VariableWidthViewVectorInlineValueBenchmarks {
@@ -48,7 +47,7 @@ public class VariableWidthViewVectorInlineValueBenchmarks {
 
   private static final int ALLOCATOR_CAPACITY = 1024 * 1024;
 
-  private static byte[] bytes = "InlineValue".getBytes();
+  private static byte[] bytes = VariableWidthVectorBenchmarkConstants.SHORT_VALUE.getBytes();
   private ArrowBuf arrowBuff;
 
   private BufferAllocator allocator;
@@ -121,7 +120,9 @@ public class VariableWidthViewVectorInlineValueBenchmarks {
   public static void main(String[] args) throws RunnerException {
     Options opt =
         new OptionsBuilder()
-            .include(VariableWidthViewVectorInlineValueBenchmarks.class.getSimpleName() + ".setSafeFromArray")
+            .include(
+                VariableWidthViewVectorInlineValueBenchmarks.class.getSimpleName()
+                    + ".setSafeFromArray")
             .forks(1)
             .build();
 
