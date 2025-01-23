@@ -58,17 +58,18 @@ public class VariableWidthViewVectorInlineValueBenchmarks {
   private int step;
 
   /** Setup benchmarks. */
-  @Setup(Level.Iteration)
+  @Setup(Level.Invocation)
   public void prepare() {
     allocator = new RootAllocator();
     vector = new ViewVarCharVector("vector", allocator);
     vector.allocateNew(VECTOR_CAPACITY, VECTOR_LENGTH);
+    vector.zeroVector();
     arrowBuff = allocator.buffer(VECTOR_LENGTH);
     arrowBuff.setBytes(0, bytes, 0, bytes.length);
   }
 
   /** Tear down benchmarks. */
-  @TearDown(Level.Iteration)
+  @TearDown(Level.Invocation)
   public void tearDown() {
     arrowBuff.close();
     vector.close();
