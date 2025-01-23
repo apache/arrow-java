@@ -428,8 +428,12 @@ jobs:
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           name: |
-            reference
             release-source
+      - name: Download Javadocs
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: |
+            reference
       - name: Extract source archive
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
