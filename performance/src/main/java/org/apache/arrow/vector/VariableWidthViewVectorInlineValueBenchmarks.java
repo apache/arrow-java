@@ -120,9 +120,7 @@ public class VariableWidthViewVectorInlineValueBenchmarks {
   public static void main(String[] args) throws RunnerException {
     Options opt =
         new OptionsBuilder()
-            .include(
-                VariableWidthViewVectorInlineValueBenchmarks.class.getSimpleName()
-                    + ".setSafeFromArray")
+            .include(VariableWidthViewVectorInlineValueBenchmarks.class.getSimpleName())
             .forks(1)
             .build();
 
