@@ -1368,8 +1368,8 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
     int writePosition = index * ELEMENT_SIZE;
 
     if (length <= INLINE_SIZE) {
-      // to clear the memory segment of view being written to
-      // if it has been set
+      // Check if the memory segment has been written, and clear it if it has been set.
+      // It is recommended to batch initialize the viewBuffer before setBytes.
       if (viewBuffer.getLong(writePosition) != 0 || viewBuffer.getLong(writePosition + 8) != 0) {
         viewBuffer.setZero(writePosition, ELEMENT_SIZE);
       }
@@ -1414,8 +1414,8 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
     int writePosition = index * ELEMENT_SIZE;
 
     if (length <= INLINE_SIZE) {
-      // to clear the memory segment of view being written to
-      // if it has been set
+      // Check if the memory segment has been written, and clear it if it has been set.
+      // It is recommended to batch initialize the viewBuffer before setBytes.
       if (viewBuffer.getLong(writePosition) != 0 || viewBuffer.getLong(writePosition + 8) != 0) {
         viewBuffer.setZero(writePosition, ELEMENT_SIZE);
       }
