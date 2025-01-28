@@ -97,7 +97,7 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
 
   echo "Looking for GitHub Actions workflow on ${repository}:${rc_tag}"
   run_id=""
-  while [ -z "${run_id}" ]; do
+  while true; do
     echo "Waiting for run to start..."
     run_id=$(gh run list \
       --branch "${rc_tag}" \
@@ -106,11 +106,17 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
       --limit 1 \
       --repo "${repository}" \
       --workflow rc.yml)
-    sleep 1
+    if [ -n "${run_id}" ]; then
+      break
+    fi
+    sleep 60
   done
 
   echo "Found GitHub Actions workflow with ID: ${run_id}"
-  gh run watch --repo "${repository}" --exit-status "${run_id}"
+  gh run watch \
+     --exit-status "${run_id}" \
+     --interval 60 \
+     --repo "${repository}"
 
   echo "Downloading artifacts from GitHub Releases"
   gh release download "${rc_tag}" \
