@@ -536,7 +536,7 @@ jobs:
           cd site
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git commit -m "Publish documents (${GITHUB_SHA})"
+          git commit -m "Publish documentation (${GITHUB_SHA})"
           git push origin "${BRANCH}"
   verify:
     name: Verify
