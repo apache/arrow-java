@@ -114,9 +114,9 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
 
   echo "Found GitHub Actions workflow with ID: ${run_id}"
   gh run watch \
-     --exit-status "${run_id}" \
-     --interval 60 \
-     --repo "${repository}"
+    --exit-status "${run_id}" \
+    --interval 60 \
+    --repo "${repository}"
 
   echo "Downloading artifacts from GitHub Releases"
   gh release download "${rc_tag}" \
