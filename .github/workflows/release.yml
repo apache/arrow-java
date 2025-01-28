@@ -34,21 +34,65 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - name: Download RC contents
         run: |
           set -x
-          latest_rc_tag=$(gh release list --json tagName --jq '.[].tagName' | \
-                            grep -F "${GITHUB_REF_NAME}-rc" | \
-                            head -n1)
-          gh release download ${latest_rc_tag} --dir dists
+          latest_rc_tag=$(gh release list \
+                            --jq '.[].tagName' \
+                            --json tagName \
+                            --repo ${GITHUB_REPOSITORY} | \
+                              grep -F "${GITHUB_REF_NAME}-rc" | \
+                              head -n1)
+          gh release download ${latest_rc_tag} \
+            --repo ${GITHUB_REPOSITORY} \
+            --dir dists
       - name: Create GitHub Release
         run: |
           # GH-499: How to create release notes?
           version=${GITHUB_REF_NAME#v}
           gh release create ${GITHUB_REF_NAME} \
             --generate-notes \
+            --repo ${GITHUB_REPOSITORY} \
             --title "Apache Arrow Java ${version}" \
             --verify-tag \
             dists/*
+      - name: Create GitHub Release
+        run: |
+          # GH-499: How to create release notes?
+          version=${GITHUB_REF_NAME#v}
+          gh release create ${GITHUB_REF_NAME} \
+            --generate-notes \
+            --repo ${GITHUB_REPOSITORY} \
+            --title "Apache Arrow Java ${version}" \
+            --verify-tag \
+            dists/*
+      - name: Checkout for publishing documents
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: site
+      - name: Publish documents
+        run: |
+          set -x
+
+          tar -xf dists/html.tar.gz
+          version=${GITHUB_REF_NAME#v}
+
+          if [ "${GITHUB_REPOSITORY}" = "apache/arrow-java" ]; then
+            BRANCH=asf-site
+          else
+            BRANCH=gh-pages
+          fi
+
+          cd site
+          git fetch
+          git switch -c "${BRANCH}" "origin/${BRANCH}"
+
+          rm -rf current ${version}
+          cp -a ../html current
+          cp -a ../html ${version}
+          git add current ${version}
+
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m "Publish documents (${GITHUB_REF_NAME})"
+          git push origin "${BRANCH}"

@@ -471,7 +471,7 @@ jobs:
         with:
           name: release-html
           path: html.tar.gz
-  public-docs:
+  publish-docs:
     name: Publish docs
     # Run only when:
     # * We push to a branch
@@ -496,7 +496,6 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           path: site
-          persist-credentials: true
       - name: Prepare branch
         run: |
           if [ "${GITHUB_REPOSITORY}" = "apache/arrow-java" ]; then
@@ -537,7 +536,7 @@ jobs:
           cd site
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git commit -m "Publish documentation (${GITHUB_SHA})"
+          git commit -m "Publish documents (${GITHUB_SHA})"
           git push origin "${BRANCH}"
   verify:
     name: Verify
@@ -599,7 +598,7 @@ jobs:
           gh release create ${GITHUB_REF_NAME} \
             --generate-notes \
             --prerelease \
-            --repo ${{ github.repository }} \
+            --repo ${GITHUB_REPOSITORY} \
             --title "Apache Arrow Java ${version} RC${rc}" \
             --verify-tag \
             artifacts/*/*
