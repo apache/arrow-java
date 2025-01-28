@@ -19,7 +19,7 @@
 
 github:
   description: "Official Java implementation of Apache Arrow"
-  homepage: https://arrow.apache.org/
+  homepage: https://arrow.apache.org/java/
   labels:
     - apache-arrow
     - java
