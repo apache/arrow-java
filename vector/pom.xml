@@ -171,6 +171,25 @@ under the License.
                   <shadedPattern>arrow.vector.com.google.flatbuffers</shadedPattern>
                 </relocation>
               </relocations>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/LICENSE</exclude>
+                    <exclude>META-INF/NOTICE</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/LICENSE.txt</resource>
+                  <file>src/shade/LICENSE.txt</file>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/NOTICE.txt</resource>
+                  <file>src/shade/NOTICE.txt</file>
+                </transformer>
+              </transformers>
             </configuration>
           </execution>
         </executions>

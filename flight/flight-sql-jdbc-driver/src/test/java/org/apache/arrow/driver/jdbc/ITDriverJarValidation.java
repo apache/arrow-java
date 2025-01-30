@@ -67,6 +67,8 @@ public class ITDriverJarValidation {
   /** List of allowed files a jar entry may match. */
   public static final Set<String> ALLOWED_FILES =
       ImmutableSet.of(
+          "LICENSE.txt",
+          "NOTICE.txt",
           "arrow-git.properties",
           "properties/flight.properties",
           "META-INF/io.netty.versions.properties",

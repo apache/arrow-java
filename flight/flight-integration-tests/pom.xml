@@ -68,7 +68,9 @@ under the License.
 
   <build>
     <plugins>
+      <!-- TODO exclude LICENSE.txt/NOTICE.txt from non shaded jar -->
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <executions>
           <execution>
@@ -87,9 +89,27 @@ under the License.
                     <exclude>**/module-info.class</exclude>
                   </excludes>
                 </filter>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>LICENSE.txt</exclude>
+                    <exclude>NOTICE.txt</exclude>
+                    <exclude>META-INF/*LICENSE*</exclude>
+                    <exclude>META-INF/*NOTICE*</exclude>
+                    <exclude>META-INF/license/*</exclude>
+                  </excludes>
+                </filter>
               </filters>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/LICENSE.txt</resource>
+                  <file>src/shade/LICENSE.txt</file>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                  <resource>META-INF/NOTICE.txt</resource>
+                  <file>src/shade/NOTICE.txt</file>
+                </transformer>
               </transformers>
             </configuration>
           </execution>

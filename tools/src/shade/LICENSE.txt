@@ -202,21 +202,130 @@
    limitations under the License.
 
 --------------------------------------------------------------------------------
-This product includes code from Netty 4.1.117.Final:
 
-* vector/src/main/java/org/apache/arrow/vector/util/IntObjectHashMap.java
-* vector/src/main/java/org/apache/arrow/vector/util/IntObjectMap.java
-* memory/memory-core/src/main/java/org/apache/arrow/memory/rounding/DefaultRoundingPolicy.java
+This binary artifact contains Netty 4.1.117.Final.
 
-Copyright: 2014 The Netty Project
+Copyright: Copyright 2014 The Netty Project
 Home page: https://netty.io/
 License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
-This product includes code from Google Guava 33.4.0-jre
 
-* memory/memory-core/src/main/java/org/apache/arrow/util/Preconditions.java
+This binary artifact contains Jackson 2.18.2.
 
-Copyright: (C) 2011 The Guava Authors
-Home page: https://github.com/google/guava/
+Home page: https://github.com/FasterXML/jackson
 License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Apache Commons Codec 1.18.0.
+
+Copyright: Copyright 2002-2024 The Apache Software Foundation
+Home page: https://commons.apache.org/proper/commons-codec/
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Apache Commons Compress 1.27.1.
+
+Copyright: Copyright 2002-2024 The Apache Software Foundation
+Home page: https://commons.apache.org/proper/commons-compress/
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Apache Commons IO 2.16.1.
+
+Copyright: Copyright 2002-2024 The Apache Software Foundation
+Home page: https://commons.apache.org/proper/commons-io/
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Apache Commons Lang 3.16.0.
+
+Copyright: Copyright 2001-2024 The Apache Software Foundation
+Home page: https://commons.apache.org/proper/commons-lang/
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Luben Zstd 1.5.6-9.
+
+Copyright: Copyright (c) 2015-present, Luben Karavelov/ All rights reserved.
+Home page: https://github.com/luben/zstd-jni
+License: BSD License
+License text:
+
+| Zstd-jni: JNI bindings to Zstd Library
+|
+| Copyright (c) 2015-present, Luben Karavelov/ All rights reserved.
+|
+| BSD License
+|
+| Redistribution and use in source and binary forms, with or without modification,
+| are permitted provided that the following conditions are met:
+|
+| * Redistributions of source code must retain the above copyright notice, this
+|   list of conditions and the following disclaimer.
+|
+| * Redistributions in binary form must reproduce the above copyright notice, this
+|   list of conditions and the following disclaimer in the documentation and/or
+|   other materials provided with the distribution.
+|
+| THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+| ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+| WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+| DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+| ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+| (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+| LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+| ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+| (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+| SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Apache Commons CLI 1.9.0.
+
+Copyright: Copyright 2002-2024 The Apache Software Foundation
+Home page: https://commons.apache.org/proper/commons-cli/
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Google Flatbuffers 24.3.25.
+
+Home page: https://flatbuffers.dev/
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains Slf4j 2.0.16.
+
+Copyright: Copyright (c) 2004-2022 QOS.ch Sarl (Switzerland)
+Home page: http://www.slf4j.org/
+License: MIT
+License text:
+
+| Copyright (c) 2004-2022 QOS.ch Sarl (Switzerland)
+| All rights reserved.
+|
+| Permission is hereby granted, free  of charge, to any person obtaining
+| a  copy  of this  software  and  associated  documentation files  (the
+| "Software"), to  deal in  the Software without  restriction, including
+| without limitation  the rights to  use, copy, modify,  merge, publish,
+| distribute,  sublicense, and/or sell  copies of  the Software,  and to
+| permit persons to whom the Software  is furnished to do so, subject to
+| the following conditions:
+|
+| The  above  copyright  notice  and  this permission  notice  shall  be
+| included in all copies or substantial portions of the Software.
+|
+| THE  SOFTWARE IS  PROVIDED  "AS  IS", WITHOUT  WARRANTY  OF ANY  KIND,
+| EXPRESS OR  IMPLIED, INCLUDING  BUT NOT LIMITED  TO THE  WARRANTIES OF
+| MERCHANTABILITY,    FITNESS    FOR    A   PARTICULAR    PURPOSE    AND
+| NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+| LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+| OF CONTRACT, TORT OR OTHERWISE,  ARISING FROM, OUT OF OR IN CONNECTION
+| WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
