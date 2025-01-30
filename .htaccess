@@ -15,4 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-RedirectMatch permanent "^/$" /current/
+RedirectMatch permanent "^/java/$" /java/current/
