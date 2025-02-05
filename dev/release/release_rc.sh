@@ -109,13 +109,13 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
     if [ -n "${run_id}" ]; then
       break
     fi
-    sleep 60
+    sleep 600
   done
 
   echo "Found GitHub Actions workflow with ID: ${run_id}"
   gh run watch \
     --exit-status "${run_id}" \
-    --interval 60 \
+    --interval 600 \
     --repo "${repository}"
 
   echo "Downloading artifacts from GitHub Releases"
