@@ -600,7 +600,12 @@ jobs:
             --prerelease \
             --repo ${GITHUB_REPOSITORY} \
             --title "Apache Arrow Java ${version} RC${rc}" \
-            --verify-tag \
-            artifacts/*/*
+            --verify-tag
+          # GitHub CLI does not respect their own rate limits
+          # https://github.com/cli/cli/issues/9586
+          for artifact in artifacts/*/*; do
+            sleep 1
+            gh release upload ${GITHUB_REF_NAME} $artifact
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
