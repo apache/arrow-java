@@ -605,7 +605,9 @@ jobs:
           # https://github.com/cli/cli/issues/9586
           for artifact in artifacts/*/*; do
             sleep 1
-            gh release upload ${GITHUB_REF_NAME} $artifact
+            gh release upload ${GITHUB_REF_NAME} \
+              --repo ${GITHUB_REPOSITORY} \
+              $artifact
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
