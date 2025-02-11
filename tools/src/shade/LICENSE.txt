@@ -294,7 +294,7 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Google Flatbuffers 24.3.25.
+This binary artifact contains Google Flatbuffers 25.1.24.
 
 Home page: https://flatbuffers.dev/
 License: https://www.apache.org/licenses/LICENSE-2.0
