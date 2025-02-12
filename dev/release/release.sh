@@ -87,3 +87,8 @@ echo "  https://dist.apache.org/repos/dist/release/arrow/${release_id}"
 echo
 echo "Add this release to ASF's report database:"
 echo "  https://reporter.apache.org/addrelease.html?arrow"
+echo
+echo "Release binary artifacts in repository.apache.org:"
+echo "1. Open https://repository.apache.org/#stagingRepositories"
+echo "2. Select the repository for RC: orgapachearrow-XXXX"
+echo "3. Click the Release button"
