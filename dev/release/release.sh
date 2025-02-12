@@ -49,6 +49,7 @@ git tag -a -m "${version}" "${tag}" "${rc_tag}"
 git push origin "${tag}"
 
 release_id="apache-arrow-java-${version}"
+source_archive="apache-arrow-java-${version}.tar.gz"
 dist_url="https://dist.apache.org/repos/dist/release/arrow"
 dist_base_dir="dev/release/dist"
 dist_dir="${dist_base_dir}/${release_id}"
@@ -56,8 +57,9 @@ echo "Checking out ${dist_url}"
 rm -rf "${dist_base_dir}"
 svn co --depth=empty "${dist_url}" "${dist_base_dir}"
 gh release download "${rc_tag}" \
-  --repo "${repository}" \
   --dir "${dist_dir}" \
+  --pattern "${source_archive}*" \
+  --repo "${repository}" \
   --skip-existing
 
 echo "Uploading to release/"
