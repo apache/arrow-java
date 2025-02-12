@@ -54,8 +54,16 @@ jobs:
             --generate-notes \
             --repo ${GITHUB_REPOSITORY} \
             --title "Apache Arrow Java ${version}" \
-            --verify-tag \
-            dists/*
+            --verify-tag
+
+          # GitHub CLI does not respect their own rate limits
+          # https://github.com/cli/cli/issues/9586
+          for artifact in dists/*; do
+            sleep 1
+            gh release upload ${GITHUB_REF_NAME} \
+              --repo ${GITHUB_REPOSITORY} \
+              $artifact
+          done
       - name: Checkout for publishing docs
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
