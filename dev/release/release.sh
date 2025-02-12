@@ -45,7 +45,7 @@ esac
 tag="v${version}"
 rc_tag="${tag}-rc${rc}"
 echo "Tagging for release: ${tag}"
-git tag -a -m "${version}" "${tag}" "${rc_tag}"
+git tag -a -m "${version}" "${tag}" "${rc_tag}^{}"
 git push origin "${tag}"
 
 release_id="apache-arrow-java-${version}"
