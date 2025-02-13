@@ -24,16 +24,16 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 import pathlib
-import re
+import xml.etree.ElementTree as ET
 
 project = 'arrow-java'
 copyright = '2025, Apache Arrow Developers'
 author = 'Apache Arrow Developers'
 
 top_level_pom_xml = pathlib.Path(__file__).parents[2] / "pom.xml"
-release = re.findall("^  <version>(.+?)</version>",
-                     top_level_pom_xml.read_text(),
-                     re.MULTILINE)[0]
+tree = ET.parse(top_level_pom_xml)
+ns = {"maven": "http://maven.apache.org/POM/4.0.0"}
+release = tree.getroot().find("maven:version", ns).text
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
