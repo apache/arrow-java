@@ -166,7 +166,7 @@ $ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh ${NEW_VERSION}-SNAPS
 Here is an example to bump version to 19.0.1-SNAPSHOT:
 
 ```
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh 19.0.0-SNAPSHOT
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh 19.0.1-SNAPSHOT
 ```
 
 It creates a feature branch and adds a commit that bumps version. This

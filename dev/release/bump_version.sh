@@ -59,6 +59,9 @@ mvn versions:set-scm-tag "-DnewTag=${tag}" -DgenerateBackupPoms=false -pl :arrow
 mvn versions:set-scm-tag "-DnewTag=${tag}" -DgenerateBackupPoms=false -pl :arrow-bom
 git add "pom.xml"
 git add "**/pom.xml"
+sed -i.bak -e "s/^release = '.*'/release = '${version}'/" docs/source/conf.py
+rm docs/source/conf.py.bak
+git add docs/source/conf.py
 git commit -m "MINOR: Bump version to ${version}"
 git push --set-upstream origin "${branch}"
 gh pr create --fill --repo apache/arrow-java
