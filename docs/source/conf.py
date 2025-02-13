@@ -23,10 +23,17 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import pathlib
+import re
+
 project = 'arrow-java'
 copyright = '2025, Apache Arrow Developers'
 author = 'Apache Arrow Developers'
-release = '18.1.0'
+
+top_level_pom_xml = pathlib.Path(__file__).parents[2] / "pom.xml"
+release = re.findall("^  <version>(.+?)</version>",
+                     top_level_pom_xml.read_text(),
+                     re.MULTILINE)[0]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
