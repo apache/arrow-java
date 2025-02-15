@@ -31,7 +31,7 @@ import org.apache.avro.io.Encoder;
 public abstract class AvroDecimalProducer extends BaseAvroProducer<DecimalVector> {
 
   /** Instantiate an AvroDecimalProducer. */
-  public AvroDecimalProducer(DecimalVector vector) {
+  protected AvroDecimalProducer(DecimalVector vector) {
     super(vector);
   }
 
