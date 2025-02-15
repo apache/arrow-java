@@ -18,6 +18,8 @@
 module org.apache.arrow.adapter.avro {
   exports org.apache.arrow.adapter.avro.consumers;
   exports org.apache.arrow.adapter.avro.consumers.logical;
+  exports org.apache.arrow.adapter.avro.producers;
+  exports org.apache.arrow.adapter.avro.producers.logical;
   exports org.apache.arrow.adapter.avro;
 
   requires org.apache.arrow.memory.core;
