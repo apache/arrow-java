@@ -38,6 +38,16 @@ public abstract class BaseAvroProducer<T extends FieldVector> implements Produce
   }
 
   @Override
+  public void skipNull() {
+    currentIndex++;
+  }
+
+  @Override
+  public void setPosition(int index) {
+    currentIndex = index;
+  }
+
+  @Override
   public void close() throws Exception {
     vector.close();
   }
@@ -50,7 +60,7 @@ public abstract class BaseAvroProducer<T extends FieldVector> implements Produce
   }
 
   @Override
-  public FieldVector getVector() {
+  public T getVector() {
     return vector;
   }
 }

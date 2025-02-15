@@ -31,6 +31,12 @@ public interface Producer<T extends FieldVector> extends AutoCloseable {
    */
   void produce(Encoder encoder) throws IOException;
 
+  /** Skip null value in the vector by setting reader position + 1. */
+  void skipNull();
+
+  /** Set the position to read value from vector. */
+  void setPosition(int index);
+
   /**
    * Close this produce
    */
@@ -47,5 +53,5 @@ public interface Producer<T extends FieldVector> extends AutoCloseable {
   /**
    * Get the vector within the producer.
    */
-  FieldVector getVector();
+  T getVector();
 }
