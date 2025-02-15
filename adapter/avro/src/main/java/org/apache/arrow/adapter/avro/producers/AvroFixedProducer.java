@@ -18,7 +18,6 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.avro.io.Encoder;
@@ -29,20 +28,21 @@ import org.apache.avro.io.Encoder;
  */
 public class AvroFixedProducer extends BaseAvroProducer<FixedSizeBinaryVector> {
 
+  private final byte[] reuseBytes;
+
   /**
    * Instantiate an AvroFixedProducer.
    */
   public AvroFixedProducer(FixedSizeBinaryVector vector) {
     super(vector);
+    reuseBytes = new byte[vector.getByteWidth()];
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    // The nio ByteBuffer is created once per call, but underlying data is not copied
     long offset = (long) currentIndex * vector.getByteWidth();
-    int length = vector.getByteWidth();
-    ByteBuffer nioBuffer = vector.getDataBuffer().nioBuffer(offset, length);
-    encoder.writeBytes(nioBuffer);
+    vector.getDataBuffer().getBytes(offset, reuseBytes);
+    encoder.writeBytes(reuseBytes);
     currentIndex++;
   }
 }
