@@ -92,12 +92,12 @@ services:
     # Usage:
     #   docker compose build vcpkg-jni
     #   docker compose run vcpkg-jni
-    image: ${REPO}:${ARCH}-vcpkg-jni
+    image: ${REPO}:${ARCH}-vcpkg-jni-{VCPKG}
     build:
       context: .
       dockerfile: ci/docker/vcpkg-jni.dockerfile
       cache_from:
-        - ${REPO}:${ARCH}-vcpkg-jni
+        - ${REPO}:${ARCH}-vcpkg-jni-{VCPKG}
       args:
         base: ${ARROW_REPO}:${ARCH}-python-${PYTHON}-wheel-manylinux-2014-vcpkg-${VCPKG}
     volumes:
