@@ -35,7 +35,7 @@ import java.nio.ByteOrder;
 
 @SuppressWarnings("unused")
 public final class Interval extends Table {
-  public static void ValidateVersion() { Constants.FLATBUFFERS_25_1_24(); }
+  public static void ValidateVersion() { Constants.FLATBUFFERS_25_2_10(); }
   public static Interval getRootAsInterval(ByteBuffer _bb) { return getRootAsInterval(_bb, new Interval()); }
   public static Interval getRootAsInterval(ByteBuffer _bb, Interval obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }

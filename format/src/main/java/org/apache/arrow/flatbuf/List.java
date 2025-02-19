@@ -35,7 +35,7 @@ import java.nio.ByteOrder;
 
 @SuppressWarnings("unused")
 public final class List extends Table {
-  public static void ValidateVersion() { Constants.FLATBUFFERS_25_1_24(); }
+  public static void ValidateVersion() { Constants.FLATBUFFERS_25_2_10(); }
   public static List getRootAsList(ByteBuffer _bb) { return getRootAsList(_bb, new List()); }
   public static List getRootAsList(ByteBuffer _bb, List obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }

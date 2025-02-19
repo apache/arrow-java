@@ -39,7 +39,7 @@ import java.nio.ByteOrder;
  */
 @SuppressWarnings("unused")
 public final class LargeUtf8 extends Table {
-  public static void ValidateVersion() { Constants.FLATBUFFERS_25_1_24(); }
+  public static void ValidateVersion() { Constants.FLATBUFFERS_25_2_10(); }
   public static LargeUtf8 getRootAsLargeUtf8(ByteBuffer _bb) { return getRootAsLargeUtf8(_bb, new LargeUtf8()); }
   public static LargeUtf8 getRootAsLargeUtf8(ByteBuffer _bb, LargeUtf8 obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }

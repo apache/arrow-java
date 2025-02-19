@@ -35,7 +35,7 @@ import java.nio.ByteOrder;
 
 @SuppressWarnings("unused")
 public final class DictionaryEncoding extends Table {
-  public static void ValidateVersion() { Constants.FLATBUFFERS_25_1_24(); }
+  public static void ValidateVersion() { Constants.FLATBUFFERS_25_2_10(); }
   public static DictionaryEncoding getRootAsDictionaryEncoding(ByteBuffer _bb) { return getRootAsDictionaryEncoding(_bb, new DictionaryEncoding()); }
   public static DictionaryEncoding getRootAsDictionaryEncoding(ByteBuffer _bb, DictionaryEncoding obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
