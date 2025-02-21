@@ -121,7 +121,7 @@ module.exports = {
     check_title_format: function({core, github, context}) {
         const title = context.payload.pull_request.title;
         if (title.startsWith("MINOR: ")) {
-            context.log("PR is a minor PR");
+            console.log("PR is a minor PR");
             return {"issue": null};
         }
 
