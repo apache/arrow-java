@@ -116,6 +116,7 @@ import org.apache.arrow.vector.complex.impl.UInt8WriterImpl;
 import org.apache.arrow.vector.complex.impl.UnionLargeListViewWriter;
 import org.apache.arrow.vector.complex.impl.UnionLargeListWriter;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
+import org.apache.arrow.vector.complex.impl.UnionMapWriter;
 import org.apache.arrow.vector.complex.impl.UnionWriter;
 import org.apache.arrow.vector.complex.impl.VarBinaryWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarCharWriterImpl;
@@ -721,7 +722,7 @@ public class Types {
 
       @Override
       public FieldWriter getNewFieldWriter(ValueVector vector) {
-        return new UnionListWriter((MapVector) vector);
+        return new UnionMapWriter((MapVector) vector);
       }
     },
     TIMESTAMPSECTZ(null) {
