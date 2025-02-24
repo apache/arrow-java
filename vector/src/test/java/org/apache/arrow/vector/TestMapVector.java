@@ -35,6 +35,7 @@ import org.apache.arrow.vector.complex.impl.UnionMapWriter;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -1240,5 +1241,26 @@ public class TestMapVector {
 
     assertEquals(intField, vec.getField().getChildren().get(0));
     assertEquals(intField, res.getField().getChildren().get(0));
+  }
+
+  @Test
+  public void testMapTypeReturnsSupportedMapWriter() {
+    try (final MapVector vector = MapVector.empty("map", allocator, false)) {
+      vector.allocateNew();
+      FieldWriter mapWriter = MinorType.MAP.getNewFieldWriter(vector);
+
+      mapWriter.startMap();
+      mapWriter.startEntry();
+      mapWriter.key().bigInt().writeBigInt(1);
+      mapWriter.value().integer().writeInt(11);
+      mapWriter.endEntry();
+      mapWriter.endMap();
+
+      Object result = vector.getObject(0);
+      ArrayList<?> resultSet = (ArrayList<?>) result;
+      Map<?, ?> resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertEquals(1L, getResultKey(resultStruct));
+      assertEquals(11, getResultValue(resultStruct));
+    }
   }
 }
