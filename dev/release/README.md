@@ -172,6 +172,74 @@ $ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh 19.0.0-SNAPSHOT
 It creates a feature branch and adds a commit that bumps version. This
 opens a pull request from the feature branch by `gh pr create`.
 
+### Close the GitHub milestone
+
+Close the milestone here, then open a new milestone for the next release:
+
+https://github.com/apache/arrow-java/milestones
+
+The milestone should be named after the version (e.g. "18.4.0").
+
+### Publish the release blog post
+
+Open a pull request on
+[apache/arrow-site](https://github.com/apache/arrow-site) announcing the new
+release and summarizing the changes.  Do not include the full changelog, just
+important entries (breaking changes, new features, major bug fixes) and a link
+to the full changelog.  See an [example
+PR](https://github.com/apache/arrow-site/pull/594).
+
+### Announce the new release on the mailing list
+
+Send an email to "announce@apache.org" from your Apache email, CC'ing
+dev@arrow.apache.org/user@arrow.apache.org.  See an [example
+post](https://lists.apache.org/thread/bxpt0r8kw0ltgywnylqdroskkt6966z4).
+
+```
+To: announce@apache.org
+CC: dev@arrow.apache.org, user@arrow.apache.org
+Subject: [ANNOUNCE] Apache Arrow Java 18.2.0 released
+
+The Apache Arrow community is pleased to announce the Arrow Java 18.2.0 release.
+
+The release is available now from our website:
+     https://arrow.apache.org/install/
+and
+     https://www.apache.org/dyn/closer.cgi/arrow/apache-arrow-java-18.2.0/
+
+Read about what's new in the release at:
+     https://arrow.apache.org/blog/2025/02/19/arrow-java-18.2.0/
+
+Read the full changelog:
+     https://github.com/apache/arrow-java/commits/v18.2.0
+
+What is Apache Arrow?
+-------------------------------
+
+Apache Arrow is a universal columnar format and multi-language toolbox
+for fast data interchange and in-memory analytics. It houses a set of
+canonical in-memory representations of flat and hierarchical data
+along with multiple language-bindings for structure manipulation. It
+also provides low-overhead streaming and batch messaging, zero-copy
+interprocess communication (IPC), and vectorized in-memory analytics
+libraries.
+
+Please report any feedback to the mailing lists:
+    https://lists.apache.org/list.html?dev@arrow.apache.org
+
+Regards,
+The Apache Arrow community.
+```
+
+### Announce the new release on social media
+
+Make a post on our [BlueSky](https://bsky.app/profile/arrow.apache.org) and
+[LinkedIn](https://www.linkedin.com/company/apache-arrow/) accounts.  (Ask
+your fellow PMC members for access if need be, or ask a PMC member to make the
+post on your behalf.)  The post should link to the blog post.  See [example
+BlueSky post](https://bsky.app/profile/arrow.apache.org/post/3lioi6ov5h22d)
+and [example LinkedIn post](https://www.linkedin.com/posts/apache-arrow_apache-arrow-java-1820-release-activity-7298633716522758144-L71x).
+
 ## Verify
 
 We have a script to verify a RC.
