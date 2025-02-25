@@ -18,9 +18,7 @@ package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
 
-import org.apache.arrow.adapter.avro.consumers.BaseAvroConsumer;
 import org.apache.arrow.vector.BitVector;
-import org.apache.avro.io.Decoder;
 import org.apache.avro.io.Encoder;
 
 /**
