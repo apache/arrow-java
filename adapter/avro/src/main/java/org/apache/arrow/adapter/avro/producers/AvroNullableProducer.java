@@ -48,8 +48,9 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
 
   @Override
   public void skipNull() {
-    delegate.skipNull();
-    super.skipNull();
+    // Should never be called on nullable producer
+    // Calling produce() will skipNull() on the delegate
+    throw new UnsupportedOperationException();
   }
 
   @Override
