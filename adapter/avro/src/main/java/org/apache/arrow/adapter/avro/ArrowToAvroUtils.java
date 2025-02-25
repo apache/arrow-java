@@ -25,6 +25,7 @@ import org.apache.arrow.adapter.avro.producers.AvroFixedProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFloatProducer;
 import org.apache.arrow.adapter.avro.producers.AvroIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
+import org.apache.arrow.adapter.avro.producers.AvroMapProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullableProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStringProducer;
@@ -56,6 +57,7 @@ import org.apache.arrow.vector.TimeStampMilliVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.types.Types;
 
@@ -155,6 +157,17 @@ public class ArrowToAvroUtils {
         FieldVector itemVector = listVector.getDataVector();
         Producer<?> itemProducer = createProducer(itemVector, itemVector.getField().isNullable());
         return new AvroArraysProducer(listVector, itemProducer);
+
+      case MAP:
+
+        MapVector mapVector = (MapVector) vector;
+        StructVector entryVector = (StructVector) mapVector.getDataVector();
+        VarCharVector keyVector = (VarCharVector) entryVector.getChildrenFromFields().get(0);
+        FieldVector valueVector = entryVector.getChildrenFromFields().get(1);
+        Producer<?> keyProducer = new AvroStringProducer(keyVector);
+        Producer<?> valueProducer = createProducer(valueVector, valueVector.getField().isNullable());
+        Producer<?> entryProducer = new AvroStructProducer(entryVector, new Producer<?>[] {keyProducer, valueProducer});
+        return new AvroMapProducer(mapVector, entryProducer);
 
       // Not all Arrow types are supported for encoding (yet)!
 
