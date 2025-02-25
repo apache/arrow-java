@@ -141,7 +141,7 @@ public class TestArrowReaderWriterWithCompression {
 
     return new Dictionary(
         dictionaryVector,
-        new DictionaryEncoding(/*id=*/ 1L, /*ordered=*/ false, /*indexType=*/ null));
+        new DictionaryEncoding(/* id= */ 1L, /* ordered= */ false, /* indexType= */ null));
   }
 
   @Test

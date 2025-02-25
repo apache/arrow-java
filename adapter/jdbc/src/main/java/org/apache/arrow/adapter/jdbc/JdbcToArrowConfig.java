@@ -61,6 +61,7 @@ public final class JdbcToArrowConfig {
   private final Map<String, String> schemaMetadata;
   private final Map<Integer, Map<String, String>> columnMetadataByColumnIndex;
   private final RoundingMode bigDecimalRoundingMode;
+
   /**
    * The maximum rowCount to read each time when partially convert data. Default value is 1024 and
    * -1 means disable partial read. default is -1 which means disable partial read. Note that this

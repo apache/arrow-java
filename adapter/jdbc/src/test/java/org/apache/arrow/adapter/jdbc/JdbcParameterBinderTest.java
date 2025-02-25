@@ -107,8 +107,8 @@ public class JdbcParameterBinderTest {
         final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
       final JdbcParameterBinder binder =
           JdbcParameterBinder.builder(statement, root)
-              .bind(/*parameterIndex=*/ 1, /*columnIndex=*/ 2)
-              .bind(/*parameterIndex=*/ 2, /*columnIndex=*/ 0)
+              .bind(/* parameterIndex= */ 1, /* columnIndex= */ 2)
+              .bind(/* parameterIndex= */ 2, /* columnIndex= */ 0)
               .build();
       assertThat(binder.next()).isFalse();
 
@@ -166,7 +166,7 @@ public class JdbcParameterBinderTest {
       final JdbcParameterBinder binder =
           JdbcParameterBinder.builder(statement, root)
               .bind(
-                  /*parameterIndex=*/ 1,
+                  /* parameterIndex= */ 1,
                   new ColumnBinder() {
                     private final IntVector vector = (IntVector) root.getVector(0);
 

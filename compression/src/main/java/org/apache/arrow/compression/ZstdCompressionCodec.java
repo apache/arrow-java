@@ -46,8 +46,8 @@ public class ZstdCompressionCodec extends AbstractCompressionCodec {
             compressedBuffer.memoryAddress() + CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH,
             dstSize,
             /*src*/ uncompressedBuffer.memoryAddress(),
-            /*srcSize=*/ uncompressedBuffer.writerIndex(),
-            /*level=*/ this.compressionLevel);
+            /* srcSize= */ uncompressedBuffer.writerIndex(),
+            /* level= */ this.compressionLevel);
     if (Zstd.isError(bytesWritten)) {
       compressedBuffer.close();
       throw new RuntimeException("Error compressing: " + Zstd.getErrorName(bytesWritten));
@@ -64,7 +64,8 @@ public class ZstdCompressionCodec extends AbstractCompressionCodec {
         Zstd.decompressUnsafe(
             uncompressedBuffer.memoryAddress(),
             decompressedLength,
-            /*src=*/ compressedBuffer.memoryAddress() + CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH,
+            /* src= */ compressedBuffer.memoryAddress()
+                + CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH,
             compressedBuffer.writerIndex() - CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
     if (Zstd.isError(decompressedSize)) {
       uncompressedBuffer.close();

@@ -486,8 +486,7 @@ public class TestBasicOperation {
         // Should have no body buffers
         assertFalse(message.getBufs().iterator().hasNext());
         final Flight.FlightData protobufData =
-            arrowMessageToProtobuf(marshaller, message)
-                .toBuilder()
+            arrowMessageToProtobuf(marshaller, message).toBuilder()
                 .setDataBody(ByteString.EMPTY)
                 .build();
         assertEquals(0, protobufData.getDataBody().size());

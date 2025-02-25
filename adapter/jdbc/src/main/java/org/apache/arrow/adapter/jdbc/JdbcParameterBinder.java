@@ -116,7 +116,7 @@ public class JdbcParameterBinder {
     /** Bind each column to the corresponding parameter in order. */
     public Builder bindAll() {
       for (int i = 0; i < root.getFieldVectors().size(); i++) {
-        bind(/*parameterIndex=*/ i + 1, /*columnIndex=*/ i);
+        bind(/* parameterIndex= */ i + 1, /* columnIndex= */ i);
       }
       return this;
     }

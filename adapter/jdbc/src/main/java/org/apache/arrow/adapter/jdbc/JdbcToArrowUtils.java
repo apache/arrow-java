@@ -145,7 +145,7 @@ public class JdbcToArrowUtils {
       final int scale = parameterMetaData.getScale(parameterCounter);
       final ArrowType arrowType =
           getArrowTypeFromJdbcType(new JdbcFieldInfo(jdbcDataType, precision, scale), calendar);
-      final FieldType fieldType = new FieldType(arrowIsNullable, arrowType, /*dictionary=*/ null);
+      final FieldType fieldType = new FieldType(arrowIsNullable, arrowType, /* dictionary= */ null);
       parameterFields.add(new Field(null, fieldType, null));
     }
 

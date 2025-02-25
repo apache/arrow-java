@@ -144,19 +144,19 @@ public class TestArrowReaderWriter {
     dictionary1 =
         new Dictionary(
             dictionaryVector1,
-            new DictionaryEncoding(/*id=*/ 1L, /*ordered=*/ false, /*indexType=*/ null));
+            new DictionaryEncoding(/* id= */ 1L, /* ordered= */ false, /* indexType= */ null));
     dictionary2 =
         new Dictionary(
             dictionaryVector2,
-            new DictionaryEncoding(/*id=*/ 2L, /*ordered=*/ false, /*indexType=*/ null));
+            new DictionaryEncoding(/* id= */ 2L, /* ordered= */ false, /* indexType= */ null));
     dictionary3 =
         new Dictionary(
             dictionaryVector3,
-            new DictionaryEncoding(/*id=*/ 1L, /*ordered=*/ false, /*indexType=*/ null));
+            new DictionaryEncoding(/* id= */ 1L, /* ordered= */ false, /* indexType= */ null));
     dictionary4 =
         new Dictionary(
             dictionaryVector4,
-            new DictionaryEncoding(/*id=*/ 3L, /*ordered=*/ false, /*indexType=*/ null));
+            new DictionaryEncoding(/* id= */ 3L, /* ordered= */ false, /* indexType= */ null));
   }
 
   @AfterEach

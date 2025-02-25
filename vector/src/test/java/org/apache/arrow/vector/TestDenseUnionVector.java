@@ -408,7 +408,7 @@ public class TestDenseUnionVector {
 
     final FieldType fieldType =
         new FieldType(
-            false, new ArrowType.Union(UnionMode.Dense, typeIds), /*dictionary=*/ null, metadata);
+            false, new ArrowType.Union(UnionMode.Dense, typeIds), /* dictionary= */ null, metadata);
     final Field field = new Field("union", fieldType, children);
 
     MinorType minorType = MinorType.DENSEUNION;

@@ -128,7 +128,7 @@ public final class AutoCloseables {
             .flatMap(
                 (Iterable<? extends AutoCloseable> i) ->
                     StreamSupport.stream(
-                        ((Iterable<AutoCloseable>) i).spliterator(), /*parallel=*/ false))
+                        ((Iterable<AutoCloseable>) i).spliterator(), /* parallel= */ false))
             .iterator();
       }
     };
