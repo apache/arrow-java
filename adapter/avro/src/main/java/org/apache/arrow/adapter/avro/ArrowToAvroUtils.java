@@ -17,6 +17,7 @@
 
 package org.apache.arrow.adapter.avro;
 
+import org.apache.arrow.adapter.avro.producers.AvroArraysProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
 import org.apache.arrow.adapter.avro.producers.AvroDoubleProducer;
@@ -54,6 +55,7 @@ import org.apache.arrow.vector.TimeStampMicroVector;
 import org.apache.arrow.vector.TimeStampMilliVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.types.Types;
 
@@ -146,6 +148,13 @@ public class ArrowToAvroUtils {
           childProducers[i] = createProducer(childVector, childVector.getField().isNullable());
         }
         return new AvroStructProducer(structVector, childProducers);
+
+      case LIST:
+
+        ListVector listVector = (ListVector) vector;
+        FieldVector itemVector = listVector.getDataVector();
+        Producer<?> itemProducer = createProducer(itemVector, itemVector.getField().isNullable());
+        return new AvroArraysProducer(listVector, itemProducer);
 
       // Not all Arrow types are supported for encoding (yet)!
 
