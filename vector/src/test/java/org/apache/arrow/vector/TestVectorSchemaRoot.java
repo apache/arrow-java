@@ -91,8 +91,8 @@ public class TestVectorSchemaRoot {
   }
 
   private VectorSchemaRoot createBatch() {
-    FieldType varCharType = new FieldType(true, new ArrowType.Utf8(), /*dictionary=*/ null);
-    FieldType listType = new FieldType(true, new ArrowType.List(), /*dictionary=*/ null);
+    FieldType varCharType = new FieldType(true, new ArrowType.Utf8(), /* dictionary= */ null);
+    FieldType listType = new FieldType(true, new ArrowType.List(), /* dictionary= */ null);
 
     // create the schema
     List<Field> schemaFields = new ArrayList<>();

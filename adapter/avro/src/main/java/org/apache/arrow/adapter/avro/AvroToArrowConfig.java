@@ -25,6 +25,7 @@ import org.apache.arrow.vector.dictionary.DictionaryProvider;
 public class AvroToArrowConfig {
 
   private final BufferAllocator allocator;
+
   /**
    * The maximum rowCount to read each time when partially convert data. Default value is 1024 and
    * -1 means read all data into one vector.

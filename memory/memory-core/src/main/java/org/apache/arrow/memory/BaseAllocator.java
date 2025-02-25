@@ -272,7 +272,7 @@ abstract class BaseAllocator extends Accountant implements BufferAllocator {
       final AllocationManager manager = new ForeignAllocationManager(this, allocation);
       final BufferLedger ledger = manager.associate(this);
       final ArrowBuf buf =
-          new ArrowBuf(ledger, /*bufferManager=*/ null, size, allocation.memoryAddress());
+          new ArrowBuf(ledger, /* bufferManager= */ null, size, allocation.memoryAddress());
       buf.writerIndex(size);
       listener.onAllocation(size);
       return buf;
