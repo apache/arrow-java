@@ -21,6 +21,11 @@ import org.apache.avro.io.Encoder;
 
 import java.io.IOException;
 
+/**
+ * Interface that is used to produce values to avro encoder.
+ *
+ * @param <T> The vector within producer or its delegate, used for partially produce purpose.
+ */
 public interface Producer<T extends FieldVector> extends AutoCloseable {
 
   /**
@@ -38,13 +43,13 @@ public interface Producer<T extends FieldVector> extends AutoCloseable {
   void setPosition(int index);
 
   /**
-   * Close this produce
+   * Close this producer.
    */
   @Override
   void close() throws Exception;
 
   /**
-   * Reset the vector within producer
+   * Reset the vector within producer.
    *
    * @return true if reset is successful, false if reset is not needed.
    */

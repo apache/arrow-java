@@ -23,7 +23,7 @@ import java.io.IOException;
 
 /**
  * Producer that produces int values from an {@link IntVector},
- * writes data to an avro encoder
+ * writes data to an avro encoder.
  */
 public class AvroIntProducer extends BaseAvroProducer<IntVector> {
 
