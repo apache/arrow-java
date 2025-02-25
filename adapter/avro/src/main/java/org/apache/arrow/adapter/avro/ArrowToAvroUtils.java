@@ -27,6 +27,7 @@ import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullableProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStringProducer;
+import org.apache.arrow.adapter.avro.producers.AvroStructProducer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.adapter.avro.producers.Producer;
@@ -53,6 +54,7 @@ import org.apache.arrow.vector.TimeStampMicroVector;
 import org.apache.arrow.vector.TimeStampMilliVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.types.Types;
 
 import java.util.ArrayList;
@@ -131,6 +133,19 @@ public class ArrowToAvroUtils {
         return new AvroTimestampMillisProducer((TimeStampMilliVector) vector);
       case TIMESTAMPMICRO:
         return new AvroTimestampMicroProducer((TimeStampMicroVector) vector);
+
+      // Complex types
+
+      case STRUCT:
+
+        StructVector structVector = (StructVector) vector;
+        List<FieldVector> childVectors = structVector.getChildrenFromFields();
+        Producer<?>[] childProducers = new Producer<?>[childVectors.size()];
+        for (int i = 0; i < childVectors.size(); i++) {
+          FieldVector childVector = childVectors.get(i);
+          childProducers[i] = createProducer(childVector, childVector.getField().isNullable());
+        }
+        return new AvroStructProducer(structVector, childProducers);
 
       // Not all Arrow types are supported for encoding (yet)!
 
