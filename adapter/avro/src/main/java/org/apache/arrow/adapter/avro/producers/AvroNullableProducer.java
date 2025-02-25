@@ -47,8 +47,15 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
   }
 
   @Override
-  public void close() throws Exception {
-    delegate.close();
+  public void skipNull() {
+    delegate.skipNull();
+    super.skipNull();
+  }
+
+  @Override
+  public void setPosition(int index) {
+    delegate.setPosition(index);
+    super.setPosition(index);
   }
 
   @Override
@@ -59,5 +66,10 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
   @Override
   public T getVector() {
     return delegate.getVector();
+  }
+
+  @Override
+  public void close() throws Exception {
+    delegate.close();
   }
 }

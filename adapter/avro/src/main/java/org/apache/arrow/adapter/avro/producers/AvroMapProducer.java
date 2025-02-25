@@ -56,9 +56,27 @@ public class AvroMapProducer extends BaseAvroProducer<MapVector> {
   }
 
   @Override
+  public void skipNull() {
+    delegate.skipNull();
+    super.skipNull();
+  }
+
+  @Override
+  public void setPosition(int index) {
+    delegate.setPosition(index);
+    super.setPosition(index);
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public boolean resetValueVector(MapVector vector) {
     ((Producer<FieldVector>) delegate).resetValueVector(vector.getDataVector());
     return super.resetValueVector(vector);
+  }
+
+  @Override
+  public void close() throws Exception {
+    delegate.close();
+    super.close();
   }
 }

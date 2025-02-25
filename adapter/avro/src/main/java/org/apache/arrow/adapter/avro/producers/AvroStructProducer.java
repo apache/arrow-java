@@ -40,7 +40,7 @@ public class AvroStructProducer extends BaseAvroProducer<StructVector> {
   @Override
   public void produce(Encoder encoder) throws IOException {
 
-    for (Producer<? extends FieldVector> delegate : delegates) {
+    for (Producer<?> delegate : delegates) {
       delegate.produce(encoder);
     }
 
@@ -48,14 +48,36 @@ public class AvroStructProducer extends BaseAvroProducer<StructVector> {
   }
 
   @Override
+  public void skipNull() {
+    for (Producer<?> delegate : delegates) {
+      delegate.skipNull();
+    }
+    super.skipNull();
+  }
+
+  @Override
+  public void setPosition(int index) {
+    for (Producer<?> delegate : delegates) {
+      delegate.setPosition(index);
+    }
+    super.setPosition(index);
+  }
+
+  @Override
   @SuppressWarnings("unchecked")
   public boolean resetValueVector(StructVector vector) {
-
     for (int i = 0; i < delegates.length; i++) {
       Producer<FieldVector> delegate = (Producer<FieldVector>) delegates[i];
       delegate.resetValueVector(vector.getChildrenFromFields().get(i));
     }
-
     return super.resetValueVector(vector);
+  }
+
+  @Override
+  public void close() throws Exception {
+    for (Producer<?> delegate : delegates) {
+      delegate.close();
+    }
+    super.close();
   }
 }
