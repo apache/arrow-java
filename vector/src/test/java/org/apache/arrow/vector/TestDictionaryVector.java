@@ -1107,9 +1107,9 @@ public class TestDictionaryVector {
           new Dictionary(
               dictionaryVector,
               new DictionaryEncoding(
-                  /*id=*/ 10L,
-                  /*ordered=*/ false,
-                  /*indexType=*/ new ArrowType.Int(/*bitWidth*/ 8, /*isSigned*/ false)));
+                  /* id= */ 10L,
+                  /* ordered= */ false,
+                  /* indexType= */ new ArrowType.Int(/*bitWidth*/ 8, /*isSigned*/ false)));
       testDictionary(dictionary1, (vector, index) -> ((UInt1Vector) vector).get(index));
     }
   }
@@ -1122,9 +1122,9 @@ public class TestDictionaryVector {
           new Dictionary(
               dictionaryVector,
               new DictionaryEncoding(
-                  /*id=*/ 20L,
-                  /*ordered=*/ false,
-                  /*indexType=*/ new ArrowType.Int(/*bitWidth=*/ 16, /*isSigned*/ false)));
+                  /* id= */ 20L,
+                  /* ordered= */ false,
+                  /* indexType= */ new ArrowType.Int(/* bitWidth= */ 16, /*isSigned*/ false)));
       testDictionary(dictionary2, (vector, index) -> ((UInt2Vector) vector).get(index));
     }
   }
@@ -1137,9 +1137,9 @@ public class TestDictionaryVector {
           new Dictionary(
               dictionaryVector,
               new DictionaryEncoding(
-                  /*id=*/ 30L,
-                  /*ordered=*/ false,
-                  /*indexType=*/ new ArrowType.Int(/*bitWidth=*/ 32, /*isSigned*/ false)));
+                  /* id= */ 30L,
+                  /* ordered= */ false,
+                  /* indexType= */ new ArrowType.Int(/* bitWidth= */ 32, /*isSigned*/ false)));
       testDictionary(dictionary4, (vector, index) -> ((UInt4Vector) vector).get(index));
     }
   }
@@ -1152,9 +1152,9 @@ public class TestDictionaryVector {
           new Dictionary(
               dictionaryVector,
               new DictionaryEncoding(
-                  /*id=*/ 40L,
-                  /*ordered=*/ false,
-                  /*indexType=*/ new ArrowType.Int(/*bitWidth=*/ 64, /*isSigned*/ false)));
+                  /* id= */ 40L,
+                  /* ordered= */ false,
+                  /* indexType= */ new ArrowType.Int(/* bitWidth= */ 64, /*isSigned*/ false)));
       testDictionary(dictionary8, (vector, index) -> (int) ((UInt8Vector) vector).get(index));
     }
   }
@@ -1174,9 +1174,9 @@ public class TestDictionaryVector {
           new Dictionary(
               dictionaryVector,
               new DictionaryEncoding(
-                  /*id=*/ 10L,
-                  /*ordered=*/ false,
-                  /*indexType=*/ new ArrowType.Int(/*bitWidth=*/ 8, /*isSigned*/ false)));
+                  /* id= */ 10L,
+                  /* ordered= */ false,
+                  /* indexType= */ new ArrowType.Int(/* bitWidth= */ 8, /*isSigned*/ false)));
 
       try (VarCharVector vector = new VarCharVector("vector", allocator)) {
         setVector(vector, "255");

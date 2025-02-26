@@ -118,8 +118,10 @@ public class Row implements Iterator<Row> {
 
   /** The table we're enumerating. */
   protected final BaseTable table;
+
   /** the current row number. */
   protected int rowNumber = -1;
+
   /** Indicates whether the next non-deleted row has been determined yet. */
   private boolean nextRowSet;
 

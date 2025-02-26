@@ -395,7 +395,10 @@ public class TestUnionVector {
 
     final FieldType fieldType =
         new FieldType(
-            false, new ArrowType.Union(UnionMode.Sparse, typeIds), /*dictionary=*/ null, metadata);
+            false,
+            new ArrowType.Union(UnionMode.Sparse, typeIds),
+            /* dictionary= */ null,
+            metadata);
     final Field field = new Field("union", fieldType, children);
 
     MinorType minorType = MinorType.UNION;

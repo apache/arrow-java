@@ -76,5 +76,6 @@ public interface VectorVisitor<OUT, IN> {
   default OUT visit(RunEndEncodedVector left, IN value) {
     throw new UnsupportedOperationException(
         "VectorVisitor for LargeListViewVector is not supported.");
-  };
+  }
+  ;
 }

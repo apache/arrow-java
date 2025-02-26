@@ -47,7 +47,7 @@ public class TestIntervalMonthDayNanoVector {
   @Test
   public void testBasics() {
     try (final IntervalMonthDayNanoVector vector =
-        new IntervalMonthDayNanoVector(/*name=*/ "", allocator)) {
+        new IntervalMonthDayNanoVector(/* name= */ "", allocator)) {
       int valueCount = 100;
       vector.setInitialCapacity(valueCount);
       vector.allocateNew();
@@ -61,12 +61,12 @@ public class TestIntervalMonthDayNanoVector {
       holder.days = Integer.MIN_VALUE;
       holder.nanoseconds = Long.MIN_VALUE;
 
-      vector.set(0, /*months=*/ 1, /*days=*/ 2, /*nanoseconds=*/ -2);
-      vector.setSafe(2, /*months=*/ 1, /*days=*/ 2, /*nanoseconds=*/ -3);
-      vector.setSafe(/*index=*/ 4, nullableHolder);
+      vector.set(0, /* months= */ 1, /* days= */ 2, /* nanoseconds= */ -2);
+      vector.setSafe(2, /* months= */ 1, /* days= */ 2, /* nanoseconds= */ -3);
+      vector.setSafe(/* index= */ 4, nullableHolder);
       vector.set(3, holder);
       nullableHolder.isSet = 0;
-      vector.setSafe(/*index=*/ 5, nullableHolder);
+      vector.setSafe(/* index= */ 5, nullableHolder);
       vector.setValueCount(5);
 
       assertEquals("P1M2D PT-0.000000002S ", vector.getAsStringBuilder(0).toString());

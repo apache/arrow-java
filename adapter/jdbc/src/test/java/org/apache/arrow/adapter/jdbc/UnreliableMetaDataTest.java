@@ -187,10 +187,11 @@ public class UnreliableMetaDataTest {
     final Schema notNullSchema =
         new Schema(
             Collections.singletonList(
-                Field.notNullable(/*name=*/ null, new ArrowType.Int(32, true))));
+                Field.notNullable(/* name= */ null, new ArrowType.Int(32, true))));
     final Schema nullSchema =
         new Schema(
-            Collections.singletonList(Field.nullable(/*name=*/ null, new ArrowType.Int(32, true))));
+            Collections.singletonList(
+                Field.nullable(/* name= */ null, new ArrowType.Int(32, true))));
 
     try (final ResultSet rs = resultSetBuilder.build()) {
       JdbcToArrowConfig config =

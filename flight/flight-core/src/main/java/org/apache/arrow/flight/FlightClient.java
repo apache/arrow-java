@@ -72,6 +72,7 @@ import org.apache.arrow.vector.dictionary.DictionaryProvider.MapDictionaryProvid
 /** Client for Flight services. */
 public class FlightClient implements AutoCloseable {
   private static final int PENDING_REQUESTS = 5;
+
   /**
    * The maximum number of trace events to keep on the gRPC Channel. This value disables channel
    * tracing.
