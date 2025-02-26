@@ -30,6 +30,7 @@ import org.apache.arrow.adapter.avro.producers.AvroNullProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullableProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStringProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStructProducer;
+import org.apache.arrow.adapter.avro.producers.AvroUnionsProducer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.adapter.avro.producers.Producer;
@@ -59,6 +60,7 @@ import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
+import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.types.Types;
 
 import java.util.ArrayList;
@@ -93,12 +95,14 @@ public class ArrowToAvroUtils {
 
     Preconditions.checkNotNull(vector, "Arrow vector object can't be null");
 
-    if (nullable) {
+    final Types.MinorType minorType = vector.getMinorType();
+
+    // Avro understands nullable types as a union of type | null
+    // Most nullable fields in a VSR will not be unions, so provide a special wrapper
+    if (nullable && minorType != Types.MinorType.UNION) {
       final BaseAvroProducer<?> innerProducer = createProducer(vector, false);
       return new AvroNullableProducer<>(innerProducer);
     }
-
-    final Types.MinorType minorType = vector.getMinorType();
 
     switch (minorType) {
 
@@ -168,6 +172,17 @@ public class ArrowToAvroUtils {
         Producer<?> valueProducer = createProducer(valueVector, valueVector.getField().isNullable());
         Producer<?> entryProducer = new AvroStructProducer(entryVector, new Producer<?>[] {keyProducer, valueProducer});
         return new AvroMapProducer(mapVector, entryProducer);
+
+      case UNION:
+
+        UnionVector unionVector = (UnionVector) vector;
+        List<FieldVector> unionChildVectors = unionVector.getChildrenFromFields();
+        Producer<?>[] unionChildProducers = new Producer<?>[unionChildVectors.size()];
+        for (int i = 0; i < unionChildVectors.size(); i++) {
+          FieldVector unionChildVector = unionChildVectors.get(i);
+          unionChildProducers[i] = createProducer(unionChildVector, /* nullable = */ false);  // Do not nest union types
+        }
+        return new AvroUnionsProducer(unionVector, unionChildProducers);
 
       // Not all Arrow types are supported for encoding (yet)!
 
