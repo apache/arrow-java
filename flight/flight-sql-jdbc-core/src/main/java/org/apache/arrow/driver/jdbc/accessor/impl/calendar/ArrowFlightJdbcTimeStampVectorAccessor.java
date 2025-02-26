@@ -35,16 +35,13 @@ import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
-
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessor;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
 import org.apache.arrow.vector.TimeStampVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.util.DateUtility;
 
-/**
- * Accessor for the Arrow types extending from {@link TimeStampVector}.
- */
+/** Accessor for the Arrow types extending from {@link TimeStampVector}. */
 public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAccessor {
 
   private final TimeZone timeZone;
@@ -54,16 +51,12 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
   private final Holder holder;
   private final boolean isZoned;
 
-  /**
-   * Functional interface used to convert a number (in any time resolution) to LocalDateTime.
-   */
+  /** Functional interface used to convert a number (in any time resolution) to LocalDateTime. */
   interface LongToLocalDateTime {
     LocalDateTime fromLong(long value);
   }
 
-  /**
-   * Instantiate a ArrowFlightJdbcTimeStampVectorAccessor for given vector.
-   */
+  /** Instantiate a ArrowFlightJdbcTimeStampVectorAccessor for given vector. */
   public ArrowFlightJdbcTimeStampVectorAccessor(
       TimeStampVector vector,
       IntSupplier currentRowSupplier,
@@ -148,7 +141,8 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
 
     LocalDateTime localDateTime = this.longToLocalDateTime.fromLong(value);
 
-    // Adjust timestamp to desired calendar (if provided) only if the column includes TZ info, otherwise treat as wall-clock time
+    // Adjust timestamp to desired calendar (if provided) only if the column includes TZ info,
+    // otherwise treat as wall-clock time
     if (calendar != null && this.isZoned) {
       TimeZone timeZone = calendar.getTimeZone();
       long millis = this.timeUnit.toMillis(value);

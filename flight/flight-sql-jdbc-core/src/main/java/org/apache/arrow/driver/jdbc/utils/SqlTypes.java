@@ -121,7 +121,7 @@ public class SqlTypes {
         return Types.TIME;
       case Timestamp:
         String tz = ((ArrowType.Timestamp) arrowType).getTimezone();
-        if (tz != null){
+        if (tz != null) {
           return Types.TIMESTAMP_WITH_TIMEZONE;
         } else {
           return Types.TIMESTAMP;

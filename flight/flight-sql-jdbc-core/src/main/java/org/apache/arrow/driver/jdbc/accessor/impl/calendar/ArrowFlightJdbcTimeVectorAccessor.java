@@ -27,7 +27,6 @@ import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
-
 import org.apache.arrow.driver.jdbc.ArrowFlightJdbcTime;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessor;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
@@ -51,9 +50,9 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeNanoVector}.
    *
-   * @param vector             an instance of a TimeNanoVector.
+   * @param vector an instance of a TimeNanoVector.
    * @param currentRowSupplier the supplier to track the lines.
-   * @param setCursorWasNull   the consumer to set if value was null.
+   * @param setCursorWasNull the consumer to set if value was null.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
       TimeNanoVector vector,
@@ -68,9 +67,9 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeMicroVector}.
    *
-   * @param vector             an instance of a TimeMicroVector.
+   * @param vector an instance of a TimeMicroVector.
    * @param currentRowSupplier the supplier to track the lines.
-   * @param setCursorWasNull   the consumer to set if value was null.
+   * @param setCursorWasNull the consumer to set if value was null.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
       TimeMicroVector vector,
@@ -85,7 +84,7 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeMilliVector}.
    *
-   * @param vector             an instance of a TimeMilliVector.
+   * @param vector an instance of a TimeMilliVector.
    * @param currentRowSupplier the supplier to track the lines.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
@@ -101,7 +100,7 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   /**
    * Instantiate an accessor for a {@link TimeSecVector}.
    *
-   * @param vector             an instance of a TimeSecVector.
+   * @param vector an instance of a TimeSecVector.
    * @param currentRowSupplier the supplier to track the lines.
    */
   public ArrowFlightJdbcTimeVectorAccessor(
