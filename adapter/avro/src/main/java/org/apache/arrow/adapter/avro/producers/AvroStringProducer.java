@@ -37,11 +37,15 @@ public class AvroStringProducer extends BaseAvroProducer<VarCharVector> {
 
   @Override
   public void produce(Encoder encoder) throws IOException {
+
+    int start = vector.getStartOffset(currentIndex);
+    int end = vector.getEndOffset(currentIndex);
+    int length = end - start;
+
     // The nio ByteBuffer is created once per call, but underlying data is not copied
-    long offset = vector.getStartOffset(currentIndex);
-    int length = vector.getEndOffset(currentIndex);
-    ByteBuffer nioBuffer = vector.getDataBuffer().nioBuffer(offset, length);
+    ByteBuffer nioBuffer = vector.getDataBuffer().nioBuffer(start, length);
     encoder.writeBytes(nioBuffer);
+
     currentIndex++;
   }
 }

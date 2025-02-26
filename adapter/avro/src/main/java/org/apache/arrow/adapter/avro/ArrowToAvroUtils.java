@@ -180,7 +180,7 @@ public class ArrowToAvroUtils {
         Producer<?>[] unionChildProducers = new Producer<?>[unionChildVectors.size()];
         for (int i = 0; i < unionChildVectors.size(); i++) {
           FieldVector unionChildVector = unionChildVectors.get(i);
-          unionChildProducers[i] = createProducer(unionChildVector, /* nullable = */ false);  // Do not nest union types
+          unionChildProducers[i] = createProducer(unionChildVector, /* nullable = */ false); // Do not nest union types
         }
         return new AvroUnionsProducer(unionVector, unionChildProducers);
 
