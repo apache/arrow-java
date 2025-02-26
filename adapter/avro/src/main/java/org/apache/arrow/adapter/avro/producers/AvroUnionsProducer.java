@@ -14,21 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
+import java.io.IOException;
+import java.util.List;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.UnionMode;
 import org.apache.avro.io.Encoder;
 
-import java.io.IOException;
-import java.util.List;
-
 /**
- * Producer which produces unions type values to avro encoder. Write the data to
- * {@link org.apache.arrow.vector.complex.UnionVector}.
+ * Producer which produces unions type values to avro encoder. Write the data to {@link
+ * org.apache.arrow.vector.complex.UnionVector}.
  */
 public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
 
@@ -40,7 +38,11 @@ public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
   public AvroUnionsProducer(UnionVector vector, Producer<?>[] delegates) {
     super(vector);
     this.delegates = delegates;
-    this.unionMode = vector.getMinorType() == Types.MinorType.DENSEUNION ? UnionMode.Dense : UnionMode.Sparse;
+    if (vector.getMinorType() == Types.MinorType.DENSEUNION) {
+      this.unionMode = UnionMode.Dense;
+    } else {
+      this.unionMode = UnionMode.Sparse;
+    }
     this.nullTypeIndex = findNullTypeIndex();
   }
 
@@ -61,16 +63,14 @@ public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
     if (vector.isNull(currentIndex)) {
       encoder.writeInt(nullTypeIndex);
       encoder.writeNull();
-    }
-    else {
+    } else {
 
       int typeIndex = vector.getTypeValue(currentIndex);
       int typeVectorIndex;
 
       if (unionMode == UnionMode.Dense) {
         typeVectorIndex = vector.getOffsetBuffer().getInt(currentIndex * (long) Integer.BYTES);
-      }
-      else {
+      } else {
         typeVectorIndex = currentIndex;
       }
 
@@ -79,8 +79,7 @@ public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
       if (typeVector.isNull(typeVectorIndex)) {
         encoder.writeInt(nullTypeIndex);
         encoder.writeNull();
-      }
-      else {
+      } else {
         Producer<?> delegate = delegates[typeIndex];
         encoder.writeInt(typeIndex);
         delegate.setPosition(typeVectorIndex);

@@ -18,19 +18,16 @@ package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces string values from a {@link VarCharVector},
- * writes data to an Avro encoder.
+ * Producer that produces string values from a {@link VarCharVector}, writes data to an Avro
+ * encoder.
  */
 public class AvroStringProducer extends BaseAvroProducer<VarCharVector> {
 
-  /**
-   * Instantiate an AvroStringProducer.
-   */
+  /** Instantiate an AvroStringProducer. */
   public AvroStringProducer(VarCharVector vector) {
     super(vector);
   }

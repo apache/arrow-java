@@ -16,10 +16,9 @@
  */
 package org.apache.arrow.adapter.avro.producers;
 
+import java.io.IOException;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.avro.io.Encoder;
-
-import java.io.IOException;
 
 /**
  * Interface that is used to produce values to avro encoder.
@@ -42,9 +41,7 @@ public interface Producer<T extends FieldVector> extends AutoCloseable {
   /** Set the position to read value from vector. */
   void setPosition(int index);
 
-  /**
-   * Close this producer.
-   */
+  /** Close this producer. */
   @Override
   void close() throws Exception;
 
@@ -55,8 +52,6 @@ public interface Producer<T extends FieldVector> extends AutoCloseable {
    */
   boolean resetValueVector(T vector);
 
-  /**
-   * Get the vector within the producer.
-   */
+  /** Get the vector within the producer. */
   T getVector();
 }

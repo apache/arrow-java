@@ -17,19 +17,15 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces float values from a {@link Float4Vector},
- * writes data to an Avro encoder.
+ * Producer that produces float values from a {@link Float4Vector}, writes data to an Avro encoder.
  */
 public class AvroFloatProducer extends BaseAvroProducer<Float4Vector> {
 
-  /**
-   * Instantiate an AvroFloatProducer.
-   */
+  /** Instantiate an AvroFloatProducer. */
   public AvroFloatProducer(Float4Vector vector) {
     super(vector);
   }

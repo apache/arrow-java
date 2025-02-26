@@ -14,24 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces byte array values from a {@link VarBinaryVector},
- * writes data to an Avro encoder.
+ * Producer that produces byte array values from a {@link VarBinaryVector}, writes data to an Avro
+ * encoder.
  */
 public class AvroBytesProducer extends BaseAvroProducer<VarBinaryVector> {
 
-  /**
-   * Instantiate an AvroBytesProducer.
-   */
+  /** Instantiate an AvroBytesProducer. */
   public AvroBytesProducer(VarBinaryVector vector) {
     super(vector);
   }

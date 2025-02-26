@@ -14,18 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
+import java.io.IOException;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.avro.io.Encoder;
 
-import java.io.IOException;
-
 /**
- * Producer which produces nested record type values to avro encoder. Read the data from
- * {@link org.apache.arrow.vector.complex.StructVector}.
+ * Producer which produces nested record type values to avro encoder. Read the data from {@link
+ * org.apache.arrow.vector.complex.StructVector}.
  */
 public class AvroStructProducer extends BaseAvroProducer<StructVector> {
 

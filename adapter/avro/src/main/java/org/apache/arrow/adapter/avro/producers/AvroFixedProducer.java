@@ -14,25 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces fixed-size binary values from a {@link FixedSizeBinaryVector},
- * writes data to an Avro encoder.
+ * Producer that produces fixed-size binary values from a {@link FixedSizeBinaryVector}, writes data
+ * to an Avro encoder.
  */
 public class AvroFixedProducer extends BaseAvroProducer<FixedSizeBinaryVector> {
 
   private final byte[] reuseBytes;
 
-  /**
-   * Instantiate an AvroFixedProducer.
-   */
+  /** Instantiate an AvroFixedProducer. */
   public AvroFixedProducer(FixedSizeBinaryVector vector) {
     super(vector);
     reuseBytes = new byte[vector.getByteWidth()];

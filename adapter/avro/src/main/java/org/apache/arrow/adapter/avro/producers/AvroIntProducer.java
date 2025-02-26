@@ -16,20 +16,14 @@
  */
 package org.apache.arrow.adapter.avro.producers;
 
+import java.io.IOException;
 import org.apache.arrow.vector.IntVector;
 import org.apache.avro.io.Encoder;
 
-import java.io.IOException;
-
-/**
- * Producer that produces int values from an {@link IntVector},
- * writes data to an avro encoder.
- */
+/** Producer that produces int values from an {@link IntVector}, writes data to an avro encoder. */
 public class AvroIntProducer extends BaseAvroProducer<IntVector> {
 
-  /**
-   * Instantiate an AvroIntConsumer.
-   */
+  /** Instantiate an AvroIntConsumer. */
   public AvroIntProducer(IntVector vector) {
     super(vector);
   }

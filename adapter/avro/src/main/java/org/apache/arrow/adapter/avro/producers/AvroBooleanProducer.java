@@ -17,19 +17,15 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.BitVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces boolean values from a {@link BitVector},
- * writes data to an Avro encoder.
+ * Producer that produces boolean values from a {@link BitVector}, writes data to an Avro encoder.
  */
 public class AvroBooleanProducer extends BaseAvroProducer<BitVector> {
 
-  /**
-   * Instantiate am AvroBooleanProducer.
-   */
+  /** Instantiate am AvroBooleanProducer. */
   public AvroBooleanProducer(BitVector vector) {
     super(vector);
   }

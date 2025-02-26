@@ -14,18 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
+import java.io.IOException;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.avro.io.Encoder;
 
-import java.io.IOException;
-
-/**
- * Producer which produces map type values to avro encoder. Write the data to {@link MapVector}.
- */
+/** Producer which produces map type values to avro encoder. Write the data to {@link MapVector}. */
 public class AvroMapProducer extends BaseAvroProducer<MapVector> {
 
   private final Producer<? extends FieldVector> delegate;

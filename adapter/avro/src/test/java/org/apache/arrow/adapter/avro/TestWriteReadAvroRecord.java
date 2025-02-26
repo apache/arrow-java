@@ -16,13 +16,14 @@
  */
 package org.apache.arrow.adapter.avro;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.arrow.adapter.avro.consumers.CompositeAvroConsumer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.memory.BufferAllocator;
@@ -49,8 +50,6 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TestWriteReadAvroRecord {
 
@@ -106,11 +105,14 @@ public class TestWriteReadAvroRecord {
   public void testWriteAndReadVSR() throws Exception {
 
     BufferAllocator allocator = new RootAllocator();
+    FieldType stringNotNull = new FieldType(false, ArrowType.Utf8.INSTANCE, null);
+    FieldType stringNull = new FieldType(true, ArrowType.Utf8.INSTANCE, null);
+    FieldType intN32Null = new FieldType(true, new ArrowType.Int(32, true), null);
 
     List<Field> fields = new ArrayList<>();
-    fields.add(new Field("name", new FieldType(false, ArrowType.Utf8.INSTANCE, null), null));
-    fields.add(new Field("favorite_number", new FieldType(true, new ArrowType.Int(32, true), null), null));
-    fields.add(new Field("favorite_color", new FieldType(true, ArrowType.Utf8.INSTANCE, null), null));
+    fields.add(new Field("name", stringNotNull, null));
+    fields.add(new Field("favorite_number", intN32Null, null));
+    fields.add(new Field("favorite_color", stringNull, null));
 
     VarCharVector nameVector = new VarCharVector(fields.get(0), allocator);
     nameVector.allocateNew(2);

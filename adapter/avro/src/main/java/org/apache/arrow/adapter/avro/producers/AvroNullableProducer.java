@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
+import java.io.IOException;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.avro.io.Encoder;
 
-import java.io.IOException;
-
-
+/**
+ * Producer wrapper which producers nullable types to an avro encoder. Write the data to the
+ * underlying {@link FieldVector}.
+ */
 public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProducer<T> {
 
   private final Producer<T> delegate;
 
+  /** Instantiate a AvroNullableProducer. */
   public AvroNullableProducer(Producer<T> delegate) {
     super(delegate.getVector());
     this.delegate = delegate;
@@ -38,8 +40,7 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
       encoder.writeInt(1);
       encoder.writeNull();
       delegate.skipNull();
-    }
-    else {
+    } else {
       encoder.writeInt(0);
       delegate.produce(encoder);
     }

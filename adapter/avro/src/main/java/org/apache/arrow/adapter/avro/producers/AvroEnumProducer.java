@@ -14,17 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.IntVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces enum values from a dictionary-encoded {@link IntVector},
- * writes data to an Avro encoder.
+ * Producer that produces enum values from a dictionary-encoded {@link IntVector}, writes data to an
+ * Avro encoder.
  */
 public class AvroEnumProducer extends BaseAvroProducer<IntVector> {
 

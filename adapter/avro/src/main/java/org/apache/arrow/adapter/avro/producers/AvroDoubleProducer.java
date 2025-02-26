@@ -17,19 +17,15 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.Float8Vector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces double values from a {@link Float8Vector},
- * writes data to an Avro encoder.
+ * Producer that produces double values from a {@link Float8Vector}, writes data to an Avro encoder.
  */
 public class AvroDoubleProducer extends BaseAvroProducer<Float8Vector> {
 
-  /**
-   * Instantiate an AvroDoubleProducer.
-   */
+  /** Instantiate an AvroDoubleProducer. */
   public AvroDoubleProducer(Float8Vector vector) {
     super(vector);
   }

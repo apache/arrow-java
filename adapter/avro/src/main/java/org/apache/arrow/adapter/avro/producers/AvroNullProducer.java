@@ -17,19 +17,13 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.NullVector;
 import org.apache.avro.io.Encoder;
 
-/**
- * Producer that produces null values from a {@link NullVector},
- * writes data to an Avro encoder.
- */
+/** Producer that produces null values from a {@link NullVector}, writes data to an Avro encoder. */
 public class AvroNullProducer extends BaseAvroProducer<NullVector> {
 
-  /**
-   * Instantiate an AvroNullProducer.
-   */
+  /** Instantiate an AvroNullProducer. */
   public AvroNullProducer(NullVector vector) {
     super(vector);
   }

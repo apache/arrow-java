@@ -17,19 +17,15 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces long values from a {@link BigIntVector},
- * writes data to an Avro encoder.
+ * Producer that produces long values from a {@link BigIntVector}, writes data to an Avro encoder.
  */
 public class AvroLongProducer extends BaseAvroProducer<BigIntVector> {
 
-  /**
-   * Instantiate an AvroLongProducer.
-   */
+  /** Instantiate an AvroLongProducer. */
   public AvroLongProducer(BigIntVector vector) {
     super(vector);
   }

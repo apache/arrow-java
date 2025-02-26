@@ -14,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers.logical;
 
 import java.io.IOException;
-
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces decimal values from a {@link DecimalVector},
- * writes data to an Avro encoder.
+ * Producer that produces decimal values from a {@link DecimalVector}, writes data to an Avro
+ * encoder.
  */
 public abstract class AvroDecimalProducer extends BaseAvroProducer<DecimalVector> {
 
@@ -43,7 +41,8 @@ public abstract class AvroDecimalProducer extends BaseAvroProducer<DecimalVector
     /** Instantiate a BytesDecimalConsumer. */
     public BytesDecimalProducer(DecimalVector vector) {
       super(vector);
-      Preconditions.checkArgument(vector.getTypeWidth() <= 16, "Decimal bytes length should <= 16.");
+      Preconditions.checkArgument(
+          vector.getTypeWidth() <= 16, "Decimal bytes length should <= 16.");
       reuseBytes = new byte[vector.getTypeWidth()];
     }
 

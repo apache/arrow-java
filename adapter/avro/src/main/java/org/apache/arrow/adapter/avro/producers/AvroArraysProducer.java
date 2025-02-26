@@ -14,18 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer which produces array type values to an Avro encoder.
- * Writes the data from a {@link ListVector}.
+ * Producer which produces array type values to an Avro encoder. Writes the data from a {@link
+ * ListVector}.
  */
 public class AvroArraysProducer extends BaseAvroProducer<ListVector> {
 

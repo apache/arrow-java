@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.arrow.adapter.avro.producers.AvroArraysProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
@@ -41,8 +42,8 @@ import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMillisProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMicroProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMillisProducer;
 import org.apache.arrow.util.Preconditions;
-import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.BigIntVector;
+import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
@@ -63,9 +64,6 @@ import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.types.Types;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ArrowToAvroUtils {
 
   /**
@@ -76,14 +74,14 @@ public class ArrowToAvroUtils {
    */
   public static CompositeAvroProducer createCompositeProducer(List<FieldVector> vectors) {
 
-      List<Producer<? extends FieldVector>> producers = new ArrayList<>(vectors.size());
+    List<Producer<? extends FieldVector>> producers = new ArrayList<>(vectors.size());
 
-      for (FieldVector vector : vectors) {
-          BaseAvroProducer<? extends FieldVector> producer = createProducer(vector);
-          producers.add(producer);
-      }
+    for (FieldVector vector : vectors) {
+      BaseAvroProducer<? extends FieldVector> producer = createProducer(vector);
+      producers.add(producer);
+    }
 
-      return new CompositeAvroProducer(producers);
+    return new CompositeAvroProducer(producers);
   }
 
   private static BaseAvroProducer<?> createProducer(FieldVector vector) {
@@ -106,7 +104,7 @@ public class ArrowToAvroUtils {
 
     switch (minorType) {
 
-      // Primitive types with direct mapping to Avro
+        // Primitive types with direct mapping to Avro
 
       case NULL:
         return new AvroNullProducer((NullVector) vector);
@@ -127,10 +125,11 @@ public class ArrowToAvroUtils {
       case VARCHAR:
         return new AvroStringProducer((VarCharVector) vector);
 
-      // Logical types
+        // Logical types
 
       case DECIMAL:
-        return new AvroDecimalProducer.FixedDecimalProducer((DecimalVector) vector, DecimalVector.TYPE_WIDTH);
+        return new AvroDecimalProducer.FixedDecimalProducer(
+            (DecimalVector) vector, DecimalVector.TYPE_WIDTH);
       case DATEDAY:
         return new AvroDateProducer((DateDayVector) vector);
       case TIMEMILLI:
@@ -142,10 +141,9 @@ public class ArrowToAvroUtils {
       case TIMESTAMPMICRO:
         return new AvroTimestampMicroProducer((TimeStampMicroVector) vector);
 
-      // Complex types
+        // Complex types
 
       case STRUCT:
-
         StructVector structVector = (StructVector) vector;
         List<FieldVector> childVectors = structVector.getChildrenFromFields();
         Producer<?>[] childProducers = new Producer<?>[childVectors.size()];
@@ -156,38 +154,40 @@ public class ArrowToAvroUtils {
         return new AvroStructProducer(structVector, childProducers);
 
       case LIST:
-
         ListVector listVector = (ListVector) vector;
         FieldVector itemVector = listVector.getDataVector();
         Producer<?> itemProducer = createProducer(itemVector, itemVector.getField().isNullable());
         return new AvroArraysProducer(listVector, itemProducer);
 
       case MAP:
-
         MapVector mapVector = (MapVector) vector;
         StructVector entryVector = (StructVector) mapVector.getDataVector();
         VarCharVector keyVector = (VarCharVector) entryVector.getChildrenFromFields().get(0);
         FieldVector valueVector = entryVector.getChildrenFromFields().get(1);
         Producer<?> keyProducer = new AvroStringProducer(keyVector);
-        Producer<?> valueProducer = createProducer(valueVector, valueVector.getField().isNullable());
-        Producer<?> entryProducer = new AvroStructProducer(entryVector, new Producer<?>[] {keyProducer, valueProducer});
+        Producer<?> valueProducer =
+            createProducer(valueVector, valueVector.getField().isNullable());
+        Producer<?> entryProducer =
+            new AvroStructProducer(entryVector, new Producer<?>[] {keyProducer, valueProducer});
         return new AvroMapProducer(mapVector, entryProducer);
 
       case UNION:
-
         UnionVector unionVector = (UnionVector) vector;
         List<FieldVector> unionChildVectors = unionVector.getChildrenFromFields();
         Producer<?>[] unionChildProducers = new Producer<?>[unionChildVectors.size()];
         for (int i = 0; i < unionChildVectors.size(); i++) {
           FieldVector unionChildVector = unionChildVectors.get(i);
-          unionChildProducers[i] = createProducer(unionChildVector, /* nullable = */ false); // Do not nest union types
+          unionChildProducers[i] =
+              createProducer(unionChildVector, /* nullable = */ false); // Do not nest union types
         }
         return new AvroUnionsProducer(unionVector, unionChildProducers);
 
-      // Not all Arrow types are supported for encoding (yet)!
+        // Not all Arrow types are supported for encoding (yet)!
 
       default:
-        String error = String.format("Encoding Arrow type %s to Avro is not currently supported", minorType.name());
+        String error =
+            String.format(
+                "Encoding Arrow type %s to Avro is not currently supported", minorType.name());
         throw new UnsupportedOperationException(error);
     }
   }
