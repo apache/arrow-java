@@ -69,10 +69,4 @@ public class AvroMapProducer extends BaseAvroProducer<MapVector> {
     ((Producer<FieldVector>) delegate).resetValueVector(vector.getDataVector());
     return super.resetValueVector(vector);
   }
-
-  @Override
-  public void close() throws Exception {
-    delegate.close();
-    super.close();
-  }
 }

@@ -100,12 +100,4 @@ public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
     }
     return result & super.resetValueVector(vector);
   }
-
-  @Override
-  public void close() throws Exception {
-    for (Producer<?> delegate : delegates) {
-      delegate.close();
-    }
-    super.close();
-  }
 }

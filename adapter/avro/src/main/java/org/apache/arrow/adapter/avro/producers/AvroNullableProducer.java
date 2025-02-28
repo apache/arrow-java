@@ -23,6 +23,8 @@ import org.apache.avro.io.Encoder;
 /**
  * Producer wrapper which producers nullable types to an avro encoder. Write the data to the
  * underlying {@link FieldVector}.
+ *
+ * @param <T> The vector within producer or its delegate, used for partially produce purpose.
  */
 public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProducer<T> {
 
@@ -68,10 +70,5 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
   @Override
   public T getVector() {
     return delegate.getVector();
-  }
-
-  @Override
-  public void close() throws Exception {
-    delegate.close();
   }
 }

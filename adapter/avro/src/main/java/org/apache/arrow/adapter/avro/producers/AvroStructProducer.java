@@ -70,12 +70,4 @@ public class AvroStructProducer extends BaseAvroProducer<StructVector> {
     }
     return super.resetValueVector(vector);
   }
-
-  @Override
-  public void close() throws Exception {
-    for (Producer<?> delegate : delegates) {
-      delegate.close();
-    }
-    super.close();
-  }
 }

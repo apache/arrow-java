@@ -72,10 +72,4 @@ public class AvroArraysProducer extends BaseAvroProducer<ListVector> {
     ((Producer<FieldVector>) delegate).resetValueVector(vector.getDataVector());
     return super.resetValueVector(vector);
   }
-
-  @Override
-  public void close() throws Exception {
-    delegate.close();
-    super.close();
-  }
 }

@@ -18,13 +18,12 @@ package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
 import java.util.List;
-import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.avro.io.Encoder;
 
 /** Composite producer which holds all producers. It manages the produce and cleanup process. */
-public class CompositeAvroProducer implements AutoCloseable {
+public class CompositeAvroProducer {
 
   private final List<Producer<? extends FieldVector>> producers;
 
@@ -52,16 +51,6 @@ public class CompositeAvroProducer implements AutoCloseable {
       if (producer.resetValueVector(root.getFieldVectors().get(index))) {
         index++;
       }
-    }
-  }
-
-  @Override
-  public void close() {
-    // clean up
-    try {
-      AutoCloseables.close(producers);
-    } catch (Exception e) {
-      throw new RuntimeException("Error occurs in close.", e);
     }
   }
 }

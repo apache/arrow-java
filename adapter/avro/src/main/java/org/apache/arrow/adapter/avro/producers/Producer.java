@@ -25,7 +25,7 @@ import org.apache.avro.io.Encoder;
  *
  * @param <T> The vector within producer or its delegate, used for partially produce purpose.
  */
-public interface Producer<T extends FieldVector> extends AutoCloseable {
+public interface Producer<T extends FieldVector> {
 
   /**
    * Produce a specific type value from the vector and write it to avro encoder.
@@ -40,10 +40,6 @@ public interface Producer<T extends FieldVector> extends AutoCloseable {
 
   /** Set the position to read value from vector. */
   void setPosition(int index);
-
-  /** Close this producer. */
-  @Override
-  void close() throws Exception;
 
   /**
    * Reset the vector within producer.
