@@ -137,9 +137,10 @@ public class TestWriteReadAvroRecord {
     vectors.add(favNumberVector);
     vectors.add(favColorVector);
 
-    Schema schema =useSchemaFile
-        ? AvroTestBase.getSchema("test.avsc")
-        : ArrowToAvroUtils.createAvroSchema(fields);
+    Schema schema =
+        useSchemaFile
+            ? AvroTestBase.getSchema("test.avsc")
+            : ArrowToAvroUtils.createAvroSchema(fields);
 
     File dataFile = new File(TMP, "test_vsr.avro");
     AvroToArrowConfig config = new AvroToArrowConfigBuilder(allocator).build();

@@ -129,7 +129,8 @@ public class ArrowToAvroUtils {
    * @return An Avro record schema for the given list of fields, with the specified name and
    *     namespace
    */
-  public static Schema createAvroSchema(List<Field> arrowFields, String typeName, String namespace) {
+  public static Schema createAvroSchema(
+      List<Field> arrowFields, String typeName, String namespace) {
     SchemaBuilder.RecordBuilder<Schema> assembler =
         SchemaBuilder.record(typeName).namespace(namespace);
     return buildRecordSchema(assembler, arrowFields, namespace);
