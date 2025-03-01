@@ -50,6 +50,8 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TestWriteReadAvroRecord {
 
@@ -101,8 +103,9 @@ public class TestWriteReadAvroRecord {
     assertEquals("red", deUser2.get("favorite_color").toString());
   }
 
-  @Test
-  public void testWriteAndReadVSR() throws Exception {
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  public void testWriteAndReadVSR(boolean useSchemaFile) throws Exception {
 
     BufferAllocator allocator = new RootAllocator();
     FieldType stringNotNull = new FieldType(false, ArrowType.Utf8.INSTANCE, null);
@@ -134,8 +137,11 @@ public class TestWriteReadAvroRecord {
     vectors.add(favNumberVector);
     vectors.add(favColorVector);
 
+    Schema schema =useSchemaFile
+        ? AvroTestBase.getSchema("test.avsc")
+        : ArrowToAvroUtils.createAvroSchema(fields);
+
     File dataFile = new File(TMP, "test_vsr.avro");
-    Schema schema = AvroTestBase.getSchema("test.avsc");
     AvroToArrowConfig config = new AvroToArrowConfigBuilder(allocator).build();
 
     try (FileOutputStream fos = new FileOutputStream(dataFile)) {
@@ -145,6 +151,8 @@ public class TestWriteReadAvroRecord {
 
       producer.produce(encoder);
       producer.produce(encoder);
+
+      encoder.flush();
     }
 
     List<Field> roundTripFields = new ArrayList<>();
