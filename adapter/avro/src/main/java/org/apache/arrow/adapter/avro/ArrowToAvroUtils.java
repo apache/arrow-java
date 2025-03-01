@@ -37,6 +37,7 @@ import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.adapter.avro.producers.Producer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDateProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDecimalProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroDecimal256Producer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMicroProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMillisProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMicroProducer;
@@ -46,6 +47,7 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DecimalVector;
+import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float4Vector;
@@ -595,6 +597,8 @@ public class ArrowToAvroUtils {
 
       case DECIMAL:
         return new AvroDecimalProducer((DecimalVector) vector);
+      case DECIMAL256:
+        return new AvroDecimal256Producer((Decimal256Vector) vector);
       case DATEDAY:
         return new AvroDateProducer((DateDayVector) vector);
       case TIMEMILLI:

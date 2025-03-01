@@ -17,18 +17,18 @@
 package org.apache.arrow.adapter.avro.producers.logical;
 
 import org.apache.arrow.adapter.avro.producers.AvroFixedProducer;
-import org.apache.arrow.vector.DecimalVector;
+import org.apache.arrow.vector.Decimal256Vector;
 
 /**
- * Producer that produces decimal values from a {@link DecimalVector}, writes data to an Avro
+ * Producer that produces decimal values from a {@link Decimal256Vector}, writes data to an Avro
  * encoder.
  */
-public class AvroDecimalProducer extends AvroFixedProducer {
+public class AvroDecimal256Producer extends AvroFixedProducer {
 
   // Decimal stored as fixed width bytes, matches Avro decimal encoding
 
   /** Instantiate an AvroDecimalProducer. */
-  public AvroDecimalProducer(DecimalVector vector) {
+  public AvroDecimal256Producer(Decimal256Vector vector) {
     super(vector);
   }
 }
