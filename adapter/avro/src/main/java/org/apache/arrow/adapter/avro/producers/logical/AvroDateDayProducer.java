@@ -16,23 +16,18 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import java.io.IOException;
-import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
+import org.apache.arrow.adapter.avro.producers.AvroIntProducer;
 import org.apache.arrow.vector.DateDayVector;
-import org.apache.avro.io.Encoder;
 
 /**
  * Producer that produces date values from a {@link DateDayVector}, writes data to an Avro encoder.
  */
-public class AvroDateProducer extends BaseAvroProducer<DateDayVector> {
+public class AvroDateDayProducer extends AvroIntProducer {
+
+  // Date stored as integer number of days, matches Avro date type
 
   /** Instantiate an AvroDateProducer. */
-  public AvroDateProducer(DateDayVector vector) {
+  public AvroDateDayProducer(DateDayVector vector) {
     super(vector);
-  }
-
-  @Override
-  public void produce(Encoder encoder) throws IOException {
-    encoder.writeInt(vector.get(currentIndex++));
   }
 }

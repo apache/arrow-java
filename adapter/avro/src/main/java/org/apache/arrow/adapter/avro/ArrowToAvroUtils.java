@@ -35,7 +35,8 @@ import org.apache.arrow.adapter.avro.producers.AvroUnionsProducer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.adapter.avro.producers.Producer;
-import org.apache.arrow.adapter.avro.producers.logical.AvroDateProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroDateDayProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroDateMilliProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDecimalProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDecimal256Producer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMicroProducer;
@@ -43,23 +44,7 @@ import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMillisProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMicroProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMillisProducer;
 import org.apache.arrow.util.Preconditions;
-import org.apache.arrow.vector.BigIntVector;
-import org.apache.arrow.vector.BitVector;
-import org.apache.arrow.vector.DateDayVector;
-import org.apache.arrow.vector.DecimalVector;
-import org.apache.arrow.vector.Decimal256Vector;
-import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.FixedSizeBinaryVector;
-import org.apache.arrow.vector.Float4Vector;
-import org.apache.arrow.vector.Float8Vector;
-import org.apache.arrow.vector.IntVector;
-import org.apache.arrow.vector.NullVector;
-import org.apache.arrow.vector.TimeMicroVector;
-import org.apache.arrow.vector.TimeMilliVector;
-import org.apache.arrow.vector.TimeStampMicroVector;
-import org.apache.arrow.vector.TimeStampMilliVector;
-import org.apache.arrow.vector.VarBinaryVector;
-import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.*;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
@@ -600,7 +585,9 @@ public class ArrowToAvroUtils {
       case DECIMAL256:
         return new AvroDecimal256Producer((Decimal256Vector) vector);
       case DATEDAY:
-        return new AvroDateProducer((DateDayVector) vector);
+        return new AvroDateDayProducer((DateDayVector) vector);
+      case DATEMILLI:
+        return new AvroDateMilliProducer((DateMilliVector) vector);
       case TIMEMILLI:
         return new AvroTimeMillisProducer((TimeMilliVector) vector);
       case TIMEMICRO:
