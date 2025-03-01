@@ -17,26 +17,36 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
+import org.apache.arrow.vector.BaseFixedWidthVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.avro.io.Encoder;
 
 /**
  * Producer that produces fixed-size binary values from a {@link FixedSizeBinaryVector}, writes data
  * to an Avro encoder.
+ *
+ * <p>Logical types are also supported, for vectors derived from {@link BaseFixedWidthVector} where
+ * the internal representation is fixed width bytes and requires no conversion.
  */
-public class AvroFixedProducer extends BaseAvroProducer<FixedSizeBinaryVector> {
+public class AvroFixedProducer extends BaseAvroProducer<BaseFixedWidthVector> {
 
   private final byte[] reuseBytes;
 
   /** Instantiate an AvroFixedProducer. */
   public AvroFixedProducer(FixedSizeBinaryVector vector) {
     super(vector);
-    reuseBytes = new byte[vector.getByteWidth()];
+    reuseBytes = new byte[vector.getTypeWidth()];
+  }
+
+  /** Protected constructor for logical types with a fixed width representation. */
+  protected AvroFixedProducer(BaseFixedWidthVector vector) {
+    super(vector);
+    reuseBytes = new byte[vector.getTypeWidth()];
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    long offset = (long) currentIndex * vector.getByteWidth();
+    long offset = (long) currentIndex * vector.getTypeWidth();
     vector.getDataBuffer().getBytes(offset, reuseBytes);
     encoder.writeBytes(reuseBytes);
     currentIndex++;

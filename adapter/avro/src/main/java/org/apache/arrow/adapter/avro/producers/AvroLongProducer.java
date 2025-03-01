@@ -17,21 +17,35 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
+import org.apache.arrow.vector.BaseFixedWidthVector;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.avro.io.Encoder;
 
 /**
  * Producer that produces long values from a {@link BigIntVector}, writes data to an Avro encoder.
+ *
+ * <p>Logical types are also supported, for vectors derived from {@link BaseFixedWidthVector} where
+ * the internal representation matches BigIntVector and requires no conversion.
  */
-public class AvroLongProducer extends BaseAvroProducer<BigIntVector> {
+public class AvroLongProducer extends BaseAvroProducer<BaseFixedWidthVector> {
 
   /** Instantiate an AvroLongProducer. */
   public AvroLongProducer(BigIntVector vector) {
     super(vector);
   }
 
+  /** Protected constructor for logical types with a long representation. */
+  protected AvroLongProducer(BaseFixedWidthVector vector) {
+    super(vector);
+    if (vector.getTypeWidth() != BigIntVector.TYPE_WIDTH) {
+      throw new IllegalArgumentException(
+          "AvroLongProducer requires type width = " + BigIntVector.TYPE_WIDTH);
+    }
+  }
+
   @Override
   public void produce(Encoder encoder) throws IOException {
-    encoder.writeLong(vector.get(currentIndex++));
+    long value = vector.getDataBuffer().getLong(currentIndex * (long) BigIntVector.TYPE_WIDTH);
+    encoder.writeLong(value);
   }
 }
