@@ -163,7 +163,7 @@ public class ArrowToAvroUtils {
     SchemaBuilder.FieldTypeBuilder<T> builder = assembler.name(field.getName()).type();
 
     // Nullable unions need special handling, since union types cannot be directly nested
-    if (field.getType().getTypeID() != ArrowType.ArrowTypeID.Union) {
+    if (field.getType().getTypeID() == ArrowType.ArrowTypeID.Union) {
       boolean unionNullable = field.getChildren().stream().anyMatch(Field::isNullable);
       if (field.isNullable() && !unionNullable) {
         SchemaBuilder.UnionAccumulator<SchemaBuilder.NullDefault<T>> union =
@@ -177,7 +177,7 @@ public class ArrowToAvroUtils {
         return addTypesToUnion(union, tailTypes, namespace).noDefault();
       }
     } else if (field.isNullable()) {
-      return buildBaseTypeSchema(builder.optional(), field, namespace);
+      return buildBaseFieldSchema(builder.nullable(), field, namespace);
     } else {
       return buildBaseFieldSchema(builder, field, namespace);
     }
@@ -210,7 +210,7 @@ public class ArrowToAvroUtils {
       SchemaBuilder.TypeBuilder<T> builder, Field field, String namespace) {
 
     // Nullable unions need special handling, since union types cannot be directly nested
-    if (field.getType().getTypeID() != ArrowType.ArrowTypeID.Union) {
+    if (field.getType().getTypeID() == ArrowType.ArrowTypeID.Union) {
       boolean unionNullable = field.getChildren().stream().anyMatch(Field::isNullable);
       if (field.isNullable() && !unionNullable) {
         SchemaBuilder.UnionAccumulator<T> union = builder.unionOf().nullType();
