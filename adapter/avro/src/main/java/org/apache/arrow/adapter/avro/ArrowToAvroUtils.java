@@ -594,8 +594,7 @@ public class ArrowToAvroUtils {
         // Logical types
 
       case DECIMAL:
-        return new AvroDecimalProducer.FixedDecimalProducer(
-            (DecimalVector) vector, DecimalVector.TYPE_WIDTH);
+        return new AvroDecimalProducer((DecimalVector) vector);
       case DATEDAY:
         return new AvroDateProducer((DateDayVector) vector);
       case TIMEMILLI:

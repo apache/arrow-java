@@ -18,7 +18,6 @@ package org.apache.arrow.adapter.avro.producers.logical;
 
 import java.io.IOException;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
-import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.avro.io.Encoder;
 
@@ -26,53 +25,21 @@ import org.apache.avro.io.Encoder;
  * Producer that produces decimal values from a {@link DecimalVector}, writes data to an Avro
  * encoder.
  */
-public abstract class AvroDecimalProducer extends BaseAvroProducer<DecimalVector> {
+public class AvroDecimalProducer extends BaseAvroProducer<DecimalVector> {
+
+  private final byte[] reuseBytes;
 
   /** Instantiate an AvroDecimalProducer. */
-  protected AvroDecimalProducer(DecimalVector vector) {
+  public AvroDecimalProducer(DecimalVector vector) {
     super(vector);
+    reuseBytes = new byte[vector.getTypeWidth()];
   }
 
-  /** Producer for decimal logical type with original bytes type. */
-  public static class BytesDecimalProducer extends AvroDecimalProducer {
-
-    private final byte[] reuseBytes;
-
-    /** Instantiate a BytesDecimalConsumer. */
-    public BytesDecimalProducer(DecimalVector vector) {
-      super(vector);
-      Preconditions.checkArgument(
-          vector.getTypeWidth() <= 16, "Decimal bytes length should <= 16.");
-      reuseBytes = new byte[vector.getTypeWidth()];
-    }
-
-    @Override
-    public void produce(Encoder encoder) throws IOException {
-      long offset = (long) currentIndex * vector.getTypeWidth();
-      vector.getDataBuffer().getBytes(offset, reuseBytes);
-      encoder.writeBytes(reuseBytes);
-      currentIndex++;
-    }
-  }
-
-  /** Producer for decimal logical type with original fixed type. */
-  public static class FixedDecimalProducer extends AvroDecimalProducer {
-
-    private final byte[] reuseBytes;
-
-    /** Instantiate a FixedDecimalConsumer. */
-    public FixedDecimalProducer(DecimalVector vector, int size) {
-      super(vector);
-      Preconditions.checkArgument(size <= 16, "Decimal bytes length should <= 16.");
-      reuseBytes = new byte[vector.getTypeWidth()];
-    }
-
-    @Override
-    public void produce(Encoder encoder) throws IOException {
-      long offset = (long) currentIndex * vector.getTypeWidth();
-      vector.getDataBuffer().getBytes(offset, reuseBytes);
-      encoder.writeFixed(reuseBytes);
-      currentIndex++;
-    }
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    long offset = (long) currentIndex * vector.getTypeWidth();
+    vector.getDataBuffer().getBytes(offset, reuseBytes);
+    encoder.writeFixed(reuseBytes);
+    currentIndex++;
   }
 }
