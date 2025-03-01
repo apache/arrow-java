@@ -23,6 +23,7 @@ import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.MethodDescriptor;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.apache.arrow.flight.auth.ServerAuthHandler;
@@ -149,6 +150,19 @@ public class FlightGrpcUtils {
   public static FlightClient createFlightClient(
       BufferAllocator incomingAllocator, ManagedChannel channel) {
     return new FlightClient(incomingAllocator, channel, Collections.emptyList());
+  }
+
+  /**
+   * Creates a Flight client.
+   *
+   * @param incomingAllocator Memory allocator
+   * @param channel provides a connection to a gRPC server.
+   */
+  public static FlightClient createFlightClient(
+      BufferAllocator incomingAllocator,
+      ManagedChannel channel,
+      List<FlightClientMiddleware.Factory> middleware) {
+    return new FlightClient(incomingAllocator, channel, middleware);
   }
 
   /**
