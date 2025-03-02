@@ -16,8 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.accessor.impl.calendar;
 
-import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeStampVectorAccessor.getTimeUnitForVector;
-import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeStampVectorAccessor.getTimeZoneForVector;
+import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeStampVectorAccessor.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -183,6 +182,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
     Calendar calendar = Calendar.getInstance(timeZone);
 
     TimeZone timeZoneForVector = getTimeZoneForVector(vector);
+    boolean hasTz = getVectorIsZoned(vector);
 
     accessorIterator.iterate(
         vector,
@@ -190,9 +190,14 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
           final Timestamp resultWithoutCalendar = accessor.getTimestamp(null);
           final Timestamp result = accessor.getTimestamp(calendar);
 
-          long offset =
-              (long) timeZone.getOffset(resultWithoutCalendar.getTime())
-                  - timeZoneForVector.getOffset(resultWithoutCalendar.getTime());
+          long offset;
+          if (hasTz) {
+            offset =
+                (long) timeZone.getOffset(resultWithoutCalendar.getTime())
+                    - timeZoneForVector.getOffset(resultWithoutCalendar.getTime());
+          } else {
+            offset = 0;
+          }
 
           assertThat(resultWithoutCalendar.getTime() - result.getTime(), is(offset));
           assertThat(accessor.wasNull(), is(false));
@@ -231,6 +236,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
     Calendar calendar = Calendar.getInstance(timeZone);
 
     TimeZone timeZoneForVector = getTimeZoneForVector(vector);
+    boolean hasTz = getVectorIsZoned(vector);
 
     accessorIterator.iterate(
         vector,
@@ -238,9 +244,14 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
           final Date resultWithoutCalendar = accessor.getDate(null);
           final Date result = accessor.getDate(calendar);
 
-          long offset =
-              (long) timeZone.getOffset(resultWithoutCalendar.getTime())
-                  - timeZoneForVector.getOffset(resultWithoutCalendar.getTime());
+          long offset;
+          if (hasTz) {
+            offset =
+                (long) timeZone.getOffset(resultWithoutCalendar.getTime())
+                    - timeZoneForVector.getOffset(resultWithoutCalendar.getTime());
+          } else {
+            offset = 0;
+          }
 
           assertThat(resultWithoutCalendar.getTime() - result.getTime(), is(offset));
           assertThat(accessor.wasNull(), is(false));
@@ -279,6 +290,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
     Calendar calendar = Calendar.getInstance(timeZone);
 
     TimeZone timeZoneForVector = getTimeZoneForVector(vector);
+    boolean hasTz = getVectorIsZoned(vector);
 
     accessorIterator.iterate(
         vector,
@@ -286,9 +298,14 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
           final Time resultWithoutCalendar = accessor.getTime(null);
           final Time result = accessor.getTime(calendar);
 
-          long offset =
-              (long) timeZone.getOffset(resultWithoutCalendar.getTime())
-                  - timeZoneForVector.getOffset(resultWithoutCalendar.getTime());
+          long offset;
+          if (hasTz) {
+            offset =
+                (long) timeZone.getOffset(resultWithoutCalendar.getTime())
+                    - timeZoneForVector.getOffset(resultWithoutCalendar.getTime());
+          } else {
+            offset = 0;
+          }
 
           assertThat(resultWithoutCalendar.getTime() - result.getTime(), is(offset));
           assertThat(accessor.wasNull(), is(false));

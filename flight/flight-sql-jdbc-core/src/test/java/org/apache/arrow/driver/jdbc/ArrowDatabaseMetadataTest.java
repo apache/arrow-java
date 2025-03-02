@@ -299,8 +299,9 @@ public class ArrowDatabaseMetadataTest {
   private static Connection connection;
 
   static {
-    List<Integer> expectedGetColumnsDataTypes = Arrays.asList(3, 93, 4);
-    List<String> expectedGetColumnsTypeName = Arrays.asList("DECIMAL", "TIMESTAMP", "INTEGER");
+    List<Integer> expectedGetColumnsDataTypes = Arrays.asList(3, 2014, 4);
+    List<String> expectedGetColumnsTypeName =
+        Arrays.asList("DECIMAL", "TIMESTAMP_WITH_TIMEZONE", "INTEGER");
     List<Integer> expectedGetColumnsRadix = Arrays.asList(10, null, 10);
     List<Integer> expectedGetColumnsColumnSize = Arrays.asList(5, 29, 10);
     List<Integer> expectedGetColumnsDecimalDigits = Arrays.asList(2, 9, 0);

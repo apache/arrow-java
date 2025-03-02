@@ -50,7 +50,13 @@ public class SqlTypesTest {
         Types.TIME, getSqlTypeIdFromArrowType(new ArrowType.Time(TimeUnit.MILLISECOND, 32)));
     assertEquals(
         Types.TIMESTAMP,
+        getSqlTypeIdFromArrowType(new ArrowType.Timestamp(TimeUnit.MILLISECOND, null)));
+    assertEquals(
+        Types.TIMESTAMP,
         getSqlTypeIdFromArrowType(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "")));
+    assertEquals(
+        Types.TIMESTAMP_WITH_TIMEZONE,
+        getSqlTypeIdFromArrowType(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")));
 
     assertEquals(Types.BOOLEAN, getSqlTypeIdFromArrowType(new ArrowType.Bool()));
 
@@ -97,7 +103,13 @@ public class SqlTypesTest {
     assertEquals("TIME", getSqlTypeNameFromArrowType(new ArrowType.Time(TimeUnit.MILLISECOND, 32)));
     assertEquals(
         "TIMESTAMP",
+        getSqlTypeNameFromArrowType(new ArrowType.Timestamp(TimeUnit.MILLISECOND, null)));
+    assertEquals(
+        "TIMESTAMP",
         getSqlTypeNameFromArrowType(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "")));
+    assertEquals(
+        "TIMESTAMP_WITH_TIMEZONE",
+        getSqlTypeNameFromArrowType(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")));
 
     assertEquals("BOOLEAN", getSqlTypeNameFromArrowType(new ArrowType.Bool()));
 

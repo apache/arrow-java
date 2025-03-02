@@ -22,6 +22,8 @@ import java.util.Map;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 
+import com.google.common.base.Strings;
+
 /** SQL Types utility functions. */
 public class SqlTypes {
   private static final Map<Integer, String> typeIdToName = new HashMap<>();
@@ -121,10 +123,10 @@ public class SqlTypes {
         return Types.TIME;
       case Timestamp:
         String tz = ((ArrowType.Timestamp) arrowType).getTimezone();
-        if (tz != null) {
-          return Types.TIMESTAMP_WITH_TIMEZONE;
-        } else {
+        if (Strings.isNullOrEmpty(tz)) {
           return Types.TIMESTAMP;
+        } else {
+          return Types.TIMESTAMP_WITH_TIMEZONE;
         }
       case Bool:
         return Types.BOOLEAN;
