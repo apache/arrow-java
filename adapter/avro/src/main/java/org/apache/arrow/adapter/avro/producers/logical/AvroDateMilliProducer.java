@@ -41,5 +41,6 @@ public class AvroDateMilliProducer extends BaseAvroProducer<DateMilliVector> {
     long millis = vector.getDataBuffer().getLong(currentIndex * (long) DateMilliVector.TYPE_WIDTH);
     long days = millis / MILLIS_PER_DAY;
     encoder.writeInt((int) days);
+    currentIndex++;
   }
 }

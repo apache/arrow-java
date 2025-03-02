@@ -47,5 +47,6 @@ public class AvroLongProducer extends BaseAvroProducer<BaseFixedWidthVector> {
   public void produce(Encoder encoder) throws IOException {
     long value = vector.getDataBuffer().getLong(currentIndex * (long) BigIntVector.TYPE_WIDTH);
     encoder.writeLong(value);
+    currentIndex++;
   }
 }
