@@ -18,15 +18,16 @@ package org.apache.arrow.adapter.avro;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.arrow.adapter.avro.producers.AvroArraysProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedProducer;
+import org.apache.arrow.adapter.avro.producers.AvroFixedSizeListProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat2Producer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat4Producer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat8Producer;
 import org.apache.arrow.adapter.avro.producers.AvroIntProducer;
+import org.apache.arrow.adapter.avro.producers.AvroListProducer;
 import org.apache.arrow.adapter.avro.producers.AvroMapProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullableProducer;
@@ -92,6 +93,7 @@ import org.apache.arrow.vector.UInt4Vector;
 import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
@@ -339,7 +341,6 @@ public class ArrowToAvroUtils {
             builder.record(field.getName()), field.getChildren(), childNamespace);
 
       case List:
-      case LargeList:
       case FixedSizeList:
         return buildArraySchema(builder.array(), field, namespace);
 
@@ -431,7 +432,6 @@ public class ArrowToAvroUtils {
             .noDefault();
 
       case List:
-      case LargeList:
       case FixedSizeList:
         return buildArraySchema(builder.array(), field, namespace).noDefault();
 
@@ -526,7 +526,6 @@ public class ArrowToAvroUtils {
             buildRecordSchema(builder.record(field.getName()), field.getChildren(), childNamespace);
 
       case List:
-      case LargeList:
       case FixedSizeList:
         return (SchemaBuilder.UnionAccumulator) buildArraySchema(builder.array(), field, namespace);
 
@@ -680,7 +679,14 @@ public class ArrowToAvroUtils {
         ListVector listVector = (ListVector) vector;
         FieldVector itemVector = listVector.getDataVector();
         Producer<?> itemProducer = createProducer(itemVector, itemVector.getField().isNullable());
-        return new AvroArraysProducer(listVector, itemProducer);
+        return new AvroListProducer(listVector, itemProducer);
+
+      case FIXED_SIZE_LIST:
+        FixedSizeListVector fixedListVector = (FixedSizeListVector) vector;
+        FieldVector fixedItemVector = fixedListVector.getDataVector();
+        Producer<?> fixedItemProducer =
+            createProducer(fixedItemVector, fixedItemVector.getField().isNullable());
+        return new AvroFixedSizeListProducer(fixedListVector, fixedItemProducer);
 
       case MAP:
         MapVector mapVector = (MapVector) vector;

@@ -18,19 +18,20 @@ package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
 import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer which produces array type values to an Avro encoder. Writes the data from a {@link
- * ListVector}.
+ * Producer that produces array values from a {@link FixedSizeListVector}, writes data to an avro
+ * encoder.
  */
-public class AvroArraysProducer extends BaseAvroProducer<ListVector> {
+public class AvroFixedSizeListProducer extends BaseAvroProducer<FixedSizeListVector> {
 
   private final Producer<? extends FieldVector> delegate;
 
-  /** Instantiate an ArraysProducer. */
-  public AvroArraysProducer(ListVector vector, Producer<? extends FieldVector> delegate) {
+  /** Instantiate an AvroFixedSizeListProducer. */
+  public AvroFixedSizeListProducer(
+      FixedSizeListVector vector, Producer<? extends FieldVector> delegate) {
     super(vector);
     this.delegate = delegate;
   }
@@ -38,14 +39,10 @@ public class AvroArraysProducer extends BaseAvroProducer<ListVector> {
   @Override
   public void produce(Encoder encoder) throws IOException {
 
-    int startOffset = vector.getOffsetBuffer().getInt(currentIndex * (long) Integer.BYTES);
-    int endOffset = vector.getOffsetBuffer().getInt((currentIndex + 1) * (long) Integer.BYTES);
-    int nItems = endOffset - startOffset;
-
     encoder.writeArrayStart();
-    encoder.setItemCount(nItems);
+    encoder.setItemCount(vector.getListSize());
 
-    for (int i = 0; i < nItems; i++) {
+    for (int i = 0; i < vector.getListSize(); i++) {
       encoder.startItem();
       delegate.produce(encoder);
     }
@@ -54,21 +51,18 @@ public class AvroArraysProducer extends BaseAvroProducer<ListVector> {
     currentIndex++;
   }
 
-  @Override
-  public void skipNull() {
-    delegate.skipNull();
-    super.skipNull();
-  }
+  // Do not override skipNull(), the delegate delegate vector will not hold data
 
   @Override
   public void setPosition(int index) {
-    delegate.setPosition(index);
+    int delegateOffset = vector.getOffsetBuffer().getInt(index * (long) Integer.BYTES);
+    delegate.setPosition(delegateOffset);
     super.setPosition(index);
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public boolean resetValueVector(ListVector vector) {
+  public boolean resetValueVector(FixedSizeListVector vector) {
     ((Producer<FieldVector>) delegate).resetValueVector(vector.getDataVector());
     return super.resetValueVector(vector);
   }
