@@ -160,7 +160,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
       return null;
     }
 
-    return new Date(Timestamp.valueOf(localDateTime).getTime());
+    return new Date(getTimstampWithOffset(calendar, localDateTime).getTime());
   }
 
   @Override
@@ -170,7 +170,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
       return null;
     }
 
-    return new Time(Timestamp.valueOf(localDateTime).getTime());
+    return new Time(getTimstampWithOffset(calendar, localDateTime).getTime());
   }
 
   @Override
@@ -179,19 +179,26 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     if (localDateTime == null) {
       return null;
     }
-    // to prevent breaking changes for those using this, apply the offset that was previously
-    // applied in getLocalDateTime
+
+    return getTimstampWithOffset(calendar, localDateTime);
+  }
+
+  /**
+   * Apply offset to LocalDateTime to get a Timestamp with legacy behavior. Previously we applied
+   * the offset to the LocalDateTime even if the underlying Vector did not have a TZ. In order to
+   * support java.time.* accessors, we fixed this so we only apply the offset if the underlying
+   * vector includes TZ info. In order to maintain backward compatibility, we apply the offset if
+   * needed for getDate, getTime, and getTimestamp.
+   */
+  private Timestamp getTimstampWithOffset(Calendar calendar, LocalDateTime localDateTime) {
     if (calendar != null && !isZoned) {
       TimeZone timeZone = calendar.getTimeZone();
       long millis = Timestamp.valueOf(localDateTime).getTime();
       localDateTime =
           localDateTime.minus(
               timeZone.getOffset(millis) - this.timeZone.getOffset(millis), ChronoUnit.MILLIS);
-
-      return Timestamp.valueOf(localDateTime);
-    } else {
-      return Timestamp.valueOf(localDateTime);
     }
+    return Timestamp.valueOf(localDateTime);
   }
 
   protected static TimeUnit getTimeUnitForVector(TimeStampVector vector) {
