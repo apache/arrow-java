@@ -21,6 +21,7 @@ import java.util.List;
 import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
+import org.apache.arrow.adapter.avro.producers.AvroDenseUnionProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedSizeListProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat2Producer;
@@ -39,7 +40,7 @@ import org.apache.arrow.adapter.avro.producers.AvroUint1Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUint2Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUint4Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUint8Producer;
-import org.apache.arrow.adapter.avro.producers.AvroUnionsProducer;
+import org.apache.arrow.adapter.avro.producers.AvroUnionProducer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.adapter.avro.producers.Producer;
@@ -93,6 +94,7 @@ import org.apache.arrow.vector.UInt4Vector;
 import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
@@ -703,7 +705,18 @@ public class ArrowToAvroUtils {
           unionChildProducers[i] =
               createProducer(unionChildVector, /* nullable = */ false); // Do not nest union types
         }
-        return new AvroUnionsProducer(unionVector, unionChildProducers);
+        return new AvroUnionProducer(unionVector, unionChildProducers);
+
+      case DENSEUNION:
+        DenseUnionVector denseUnionVector = (DenseUnionVector) vector;
+        List<FieldVector> denseChildVectors = denseUnionVector.getChildrenFromFields();
+        Producer<?>[] denseChildProducers = new Producer<?>[denseChildVectors.size()];
+        for (int i = 0; i < denseChildVectors.size(); i++) {
+          FieldVector denseChildVector = denseChildVectors.get(i);
+          denseChildProducers[i] =
+              createProducer(denseChildVector, /* nullable = */ false); // Do not nest union types
+        }
+        return new AvroDenseUnionProducer(denseUnionVector, denseChildProducers);
 
       default:
         // Not all Arrow types are supported for encoding (yet)!

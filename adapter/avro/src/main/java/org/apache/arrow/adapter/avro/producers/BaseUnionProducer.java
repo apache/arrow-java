@@ -19,23 +19,22 @@ package org.apache.arrow.adapter.avro.producers;
 import java.io.IOException;
 import java.util.List;
 import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.UnionMode;
 import org.apache.avro.io.Encoder;
 
-/**
- * Producer which produces unions type values to avro encoder. Write the data to {@link
- * org.apache.arrow.vector.complex.UnionVector}.
- */
-public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
+abstract class BaseUnionProducer<T extends FieldVector> extends BaseAvroProducer<T> {
+
+  // Logic is substantially the same for union and dense union, just dense union resolves offsets
+  // For methods not available on FieldVector some calls are delegate to the  child class
 
   private final Producer<?>[] delegates;
   private final UnionMode unionMode;
   private final int nullTypeIndex;
 
-  /** Instantiate an AvroUnionsProducer. */
-  public AvroUnionsProducer(UnionVector vector, Producer<?>[] delegates) {
+  protected abstract int getCurrentTypeIndex();
+
+  public BaseUnionProducer(T vector, Producer<?>[] delegates) {
     super(vector);
     this.delegates = delegates;
     if (vector.getMinorType() == Types.MinorType.DENSEUNION) {
@@ -43,11 +42,10 @@ public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
     } else {
       this.unionMode = UnionMode.Sparse;
     }
-    this.nullTypeIndex = findNullTypeIndex();
+    this.nullTypeIndex = findNullTypeIndex(vector.getChildrenFromFields());
   }
 
-  private int findNullTypeIndex() {
-    List<FieldVector> childVectors = vector.getChildrenFromFields();
+  protected int findNullTypeIndex(List<FieldVector> childVectors) {
     for (int i = 0; i < childVectors.size(); i++) {
       if (childVectors.get(i).getMinorType() == Types.MinorType.NULL) {
         return i;
@@ -65,7 +63,7 @@ public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
       encoder.writeNull();
     } else {
 
-      int typeIndex = vector.getTypeValue(currentIndex);
+      int typeIndex = getCurrentTypeIndex();
       int typeVectorIndex;
 
       if (unionMode == UnionMode.Dense) {
@@ -92,7 +90,7 @@ public class AvroUnionsProducer extends BaseAvroProducer<UnionVector> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public boolean resetValueVector(UnionVector vector) {
+  public boolean resetValueVector(T vector) {
     boolean result = true;
     for (int i = 0; i < delegates.length; i++) {
       Producer<FieldVector> delegate = (Producer<FieldVector>) delegates[i];
