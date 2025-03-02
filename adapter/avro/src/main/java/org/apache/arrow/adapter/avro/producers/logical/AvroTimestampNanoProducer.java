@@ -16,24 +16,19 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import java.io.IOException;
-import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
-import org.apache.arrow.vector.TimeStampMilliVector;
-import org.apache.avro.io.Encoder;
+import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
+import org.apache.arrow.vector.TimeStampNanoVector;
 
 /**
- * Producer that produces timestamp (milliseconds) values from a {@link TimeStampMilliVector},
+ * Producer that produces local timestamp (nanoseconds) values from a {@link TimeStampNanoVector},
  * writes data to an Avro encoder.
  */
-public class AvroTimestampMillisProducer extends BaseAvroProducer<TimeStampMilliVector> {
+public class AvroTimestampNanoProducer extends AvroLongProducer {
 
-  /** Instantiate an AvroTimestampMillisProducer. */
-  public AvroTimestampMillisProducer(TimeStampMilliVector vector) {
+  // Local timestamp in epoch nanoseconds stored as long, matches Avro local-timestamp-nanos type
+
+  /** Instantiate an AvroTimestampNanoProducer. */
+  public AvroTimestampNanoProducer(TimeStampNanoVector vector) {
     super(vector);
-  }
-
-  @Override
-  public void produce(Encoder encoder) throws IOException {
-    encoder.writeLong(vector.get(currentIndex++));
   }
 }

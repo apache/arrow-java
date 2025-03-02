@@ -44,7 +44,9 @@ import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMilliProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeNanoProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeSecProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMicroProducer;
-import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMillisProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMilliProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampNanoProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampSecProducer;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
@@ -64,6 +66,8 @@ import org.apache.arrow.vector.TimeNanoVector;
 import org.apache.arrow.vector.TimeSecVector;
 import org.apache.arrow.vector.TimeStampMicroVector;
 import org.apache.arrow.vector.TimeStampMilliVector;
+import org.apache.arrow.vector.TimeStampNanoVector;
+import org.apache.arrow.vector.TimeStampSecVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.ListVector;
@@ -620,10 +624,14 @@ public class ArrowToAvroUtils {
         return new AvroTimeMicroProducer((TimeMicroVector) vector);
       case TIMENANO:
         return new AvroTimeNanoProducer((TimeNanoVector) vector);
+      case TIMESTAMPSEC:
+        return new AvroTimestampSecProducer((TimeStampSecVector) vector);
       case TIMESTAMPMILLI:
-        return new AvroTimestampMillisProducer((TimeStampMilliVector) vector);
+        return new AvroTimestampMilliProducer((TimeStampMilliVector) vector);
       case TIMESTAMPMICRO:
         return new AvroTimestampMicroProducer((TimeStampMicroVector) vector);
+      case TIMESTAMPNANO:
+        return new AvroTimestampNanoProducer((TimeStampNanoVector) vector);
 
         // Complex types
 
