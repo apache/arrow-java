@@ -17,36 +17,43 @@
 package org.apache.arrow.adapter.avro.producers.logical;
 
 import java.io.IOException;
-import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
-import org.apache.arrow.vector.TimeStampSecVector;
+import java.time.Instant;
+import java.time.ZoneId;
+import org.apache.arrow.vector.TimeStampSecTZVector;
+import org.apache.arrow.vector.TimeStampVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that converts epoch seconds from a {@link TimeStampSecVector} and produces local time
- * (milliseconds) values, writes data to an Avro encoder.
+ * Producer that converts timestamps in zone-aware epoch seconds from a {@link TimeStampSecTZVector}
+ * and produces UTC timestamp (millisecond) values, writes data to an Avro encoder.
  */
-public class AvroTimestampSecProducer extends BaseAvroProducer<TimeStampSecVector> {
+public class AvroTimestampSecTzProducer extends BaseTimestampTzProducer<TimeStampSecTZVector> {
 
-  // Avro does not support timestamps in seconds, so convert to local-timestamp-millis type
+  // Avro does not support timestamps in seconds, so convert to timestamp-millis type
   // Check for overflow and raise an exception
 
   private static final long MILLIS_PER_SECOND = 1000;
   private static final long OVERFLOW_LIMIT = Long.MAX_VALUE / MILLIS_PER_SECOND;
 
-  /** Instantiate an AvroTimestampSecProducer. */
-  public AvroTimestampSecProducer(TimeStampSecVector vector) {
-    super(vector);
+  /** Instantiate an AvroTimestampSecTzProducer. */
+  public AvroTimestampSecTzProducer(TimeStampSecTZVector vector) {
+    super(vector, vector.getTimeZone(), 1);
+  }
+
+  @Override
+  protected long convertToUtc(long tzValue, ZoneId zoneId) {
+    return Instant.ofEpochSecond(tzValue).atZone(zoneId).toInstant().getEpochSecond();
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    long seconds =
-        vector.getDataBuffer().getLong(currentIndex * (long) TimeStampSecVector.TYPE_WIDTH);
-    if (Math.abs(seconds) > OVERFLOW_LIMIT) {
+    long tzSeconds =
+        vector.getDataBuffer().getLong(currentIndex * (long) TimeStampVector.TYPE_WIDTH);
+    long utcSeconds = fixedOffsetFlag ? tzSeconds + fixedOffset : convertToUtc(tzSeconds, zoneId);
+    if (Math.abs(utcSeconds) > OVERFLOW_LIMIT) {
       throw new ArithmeticException("Timestamp value is too large for Avro encoding");
     }
-    long millis = seconds * MILLIS_PER_SECOND;
-    encoder.writeLong(millis);
-    currentIndex++;
+    long utcMillis = utcSeconds * MILLIS_PER_SECOND;
+    encoder.writeLong(utcMillis);
   }
 }

@@ -44,9 +44,13 @@ import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMilliProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeNanoProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeSecProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMicroProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMicroTzProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMilliProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampMilliTzProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampNanoProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampNanoTzProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampSecProducer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampSecTzProducer;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
@@ -64,9 +68,13 @@ import org.apache.arrow.vector.TimeMicroVector;
 import org.apache.arrow.vector.TimeMilliVector;
 import org.apache.arrow.vector.TimeNanoVector;
 import org.apache.arrow.vector.TimeSecVector;
+import org.apache.arrow.vector.TimeStampMicroTZVector;
 import org.apache.arrow.vector.TimeStampMicroVector;
+import org.apache.arrow.vector.TimeStampMilliTZVector;
 import org.apache.arrow.vector.TimeStampMilliVector;
+import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.TimeStampNanoVector;
+import org.apache.arrow.vector.TimeStampSecTZVector;
 import org.apache.arrow.vector.TimeStampSecVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
@@ -632,6 +640,14 @@ public class ArrowToAvroUtils {
         return new AvroTimestampMicroProducer((TimeStampMicroVector) vector);
       case TIMESTAMPNANO:
         return new AvroTimestampNanoProducer((TimeStampNanoVector) vector);
+      case TIMESTAMPSECTZ:
+        return new AvroTimestampSecTzProducer((TimeStampSecTZVector) vector);
+      case TIMESTAMPMILLITZ:
+        return new AvroTimestampMilliTzProducer((TimeStampMilliTZVector) vector);
+      case TIMESTAMPMICROTZ:
+        return new AvroTimestampMicroTzProducer((TimeStampMicroTZVector) vector);
+      case TIMESTAMPNANOTZ:
+        return new AvroTimestampNanoTzProducer((TimeStampNanoTZVector) vector);
 
         // Complex types
 
