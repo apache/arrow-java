@@ -18,22 +18,30 @@ package org.apache.arrow.adapter.avro.producers.logical;
 
 import java.io.IOException;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
-import org.apache.arrow.vector.TimeMilliVector;
+import org.apache.arrow.vector.TimeSecVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces time (milliseconds) values from a {@link TimeMilliVector}, writes data to
- * an Avro encoder.
+ * Producer that converts seconds from a {@link TimeSecVector} and produces time (microseconds)
+ * values, writes data to an Avro encoder.
  */
-public class AvroTimeMillisProducer extends BaseAvroProducer<TimeMilliVector> {
+public class AvroTimeSecProducer extends BaseAvroProducer<TimeSecVector> {
 
-  /** Instantiate an AvroTimeMillisProducer. */
-  public AvroTimeMillisProducer(TimeMilliVector vector) {
+  // Convert seconds to microseconds for Avro time-micros (LONG) type
+  // Range is 1000 times more than for milliseconds, so won't fit into time-millis (INT)
+
+  private static final long MICROS_PER_SECOND = 1000;
+
+  /** Instantiate an AvroTimeSecProducer. */
+  public AvroTimeSecProducer(TimeSecVector vector) {
     super(vector);
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    encoder.writeInt(vector.get(currentIndex++));
+    int seconds = vector.getDataBuffer().getInt(currentIndex * (long) TimeSecVector.TYPE_WIDTH);
+    long micros = seconds * MICROS_PER_SECOND;
+    encoder.writeLong(micros);
+    currentIndex++;
   }
 }

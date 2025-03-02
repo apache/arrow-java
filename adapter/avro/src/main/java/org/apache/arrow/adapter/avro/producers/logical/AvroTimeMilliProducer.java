@@ -16,19 +16,19 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
-import org.apache.arrow.vector.TimeMicroVector;
+import org.apache.arrow.adapter.avro.producers.AvroIntProducer;
+import org.apache.arrow.vector.TimeMilliVector;
 
 /**
- * Producer that produces time (microseconds) values from a {@link TimeMicroVector}, writes data to
+ * Producer that produces time (milliseconds) values from a {@link TimeMilliVector}, writes data to
  * an Avro encoder.
  */
-public class AvroTimeMicroProducer extends AvroLongProducer {
+public class AvroTimeMilliProducer extends AvroIntProducer {
 
-  // Time in microseconds stored as long, matches Avro time-micros type
+  // Time in milliseconds stored as integer, matches Avro time-millis type
 
-  /** Instantiate an AvroTimeMicroProducer. */
-  public AvroTimeMicroProducer(TimeMicroVector vector) {
+  /** Instantiate an AvroTimeMillisProducer. */
+  public AvroTimeMilliProducer(TimeMilliVector vector) {
     super(vector);
   }
 }
