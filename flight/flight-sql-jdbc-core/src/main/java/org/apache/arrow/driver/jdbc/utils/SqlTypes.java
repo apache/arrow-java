@@ -16,13 +16,12 @@
  */
 package org.apache.arrow.driver.jdbc.utils;
 
+import com.google.common.base.Strings;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
-
-import com.google.common.base.Strings;
 
 /** SQL Types utility functions. */
 public class SqlTypes {

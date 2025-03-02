@@ -179,8 +179,19 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     if (localDateTime == null) {
       return null;
     }
+    // to prevent breaking changes for those using this, apply the offset that was previously
+    // applied in getLocalDateTime
+    if (calendar != null && !isZoned) {
+      TimeZone timeZone = calendar.getTimeZone();
+      long millis = Timestamp.valueOf(localDateTime).getTime();
+      localDateTime =
+          localDateTime.minus(
+              timeZone.getOffset(millis) - this.timeZone.getOffset(millis), ChronoUnit.MILLIS);
 
-    return Timestamp.valueOf(localDateTime);
+      return Timestamp.valueOf(localDateTime);
+    } else {
+      return Timestamp.valueOf(localDateTime);
+    }
   }
 
   protected static TimeUnit getTimeUnitForVector(TimeStampVector vector) {
