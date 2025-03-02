@@ -318,10 +318,6 @@ public class ArrowToAvroUtils {
         String timestampLogicalType = timestampLogicalType(timestampType);
         return builder.longBuilder().prop("logicalType", timestampLogicalType).endLong();
 
-      case Duration:
-      case Interval:
-        return builder.fixed(field.getName()).prop("logicalType", "duration").size(12);
-
       case Struct:
         String childNamespace =
             namespace == null ? field.getName() : namespace + "." + field.getName();
@@ -412,10 +408,6 @@ public class ArrowToAvroUtils {
             .prop("logicalType", timestampLogicalType)
             .endLong()
             .noDefault();
-
-      case Duration:
-      case Interval:
-        return builder.fixed(field.getName()).prop("logicalType", "duration").size(12).noDefault();
 
       case Struct:
         String childNamespace =
@@ -512,11 +504,6 @@ public class ArrowToAvroUtils {
         String timestampLogicalType = timestampLogicalType(timestampType);
         return (SchemaBuilder.UnionAccumulator)
             builder.longBuilder().prop("logicalType", timestampLogicalType).endLong();
-
-      case Duration:
-      case Interval:
-        return (SchemaBuilder.UnionAccumulator)
-            builder.fixed(field.getName()).prop("logicalType", "duration").size(12);
 
       case Struct:
         String childNamespace =
