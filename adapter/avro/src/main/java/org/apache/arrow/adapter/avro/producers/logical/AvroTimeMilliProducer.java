@@ -27,7 +27,7 @@ public class AvroTimeMilliProducer extends AvroIntProducer {
 
   // Time in milliseconds stored as integer, matches Avro time-millis type
 
-  /** Instantiate an AvroTimeMillisProducer. */
+  /** Instantiate an AvroTimeMilliProducer. */
   public AvroTimeMilliProducer(TimeMilliVector vector) {
     super(vector);
   }

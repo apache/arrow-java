@@ -30,7 +30,7 @@ public class AvroTimeSecProducer extends BaseAvroProducer<TimeSecVector> {
   // Convert seconds to microseconds for Avro time-micros (LONG) type
   // Range is 1000 times more than for milliseconds, so won't fit into time-millis (INT)
 
-  private static final long MICROS_PER_SECOND = 1000;
+  private static final long MICROS_PER_SECOND = 1000000;
 
   /** Instantiate an AvroTimeSecProducer. */
   public AvroTimeSecProducer(TimeSecVector vector) {
