@@ -28,18 +28,18 @@ import org.apache.avro.io.Encoder;
  * <p>Logical types are also supported, for vectors derived from {@link BaseFixedWidthVector} where
  * the internal representation is fixed width bytes and requires no conversion.
  */
-public class AvroFixedProducer extends BaseAvroProducer<BaseFixedWidthVector> {
+public class AvroFixedSizeBinaryProducer extends BaseAvroProducer<BaseFixedWidthVector> {
 
   private final byte[] reuseBytes;
 
-  /** Instantiate an AvroFixedProducer. */
-  public AvroFixedProducer(FixedSizeBinaryVector vector) {
+  /** Instantiate an AvroFixedSizeBinaryProducer. */
+  public AvroFixedSizeBinaryProducer(FixedSizeBinaryVector vector) {
     super(vector);
     reuseBytes = new byte[vector.getTypeWidth()];
   }
 
   /** Protected constructor for logical types with a fixed width representation. */
-  protected AvroFixedProducer(BaseFixedWidthVector vector) {
+  protected AvroFixedSizeBinaryProducer(BaseFixedWidthVector vector) {
     super(vector);
     reuseBytes = new byte[vector.getTypeWidth()];
   }

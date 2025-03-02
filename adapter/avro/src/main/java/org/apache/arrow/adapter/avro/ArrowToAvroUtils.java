@@ -22,7 +22,7 @@ import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
 import org.apache.arrow.adapter.avro.producers.AvroDenseUnionProducer;
-import org.apache.arrow.adapter.avro.producers.AvroFixedProducer;
+import org.apache.arrow.adapter.avro.producers.AvroFixedSizeBinaryProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedSizeListProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat2Producer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat4Producer;
@@ -620,7 +620,7 @@ public class ArrowToAvroUtils {
       case VARBINARY:
         return new AvroBytesProducer((VarBinaryVector) vector);
       case FIXEDSIZEBINARY:
-        return new AvroFixedProducer((FixedSizeBinaryVector) vector);
+        return new AvroFixedSizeBinaryProducer((FixedSizeBinaryVector) vector);
       case VARCHAR:
         return new AvroStringProducer((VarCharVector) vector);
 
