@@ -21,9 +21,10 @@ import java.util.List;
 import org.apache.arrow.adapter.avro.producers.AvroArraysProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
-import org.apache.arrow.adapter.avro.producers.AvroDoubleProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedProducer;
-import org.apache.arrow.adapter.avro.producers.AvroFloatProducer;
+import org.apache.arrow.adapter.avro.producers.AvroFloat2Producer;
+import org.apache.arrow.adapter.avro.producers.AvroFloat4Producer;
+import org.apache.arrow.adapter.avro.producers.AvroFloat8Producer;
 import org.apache.arrow.adapter.avro.producers.AvroIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
 import org.apache.arrow.adapter.avro.producers.AvroMapProducer;
@@ -60,6 +61,7 @@ import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
+import org.apache.arrow.vector.Float2Vector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.Float8Vector;
 import org.apache.arrow.vector.IntVector;
@@ -590,10 +592,12 @@ public class ArrowToAvroUtils {
         return new AvroIntProducer((IntVector) vector);
       case BIGINT:
         return new AvroLongProducer((BigIntVector) vector);
+      case FLOAT2:
+        return new AvroFloat2Producer((Float2Vector) vector);
       case FLOAT4:
-        return new AvroFloatProducer((Float4Vector) vector);
+        return new AvroFloat4Producer((Float4Vector) vector);
       case FLOAT8:
-        return new AvroDoubleProducer((Float8Vector) vector);
+        return new AvroFloat8Producer((Float8Vector) vector);
       case VARBINARY:
         return new AvroBytesProducer((VarBinaryVector) vector);
       case FIXEDSIZEBINARY:

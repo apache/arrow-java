@@ -17,21 +17,24 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-import org.apache.arrow.vector.Float4Vector;
+import org.apache.arrow.memory.util.Float16;
+import org.apache.arrow.vector.Float2Vector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces float values from a {@link Float4Vector}, writes data to an Avro encoder.
+ * Producer that produces float values from a {@link Float2Vector}, writes data to an Avro encoder.
  */
-public class AvroFloatProducer extends BaseAvroProducer<Float4Vector> {
+public class AvroFloat2Producer extends BaseAvroProducer<Float2Vector> {
 
-  /** Instantiate an AvroFloatProducer. */
-  public AvroFloatProducer(Float4Vector vector) {
+  /** Instantiate an AvroFloat2Producer. */
+  public AvroFloat2Producer(Float2Vector vector) {
     super(vector);
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    encoder.writeFloat(vector.get(currentIndex++));
+    short rawValue = vector.getDataBuffer().getShort(currentIndex * (long) Float2Vector.TYPE_WIDTH);
+    encoder.writeFloat(Float16.toFloat(rawValue));
+    currentIndex++;
   }
 }

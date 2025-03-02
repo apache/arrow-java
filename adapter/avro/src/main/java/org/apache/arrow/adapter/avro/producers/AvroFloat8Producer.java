@@ -23,15 +23,17 @@ import org.apache.avro.io.Encoder;
 /**
  * Producer that produces double values from a {@link Float8Vector}, writes data to an Avro encoder.
  */
-public class AvroDoubleProducer extends BaseAvroProducer<Float8Vector> {
+public class AvroFloat8Producer extends BaseAvroProducer<Float8Vector> {
 
-  /** Instantiate an AvroDoubleProducer. */
-  public AvroDoubleProducer(Float8Vector vector) {
+  /** Instantiate an AvroFloat8Producer. */
+  public AvroFloat8Producer(Float8Vector vector) {
     super(vector);
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    encoder.writeDouble(vector.get(currentIndex++));
+    double value = vector.getDataBuffer().getDouble(currentIndex * (long) Float8Vector.TYPE_WIDTH);
+    encoder.writeDouble(value);
+    currentIndex++;
   }
 }
