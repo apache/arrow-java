@@ -34,6 +34,10 @@ import org.apache.arrow.adapter.avro.producers.AvroSmallIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStringProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStructProducer;
 import org.apache.arrow.adapter.avro.producers.AvroTinyIntProducer;
+import org.apache.arrow.adapter.avro.producers.AvroUint1Producer;
+import org.apache.arrow.adapter.avro.producers.AvroUint2Producer;
+import org.apache.arrow.adapter.avro.producers.AvroUint4Producer;
+import org.apache.arrow.adapter.avro.producers.AvroUint8Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUnionsProducer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
@@ -82,6 +86,10 @@ import org.apache.arrow.vector.TimeStampNanoVector;
 import org.apache.arrow.vector.TimeStampSecTZVector;
 import org.apache.arrow.vector.TimeStampSecVector;
 import org.apache.arrow.vector.TinyIntVector;
+import org.apache.arrow.vector.UInt1Vector;
+import org.apache.arrow.vector.UInt2Vector;
+import org.apache.arrow.vector.UInt4Vector;
+import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.ListVector;
@@ -600,6 +608,14 @@ public class ArrowToAvroUtils {
         return new AvroIntProducer((IntVector) vector);
       case BIGINT:
         return new AvroBigIntProducer((BigIntVector) vector);
+      case UINT1:
+        return new AvroUint1Producer((UInt1Vector) vector);
+      case UINT2:
+        return new AvroUint2Producer((UInt2Vector) vector);
+      case UINT4:
+        return new AvroUint4Producer((UInt4Vector) vector);
+      case UINT8:
+        return new AvroUint8Producer((UInt8Vector) vector);
       case FLOAT2:
         return new AvroFloat2Producer((Float2Vector) vector);
       case FLOAT4:
