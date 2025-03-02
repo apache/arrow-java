@@ -295,11 +295,9 @@ public class ArrowToAvroUtils {
         }
 
       case Utf8:
-      case LargeUtf8:
         return builder.stringType();
 
       case Binary:
-      case LargeBinary:
         return builder.bytesType();
 
       case FixedSizeBinary:
@@ -382,11 +380,9 @@ public class ArrowToAvroUtils {
         }
 
       case Utf8:
-      case LargeUtf8:
         return builder.stringType().noDefault();
 
       case Binary:
-      case LargeBinary:
         return builder.bytesType().noDefault();
 
       case FixedSizeBinary:
@@ -475,11 +471,9 @@ public class ArrowToAvroUtils {
         }
 
       case Utf8:
-      case LargeUtf8:
         return (SchemaBuilder.UnionAccumulator) builder.stringType();
 
       case Binary:
-      case LargeBinary:
         return (SchemaBuilder.UnionAccumulator) builder.bytesType();
 
       case FixedSizeBinary:
