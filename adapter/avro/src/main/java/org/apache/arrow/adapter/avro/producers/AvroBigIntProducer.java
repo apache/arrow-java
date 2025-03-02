@@ -18,35 +18,35 @@ package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
 import org.apache.arrow.vector.BaseFixedWidthVector;
-import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.BigIntVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces int values from an {@link IntVector}, writes data to an avro encoder.
+ * Producer that produces long values from a {@link BigIntVector}, writes data to an Avro encoder.
  *
  * <p>Logical types are also supported, for vectors derived from {@link BaseFixedWidthVector} where
- * the internal representation matches IntVector and requires no conversion.
+ * the internal representation matches BigIntVector and requires no conversion.
  */
-public class AvroIntProducer extends BaseAvroProducer<BaseFixedWidthVector> {
+public class AvroBigIntProducer extends BaseAvroProducer<BaseFixedWidthVector> {
 
-  /** Instantiate an AvroIntConsumer. */
-  public AvroIntProducer(IntVector vector) {
+  /** Instantiate an AvroBigIntProducer. */
+  public AvroBigIntProducer(BigIntVector vector) {
     super(vector);
   }
 
-  /** Protected constructor for a logical types with an integer representation. */
-  protected AvroIntProducer(BaseFixedWidthVector vector) {
+  /** Protected constructor for logical types with a long representation. */
+  protected AvroBigIntProducer(BaseFixedWidthVector vector) {
     super(vector);
-    if (vector.getTypeWidth() != IntVector.TYPE_WIDTH) {
+    if (vector.getTypeWidth() != BigIntVector.TYPE_WIDTH) {
       throw new IllegalArgumentException(
-          "AvroIntProducer requires type width = " + IntVector.TYPE_WIDTH);
+          "AvroBigIntProducer requires type width = " + BigIntVector.TYPE_WIDTH);
     }
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    int value = vector.getDataBuffer().getInt(currentIndex * (long) IntVector.TYPE_WIDTH);
-    encoder.writeInt(value);
+    long value = vector.getDataBuffer().getLong(currentIndex * (long) BigIntVector.TYPE_WIDTH);
+    encoder.writeLong(value);
     currentIndex++;
   }
 }

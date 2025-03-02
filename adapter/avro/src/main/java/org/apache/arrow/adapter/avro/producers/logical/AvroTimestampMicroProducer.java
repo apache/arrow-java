@@ -16,14 +16,14 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.vector.TimeStampMicroVector;
 
 /**
  * Producer that produces local timestamp (microseconds) values from a {@link TimeStampMicroVector},
  * writes data to an Avro encoder.
  */
-public class AvroTimestampMicroProducer extends AvroLongProducer {
+public class AvroTimestampMicroProducer extends AvroBigIntProducer {
 
   // Local timestamp in epoch microseconds stored as long, matches Avro local-timestamp-micros type
 

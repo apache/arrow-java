@@ -14,21 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.adapter.avro.producers.logical;
+package org.apache.arrow.adapter.avro.producers;
 
-import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
-import org.apache.arrow.vector.TimeMicroVector;
+import java.io.IOException;
+import org.apache.arrow.vector.SmallIntVector;
+import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces time (microseconds) values from a {@link TimeMicroVector}, writes data to
- * an Avro encoder.
+ * Producer that produces int values from an {@link SmallIntVector}, writes data to an avro encoder.
  */
-public class AvroTimeMicroProducer extends AvroBigIntProducer {
+public class AvroSmallIntProducer extends BaseAvroProducer<SmallIntVector> {
 
-  // Time in microseconds stored as long, matches Avro time-micros type
-
-  /** Instantiate an AvroTimeMicroProducer. */
-  public AvroTimeMicroProducer(TimeMicroVector vector) {
+  /** Instantiate an AvroSmallIntProducer. */
+  public AvroSmallIntProducer(SmallIntVector vector) {
     super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    short value = vector.getDataBuffer().getShort(currentIndex * (long) SmallIntVector.TYPE_WIDTH);
+    encoder.writeInt(value);
+    currentIndex++;
   }
 }

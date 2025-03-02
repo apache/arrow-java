@@ -17,36 +17,23 @@
 package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
-import org.apache.arrow.vector.BaseFixedWidthVector;
-import org.apache.arrow.vector.BigIntVector;
+import org.apache.arrow.vector.TinyIntVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces long values from a {@link BigIntVector}, writes data to an Avro encoder.
- *
- * <p>Logical types are also supported, for vectors derived from {@link BaseFixedWidthVector} where
- * the internal representation matches BigIntVector and requires no conversion.
+ * Producer that produces int values from an {@link TinyIntVector}, writes data to an avro encoder.
  */
-public class AvroLongProducer extends BaseAvroProducer<BaseFixedWidthVector> {
+public class AvroTinyIntProducer extends BaseAvroProducer<TinyIntVector> {
 
-  /** Instantiate an AvroLongProducer. */
-  public AvroLongProducer(BigIntVector vector) {
+  /** Instantiate an AvroTinyIntProducer. */
+  public AvroTinyIntProducer(TinyIntVector vector) {
     super(vector);
-  }
-
-  /** Protected constructor for logical types with a long representation. */
-  protected AvroLongProducer(BaseFixedWidthVector vector) {
-    super(vector);
-    if (vector.getTypeWidth() != BigIntVector.TYPE_WIDTH) {
-      throw new IllegalArgumentException(
-          "AvroLongProducer requires type width = " + BigIntVector.TYPE_WIDTH);
-    }
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    long value = vector.getDataBuffer().getLong(currentIndex * (long) BigIntVector.TYPE_WIDTH);
-    encoder.writeLong(value);
+    byte value = vector.getDataBuffer().getByte(currentIndex * (long) TinyIntVector.TYPE_WIDTH);
+    encoder.writeInt(value);
     currentIndex++;
   }
 }

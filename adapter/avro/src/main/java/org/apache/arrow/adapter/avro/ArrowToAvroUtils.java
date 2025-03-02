@@ -19,6 +19,7 @@ package org.apache.arrow.adapter.avro;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.arrow.adapter.avro.producers.AvroArraysProducer;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedProducer;
@@ -26,12 +27,13 @@ import org.apache.arrow.adapter.avro.producers.AvroFloat2Producer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat4Producer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat8Producer;
 import org.apache.arrow.adapter.avro.producers.AvroIntProducer;
-import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
 import org.apache.arrow.adapter.avro.producers.AvroMapProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullProducer;
 import org.apache.arrow.adapter.avro.producers.AvroNullableProducer;
+import org.apache.arrow.adapter.avro.producers.AvroSmallIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStringProducer;
 import org.apache.arrow.adapter.avro.producers.AvroStructProducer;
+import org.apache.arrow.adapter.avro.producers.AvroTinyIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroUnionsProducer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
@@ -66,6 +68,7 @@ import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.Float8Vector;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.NullVector;
+import org.apache.arrow.vector.SmallIntVector;
 import org.apache.arrow.vector.TimeMicroVector;
 import org.apache.arrow.vector.TimeMilliVector;
 import org.apache.arrow.vector.TimeNanoVector;
@@ -78,6 +81,7 @@ import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.TimeStampNanoVector;
 import org.apache.arrow.vector.TimeStampSecTZVector;
 import org.apache.arrow.vector.TimeStampSecVector;
+import org.apache.arrow.vector.TinyIntVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.ListVector;
@@ -588,10 +592,14 @@ public class ArrowToAvroUtils {
         return new AvroNullProducer((NullVector) vector);
       case BIT:
         return new AvroBooleanProducer((BitVector) vector);
+      case TINYINT:
+        return new AvroTinyIntProducer((TinyIntVector) vector);
+      case SMALLINT:
+        return new AvroSmallIntProducer((SmallIntVector) vector);
       case INT:
         return new AvroIntProducer((IntVector) vector);
       case BIGINT:
-        return new AvroLongProducer((BigIntVector) vector);
+        return new AvroBigIntProducer((BigIntVector) vector);
       case FLOAT2:
         return new AvroFloat2Producer((Float2Vector) vector);
       case FLOAT4:

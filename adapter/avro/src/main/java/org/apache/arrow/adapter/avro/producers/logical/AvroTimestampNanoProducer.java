@@ -16,14 +16,14 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import org.apache.arrow.adapter.avro.producers.AvroLongProducer;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.vector.TimeStampNanoVector;
 
 /**
  * Producer that produces local timestamp (nanoseconds) values from a {@link TimeStampNanoVector},
  * writes data to an Avro encoder.
  */
-public class AvroTimestampNanoProducer extends AvroLongProducer {
+public class AvroTimestampNanoProducer extends AvroBigIntProducer {
 
   // Local timestamp in epoch nanoseconds stored as long, matches Avro local-timestamp-nanos type
 
