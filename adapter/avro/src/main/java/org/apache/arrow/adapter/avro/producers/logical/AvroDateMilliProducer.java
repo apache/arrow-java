@@ -22,8 +22,8 @@ import org.apache.arrow.vector.DateMilliVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces date values from a {@link DateMilliVector}, writes data to an Avro
- * encoder.
+ * Producer that converts days in milliseconds from a {@link DateMilliVector} and produces date
+ * (INT) values, writes data to an Avro encoder.
  */
 public class AvroDateMilliProducer extends BaseAvroProducer<DateMilliVector> {
 
