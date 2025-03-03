@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.utils;
 
+import com.google.common.base.Strings;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,7 +121,12 @@ public class SqlTypes {
       case Time:
         return Types.TIME;
       case Timestamp:
-        return Types.TIMESTAMP;
+        String tz = ((ArrowType.Timestamp) arrowType).getTimezone();
+        if (Strings.isNullOrEmpty(tz)) {
+          return Types.TIMESTAMP;
+        } else {
+          return Types.TIMESTAMP_WITH_TIMEZONE;
+        }
       case Bool:
         return Types.BOOLEAN;
       case Decimal:
