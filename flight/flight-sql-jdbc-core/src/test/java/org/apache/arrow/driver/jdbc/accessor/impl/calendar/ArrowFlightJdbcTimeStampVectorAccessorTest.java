@@ -404,6 +404,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
     return expectedTimestamp;
   }
 
+  /** ZonedDateTime contains all necessary information to generate any java.time object. */
   private ZonedDateTime getZonedDateTime(int currentRow, String timeZone) {
     Object object = vector.getObject(currentRow);
     TimeZone tz = TimeZone.getTimeZone(timeZone);
