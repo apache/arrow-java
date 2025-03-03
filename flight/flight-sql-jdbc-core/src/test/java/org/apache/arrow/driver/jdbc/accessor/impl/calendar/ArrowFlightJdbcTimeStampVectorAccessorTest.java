@@ -24,8 +24,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -200,6 +205,82 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
 
   @ParameterizedTest
   @MethodSource("data")
+  public void testShouldGetObjectReturnValidLocalDateTime(
+      Supplier<TimeStampVector> vectorSupplier, String vectorType, String timeZone)
+      throws Exception {
+    setup(vectorSupplier);
+    final String expectedTimeZone = Objects.requireNonNullElse(timeZone, "UTC");
+
+    accessorIterator.iterate(
+        vector,
+        (accessor, currentRow) -> {
+          final LocalDateTime value = accessor.getObject(LocalDateTime.class);
+
+          assertThat(
+              value, equalTo(getZonedDateTime(currentRow, expectedTimeZone).toLocalDateTime()));
+          assertThat(accessor.wasNull(), is(false));
+        });
+  }
+
+  @ParameterizedTest
+  @MethodSource("data")
+  public void testShouldGetObjectReturnValidInstant(
+      Supplier<TimeStampVector> vectorSupplier, String vectorType, String timeZone)
+      throws Exception {
+    setup(vectorSupplier);
+    final String expectedTimeZone = Objects.requireNonNullElse(timeZone, "UTC");
+
+    accessorIterator.iterate(
+        vector,
+        (accessor, currentRow) -> {
+          final Instant value = accessor.getObject(Instant.class);
+
+          assertThat(value, equalTo(getZonedDateTime(currentRow, expectedTimeZone).toInstant()));
+          assertThat(accessor.wasNull(), is(false));
+        });
+  }
+
+  @ParameterizedTest
+  @MethodSource("data")
+  public void testShouldGetObjectReturnValidOffsetDateTime(
+      Supplier<TimeStampVector> vectorSupplier, String vectorType, String timeZone)
+      throws Exception {
+    setup(vectorSupplier);
+    final String expectedTimeZone = Objects.requireNonNullElse(timeZone, "UTC");
+
+    accessorIterator.iterate(
+        vector,
+        (accessor, currentRow) -> {
+          final OffsetDateTime value = accessor.getObject(OffsetDateTime.class);
+          final OffsetDateTime vectorValue =
+              getZonedDateTime(currentRow, expectedTimeZone).toOffsetDateTime();
+          assertThat(value, equalTo(vectorValue));
+          assertThat(value.getOffset(), equalTo(vectorValue.getOffset()));
+          assertThat(accessor.wasNull(), is(false));
+        });
+  }
+
+  @ParameterizedTest
+  @MethodSource("data")
+  public void testShouldGetObjectReturnValidZonedDateTime(
+      Supplier<TimeStampVector> vectorSupplier, String vectorType, String timeZone)
+      throws Exception {
+    setup(vectorSupplier);
+    final String expectedTimeZone = Objects.requireNonNullElse(timeZone, "UTC");
+
+    accessorIterator.iterate(
+        vector,
+        (accessor, currentRow) -> {
+          final ZonedDateTime value = accessor.getObject(ZonedDateTime.class);
+
+          assertThat(value, equalTo(getZonedDateTime(currentRow, expectedTimeZone)));
+          assertThat(value.getZone(), equalTo(ZoneId.of(expectedTimeZone)));
+          assertThat(accessor.wasNull(), is(false));
+        });
+  }
+
+  @ParameterizedTest
+  @MethodSource("data")
   public void testShouldGetTimestampReturnNull(Supplier<TimeStampVector> vectorSupplier) {
     setup(vectorSupplier);
     vector.setNull(0);
@@ -315,6 +396,24 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
       long millis = timeUnit.toMillis((Long) object);
       long offset = TimeZone.getTimeZone(timeZone).getOffset(millis);
       expectedTimestamp = new Timestamp(millis + offset);
+    }
+    return expectedTimestamp;
+  }
+
+  private ZonedDateTime getZonedDateTime(int currentRow, String timeZone) {
+    Object object = vector.getObject(currentRow);
+    TimeZone tz = TimeZone.getTimeZone(timeZone);
+    ZonedDateTime expectedTimestamp = null;
+    if (object instanceof LocalDateTime) {
+      expectedTimestamp = ((LocalDateTime) object).atZone(tz.toZoneId());
+    } else if (object instanceof Long) {
+      TimeUnit timeUnit = getTimeUnitForVector(vector);
+      long millis = timeUnit.toMillis((Long) object);
+      long offset = tz.getOffset(millis);
+      // TODO: should we actually add the offset here? I'm not completely sure how the value is
+      // stored in the vector
+      LocalDateTime local = new Timestamp(millis + offset).toLocalDateTime();
+      expectedTimestamp = ZonedDateTime.of(local, tz.toZoneId());
     }
     return expectedTimestamp;
   }
