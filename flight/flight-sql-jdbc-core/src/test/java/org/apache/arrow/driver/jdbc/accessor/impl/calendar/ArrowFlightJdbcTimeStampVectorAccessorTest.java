@@ -412,12 +412,8 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
       expectedTimestamp = ((LocalDateTime) object).atZone(tz.toZoneId());
     } else if (object instanceof Long) {
       TimeUnit timeUnit = getTimeUnitForVector(vector);
-      long millis = timeUnit.toMillis((Long) object);
-      long offset = tz.getOffset(millis);
-      // TODO: should we actually add the offset here? I'm not completely sure how the value is
-      // stored in the vector
-      LocalDateTime local = new Timestamp(millis + offset).toLocalDateTime();
-      expectedTimestamp = ZonedDateTime.of(local, tz.toZoneId());
+      Instant instant = Instant.ofEpochMilli(timeUnit.toMillis((Long) object));
+      expectedTimestamp = ZonedDateTime.ofInstant(instant, tz.toZoneId());
     }
     return expectedTimestamp;
   }
