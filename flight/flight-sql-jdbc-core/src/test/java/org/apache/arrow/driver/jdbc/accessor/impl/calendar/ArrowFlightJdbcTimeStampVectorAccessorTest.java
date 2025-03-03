@@ -215,9 +215,10 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
         vector,
         (accessor, currentRow) -> {
           final LocalDateTime value = accessor.getObject(LocalDateTime.class);
+          final LocalDateTime expectedValue =
+              getZonedDateTime(currentRow, expectedTimeZone).toLocalDateTime();
 
-          assertThat(
-              value, equalTo(getZonedDateTime(currentRow, expectedTimeZone).toLocalDateTime()));
+          assertThat(value, equalTo(expectedValue));
           assertThat(accessor.wasNull(), is(false));
         });
   }
@@ -234,8 +235,9 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
         vector,
         (accessor, currentRow) -> {
           final Instant value = accessor.getObject(Instant.class);
+          final Instant expectedValue = getZonedDateTime(currentRow, expectedTimeZone).toInstant();
 
-          assertThat(value, equalTo(getZonedDateTime(currentRow, expectedTimeZone).toInstant()));
+          assertThat(value, equalTo(expectedValue));
           assertThat(accessor.wasNull(), is(false));
         });
   }
@@ -252,10 +254,11 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
         vector,
         (accessor, currentRow) -> {
           final OffsetDateTime value = accessor.getObject(OffsetDateTime.class);
-          final OffsetDateTime vectorValue =
+          final OffsetDateTime expectedValue =
               getZonedDateTime(currentRow, expectedTimeZone).toOffsetDateTime();
-          assertThat(value, equalTo(vectorValue));
-          assertThat(value.getOffset(), equalTo(vectorValue.getOffset()));
+
+          assertThat(value, equalTo(expectedValue));
+          assertThat(value.getOffset(), equalTo(expectedValue.getOffset()));
           assertThat(accessor.wasNull(), is(false));
         });
   }
@@ -272,8 +275,9 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
         vector,
         (accessor, currentRow) -> {
           final ZonedDateTime value = accessor.getObject(ZonedDateTime.class);
+          final ZonedDateTime expectedValue = getZonedDateTime(currentRow, expectedTimeZone);
 
-          assertThat(value, equalTo(getZonedDateTime(currentRow, expectedTimeZone)));
+          assertThat(value, equalTo(expectedValue));
           assertThat(value.getZone(), equalTo(ZoneId.of(expectedTimeZone)));
           assertThat(accessor.wasNull(), is(false));
         });
