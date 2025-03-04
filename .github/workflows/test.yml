@@ -63,7 +63,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: Cache Docker Volumes
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: .docker
           key: maven-${{ matrix.jdk }}-${{ matrix.maven }}-${{ hashFiles('compose.yaml', '**/pom.xml', '**/*.java') }}
@@ -180,7 +180,7 @@ jobs:
         run: |
           ci/scripts/util_free_space.sh
       - name: Cache Docker Volumes
-        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf # v4.2.2
         with:
           path: .docker
           key: integration-conda-${{ hashFiles('cpp/**') }}
