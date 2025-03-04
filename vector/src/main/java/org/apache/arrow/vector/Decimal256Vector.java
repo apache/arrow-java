@@ -58,7 +58,7 @@ public final class Decimal256Vector extends BaseFixedWidthVector
   public Decimal256Vector(String name, BufferAllocator allocator, int precision, int scale) {
     this(
         name,
-        FieldType.nullable(new ArrowType.Decimal(precision, scale, /*bitWidth=*/ TYPE_WIDTH * 8)),
+        FieldType.nullable(new ArrowType.Decimal(precision, scale, /* bitWidth= */ TYPE_WIDTH * 8)),
         allocator);
   }
 

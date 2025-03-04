@@ -32,6 +32,7 @@ public class MemoryUtil {
       org.slf4j.LoggerFactory.getLogger(MemoryUtil.class);
 
   private static final @Nullable Constructor<?> DIRECT_BUFFER_CONSTRUCTOR;
+
   /** The unsafe object from which to access the off-heap memory. */
   private static final Unsafe UNSAFE;
 

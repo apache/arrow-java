@@ -61,7 +61,7 @@ public class TestFixedSizeListVector {
 
   @Test
   public void testIntType() {
-    try (FixedSizeListVector vector = FixedSizeListVector.empty("list", /*size=*/ 2, allocator)) {
+    try (FixedSizeListVector vector = FixedSizeListVector.empty("list", /* size= */ 2, allocator)) {
       IntVector nested =
           (IntVector)
               vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType())).getVector();
@@ -90,7 +90,7 @@ public class TestFixedSizeListVector {
 
   @Test
   public void testFloatTypeNullable() {
-    try (FixedSizeListVector vector = FixedSizeListVector.empty("list", /*size=*/ 2, allocator)) {
+    try (FixedSizeListVector vector = FixedSizeListVector.empty("list", /* size= */ 2, allocator)) {
       Float4Vector nested =
           (Float4Vector)
               vector.addOrGetVector(FieldType.nullable(MinorType.FLOAT4.getType())).getVector();
@@ -275,7 +275,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testConsistentChildName() throws Exception {
     try (FixedSizeListVector listVector =
-        FixedSizeListVector.empty("sourceVector", /*size=*/ 2, allocator)) {
+        FixedSizeListVector.empty("sourceVector", /* size= */ 2, allocator)) {
       String emptyListStr = listVector.getField().toString();
       assertTrue(emptyListStr.contains(ListVector.DATA_VECTOR_NAME));
 
@@ -292,7 +292,7 @@ public class TestFixedSizeListVector {
      * Read and verify
      */
     try (final FixedSizeListVector vector =
-        FixedSizeListVector.empty("vector", /*size=*/ 3, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
 
       UnionFixedSizeListWriter writer = vector.getWriter();
       writer.allocate();
@@ -321,7 +321,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testUnionFixedSizeListWriter() throws Exception {
     try (final FixedSizeListVector vector1 =
-        FixedSizeListVector.empty("vector", /*size=*/ 3, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
 
       UnionFixedSizeListWriter writer1 = vector1.getWriter();
       writer1.allocate();
@@ -350,7 +350,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testWriteDecimal() throws Exception {
     try (final FixedSizeListVector vector =
-        FixedSizeListVector.empty("vector", /*size=*/ 3, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
 
       UnionFixedSizeListWriter writer = vector.getWriter();
       writer.allocate();
@@ -379,7 +379,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testDecimalIndexCheck() throws Exception {
     try (final FixedSizeListVector vector =
-        FixedSizeListVector.empty("vector", /*size=*/ 3, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
 
       UnionFixedSizeListWriter writer = vector.getWriter();
       writer.allocate();
@@ -405,7 +405,7 @@ public class TestFixedSizeListVector {
         IllegalStateException.class,
         () -> {
           try (final FixedSizeListVector vector1 =
-              FixedSizeListVector.empty("vector", /*size=*/ 3, allocator)) {
+              FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
 
             UnionFixedSizeListWriter writer1 = vector1.getWriter();
             writer1.allocate();
@@ -430,7 +430,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testSplitAndTransfer() throws Exception {
     try (final FixedSizeListVector vector1 =
-        FixedSizeListVector.empty("vector", /*size=*/ 3, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
 
       UnionFixedSizeListWriter writer1 = vector1.getWriter();
       writer1.allocate();
@@ -462,7 +462,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testZeroWidthVector() {
     try (final FixedSizeListVector vector1 =
-        FixedSizeListVector.empty("vector", /*size=*/ 0, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 0, allocator)) {
 
       UnionFixedSizeListWriter writer1 = vector1.getWriter();
       writer1.allocate();
@@ -494,7 +494,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testVectorWithNulls() {
     try (final FixedSizeListVector vector1 =
-        FixedSizeListVector.empty("vector", /*size=*/ 4, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 4, allocator)) {
 
       UnionFixedSizeListWriter writer1 = vector1.getWriter();
       writer1.allocate();
@@ -527,7 +527,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testWriteVarCharHelpers() throws Exception {
     try (final FixedSizeListVector vector =
-        FixedSizeListVector.empty("vector", /*size=*/ 4, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 4, allocator)) {
 
       UnionFixedSizeListWriter writer = vector.getWriter();
       writer.allocate();
@@ -547,7 +547,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testWriteLargeVarCharHelpers() throws Exception {
     try (final FixedSizeListVector vector =
-        FixedSizeListVector.empty("vector", /*size=*/ 4, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 4, allocator)) {
 
       UnionFixedSizeListWriter writer = vector.getWriter();
       writer.allocate();
@@ -567,7 +567,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testWriteVarBinaryHelpers() throws Exception {
     try (final FixedSizeListVector vector =
-        FixedSizeListVector.empty("vector", /*size=*/ 4, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 4, allocator)) {
 
       UnionFixedSizeListWriter writer = vector.getWriter();
       writer.allocate();
@@ -599,7 +599,7 @@ public class TestFixedSizeListVector {
   @Test
   public void testWriteLargeVarBinaryHelpers() throws Exception {
     try (final FixedSizeListVector vector =
-        FixedSizeListVector.empty("vector", /*size=*/ 4, allocator)) {
+        FixedSizeListVector.empty("vector", /* size= */ 4, allocator)) {
 
       UnionFixedSizeListWriter writer = vector.getWriter();
       writer.allocate();

@@ -208,7 +208,7 @@ public class MessageSerializerTest {
 
     {
       byte[] validBytes = out.toByteArray();
-      byte[] missingBytes = Arrays.copyOfRange(validBytes, /*from=*/ 0, validBytes.length - 1);
+      byte[] missingBytes = Arrays.copyOfRange(validBytes, /* from= */ 0, validBytes.length - 1);
 
       ByteArrayInputStream in = new ByteArrayInputStream(missingBytes);
       ReadChannel channel = new ReadChannel(Channels.newChannel(in));
