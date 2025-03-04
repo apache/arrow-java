@@ -14,15 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import org.apache.arrow.vector.complex.DenseUnionVector;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer which produces union values from a {@link DenseUnionVector}, writes data to an avro
+ * encoder.
+ */
+public class AvroDenseUnionProducer extends BaseUnionProducer<DenseUnionVector> {
+
+  /** Instantiate an AvroUnionProducer. */
+  public AvroDenseUnionProducer(DenseUnionVector vector, Producer<?>[] delegates) {
+    super(vector, delegates);
+  }
+
+  @Override
+  protected int getCurrentTypeIndex() {
+    return vector.getTypeId(currentIndex);
+  }
 }
