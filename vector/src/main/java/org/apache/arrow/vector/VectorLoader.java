@@ -122,6 +122,10 @@ public class VectorLoader {
         (int) (variadicBufferLayoutCount + TypeLayout.getTypeBufferCount(field.getType()));
     List<ArrowBuf> ownBuffers = new ArrayList<>(bufferLayoutCount);
     for (int j = 0; j < bufferLayoutCount; j++) {
+      if (!buffers.hasNext()) {
+        throw new IllegalArgumentException(
+            "no more buffers for field " + field + ". Expected " + bufferLayoutCount);
+      }
       ArrowBuf nextBuf = buffers.next();
       // for vectors without nulls, the buffer is empty, so there is no need to decompress it.
       ArrowBuf bufferToAdd =
