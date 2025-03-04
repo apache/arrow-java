@@ -20,8 +20,10 @@ import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdb
 import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeVectorGetter.Holder;
 import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcTimeVectorGetter.createGetter;
 
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
@@ -122,6 +124,19 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
   }
 
   @Override
+  public <T> T getObject(final Class<T> type) throws SQLException {
+    final Object value;
+    if (type == LocalTime.class) {
+      value = getLocalTime();
+    } else if (type == Time.class) {
+      value = getObject();
+    } else {
+      throw new SQLException("invalid class");
+    }
+    return !type.isPrimitive() && wasNull ? null : type.cast(value);
+  }
+
+  @Override
   public Time getTime(Calendar calendar) {
     fillHolder();
     if (this.wasNull) {
@@ -132,6 +147,10 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
     long milliseconds = this.timeUnit.toMillis(value);
 
     return new ArrowFlightJdbcTime(DateTimeUtils.applyCalendarOffset(milliseconds, calendar));
+  }
+
+  private LocalTime getLocalTime() {
+    return getTime(null).toLocalTime();
   }
 
   private void fillHolder() {
