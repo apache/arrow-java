@@ -14,15 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import java.io.IOException;
+import org.apache.arrow.memory.util.Float16;
+import org.apache.arrow.vector.Float2Vector;
+import org.apache.avro.io.Encoder;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces float values from a {@link Float2Vector}, writes data to an Avro encoder.
+ */
+public class AvroFloat2Producer extends BaseAvroProducer<Float2Vector> {
+
+  /** Instantiate an AvroFloat2Producer. */
+  public AvroFloat2Producer(Float2Vector vector) {
+    super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    short rawValue = vector.getDataBuffer().getShort(currentIndex * (long) Float2Vector.TYPE_WIDTH);
+    encoder.writeFloat(Float16.toFloat(rawValue));
+    currentIndex++;
+  }
 }

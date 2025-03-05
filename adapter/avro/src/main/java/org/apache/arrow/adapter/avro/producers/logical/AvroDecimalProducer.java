@@ -14,15 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers.logical;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import org.apache.arrow.adapter.avro.producers.AvroFixedSizeBinaryProducer;
+import org.apache.arrow.vector.DecimalVector;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces decimal values from a {@link DecimalVector}, writes data to an Avro
+ * encoder.
+ */
+public class AvroDecimalProducer extends AvroFixedSizeBinaryProducer {
+
+  // Decimal stored as fixed width bytes, matches Avro decimal encoding
+
+  /** Instantiate an AvroDecimalProducer. */
+  public AvroDecimalProducer(DecimalVector vector) {
+    super(vector);
+  }
 }
