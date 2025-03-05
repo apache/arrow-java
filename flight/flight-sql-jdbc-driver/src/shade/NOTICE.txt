@@ -73,7 +73,7 @@ This product includes gRPC 1.70.0, with the following in its NOTICE:
 
 ---------------------------------------------------
 
-This product includes Netty 4.1.117.Final, with the following in its NOTICE:
+This product includes Netty 4.1.119.Final, with the following in its NOTICE:
 
 |                             The Netty Project
 |                             =================
