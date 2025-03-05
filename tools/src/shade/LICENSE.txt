@@ -203,7 +203,7 @@
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Netty 4.1.117.Final.
+This binary artifact contains Netty 4.1.119.Final.
 
 Copyright: Copyright 2014 The Netty Project
 Home page: https://netty.io/
@@ -211,7 +211,7 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Jackson 2.18.2.
+This binary artifact contains Jackson 2.18.3.
 
 Home page: https://github.com/FasterXML/jackson
 License: https://www.apache.org/licenses/LICENSE-2.0
@@ -250,7 +250,7 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Luben Zstd 1.5.6-9.
+This binary artifact contains Luben Zstd 1.5.7-1.
 
 Copyright: Copyright (c) 2015-present, Luben Karavelov/ All rights reserved.
 Home page: https://github.com/luben/zstd-jni
@@ -294,14 +294,14 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Google Flatbuffers 25.1.24.
+This binary artifact contains Google Flatbuffers 25.2.10.
 
 Home page: https://flatbuffers.dev/
 License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Slf4j 2.0.16.
+This binary artifact contains Slf4j 2.0.17.
 
 Copyright: Copyright (c) 2004-2022 QOS.ch Sarl (Switzerland)
 Home page: http://www.slf4j.org/
