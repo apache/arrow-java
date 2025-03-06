@@ -19,8 +19,22 @@ package org.apache.arrow.adapter.avro;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.arrow.adapter.avro.consumers.CompositeAvroConsumer;
+import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
+import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileWriter;
@@ -28,10 +42,16 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.BinaryDecoder;
+import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.io.EncoderFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TestWriteReadAvroRecord {
 
@@ -81,5 +101,86 @@ public class TestWriteReadAvroRecord {
     assertEquals("Ben", deUser2.get("name").toString());
     assertEquals(7, deUser2.get("favorite_number"));
     assertEquals("red", deUser2.get("favorite_color").toString());
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  public void testWriteAndReadVSR(boolean useSchemaFile) throws Exception {
+
+    BufferAllocator allocator = new RootAllocator();
+    FieldType stringNotNull = new FieldType(false, ArrowType.Utf8.INSTANCE, null);
+    FieldType stringNull = new FieldType(true, ArrowType.Utf8.INSTANCE, null);
+    FieldType intN32Null = new FieldType(true, new ArrowType.Int(32, true), null);
+
+    List<Field> fields = new ArrayList<>();
+    fields.add(new Field("name", stringNotNull, null));
+    fields.add(new Field("favorite_number", intN32Null, null));
+    fields.add(new Field("favorite_color", stringNull, null));
+
+    VarCharVector nameVector = new VarCharVector(fields.get(0), allocator);
+    nameVector.allocateNew(2);
+    nameVector.set(0, "Alyssa".getBytes(StandardCharsets.UTF_8));
+    nameVector.set(1, "Ben".getBytes(StandardCharsets.UTF_8));
+
+    IntVector favNumberVector = new IntVector(fields.get(1), allocator);
+    favNumberVector.allocateNew(2);
+    favNumberVector.set(0, 256);
+    favNumberVector.set(1, 7);
+
+    VarCharVector favColorVector = new VarCharVector(fields.get(2), allocator);
+    favColorVector.allocateNew(2);
+    favColorVector.setNull(0);
+    favColorVector.set(1, "red".getBytes(StandardCharsets.UTF_8));
+
+    List<FieldVector> vectors = new ArrayList<>();
+    vectors.add(nameVector);
+    vectors.add(favNumberVector);
+    vectors.add(favColorVector);
+
+    Schema schema =
+        useSchemaFile
+            ? AvroTestBase.getSchema("test.avsc")
+            : ArrowToAvroUtils.createAvroSchema(fields);
+
+    File dataFile = new File(TMP, "test_vsr.avro");
+    AvroToArrowConfig config = new AvroToArrowConfigBuilder(allocator).build();
+
+    try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+
+      BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+      CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+
+      producer.produce(encoder);
+      producer.produce(encoder);
+
+      encoder.flush();
+    }
+
+    List<Field> roundTripFields = new ArrayList<>();
+    List<FieldVector> roundTripVectors = new ArrayList<>();
+
+    try (FileInputStream fis = new FileInputStream(dataFile)) {
+
+      BinaryDecoder decoder = new DecoderFactory().directBinaryDecoder(fis, null);
+      CompositeAvroConsumer consumer = AvroToArrowUtils.createCompositeConsumer(schema, config);
+
+      consumer.getConsumers().forEach(c -> roundTripFields.add(c.getVector().getField()));
+      consumer.getConsumers().forEach(c -> roundTripVectors.add(c.getVector()));
+      consumer.consume(decoder);
+      consumer.consume(decoder);
+    }
+
+    VectorSchemaRoot root = new VectorSchemaRoot(fields, vectors, 2);
+    VectorSchemaRoot roundTripRoot = new VectorSchemaRoot(roundTripFields, roundTripVectors, 2);
+
+    assertEquals(root.getRowCount(), roundTripRoot.getRowCount());
+
+    for (int row = 0; row < 2; row++) {
+      for (int col = 0; col < 3; col++) {
+        FieldVector vector = root.getVector(col);
+        FieldVector roundTripVector = roundTripRoot.getVector(col);
+        assertEquals(vector.getObject(row), roundTripVector.getObject(row));
+      }
+    }
   }
 }
