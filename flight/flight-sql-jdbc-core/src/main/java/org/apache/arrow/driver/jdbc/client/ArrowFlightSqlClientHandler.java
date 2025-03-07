@@ -17,10 +17,13 @@
 package org.apache.arrow.driver.jdbc.client;
 
 import com.google.common.collect.ImmutableMap;
+import io.grpc.netty.NettyChannelBuilder;
+import io.netty.channel.ChannelOption;
 import java.io.IOException;
 import java.net.URI;
 import java.security.GeneralSecurityException;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,6 +39,7 @@ import org.apache.arrow.flight.CloseSessionRequest;
 import org.apache.arrow.flight.FlightClient;
 import org.apache.arrow.flight.FlightClientMiddleware;
 import org.apache.arrow.flight.FlightEndpoint;
+import org.apache.arrow.flight.FlightGrpcUtils;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.FlightStatusCode;
@@ -50,6 +54,7 @@ import org.apache.arrow.flight.auth2.ClientBearerHeaderHandler;
 import org.apache.arrow.flight.auth2.ClientIncomingAuthHeaderMiddleware;
 import org.apache.arrow.flight.client.ClientCookieMiddleware;
 import org.apache.arrow.flight.grpc.CredentialCallOption;
+import org.apache.arrow.flight.grpc.NettyClientBuilder;
 import org.apache.arrow.flight.sql.FlightSqlClient;
 import org.apache.arrow.flight.sql.impl.FlightSql.SqlInfo;
 import org.apache.arrow.flight.sql.util.TableRef;
@@ -138,12 +143,11 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           // Clone the builder and then set the new endpoint on it.
 
           // GH-38574: Currently a new FlightClient will be made for each partition that returns a
-          // non-empty Location
-          // then disposed of. It may be better to cache clients because a server may report the
-          // same Locations.
-          // It would also be good to identify when the reported location is the same as the
-          // original connection's
-          // Location and skip creating a FlightClient in that scenario.
+          // non-empty Location then disposed of. It may be better to cache clients because a server
+          // may report the same Locations. It would also be good to identify when the reported
+          // location
+          // is the same as the original connection's Location and skip creating a FlightClient in
+          // that scenario.
           List<Exception> exceptions = new ArrayList<>();
           CloseableEndpointStreamPair stream = null;
           for (Location location : endpoint.getLocations()) {
@@ -158,7 +162,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                 new Builder(ArrowFlightSqlClientHandler.this.builder)
                     .withHost(endpointUri.getHost())
                     .withPort(endpointUri.getPort())
-                    .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS));
+                    .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS))
+                    .withConnectTimeout(builder.connectTimeout);
 
             ArrowFlightSqlClientHandler endpointHandler = null;
             try {
@@ -177,6 +182,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
               exceptions.add(ex);
               continue;
             }
+
             break;
           }
           if (stream != null) {
@@ -543,6 +549,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting Optional<String> catalog = Optional.empty();
 
+    @VisibleForTesting @Nullable Duration connectTimeout;
+
     // These two middleware are for internal use within build() and should not be exposed by builder
     // APIs.
     // Note that these middleware may not necessarily be registered.
@@ -825,6 +833,19 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       return this;
     }
 
+    public Builder withConnectTimeout(Duration connectTimeout) {
+      this.connectTimeout = connectTimeout;
+      return this;
+    }
+
+    /** Get the location that this client will connect to. */
+    public Location getLocation() {
+      if (useEncryption) {
+        return Location.forGrpcTls(host, port);
+      }
+      return Location.forGrpcInsecure(host, port);
+    }
+
     /**
      * Builds a new {@link ArrowFlightSqlClientHandler} from the provided fields.
      *
@@ -845,17 +866,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         if (isUsingUserPasswordAuth) {
           buildTimeMiddlewareFactories.add(authFactory);
         }
-        final FlightClient.Builder clientBuilder = FlightClient.builder().allocator(allocator);
+        final NettyClientBuilder clientBuilder = new NettyClientBuilder();
+        clientBuilder.allocator(allocator);
 
         buildTimeMiddlewareFactories.add(new ClientCookieMiddleware.Factory());
         buildTimeMiddlewareFactories.forEach(clientBuilder::intercept);
-        Location location;
         if (useEncryption) {
-          location = Location.forGrpcTls(host, port);
           clientBuilder.useTls();
-        } else {
-          location = Location.forGrpcInsecure(host, port);
         }
+        Location location = getLocation();
         clientBuilder.location(location);
 
         if (useEncryption) {
@@ -883,7 +902,14 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           }
         }
 
-        client = clientBuilder.build();
+        NettyChannelBuilder channelBuilder = clientBuilder.build();
+        if (connectTimeout != null) {
+          channelBuilder.withOption(
+              ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis());
+        }
+        client =
+            FlightGrpcUtils.createFlightClient(
+                allocator, channelBuilder.build(), clientBuilder.middleware());
         final ArrayList<CallOption> credentialOptions = new ArrayList<>();
         if (isUsingUserPasswordAuth) {
           // If the authFactory has already been used for a handshake, use the existing token.

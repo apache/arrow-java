@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.utils;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -163,6 +164,16 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     return ArrowFlightConnectionProperty.CATALOG.getString(properties);
   }
 
+  /** The initial connect timeout. */
+  public Duration getConnectTimeout() {
+    Integer timeout = ArrowFlightConnectionProperty.CONNECT_TIMEOUT_MILLIS.getInteger(properties);
+    if (timeout == null) {
+      return Duration.ofMillis(
+          (int) ArrowFlightConnectionProperty.CONNECT_TIMEOUT_MILLIS.defaultValue());
+    }
+    return Duration.ofMillis(timeout);
+  }
+
   /**
    * Gets the {@link CallOption}s from this {@link ConnectionConfig}.
    *
@@ -213,7 +224,9 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     TOKEN("token", null, Type.STRING, false),
     RETAIN_COOKIES("retainCookies", true, Type.BOOLEAN, false),
     RETAIN_AUTH("retainAuth", true, Type.BOOLEAN, false),
-    CATALOG("catalog", null, Type.STRING, false);
+    CATALOG("catalog", null, Type.STRING, false),
+    CONNECT_TIMEOUT_MILLIS("connectTimeoutMs", 10000, Type.NUMBER, false),
+    ;
 
     private final String camelName;
     private final Object defaultValue;
