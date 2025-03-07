@@ -81,4 +81,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./.github/workflows/dev_pr_milestone.sh "${GITHUB_REPOSITORY}" ${{github.event.number}}
+          ./.github/workflows/dev_pr_milestone.sh "${GITHUB_REPOSITORY}" ${{ github.event.number }}
