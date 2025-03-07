@@ -75,3 +75,10 @@ jobs:
           script: |
             const scripts = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/dev_pr.js`);
             await scripts.check_linked_issue({core, github, context, issue: ${{ steps.title-format.outputs.result }}});
+
+      - name: Assign milestone
+        if: '! github.event.pull_request.draft'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./.github/workflows/dev_pr_milestone.sh "${GITHUB_REPOSITORY}" ${{ github.event.number }}
