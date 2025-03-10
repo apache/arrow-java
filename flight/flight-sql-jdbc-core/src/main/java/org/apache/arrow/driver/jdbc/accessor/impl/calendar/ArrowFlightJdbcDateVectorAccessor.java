@@ -24,7 +24,9 @@ import static org.apache.calcite.avatica.util.DateTimeUtils.MILLIS_PER_DAY;
 import static org.apache.calcite.avatica.util.DateTimeUtils.unixDateToString;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
@@ -86,6 +88,19 @@ public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
   }
 
   @Override
+  public <T> T getObject(final Class<T> type) throws SQLException {
+    final Object value;
+    if (type == LocalDate.class) {
+      value = getLocalDate();
+    } else if (type == Date.class) {
+      value = getObject();
+    } else {
+      throw new SQLException("invalid class");
+    }
+    return !type.isPrimitive() && wasNull ? null : type.cast(value);
+  }
+
+  @Override
   public Date getDate(Calendar calendar) {
     fillHolder();
     if (this.wasNull) {
@@ -133,5 +148,9 @@ public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
     }
 
     throw new IllegalArgumentException("Invalid Arrow vector");
+  }
+
+  private LocalDate getLocalDate() {
+    return getDate(null).toLocalDate();
   }
 }
