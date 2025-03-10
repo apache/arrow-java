@@ -6,7 +6,7 @@ The Apache Software Foundation (http://www.apache.org/).
 
 ---------------------------------------------------
 
-This product includes gRPC 1.70.0, with the following in its NOTICE:
+This product includes gRPC 1.71.0, with the following in its NOTICE:
 
 | Copyright 2014 The gRPC Authors
 |

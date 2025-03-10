@@ -203,7 +203,7 @@
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains gRPC 1.70.0.
+This binary artifact contains gRPC 1.71.0.
 
 Copyright: Copyright 2014 The gRPC Authors
 Home page: https://grpc.io/
