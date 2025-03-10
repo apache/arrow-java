@@ -103,12 +103,12 @@ under the License.
     <dep.hadoop.version>3.4.1</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
     <dep.avro.version>1.12.0</dep.avro.version>
+    <dep.mockito-bom.version>5.16.0</dep.mockito-bom.version>
     <arrow.vector.classifier></arrow.vector.classifier>
     <forkCount>2</forkCount>
     <checkstyle.version>10.21.3</checkstyle.version>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.31.0</error_prone_core.version>
-    <mockito.core.version>5.15.2</mockito.core.version>
     <checker.framework.version>3.49.1</checker.framework.version>
     <logback.version>1.5.17</logback.version>
     <doclint>none</doclint>
@@ -222,6 +222,13 @@ under the License.
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-bom</artifactId>
+        <version>${dep.mockito-bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-classic</artifactId>
         <version>${logback.version}</version>
@@ -273,12 +280,6 @@ under the License.
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
       <version>${dep.junit.jupiter.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>5.15.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
