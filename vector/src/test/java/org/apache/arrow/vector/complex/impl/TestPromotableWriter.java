@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -739,10 +738,12 @@ public class TestPromotableWriter {
 
   @Test
   public void testPromoteToUnionFromDecimal() throws Exception {
-    try (final NonNullableStructVector container = NonNullableStructVector.empty(EMPTY_SCHEMA_PATH, allocator);
-         final DecimalVector v = container.addOrGet("dec",
-             FieldType.nullable(new ArrowType.Decimal(38, 1, 128)), DecimalVector.class);
-         final PromotableWriter writer = new PromotableWriter(v, container)) {
+    try (final NonNullableStructVector container =
+            NonNullableStructVector.empty(EMPTY_SCHEMA_PATH, allocator);
+        final DecimalVector v =
+            container.addOrGet(
+                "dec", FieldType.nullable(new ArrowType.Decimal(38, 1, 128)), DecimalVector.class);
+        final PromotableWriter writer = new PromotableWriter(v, container)) {
 
       container.allocateNew();
       container.setValueCount(1);
@@ -762,8 +763,10 @@ public class TestPromotableWriter {
       holder.reader.read(decimalHolder);
 
       assertEquals(1, decimalHolder.isSet);
-      assertEquals(new BigDecimal("0.1"),
-          DecimalUtility.getBigDecimalFromArrowBuf(decimalHolder.buffer, 0, decimalHolder.scale, 128));
+      assertEquals(
+          new BigDecimal("0.1"),
+          DecimalUtility.getBigDecimalFromArrowBuf(
+              decimalHolder.buffer, 0, decimalHolder.scale, 128));
 
       unionVector.get(1, holder);
       NullableIntHolder intHolder = new NullableIntHolder();
