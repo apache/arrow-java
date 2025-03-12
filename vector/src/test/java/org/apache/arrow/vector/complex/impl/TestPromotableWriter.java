@@ -735,6 +735,7 @@ public class TestPromotableWriter {
       assertEquals("row3", new String(Objects.requireNonNull(uv.get(2)), StandardCharsets.UTF_8));
       assertEquals("row4", new String(Objects.requireNonNull(uv.get(3)), StandardCharsets.UTF_8));
     }
+  }
 
   @Test
   public void testPromoteToUnionFromDecimal() throws Exception {
