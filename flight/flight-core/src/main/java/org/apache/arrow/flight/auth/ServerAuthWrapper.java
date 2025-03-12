@@ -84,9 +84,7 @@ public class ServerAuthWrapper {
     @Override
     public void onNext(HandshakeRequest value) {
       ByteString payload = value.getPayload();
-      if (payload != null) {
-        messages.add(payload.toByteArray());
-      }
+      messages.add(payload.toByteArray());
     }
 
     private Iterator<byte[]> iter =

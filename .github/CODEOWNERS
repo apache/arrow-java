@@ -23,34 +23,34 @@
 # documentation about the syntax: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
 # modules
-/adapter/       @lidavidm @laurentgo @wgtmac
-/algorithm/     @lidavidm @laurentgo @wgtmac
-/arrow-format/  @lidavidm @laurentgo @wgtmac
-/c/             @lidavidm @laurentgo @wgtmac
-/compression/   @lidavidm @laurentgo @wgtmac
-/dataset/       @lidavidm @laurentgo @wgtmac
-/flight/        @lidavidm @laurentgo @wgtmac
-/format/        @lidavidm @laurentgo @wgtmac
-/gandiva/       @lidavidm @laurentgo @wgtmac
-/memory/        @lidavidm @laurentgo @wgtmac
-/performance/   @lidavidm @laurentgo @wgtmac
-/tools/         @lidavidm @laurentgo @wgtmac
-/vector/        @lidavidm @laurentgo @wgtmac
-CMakeLists.txt  @lidavidm @laurentgo @wgtmac
+/adapter/       @lidavidm @laurentgo @wgtmac @jbonofre
+/algorithm/     @lidavidm @laurentgo @wgtmac @jbonofre
+/arrow-format/  @lidavidm @laurentgo @wgtmac @jbonofre
+/c/             @lidavidm @laurentgo @wgtmac @jbonofre
+/compression/   @lidavidm @laurentgo @wgtmac @jbonofre
+/dataset/       @lidavidm @laurentgo @wgtmac @jbonofre
+/flight/        @lidavidm @laurentgo @wgtmac @jbonofre
+/format/        @lidavidm @laurentgo @wgtmac @jbonofre
+/gandiva/       @lidavidm @laurentgo @wgtmac @jbonofre
+/memory/        @lidavidm @laurentgo @wgtmac @jbonofre
+/performance/   @lidavidm @laurentgo @wgtmac @jbonofre
+/tools/         @lidavidm @laurentgo @wgtmac @jbonofre
+/vector/        @lidavidm @laurentgo @wgtmac @jbonofre
+CMakeLists.txt  @lidavidm @laurentgo @wgtmac @jbonofre
 
 # release scripts
-/ci/   @lidavidm @laurentgo @wgtmac @kou
-/dev/  @lidavidm @laurentgo @wgtmac @kou
+/ci/   @lidavidm @laurentgo @wgtmac @kou @jbonofre
+/dev/  @lidavidm @laurentgo @wgtmac @kou @jbonofre
 
 # PR CI and repository files
-/.github/                @lidavidm @laurentgo @wgtmac @kou
-/.asf.yaml               @lidavidm @laurentgo @wgtmac @kou
-/.env                   @lidavidm @laurentgo @wgtmac
-/.pre-commit-config.yaml @lidavidm @laurentgo @wgtmac
-/Brewfile                @lidavidm @laurentgo @wgtmac
-/docker-compose.yaml     @lidavidm @laurentgo @wgtmac
+/.github/                @lidavidm @laurentgo @wgtmac @kou @jbonofre
+/.asf.yaml               @lidavidm @laurentgo @wgtmac @kou @jbonofre
+/.env                   @lidavidm @laurentgo @wgtmac @jbonofre
+/.pre-commit-config.yaml @lidavidm @laurentgo @wgtmac @jbonofre
+/Brewfile                @lidavidm @laurentgo @wgtmac @jbonofre
+/docker-compose.yaml     @lidavidm @laurentgo @wgtmac @jbonofre
 
 # Java specific
-/.mvn/  @lidavidm @laurentgo @wgtmac
-/bom/   @lidavidm @laurentgo @wgtmac
-pom.xml @lidavidm @laurentgo @wgtmac
+/.mvn/  @lidavidm @laurentgo @wgtmac @jbonofre
+/bom/   @lidavidm @laurentgo @wgtmac @jbonofre
+pom.xml @lidavidm @laurentgo @wgtmac @jbonofre

@@ -33,8 +33,6 @@ github:
   protected_branches:
     main:
       required_linear_history: true
-  collaborators: # Note: the number of collaborators is limited to 10
-    - jbonofre
 notifications:
   commits: commits@arrow.apache.org
   issues_status: issues@arrow.apache.org
