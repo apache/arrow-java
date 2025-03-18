@@ -956,7 +956,7 @@ public class ListViewVector extends BaseRepeatedValueViewVector
 
   @Override
   public int getElementEndIndex(int index) {
-    return sizeBuffer.getInt(index * OFFSET_WIDTH);
+    return offsetBuffer.getInt((index + 1) * OFFSET_WIDTH);
   }
 
   @Override
