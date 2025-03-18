@@ -250,7 +250,7 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Luben Zstd 1.5.7-1.
+This binary artifact contains Luben Zstd 1.5.7-2.
 
 Copyright: Copyright (c) 2015-present, Luben Karavelov/ All rights reserved.
 Home page: https://github.com/luben/zstd-jni
