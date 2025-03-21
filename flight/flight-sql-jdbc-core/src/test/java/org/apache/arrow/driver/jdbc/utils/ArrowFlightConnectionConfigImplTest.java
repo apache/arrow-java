@@ -18,6 +18,7 @@ package org.apache.arrow.driver.jdbc.utils;
 
 import static java.lang.Runtime.getRuntime;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CATALOG;
+import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CONNECT_TIMEOUT_MILLIS;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.HOST;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PASSWORD;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PORT;
@@ -27,6 +28,7 @@ import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import java.time.Duration;
 import java.util.Properties;
 import java.util.Random;
 import java.util.function.Function;
@@ -59,49 +61,67 @@ public final class ArrowFlightConnectionConfigImplTest {
   public void testGetProperty(
       ArrowFlightConnectionProperty property,
       Object value,
+      Object expected,
       Function<ArrowFlightConnectionConfigImpl, ?> configFunction) {
     properties.put(property.camelName(), value);
     arrowFlightConnectionConfigFunction = configFunction;
-    assertThat(configFunction.apply(arrowFlightConnectionConfig), is(value));
-    assertThat(arrowFlightConnectionConfigFunction.apply(arrowFlightConnectionConfig), is(value));
+    assertThat(configFunction.apply(arrowFlightConnectionConfig), is(expected));
+    assertThat(
+        arrowFlightConnectionConfigFunction.apply(arrowFlightConnectionConfig), is(expected));
   }
 
   public static Stream<Arguments> provideParameters() {
+    int port = RANDOM.nextInt(Short.toUnsignedInt(Short.MAX_VALUE));
+    boolean useEncryption = RANDOM.nextBoolean();
+    int threadPoolSize = RANDOM.nextInt(getRuntime().availableProcessors());
     return Stream.of(
         Arguments.of(
             HOST,
+            "host",
             "host",
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::getHost),
         Arguments.of(
             PORT,
-            RANDOM.nextInt(Short.toUnsignedInt(Short.MAX_VALUE)),
+            port,
+            port,
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::getPort),
         Arguments.of(
             USER,
+            "user",
             "user",
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::getUser),
         Arguments.of(
             PASSWORD,
             "password",
+            "password",
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::getPassword),
         Arguments.of(
             USE_ENCRYPTION,
-            RANDOM.nextBoolean(),
+            useEncryption,
+            useEncryption,
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::useEncryption),
         Arguments.of(
             THREAD_POOL_SIZE,
-            RANDOM.nextInt(getRuntime().availableProcessors()),
+            threadPoolSize,
+            threadPoolSize,
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::threadPoolSize),
         Arguments.of(
             CATALOG,
             "catalog",
+            "catalog",
             (Function<ArrowFlightConnectionConfigImpl, ?>)
-                ArrowFlightConnectionConfigImpl::getCatalog));
+                ArrowFlightConnectionConfigImpl::getCatalog),
+        Arguments.of(
+            CONNECT_TIMEOUT_MILLIS,
+            5000,
+            Duration.ofMillis(5000),
+            (Function<ArrowFlightConnectionConfigImpl, ?>)
+                ArrowFlightConnectionConfigImpl::getConnectTimeout));
   }
 }
