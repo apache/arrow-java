@@ -1240,7 +1240,7 @@ public class ArrowToAvroDataTest {
         // Read and check values
         for (int row = 0; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(timeSecVector.get(row), (int) ((long) record.get("timeSec") / 1000000));
+          assertEquals(timeSecVector.get(row), (int) (record.get("timeSec")) / 1000);
           assertEquals(timeMillisVector.get(row), record.get("timeMillis"));
           assertEquals(timeMicrosVector.get(row), record.get("timeMicros"));
           assertEquals(timeNanosVector.get(row), (long) record.get("timeNanos") * 1000);
@@ -1321,7 +1321,7 @@ public class ArrowToAvroDataTest {
 
         for (int row = 1; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(timeSecVector.get(row), (int) ((long) record.get("timeSec") / 1000000));
+          assertEquals(timeSecVector.get(row), ((int) record.get("timeSec") / 1000));
           assertEquals(timeMillisVector.get(row), record.get("timeMillis"));
           assertEquals(timeMicrosVector.get(row), record.get("timeMicros"));
           assertEquals(timeNanosVector.get(row), (long) record.get("timeNanos") * 1000);

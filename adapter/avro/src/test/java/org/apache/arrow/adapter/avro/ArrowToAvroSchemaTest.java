@@ -515,15 +515,15 @@ public class ArrowToAvroSchemaTest {
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimeSec").schema().getType());
     assertEquals(2, schema.getField("nullableTimeSec").schema().getTypes().size());
     Schema nullableTimeSecSchema = schema.getField("nullableTimeSec").schema().getTypes().get(0);
-    assertEquals(Schema.Type.LONG, nullableTimeSecSchema.getType());
-    assertEquals("time-micros", nullableTimeSecSchema.getProp("logicalType"));
+    assertEquals(Schema.Type.INT, nullableTimeSecSchema.getType());
+    assertEquals("time-millis", nullableTimeSecSchema.getProp("logicalType"));
     assertEquals(
         Schema.Type.NULL, schema.getField("nullableTimeSec").schema().getTypes().get(1).getType());
 
     // Assertions for nonNullableTimeSec
     Schema nonNullableTimeSecSchema = schema.getField("nonNullableTimeSec").schema();
-    assertEquals(Schema.Type.LONG, nonNullableTimeSecSchema.getType());
-    assertEquals("time-micros", nonNullableTimeSecSchema.getProp("logicalType"));
+    assertEquals(Schema.Type.INT, nonNullableTimeSecSchema.getType());
+    assertEquals("time-millis", nonNullableTimeSecSchema.getProp("logicalType"));
 
     // Assertions for nullableTimeMillis
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimeMillis").schema().getType());

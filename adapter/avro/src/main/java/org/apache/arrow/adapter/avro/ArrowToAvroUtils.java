@@ -132,8 +132,8 @@ public class ArrowToAvroUtils {
    *   <li>ArrowType.FixedSizeBinary --> FIXED
    *   <li>ArrowType.Decimal --> decimal (FIXED)
    *   <li>ArrowType.Date --> date (INT)
-   *   <li>ArrowType.Time (MILLI) --> time-millis (INT)
-   *   <li>ArrowType.Time (SEC | MICRO | NANO) --> time-micros (LONG)
+   *   <li>ArrowType.Time (SEC | MILLI) --> time-millis (INT)
+   *   <li>ArrowType.Time (MICRO | NANO) --> time-micros (LONG)
    *   <li>ArrowType.Timestamp (NANOSECONDS, TZ != NULL) --> time-nanos (LONG)
    *   <li>ArrowType.Timestamp (MICROSECONDS, TZ != NULL) --> time-micros (LONG)
    *   <li>ArrowType.Timestamp (MILLISECONDS | SECONDS, TZ != NULL) --> time-millis (LONG)
@@ -326,7 +326,7 @@ public class ArrowToAvroUtils {
 
       case Time:
         ArrowType.Time timeType = (ArrowType.Time) field.getType();
-        if (timeType.getUnit() == TimeUnit.MILLISECOND) {
+        if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
           return builder.intBuilder().prop("logicalType", "time-millis").endInt();
         } else {
           // All other time types (sec, micro, nano) are encoded as time-micros (LONG)
@@ -410,7 +410,7 @@ public class ArrowToAvroUtils {
 
       case Time:
         ArrowType.Time timeType = (ArrowType.Time) field.getType();
-        if (timeType.getUnit() == TimeUnit.MILLISECOND) {
+        if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
           return builder.intBuilder().prop("logicalType", "time-millis").endInt().noDefault();
         } else {
           // All other time types (sec, micro, nano) are encoded as time-micros (LONG)
@@ -504,7 +504,7 @@ public class ArrowToAvroUtils {
 
       case Time:
         ArrowType.Time timeType = (ArrowType.Time) field.getType();
-        if (timeType.getUnit() == TimeUnit.MILLISECOND) {
+        if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
           return (SchemaBuilder.UnionAccumulator)
               builder.intBuilder().prop("logicalType", "time-millis").endInt();
         } else {

@@ -27,10 +27,12 @@ import org.apache.avro.io.Encoder;
  */
 public class AvroTimeSecProducer extends BaseAvroProducer<TimeSecVector> {
 
-  // Convert seconds to microseconds for Avro time-micros (LONG) type
-  // Range is 1000 times more than for milliseconds, so won't fit into time-millis (INT)
+  // Convert seconds to milliseconds for Avro time-millis (INT) type
+  // INT is enough to cover the number of milliseconds in a day
+  // So overflows should not happen if values are valid times of day
 
-  private static final long MICROS_PER_SECOND = 1000000;
+  private static final int MILLIS_PER_SECOND = 1000;
+  private static final long OVERFLOW_LIMIT = Integer.MAX_VALUE / 1000;
 
   /** Instantiate an AvroTimeSecProducer. */
   public AvroTimeSecProducer(TimeSecVector vector) {
@@ -40,8 +42,11 @@ public class AvroTimeSecProducer extends BaseAvroProducer<TimeSecVector> {
   @Override
   public void produce(Encoder encoder) throws IOException {
     int seconds = vector.getDataBuffer().getInt(currentIndex * (long) TimeSecVector.TYPE_WIDTH);
-    long micros = seconds * MICROS_PER_SECOND;
-    encoder.writeLong(micros);
+    if (Math.abs(seconds) > OVERFLOW_LIMIT) {
+      throw new ArithmeticException("Time value is too large for Avro encoding");
+    }
+    int millis = seconds * MILLIS_PER_SECOND;
+    encoder.writeInt(millis);
     currentIndex++;
   }
 }
