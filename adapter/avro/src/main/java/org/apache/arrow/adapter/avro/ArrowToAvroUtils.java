@@ -189,7 +189,7 @@ public class ArrowToAvroUtils {
     if (fields.isEmpty()) {
       throw new IllegalArgumentException("Record field must have at least one child field");
     }
-    SchemaBuilder.FieldAssembler<T> assembler = builder.fields();
+    SchemaBuilder.FieldAssembler<T> assembler = builder.namespace(namespace).fields();
     for (Field field : fields) {
       assembler = buildFieldSchema(assembler, field, namespace);
     }
@@ -233,11 +233,15 @@ public class ArrowToAvroUtils {
 
   private static <T> T buildMapSchema(
       SchemaBuilder.MapBuilder<T> builder, Field mapField, String namespace) {
-    if (mapField.getChildren().size() != 2) {
-      throw new IllegalArgumentException("Map field must have exactly two child fields");
+    if (mapField.getChildren().size() != 1) {
+      throw new IllegalArgumentException("Map field must have exactly one child field");
     }
-    Field keyField = mapField.getChildren().get(0);
-    Field valueField = mapField.getChildren().get(1);
+    Field entriesField = mapField.getChildren().get(0);
+    if (mapField.getChildren().size() != 1) {
+      throw new IllegalArgumentException("Map entries must have exactly two child fields");
+    }
+    Field keyField = entriesField.getChildren().get(0);
+    Field valueField = entriesField.getChildren().get(1);
     if (keyField.getType().getTypeID() != ArrowType.ArrowTypeID.Utf8 || keyField.isNullable()) {
       throw new IllegalArgumentException(
           "Map keys must be of type string and cannot be nullable for conversion to Avro");
