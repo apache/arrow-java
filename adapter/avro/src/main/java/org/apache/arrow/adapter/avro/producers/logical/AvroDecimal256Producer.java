@@ -16,19 +16,32 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import org.apache.arrow.adapter.avro.producers.AvroFixedSizeBinaryProducer;
+import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.avro.io.Encoder;
+
+import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * Producer that produces decimal values from a {@link Decimal256Vector}, writes data to an Avro
  * encoder.
  */
-public class AvroDecimal256Producer extends AvroFixedSizeBinaryProducer {
+public class AvroDecimal256Producer extends BaseAvroProducer<Decimal256Vector> {
 
-  // Decimal stored as fixed width bytes, matches Avro decimal encoding
+  // Logic is the same as for DecimalVector (128 bit)
+
+  byte[] encodedBytes = new byte[Decimal256Vector.TYPE_WIDTH];
 
   /** Instantiate an AvroDecimalProducer. */
   public AvroDecimal256Producer(Decimal256Vector vector) {
     super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    BigDecimal value = vector.getObject(currentIndex++);
+    AvroDecimalProducer.encodeDecimal(value, encodedBytes);
+    encoder.writeFixed(encodedBytes);
   }
 }

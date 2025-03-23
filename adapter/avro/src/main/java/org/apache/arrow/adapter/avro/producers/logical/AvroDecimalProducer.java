@@ -16,19 +16,44 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import org.apache.arrow.adapter.avro.producers.AvroFixedSizeBinaryProducer;
+import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.vector.DecimalVector;
+import org.apache.arrow.vector.util.DecimalUtility;
+import org.apache.avro.io.Encoder;
+
+import java.io.IOException;
+import java.math.BigDecimal;
 
 /**
  * Producer that produces decimal values from a {@link DecimalVector}, writes data to an Avro
  * encoder.
  */
-public class AvroDecimalProducer extends AvroFixedSizeBinaryProducer {
+public class AvroDecimalProducer extends BaseAvroProducer<DecimalVector> {
 
-  // Decimal stored as fixed width bytes, matches Avro decimal encoding
+  // Arrow stores decimals with native endianness, but Avro requires big endian
+  // Writing the Arrow representation as fixed bytes fails on little-end machines
+  // Instead, we replicate the big endian logic explicitly here
+  // See DecimalUtility.writeByteArrayToArrowBufHelper
+
+  byte[] encodedBytes = new byte[DecimalVector.TYPE_WIDTH];
 
   /** Instantiate an AvroDecimalProducer. */
   public AvroDecimalProducer(DecimalVector vector) {
     super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    // Use getObject() to go back to a BigDecimal then re-encode
+    BigDecimal value = vector.getObject(currentIndex++);
+    encodeDecimal(value, encodedBytes);
+    encoder.writeFixed(encodedBytes);
+  }
+
+  static void encodeDecimal(BigDecimal value, byte[] encodedBytes) {
+    byte[] valueBytes = value.unscaledValue().toByteArray();
+    byte[] padding = valueBytes[0] < 0 ? DecimalUtility.minus_one : DecimalUtility.zeroes;
+    System.arraycopy(padding, 0, encodedBytes, 0, encodedBytes.length - valueBytes.length);
+    System.arraycopy(valueBytes, 0, encodedBytes, encodedBytes.length - valueBytes.length, valueBytes.length);
   }
 }
