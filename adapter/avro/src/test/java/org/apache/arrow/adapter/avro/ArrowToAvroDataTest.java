@@ -45,6 +45,10 @@ import org.apache.arrow.vector.Float8Vector;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.NullVector;
 import org.apache.arrow.vector.SmallIntVector;
+import org.apache.arrow.vector.TimeSecVector;
+import org.apache.arrow.vector.TimeMilliVector;
+import org.apache.arrow.vector.TimeMicroVector;
+import org.apache.arrow.vector.TimeNanoVector;
 import org.apache.arrow.vector.TinyIntVector;
 import org.apache.arrow.vector.UInt1Vector;
 import org.apache.arrow.vector.UInt2Vector;
@@ -55,6 +59,7 @@ import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
+import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -1154,6 +1159,162 @@ public class ArrowToAvroDataTest {
           record = datumReader.read(record, decoder);
           assertEquals(dateDayVector.get(row), record.get("dateDay"));
           assertEquals(dateMillisVector.get(row), ((long) (Integer) record.get("dateMillis")) * 86400000L);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteTimes() throws Exception {
+
+    // Field definitions
+    FieldType timeSecField = new FieldType(false, new ArrowType.Time(TimeUnit.SECOND, 32), null);
+    FieldType timeMillisField = new FieldType(false, new ArrowType.Time(TimeUnit.MILLISECOND, 32), null);
+    FieldType timeMicrosField = new FieldType(false, new ArrowType.Time(TimeUnit.MICROSECOND, 64), null);
+    FieldType timeNanosField = new FieldType(false, new ArrowType.Time(TimeUnit.NANOSECOND, 64), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    TimeSecVector timeSecVector = new TimeSecVector(new Field("timeSec", timeSecField, null), allocator);
+    TimeMilliVector timeMillisVector = new TimeMilliVector(new Field("timeMillis", timeMillisField, null), allocator);
+    TimeMicroVector timeMicrosVector = new TimeMicroVector(new Field("timeMicros", timeMicrosField, null), allocator);
+    TimeNanoVector timeNanosVector = new TimeNanoVector(new Field("timeNanos", timeNanosField, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(timeSecVector, timeMillisVector, timeMicrosVector, timeNanosVector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      timeSecVector.setSafe(0, (int) (System.currentTimeMillis() / 1000));
+      timeSecVector.setSafe(1, (int) (System.currentTimeMillis() / 1000 - 1));
+      timeSecVector.setSafe(2, (int) (System.currentTimeMillis() / 1000 - 2));
+
+      timeMillisVector.setSafe(0, (int) System.currentTimeMillis());
+      timeMillisVector.setSafe(1, (int) System.currentTimeMillis() - 1000);
+      timeMillisVector.setSafe(2, (int) System.currentTimeMillis() - 2000);
+
+      timeMicrosVector.setSafe(0, System.currentTimeMillis() * 1000);
+      timeMicrosVector.setSafe(1, (System.currentTimeMillis() - 1000) * 1000);
+      timeMicrosVector.setSafe(2, (System.currentTimeMillis() - 2000) * 1000);
+
+      timeNanosVector.setSafe(0, System.currentTimeMillis() * 1000000);
+      timeNanosVector.setSafe(1, (System.currentTimeMillis() - 1000) * 1000000);
+      timeNanosVector.setSafe(2, (System.currentTimeMillis() - 2000) * 1000000);
+
+      File dataFile = new File(TMP, "testWriteTimes.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(timeSecVector.get(row), (int) ((long) record.get("timeSec") / 1000000));
+          assertEquals(timeMillisVector.get(row), record.get("timeMillis"));
+          assertEquals(timeMicrosVector.get(row), record.get("timeMicros"));
+          assertEquals(timeNanosVector.get(row), (long) record.get("timeNanos") * 1000);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNullableTimes() throws Exception {
+
+    // Field definitions
+    FieldType timeSecField = new FieldType(true, new ArrowType.Time(TimeUnit.SECOND, 32), null);
+    FieldType timeMillisField = new FieldType(true, new ArrowType.Time(TimeUnit.MILLISECOND, 32), null);
+    FieldType timeMicrosField = new FieldType(true, new ArrowType.Time(TimeUnit.MICROSECOND, 64), null);
+    FieldType timeNanosField = new FieldType(true, new ArrowType.Time(TimeUnit.NANOSECOND, 64), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    TimeSecVector timeSecVector = new TimeSecVector(new Field("timeSec", timeSecField, null), allocator);
+    TimeMilliVector timeMillisVector = new TimeMilliVector(new Field("timeMillis", timeMillisField, null), allocator);
+    TimeMicroVector timeMicrosVector = new TimeMicroVector(new Field("timeMicros", timeMicrosField, null), allocator);
+    TimeNanoVector timeNanosVector = new TimeNanoVector(new Field("timeNanos", timeNanosField, null), allocator);
+
+    int rowCount = 3;
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(timeSecVector, timeMillisVector, timeMicrosVector, timeNanosVector);
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      timeSecVector.setNull(0);
+      timeSecVector.setSafe(1, 0);
+      timeSecVector.setSafe(2, (int) (System.currentTimeMillis() / 1000));
+
+      timeMillisVector.setNull(0);
+      timeMillisVector.setSafe(1, 0);
+      timeMillisVector.setSafe(2, (int) System.currentTimeMillis());
+
+      timeMicrosVector.setNull(0);
+      timeMicrosVector.setSafe(1, 0);
+      timeMicrosVector.setSafe(2, System.currentTimeMillis() * 1000);
+
+      timeNanosVector.setNull(0);
+      timeNanosVector.setSafe(1, 0);
+      timeNanosVector.setSafe(2, System.currentTimeMillis() * 1000000);
+
+      File dataFile = new File(TMP, "testWriteNullableTimes.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+
+        // Read and check values
+        GenericRecord record = datumReader.read(null, decoder);
+        assertNull(record.get("timeSec"));
+        assertNull(record.get("timeMillis"));
+        assertNull(record.get("timeMicros"));
+        assertNull(record.get("timeNanos"));
+
+        for (int row = 1; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(timeSecVector.get(row), (int) ((long) record.get("timeSec") / 1000000));
+          assertEquals(timeMillisVector.get(row), record.get("timeMillis"));
+          assertEquals(timeMicrosVector.get(row), record.get("timeMicros"));
+          assertEquals(timeNanosVector.get(row), (long) record.get("timeNanos") * 1000);
         }
       }
     }
