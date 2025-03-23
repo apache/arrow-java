@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
@@ -32,6 +33,8 @@ import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.memory.util.Float16;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
+import org.apache.arrow.vector.DateDayVector;
+import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.FieldVector;
@@ -50,6 +53,7 @@ import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -1027,5 +1031,131 @@ public class ArrowToAvroDataTest {
     GenericData.Fixed fixed = (GenericData.Fixed) record.get(fieldName);
     var logicalType = LogicalTypes.fromSchema(fixed.getSchema());
     return new Conversions.DecimalConversion().fromFixed(fixed, fixed.getSchema(), logicalType);
+  }
+
+  @Test
+  public void testWriteDates() throws Exception {
+
+    // Field definitions
+    FieldType dateDayField = new FieldType(false, new ArrowType.Date(DateUnit.DAY), null);
+    FieldType dateMillisField = new FieldType(false, new ArrowType.Date(DateUnit.MILLISECOND), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    DateDayVector dateDayVector = new DateDayVector(new Field("dateDay", dateDayField, null), allocator);
+    DateMilliVector dateMillisVector = new DateMilliVector(new Field("dateMillis", dateMillisField, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(dateDayVector, dateMillisVector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      dateDayVector.setSafe(0, (int) LocalDate.now().toEpochDay());
+      dateDayVector.setSafe(1, (int) LocalDate.now().toEpochDay() + 1);
+      dateDayVector.setSafe(2, (int) LocalDate.now().toEpochDay() + 2);
+
+      dateMillisVector.setSafe(0, LocalDate.now().toEpochDay() * 86400000L);
+      dateMillisVector.setSafe(1, (LocalDate.now().toEpochDay() + 1) * 86400000L);
+      dateMillisVector.setSafe(2, (LocalDate.now().toEpochDay() + 2) * 86400000L);
+
+      File dataFile = new File(TMP, "testWriteDates.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(dateDayVector.get(row), record.get("dateDay"));
+          assertEquals(dateMillisVector.get(row), ((long) (Integer) record.get("dateMillis")) * 86400000L);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNullableDates() throws Exception {
+
+    // Field definitions
+    FieldType dateDayField = new FieldType(true, new ArrowType.Date(DateUnit.DAY), null);
+    FieldType dateMillisField = new FieldType(true, new ArrowType.Date(DateUnit.MILLISECOND), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    DateDayVector dateDayVector = new DateDayVector(new Field("dateDay", dateDayField, null), allocator);
+    DateMilliVector dateMillisVector = new DateMilliVector(new Field("dateMillis", dateMillisField, null), allocator);
+
+    int rowCount = 3;
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(dateDayVector, dateMillisVector);
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      dateDayVector.setNull(0);
+      dateDayVector.setSafe(1, 0);
+      dateDayVector.setSafe(2, (int) LocalDate.now().toEpochDay());
+
+      dateMillisVector.setNull(0);
+      dateMillisVector.setSafe(1, 0);
+      dateMillisVector.setSafe(2, LocalDate.now().toEpochDay() * 86400000L);
+
+      File dataFile = new File(TMP, "testWriteNullableDates.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+
+        // Read and check values
+        GenericRecord record = datumReader.read(null, decoder);
+        assertNull(record.get("dateDay"));
+        assertNull(record.get("dateMillis"));
+
+        for (int row = 1; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(dateDayVector.get(row), record.get("dateDay"));
+          assertEquals(dateMillisVector.get(row), ((long) (Integer) record.get("dateMillis")) * 86400000L);
+        }
+      }
+    }
   }
 }
