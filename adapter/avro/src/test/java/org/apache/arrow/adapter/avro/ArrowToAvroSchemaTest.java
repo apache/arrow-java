@@ -23,6 +23,7 @@ import java.util.List;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
+import org.apache.arrow.vector.types.UnionMode;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -283,14 +284,17 @@ public class ArrowToAvroSchemaTest {
 
     assertEquals(Schema.Type.UNION, schema.getField("nullableFixedSizeBinary").schema().getType());
     assertEquals(2, schema.getField("nullableFixedSizeBinary").schema().getTypes().size());
-    assertEquals(
-        Schema.Type.FIXED,
-        schema.getField("nullableFixedSizeBinary").schema().getTypes().get(0).getType());
+    Schema nullableFixedSizeBinarySchema =
+        schema.getField("nullableFixedSizeBinary").schema().getTypes().get(0);
+    assertEquals(Schema.Type.FIXED, nullableFixedSizeBinarySchema.getType());
+    assertEquals(10, nullableFixedSizeBinarySchema.getFixedSize());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableFixedSizeBinary").schema().getTypes().get(1).getType());
-    assertEquals(
-        Schema.Type.FIXED, schema.getField("nonNullableFixedSizeBinary").schema().getType());
+    Schema nonNullableFixedSizeBinarySchema =
+        schema.getField("nullableFixedSizeBinary").schema().getTypes().get(0);
+    assertEquals(Schema.Type.FIXED, nonNullableFixedSizeBinarySchema.getType());
+    assertEquals(10, nonNullableFixedSizeBinarySchema.getFixedSize());
   }
 
   // Schema conversion for logical types, nullable and non-nullable
@@ -339,6 +343,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableDecimal128Schema =
         schema.getField("nullableDecimal128").schema().getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimal128Schema.getType());
+    assertEquals(16, nullableDecimal128Schema.getFixedSize());
     assertEquals("decimal", nullableDecimal128Schema.getProp("logicalType"));
     assertEquals(10, nullableDecimal128Schema.getObjectProp("precision"));
     assertEquals(2, nullableDecimal128Schema.getObjectProp("scale"));
@@ -349,6 +354,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableDecimal1281
     Schema nonNullableDecimal1281Schema = schema.getField("nonNullableDecimal1281").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal1281Schema.getType());
+    assertEquals(16, nonNullableDecimal1281Schema.getFixedSize());
     assertEquals("decimal", nonNullableDecimal1281Schema.getProp("logicalType"));
     assertEquals(10, nonNullableDecimal1281Schema.getObjectProp("precision"));
     assertEquals(2, nonNullableDecimal1281Schema.getObjectProp("scale"));
@@ -356,6 +362,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableDecimal1282
     Schema nonNullableDecimal1282Schema = schema.getField("nonNullableDecimal1282").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal1282Schema.getType());
+    assertEquals(16, nonNullableDecimal1282Schema.getFixedSize());
     assertEquals("decimal", nonNullableDecimal1282Schema.getProp("logicalType"));
     assertEquals(15, nonNullableDecimal1282Schema.getObjectProp("precision"));
     assertEquals(5, nonNullableDecimal1282Schema.getObjectProp("scale"));
@@ -363,6 +370,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableDecimal1283
     Schema nonNullableDecimal1283Schema = schema.getField("nonNullableDecimal1283").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal1283Schema.getType());
+    assertEquals(16, nonNullableDecimal1283Schema.getFixedSize());
     assertEquals("decimal", nonNullableDecimal1283Schema.getProp("logicalType"));
     assertEquals(20, nonNullableDecimal1283Schema.getObjectProp("precision"));
     assertEquals(10, nonNullableDecimal1283Schema.getObjectProp("scale"));
@@ -373,6 +381,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableDecimal256Schema =
         schema.getField("nullableDecimal256").schema().getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimal256Schema.getType());
+    assertEquals(32, nullableDecimal256Schema.getFixedSize());
     assertEquals("decimal", nullableDecimal256Schema.getProp("logicalType"));
     assertEquals(20, nullableDecimal256Schema.getObjectProp("precision"));
     assertEquals(4, nullableDecimal256Schema.getObjectProp("scale"));
@@ -383,6 +392,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableDecimal2561
     Schema nonNullableDecimal2561Schema = schema.getField("nonNullableDecimal2561").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2561Schema.getType());
+    assertEquals(32, nonNullableDecimal2561Schema.getFixedSize());
     assertEquals("decimal", nonNullableDecimal2561Schema.getProp("logicalType"));
     assertEquals(20, nonNullableDecimal2561Schema.getObjectProp("precision"));
     assertEquals(4, nonNullableDecimal2561Schema.getObjectProp("scale"));
@@ -390,6 +400,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableDecimal2562
     Schema nonNullableDecimal2562Schema = schema.getField("nonNullableDecimal2562").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2562Schema.getType());
+    assertEquals(32, nonNullableDecimal2562Schema.getFixedSize());
     assertEquals("decimal", nonNullableDecimal2562Schema.getProp("logicalType"));
     assertEquals(25, nonNullableDecimal2562Schema.getObjectProp("precision"));
     assertEquals(8, nonNullableDecimal2562Schema.getObjectProp("scale"));
@@ -397,6 +408,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableDecimal2563
     Schema nonNullableDecimal2563Schema = schema.getField("nonNullableDecimal2563").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2563Schema.getType());
+    assertEquals(32, nonNullableDecimal2563Schema.getFixedSize());
     assertEquals("decimal", nonNullableDecimal2563Schema.getProp("logicalType"));
     assertEquals(30, nonNullableDecimal2563Schema.getObjectProp("precision"));
     assertEquals(15, nonNullableDecimal2563Schema.getObjectProp("scale"));
@@ -781,5 +793,594 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableTimestampNanosSchema = schema.getField("nonNullableTimestampNanos").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampNanosSchema.getType());
     assertEquals("local-timestamp-nanos", nonNullableTimestampNanosSchema.getProp("logicalType"));
+  }
+
+  // Schema conversion for complex types, where the contents are primitive and logical types
+
+  @Test
+  public void testConvertListTypes() {
+    List<Field> fields =
+        Arrays.asList(
+            new Field(
+                "nullableIntList",
+                FieldType.nullable(new ArrowType.List()),
+                Arrays.asList(
+                    new Field("item", FieldType.nullable(new ArrowType.Int(32, true)), null))),
+            new Field(
+                "nullableDoubleList",
+                FieldType.nullable(new ArrowType.List()),
+                Arrays.asList(
+                    new Field(
+                        "item",
+                        FieldType.notNullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)),
+                        null))),
+            new Field(
+                "nonNullableDecimalList",
+                FieldType.notNullable(new ArrowType.List()),
+                Arrays.asList(
+                    new Field(
+                        "item", FieldType.nullable(new ArrowType.Decimal(10, 2, 128)), null))),
+            new Field(
+                "nonNullableTimestampList",
+                FieldType.notNullable(new ArrowType.List()),
+                Arrays.asList(
+                    new Field(
+                        "item",
+                        FieldType.notNullable(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")),
+                        null))));
+
+    Schema schema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord");
+
+    assertEquals(Schema.Type.RECORD, schema.getType());
+    assertEquals(4, schema.getFields().size());
+
+    // Assertions for nullableIntList
+    assertEquals(Schema.Type.UNION, schema.getField("nullableIntList").schema().getType());
+    assertEquals(2, schema.getField("nullableIntList").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.ARRAY, schema.getField("nullableIntList").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL, schema.getField("nullableIntList").schema().getTypes().get(1).getType());
+    Schema nullableIntListItemSchema =
+        schema.getField("nullableIntList").schema().getTypes().get(0).getElementType();
+    assertEquals(Schema.Type.UNION, nullableIntListItemSchema.getType());
+    assertEquals(2, nullableIntListItemSchema.getTypes().size());
+    assertEquals(Schema.Type.INT, nullableIntListItemSchema.getTypes().get(0).getType());
+    assertEquals(Schema.Type.NULL, nullableIntListItemSchema.getTypes().get(1).getType());
+
+    // Assertions for nullableDoubleList
+    assertEquals(Schema.Type.UNION, schema.getField("nullableDoubleList").schema().getType());
+    assertEquals(2, schema.getField("nullableDoubleList").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.ARRAY,
+        schema.getField("nullableDoubleList").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL,
+        schema.getField("nullableDoubleList").schema().getTypes().get(1).getType());
+    Schema nullableDoubleListItemSchema =
+        schema.getField("nullableDoubleList").schema().getTypes().get(0).getElementType();
+    assertEquals(Schema.Type.DOUBLE, nullableDoubleListItemSchema.getType());
+
+    // Assertions for nonNullableDecimalList
+    assertEquals(Schema.Type.ARRAY, schema.getField("nonNullableDecimalList").schema().getType());
+    Schema nonNullableDecimalListItemSchema =
+        schema.getField("nonNullableDecimalList").schema().getElementType();
+    assertEquals(Schema.Type.UNION, nonNullableDecimalListItemSchema.getType());
+    assertEquals(2, nonNullableDecimalListItemSchema.getTypes().size());
+    Schema nullableDecimalSchema = nonNullableDecimalListItemSchema.getTypes().get(0);
+    assertEquals(Schema.Type.FIXED, nullableDecimalSchema.getType());
+    assertEquals(16, nullableDecimalSchema.getFixedSize());
+    assertEquals("decimal", nullableDecimalSchema.getProp("logicalType"));
+    assertEquals(10, nullableDecimalSchema.getObjectProp("precision"));
+    assertEquals(2, nullableDecimalSchema.getObjectProp("scale"));
+    assertEquals(Schema.Type.NULL, nonNullableDecimalListItemSchema.getTypes().get(1).getType());
+
+    // Assertions for nonNullableTimestampList
+    assertEquals(Schema.Type.ARRAY, schema.getField("nonNullableTimestampList").schema().getType());
+    Schema nonNullableTimestampListItemSchema =
+        schema.getField("nonNullableTimestampList").schema().getElementType();
+    assertEquals(Schema.Type.LONG, nonNullableTimestampListItemSchema.getType());
+    assertEquals("timestamp-millis", nonNullableTimestampListItemSchema.getProp("logicalType"));
+  }
+
+  @Test
+  public void testConvertFixedSizeListTypes() {
+    List<Field> fields =
+        Arrays.asList(
+            new Field(
+                "nullableFixedSizeIntList",
+                FieldType.nullable(new ArrowType.FixedSizeList(3)),
+                Arrays.asList(
+                    new Field("item", FieldType.nullable(new ArrowType.Int(32, true)), null))),
+            new Field(
+                "nullableFixedSizeDoubleList",
+                FieldType.nullable(new ArrowType.FixedSizeList(3)),
+                Arrays.asList(
+                    new Field(
+                        "item",
+                        FieldType.notNullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)),
+                        null))),
+            new Field(
+                "nonNullableFixedSizeDecimalList",
+                FieldType.notNullable(new ArrowType.FixedSizeList(3)),
+                Arrays.asList(
+                    new Field(
+                        "item", FieldType.nullable(new ArrowType.Decimal(10, 2, 128)), null))),
+            new Field(
+                "nonNullableFixedSizeTimestampList",
+                FieldType.notNullable(new ArrowType.FixedSizeList(3)),
+                Arrays.asList(
+                    new Field(
+                        "item",
+                        FieldType.notNullable(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")),
+                        null))));
+
+    Schema schema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord");
+
+    assertEquals(Schema.Type.RECORD, schema.getType());
+    assertEquals(4, schema.getFields().size());
+
+    // Assertions for nullableFixedSizeIntList
+    assertEquals(Schema.Type.UNION, schema.getField("nullableFixedSizeIntList").schema().getType());
+    assertEquals(2, schema.getField("nullableFixedSizeIntList").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.ARRAY,
+        schema.getField("nullableFixedSizeIntList").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL,
+        schema.getField("nullableFixedSizeIntList").schema().getTypes().get(1).getType());
+    Schema nullableFixedSizeIntListItemSchema =
+        schema.getField("nullableFixedSizeIntList").schema().getTypes().get(0).getElementType();
+    assertEquals(Schema.Type.UNION, nullableFixedSizeIntListItemSchema.getType());
+    assertEquals(2, nullableFixedSizeIntListItemSchema.getTypes().size());
+    assertEquals(Schema.Type.INT, nullableFixedSizeIntListItemSchema.getTypes().get(0).getType());
+    assertEquals(Schema.Type.NULL, nullableFixedSizeIntListItemSchema.getTypes().get(1).getType());
+
+    // Assertions for nullableFixedSizeDoubleList
+    assertEquals(
+        Schema.Type.UNION, schema.getField("nullableFixedSizeDoubleList").schema().getType());
+    assertEquals(2, schema.getField("nullableFixedSizeDoubleList").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.ARRAY,
+        schema.getField("nullableFixedSizeDoubleList").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL,
+        schema.getField("nullableFixedSizeDoubleList").schema().getTypes().get(1).getType());
+    Schema nullableFixedSizeDoubleListItemSchema =
+        schema.getField("nullableFixedSizeDoubleList").schema().getTypes().get(0).getElementType();
+    assertEquals(Schema.Type.DOUBLE, nullableFixedSizeDoubleListItemSchema.getType());
+
+    // Assertions for nonNullableFixedSizeDecimalList
+    assertEquals(
+        Schema.Type.ARRAY, schema.getField("nonNullableFixedSizeDecimalList").schema().getType());
+    Schema nonNullableFixedSizeDecimalListItemSchema =
+        schema.getField("nonNullableFixedSizeDecimalList").schema().getElementType();
+    assertEquals(Schema.Type.UNION, nonNullableFixedSizeDecimalListItemSchema.getType());
+    assertEquals(2, nonNullableFixedSizeDecimalListItemSchema.getTypes().size());
+    Schema nullableDecimalSchema = nonNullableFixedSizeDecimalListItemSchema.getTypes().get(0);
+    assertEquals(Schema.Type.FIXED, nullableDecimalSchema.getType());
+    assertEquals(16, nullableDecimalSchema.getFixedSize());
+    assertEquals("decimal", nullableDecimalSchema.getProp("logicalType"));
+    assertEquals(10, nullableDecimalSchema.getObjectProp("precision"));
+    assertEquals(2, nullableDecimalSchema.getObjectProp("scale"));
+    assertEquals(
+        Schema.Type.NULL, nonNullableFixedSizeDecimalListItemSchema.getTypes().get(1).getType());
+
+    // Assertions for nonNullableFixedSizeTimestampList
+    assertEquals(
+        Schema.Type.ARRAY, schema.getField("nonNullableFixedSizeTimestampList").schema().getType());
+    Schema nonNullableFixedSizeTimestampListItemSchema =
+        schema.getField("nonNullableFixedSizeTimestampList").schema().getElementType();
+    assertEquals(Schema.Type.LONG, nonNullableFixedSizeTimestampListItemSchema.getType());
+    assertEquals(
+        "timestamp-millis", nonNullableFixedSizeTimestampListItemSchema.getProp("logicalType"));
+  }
+
+  @Test
+  public void testConvertMapTypes() {
+    List<Field> fields =
+        Arrays.asList(
+            new Field(
+                "nullableMapWithNullableInt",
+                FieldType.nullable(new ArrowType.Map(false)),
+                Arrays.asList(
+                    new Field(
+                        "entries",
+                        FieldType.notNullable(new ArrowType.Struct()),
+                        Arrays.asList(
+                            new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null),
+                            new Field(
+                                "value", FieldType.nullable(new ArrowType.Int(32, true)), null))))),
+            new Field(
+                "nullableMapWithNonNullableDouble",
+                FieldType.nullable(new ArrowType.Map(false)),
+                Arrays.asList(
+                    new Field(
+                        "entries",
+                        FieldType.notNullable(new ArrowType.Struct()),
+                        Arrays.asList(
+                            new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null),
+                            new Field(
+                                "value",
+                                FieldType.notNullable(
+                                    new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)),
+                                null))))),
+            new Field(
+                "nonNullableMapWithNullableDecimal",
+                FieldType.notNullable(new ArrowType.Map(false)),
+                Arrays.asList(
+                    new Field(
+                        "entries",
+                        FieldType.notNullable(new ArrowType.Struct()),
+                        Arrays.asList(
+                            new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null),
+                            new Field(
+                                "value",
+                                FieldType.nullable(new ArrowType.Decimal(10, 2, 128)),
+                                null))))),
+            new Field(
+                "nonNullableMapWithNonNullableTimestamp",
+                FieldType.notNullable(new ArrowType.Map(false)),
+                Arrays.asList(
+                    new Field(
+                        "entries",
+                        FieldType.notNullable(new ArrowType.Struct()),
+                        Arrays.asList(
+                            new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null),
+                            new Field(
+                                "value",
+                                FieldType.notNullable(
+                                    new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")),
+                                null))))));
+
+    Schema schema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord");
+
+    assertEquals(Schema.Type.RECORD, schema.getType());
+    assertEquals(4, schema.getFields().size());
+
+    // Assertions for nullableMapWithNullableInt
+    assertEquals(
+        Schema.Type.UNION, schema.getField("nullableMapWithNullableInt").schema().getType());
+    assertEquals(2, schema.getField("nullableMapWithNullableInt").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.MAP,
+        schema.getField("nullableMapWithNullableInt").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL,
+        schema.getField("nullableMapWithNullableInt").schema().getTypes().get(1).getType());
+    Schema nullableMapWithNullableIntValueSchema =
+        schema.getField("nullableMapWithNullableInt").schema().getTypes().get(0).getValueType();
+    assertEquals(Schema.Type.UNION, nullableMapWithNullableIntValueSchema.getType());
+    assertEquals(2, nullableMapWithNullableIntValueSchema.getTypes().size());
+    assertEquals(
+        Schema.Type.INT, nullableMapWithNullableIntValueSchema.getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL, nullableMapWithNullableIntValueSchema.getTypes().get(1).getType());
+
+    // Assertions for nullableMapWithNonNullableDouble
+    assertEquals(
+        Schema.Type.UNION, schema.getField("nullableMapWithNonNullableDouble").schema().getType());
+    assertEquals(2, schema.getField("nullableMapWithNonNullableDouble").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.MAP,
+        schema.getField("nullableMapWithNonNullableDouble").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL,
+        schema.getField("nullableMapWithNonNullableDouble").schema().getTypes().get(1).getType());
+    Schema nullableMapWithNonNullableDoubleValueSchema =
+        schema
+            .getField("nullableMapWithNonNullableDouble")
+            .schema()
+            .getTypes()
+            .get(0)
+            .getValueType();
+    assertEquals(Schema.Type.DOUBLE, nullableMapWithNonNullableDoubleValueSchema.getType());
+
+    // Assertions for nonNullableMapWithNullableDecimal
+    assertEquals(
+        Schema.Type.MAP, schema.getField("nonNullableMapWithNullableDecimal").schema().getType());
+    Schema nonNullableMapWithNullableDecimalValueSchema =
+        schema.getField("nonNullableMapWithNullableDecimal").schema().getValueType();
+    assertEquals(Schema.Type.UNION, nonNullableMapWithNullableDecimalValueSchema.getType());
+    assertEquals(2, nonNullableMapWithNullableDecimalValueSchema.getTypes().size());
+    Schema nullableDecimalSchema = nonNullableMapWithNullableDecimalValueSchema.getTypes().get(0);
+    assertEquals(Schema.Type.FIXED, nullableDecimalSchema.getType());
+    assertEquals(16, nullableDecimalSchema.getFixedSize());
+    assertEquals("decimal", nullableDecimalSchema.getProp("logicalType"));
+    assertEquals(10, nullableDecimalSchema.getObjectProp("precision"));
+    assertEquals(2, nullableDecimalSchema.getObjectProp("scale"));
+    assertEquals(
+        Schema.Type.NULL, nonNullableMapWithNullableDecimalValueSchema.getTypes().get(1).getType());
+
+    // Assertions for nonNullableMapWithNonNullableTimestamp
+    assertEquals(
+        Schema.Type.MAP,
+        schema.getField("nonNullableMapWithNonNullableTimestamp").schema().getType());
+    Schema nonNullableMapWithNonNullableTimestampValueSchema =
+        schema.getField("nonNullableMapWithNonNullableTimestamp").schema().getValueType();
+    assertEquals(Schema.Type.LONG, nonNullableMapWithNonNullableTimestampValueSchema.getType());
+    assertEquals(
+        "timestamp-millis",
+        nonNullableMapWithNonNullableTimestampValueSchema.getProp("logicalType"));
+  }
+
+  @Test
+  public void testConvertRecordTypes() {
+    List<Field> fields =
+        Arrays.asList(
+            new Field(
+                "nullableRecord",
+                FieldType.nullable(new ArrowType.Struct()),
+                Arrays.asList(
+                    new Field("field1", FieldType.nullable(new ArrowType.Int(32, true)), null),
+                    new Field(
+                        "field2",
+                        FieldType.notNullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)),
+                        null),
+                    new Field(
+                        "field3", FieldType.nullable(new ArrowType.Decimal(10, 2, 128)), null),
+                    new Field(
+                        "field4",
+                        FieldType.notNullable(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")),
+                        null))),
+            new Field(
+                "nonNullableRecord",
+                FieldType.notNullable(new ArrowType.Struct()),
+                Arrays.asList(
+                    new Field("field1", FieldType.nullable(new ArrowType.Int(32, true)), null),
+                    new Field(
+                        "field2",
+                        FieldType.notNullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE)),
+                        null),
+                    new Field(
+                        "field3", FieldType.nullable(new ArrowType.Decimal(10, 2, 128)), null),
+                    new Field(
+                        "field4",
+                        FieldType.notNullable(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")),
+                        null))));
+
+    Schema schema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord");
+
+    assertEquals(Schema.Type.RECORD, schema.getType());
+    assertEquals(2, schema.getFields().size());
+
+    // Assertions for nullableRecord
+    assertEquals(Schema.Type.UNION, schema.getField("nullableRecord").schema().getType());
+    assertEquals(2, schema.getField("nullableRecord").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.RECORD, schema.getField("nullableRecord").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL, schema.getField("nullableRecord").schema().getTypes().get(1).getType());
+    Schema nullableRecordSchema = schema.getField("nullableRecord").schema().getTypes().get(0);
+    assertEquals(4, nullableRecordSchema.getFields().size());
+    assertEquals(
+        Schema.Type.INT,
+        nullableRecordSchema.getField("field1").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL,
+        nullableRecordSchema.getField("field1").schema().getTypes().get(1).getType());
+    assertEquals(Schema.Type.DOUBLE, nullableRecordSchema.getField("field2").schema().getType());
+    assertEquals(
+        Schema.Type.FIXED,
+        nullableRecordSchema.getField("field3").schema().getTypes().get(0).getType());
+    assertEquals(
+        16, nullableRecordSchema.getField("field3").schema().getTypes().get(0).getFixedSize());
+    assertEquals(
+        "decimal",
+        nullableRecordSchema.getField("field3").schema().getTypes().get(0).getProp("logicalType"));
+    assertEquals(
+        10,
+        nullableRecordSchema
+            .getField("field3")
+            .schema()
+            .getTypes()
+            .get(0)
+            .getObjectProp("precision"));
+    assertEquals(
+        2,
+        nullableRecordSchema.getField("field3").schema().getTypes().get(0).getObjectProp("scale"));
+    assertEquals(
+        Schema.Type.NULL,
+        nullableRecordSchema.getField("field3").schema().getTypes().get(1).getType());
+    assertEquals(Schema.Type.LONG, nullableRecordSchema.getField("field4").schema().getType());
+    assertEquals(
+        "timestamp-millis",
+        nullableRecordSchema.getField("field4").schema().getProp("logicalType"));
+
+    // Assertions for nonNullableRecord
+    assertEquals(Schema.Type.RECORD, schema.getField("nonNullableRecord").schema().getType());
+    Schema nonNullableRecordSchema = schema.getField("nonNullableRecord").schema();
+    assertEquals(4, nonNullableRecordSchema.getFields().size());
+    assertEquals(
+        Schema.Type.INT,
+        nonNullableRecordSchema.getField("field1").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.NULL,
+        nonNullableRecordSchema.getField("field1").schema().getTypes().get(1).getType());
+    assertEquals(Schema.Type.DOUBLE, nonNullableRecordSchema.getField("field2").schema().getType());
+    assertEquals(
+        Schema.Type.FIXED,
+        nonNullableRecordSchema.getField("field3").schema().getTypes().get(0).getType());
+    assertEquals(
+        16, nullableRecordSchema.getField("field3").schema().getTypes().get(0).getFixedSize());
+    assertEquals(
+        "decimal",
+        nonNullableRecordSchema
+            .getField("field3")
+            .schema()
+            .getTypes()
+            .get(0)
+            .getProp("logicalType"));
+    assertEquals(
+        10,
+        nonNullableRecordSchema
+            .getField("field3")
+            .schema()
+            .getTypes()
+            .get(0)
+            .getObjectProp("precision"));
+    assertEquals(
+        2,
+        nonNullableRecordSchema
+            .getField("field3")
+            .schema()
+            .getTypes()
+            .get(0)
+            .getObjectProp("scale"));
+    assertEquals(
+        Schema.Type.NULL,
+        nonNullableRecordSchema.getField("field3").schema().getTypes().get(1).getType());
+    assertEquals(Schema.Type.LONG, nonNullableRecordSchema.getField("field4").schema().getType());
+    assertEquals(
+        "timestamp-millis",
+        nonNullableRecordSchema.getField("field4").schema().getProp("logicalType"));
+  }
+
+  @Test
+  public void testConvertUnionTypes() {
+    List<Field> fields =
+        Arrays.asList(
+            new Field(
+                "sparseUnionField",
+                FieldType.nullable(
+                    new ArrowType.Union(
+                        UnionMode.Sparse,
+                        new int[] {
+                          ArrowType.ArrowTypeID.Int.getFlatbufID(),
+                          ArrowType.ArrowTypeID.FloatingPoint.getFlatbufID(),
+                          ArrowType.ArrowTypeID.Utf8.getFlatbufID()
+                        })),
+                Arrays.asList(
+                    new Field(
+                        "intMember", FieldType.notNullable(new ArrowType.Int(32, true)), null),
+                    new Field(
+                        "floatMember",
+                        FieldType.notNullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)),
+                        null),
+                    new Field("stringMember", FieldType.notNullable(new ArrowType.Utf8()), null))),
+            new Field(
+                "denseUnionField",
+                FieldType.nullable(
+                    new ArrowType.Union(
+                        UnionMode.Dense,
+                        new int[] {
+                          ArrowType.ArrowTypeID.Int.getFlatbufID(),
+                          ArrowType.ArrowTypeID.FloatingPoint.getFlatbufID(),
+                          ArrowType.ArrowTypeID.Utf8.getFlatbufID()
+                        })),
+                Arrays.asList(
+                    new Field(
+                        "intMember", FieldType.notNullable(new ArrowType.Int(32, true)), null),
+                    new Field(
+                        "floatMember",
+                        FieldType.notNullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)),
+                        null),
+                    new Field("stringMember", FieldType.notNullable(new ArrowType.Utf8()), null))),
+            new Field(
+                "nullableSparseUnionField",
+                FieldType.nullable(
+                    new ArrowType.Union(
+                        UnionMode.Sparse,
+                        new int[] {
+                          ArrowType.ArrowTypeID.Int.getFlatbufID(),
+                          ArrowType.ArrowTypeID.FloatingPoint.getFlatbufID(),
+                          ArrowType.ArrowTypeID.Utf8.getFlatbufID()
+                        })),
+                Arrays.asList(
+                    new Field(
+                        "nullableIntMember", FieldType.nullable(new ArrowType.Int(32, true)), null),
+                    new Field(
+                        "nullableFloatMember",
+                        FieldType.nullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)),
+                        null),
+                    new Field(
+                        "nullableStringMember", FieldType.nullable(new ArrowType.Utf8()), null))),
+            new Field(
+                "nullableDenseUnionField",
+                FieldType.nullable(
+                    new ArrowType.Union(
+                        UnionMode.Dense,
+                        new int[] {
+                          ArrowType.ArrowTypeID.Int.getFlatbufID(),
+                          ArrowType.ArrowTypeID.FloatingPoint.getFlatbufID(),
+                          ArrowType.ArrowTypeID.Utf8.getFlatbufID()
+                        })),
+                Arrays.asList(
+                    new Field(
+                        "nullableIntMember", FieldType.nullable(new ArrowType.Int(32, true)), null),
+                    new Field(
+                        "nullableFloatMember",
+                        FieldType.nullable(
+                            new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE)),
+                        null),
+                    new Field(
+                        "nullableStringMember", FieldType.nullable(new ArrowType.Utf8()), null))));
+
+    Schema schema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord");
+
+    assertEquals(Schema.Type.RECORD, schema.getType());
+    assertEquals(4, schema.getFields().size());
+
+    // Assertions for sparseUnionField
+    assertEquals(Schema.Type.UNION, schema.getField("sparseUnionField").schema().getType());
+    assertEquals(3, schema.getField("sparseUnionField").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.INT, schema.getField("sparseUnionField").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.FLOAT,
+        schema.getField("sparseUnionField").schema().getTypes().get(1).getType());
+    assertEquals(
+        Schema.Type.STRING,
+        schema.getField("sparseUnionField").schema().getTypes().get(2).getType());
+
+    // Assertions for denseUnionField
+    assertEquals(Schema.Type.UNION, schema.getField("denseUnionField").schema().getType());
+    assertEquals(3, schema.getField("denseUnionField").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.INT, schema.getField("denseUnionField").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.FLOAT, schema.getField("denseUnionField").schema().getTypes().get(1).getType());
+    assertEquals(
+        Schema.Type.STRING,
+        schema.getField("denseUnionField").schema().getTypes().get(2).getType());
+
+    // Assertions for sparseUnionField
+    assertEquals(Schema.Type.UNION, schema.getField("nullableSparseUnionField").schema().getType());
+    assertEquals(4, schema.getField("nullableSparseUnionField").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.NULL,
+        schema.getField("nullableSparseUnionField").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.INT,
+        schema.getField("nullableSparseUnionField").schema().getTypes().get(1).getType());
+    assertEquals(
+        Schema.Type.FLOAT,
+        schema.getField("nullableSparseUnionField").schema().getTypes().get(2).getType());
+    assertEquals(
+        Schema.Type.STRING,
+        schema.getField("nullableSparseUnionField").schema().getTypes().get(3).getType());
+
+    // Assertions for denseUnionField
+    assertEquals(Schema.Type.UNION, schema.getField("nullableDenseUnionField").schema().getType());
+    assertEquals(4, schema.getField("nullableDenseUnionField").schema().getTypes().size());
+    assertEquals(
+        Schema.Type.NULL,
+        schema.getField("nullableDenseUnionField").schema().getTypes().get(0).getType());
+    assertEquals(
+        Schema.Type.INT,
+        schema.getField("nullableDenseUnionField").schema().getTypes().get(1).getType());
+    assertEquals(
+        Schema.Type.FLOAT,
+        schema.getField("nullableDenseUnionField").schema().getTypes().get(2).getType());
+    assertEquals(
+        Schema.Type.STRING,
+        schema.getField("nullableDenseUnionField").schema().getTypes().get(3).getType());
   }
 }
