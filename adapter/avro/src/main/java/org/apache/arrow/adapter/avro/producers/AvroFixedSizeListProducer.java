@@ -62,8 +62,7 @@ public class AvroFixedSizeListProducer extends BaseAvroProducer<FixedSizeListVec
 
   @Override
   @SuppressWarnings("unchecked")
-  public boolean resetValueVector(FixedSizeListVector vector) {
+  public void resetValueVector(FixedSizeListVector vector) {
     ((Producer<FieldVector>) delegate).resetValueVector(vector.getDataVector());
-    return super.resetValueVector(vector);
   }
 }

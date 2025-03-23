@@ -48,9 +48,7 @@ public class CompositeAvroProducer {
     // This method assumes that the VSR matches the constructed set of producers
     int index = 0;
     for (Producer producer : producers) {
-      if (producer.resetValueVector(root.getFieldVectors().get(index))) {
-        index++;
-      }
+      producer.resetValueVector(root.getFieldVectors().get(index));
     }
   }
 }

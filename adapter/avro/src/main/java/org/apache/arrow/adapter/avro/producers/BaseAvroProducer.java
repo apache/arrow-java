@@ -48,10 +48,9 @@ public abstract class BaseAvroProducer<T extends FieldVector> implements Produce
   }
 
   @Override
-  public boolean resetValueVector(T vector) {
+  public void resetValueVector(T vector) {
     this.vector = vector;
     this.currentIndex = 0;
-    return true;
   }
 
   @Override

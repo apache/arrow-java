@@ -63,8 +63,8 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
   }
 
   @Override
-  public boolean resetValueVector(T vector) {
-    return delegate.resetValueVector(vector);
+  public void resetValueVector(T vector) {
+    delegate.resetValueVector(vector);
   }
 
   @Override

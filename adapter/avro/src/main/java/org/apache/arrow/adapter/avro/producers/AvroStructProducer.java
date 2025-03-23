@@ -63,11 +63,10 @@ public class AvroStructProducer extends BaseAvroProducer<StructVector> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public boolean resetValueVector(StructVector vector) {
+  public void resetValueVector(StructVector vector) {
     for (int i = 0; i < delegates.length; i++) {
       Producer<FieldVector> delegate = (Producer<FieldVector>) delegates[i];
       delegate.resetValueVector(vector.getChildrenFromFields().get(i));
     }
-    return super.resetValueVector(vector);
   }
 }

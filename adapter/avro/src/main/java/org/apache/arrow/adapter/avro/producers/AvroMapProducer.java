@@ -65,8 +65,7 @@ public class AvroMapProducer extends BaseAvroProducer<MapVector> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public boolean resetValueVector(MapVector vector) {
+  public void resetValueVector(MapVector vector) {
     ((Producer<FieldVector>) delegate).resetValueVector(vector.getDataVector());
-    return super.resetValueVector(vector);
   }
 }

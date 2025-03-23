@@ -64,8 +64,7 @@ public class AvroListProducer extends BaseAvroProducer<ListVector> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public boolean resetValueVector(ListVector vector) {
+  public void resetValueVector(ListVector vector) {
     ((Producer<FieldVector>) delegate).resetValueVector(vector.getDataVector());
-    return super.resetValueVector(vector);
   }
 }

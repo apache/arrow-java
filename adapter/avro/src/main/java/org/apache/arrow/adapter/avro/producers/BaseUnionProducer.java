@@ -90,12 +90,10 @@ abstract class BaseUnionProducer<T extends FieldVector> extends BaseAvroProducer
 
   @Override
   @SuppressWarnings("unchecked")
-  public boolean resetValueVector(T vector) {
-    boolean result = true;
+  public void resetValueVector(T vector) {
     for (int i = 0; i < delegates.length; i++) {
       Producer<FieldVector> delegate = (Producer<FieldVector>) delegates[i];
-      result &= delegate.resetValueVector(vector.getChildrenFromFields().get(i));
+      delegate.resetValueVector(vector.getChildrenFromFields().get(i));
     }
-    return result & super.resetValueVector(vector);
   }
 }

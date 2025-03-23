@@ -41,12 +41,8 @@ public interface Producer<T extends FieldVector> {
   /** Set the position to read value from vector. */
   void setPosition(int index);
 
-  /**
-   * Reset the vector within producer.
-   *
-   * @return true if reset is successful, false if reset is not needed.
-   */
-  boolean resetValueVector(T vector);
+  /** Reset the vector within producer. */
+  void resetValueVector(T vector);
 
   /** Get the vector within the producer. */
   T getVector();
