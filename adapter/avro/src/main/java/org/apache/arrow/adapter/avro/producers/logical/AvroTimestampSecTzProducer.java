@@ -50,5 +50,6 @@ public class AvroTimestampSecTzProducer extends BaseAvroProducer<TimeStampSecTZV
     }
     long utcMillis = utcSeconds * MILLIS_PER_SECOND;
     encoder.writeLong(utcMillis);
+    currentIndex++;
   }
 }
