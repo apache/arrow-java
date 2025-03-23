@@ -40,6 +40,9 @@ public class AvroDateMilliProducer extends BaseAvroProducer<DateMilliVector> {
   public void produce(Encoder encoder) throws IOException {
     long millis = vector.getDataBuffer().getLong(currentIndex * (long) DateMilliVector.TYPE_WIDTH);
     long days = millis / MILLIS_PER_DAY;
+    if (days > (long) Integer.MAX_VALUE || days < (long) Integer.MIN_VALUE) {
+      throw new ArithmeticException("Date value is too large for Avro encoding");
+    }
     encoder.writeInt((int) days);
     currentIndex++;
   }
