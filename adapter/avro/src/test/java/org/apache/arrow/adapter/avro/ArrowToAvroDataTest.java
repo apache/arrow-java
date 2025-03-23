@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
@@ -30,6 +31,7 @@ import org.apache.arrow.memory.util.Float16;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float2Vector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.Float8Vector;
@@ -41,12 +43,15 @@ import org.apache.arrow.vector.UInt1Vector;
 import org.apache.arrow.vector.UInt2Vector;
 import org.apache.arrow.vector.UInt4Vector;
 import org.apache.arrow.vector.UInt8Vector;
+import org.apache.arrow.vector.VarBinaryVector;
+import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.io.BinaryDecoder;
@@ -550,6 +555,7 @@ public class ArrowToAvroDataTest {
     List<FieldVector> vectors = Arrays.asList(float16Vector, float32Vector, float64Vector);
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
       root.setRowCount(rowCount);
       root.allocateNew();
 
@@ -585,6 +591,7 @@ public class ArrowToAvroDataTest {
       GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
 
       try (InputStream inputStream = new FileInputStream(dataFile)) {
+
         BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
 
         // Read and check values
@@ -598,6 +605,254 @@ public class ArrowToAvroDataTest {
           assertEquals(float16Vector.getValueAsFloat(row), record.get("float16"));
           assertEquals(float32Vector.get(row), record.get("float32"));
           assertEquals(float64Vector.get(row), record.get("float64"));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteStrings() throws Exception {
+
+    // Field definition
+    FieldType stringField = new FieldType(false, new ArrowType.Utf8(), null);
+
+    // Create empty vector
+    BufferAllocator allocator = new RootAllocator();
+    VarCharVector stringVector = new VarCharVector(new Field("string", stringField, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(stringVector);
+    int rowCount = 5;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      stringVector.setSafe(0, "Hello world!".getBytes());
+      stringVector.setSafe(1, "<%**\r\n\t\\abc\0$$>".getBytes());
+      stringVector.setSafe(2, "你好世界".getBytes());
+      stringVector.setSafe(3, "مرحبا بالعالم".getBytes());
+      stringVector.setSafe(4, "(P ∧ P ⇒ Q) ⇒ Q".getBytes());
+
+      File dataFile = new File(TMP, "testWriteStrings.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(stringVector.getObject(row).toString(), record.get("string").toString());
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNullableStrings() throws Exception {
+
+    // Field definition
+    FieldType stringField = new FieldType(true, new ArrowType.Utf8(), null);
+
+    // Create empty vector
+    BufferAllocator allocator = new RootAllocator();
+    VarCharVector stringVector = new VarCharVector(new Field("string", stringField, null), allocator);
+
+    int rowCount = 3;
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(stringVector);
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      stringVector.setNull(0);
+      stringVector.setSafe(1, "".getBytes());
+      stringVector.setSafe(2, "not empty".getBytes());
+
+      File dataFile = new File(TMP, "testWriteNullableStrings.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+
+        // Read and check values
+        GenericRecord record = datumReader.read(null, decoder);
+        assertNull(record.get("string"));
+
+        for (int row = 1; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(stringVector.getObject(row).toString(), record.get("string").toString());
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteBinary() throws Exception {
+
+    // Field definition
+    FieldType binaryField = new FieldType(false, new ArrowType.Binary(), null);
+    FieldType fixedField = new FieldType(false, new ArrowType.FixedSizeBinary(5), null);
+
+    // Create empty vector
+    BufferAllocator allocator = new RootAllocator();
+    VarBinaryVector binaryVector = new VarBinaryVector(new Field("binary", binaryField, null), allocator);
+    FixedSizeBinaryVector fixedVector = new FixedSizeBinaryVector(new Field("fixed", fixedField, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(binaryVector, fixedVector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      binaryVector.setSafe(0, new byte[]{1, 2, 3});
+      binaryVector.setSafe(1, new byte[]{4, 5, 6, 7});
+      binaryVector.setSafe(2, new byte[]{8, 9});
+
+      fixedVector.setSafe(0, new byte[]{1, 2, 3, 4, 5});
+      fixedVector.setSafe(1, new byte[]{4, 5, 6, 7, 8, 9});
+      fixedVector.setSafe(2, new byte[]{8, 9, 10, 11, 12});
+
+      File dataFile = new File(TMP, "testWriteBinary.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          ByteBuffer buf = ((ByteBuffer) record.get("binary"));
+          byte[] bytes = new byte[buf.remaining()];
+          buf.get(bytes);
+          System.out.print(record);
+          byte[] fixedBytes = ((GenericData.Fixed) record.get("fixed")).bytes();
+          assertArrayEquals(binaryVector.getObject(row), bytes);
+          assertArrayEquals(fixedVector.getObject(row), fixedBytes);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNullableBinary() throws Exception {
+
+    // Field definition
+    FieldType binaryField = new FieldType(true, new ArrowType.Binary(), null);
+    FieldType fixedField = new FieldType(true, new ArrowType.FixedSizeBinary(5), null);
+
+    // Create empty vector
+    BufferAllocator allocator = new RootAllocator();
+    VarBinaryVector binaryVector = new VarBinaryVector(new Field("binary", binaryField, null), allocator);
+    FixedSizeBinaryVector fixedVector = new FixedSizeBinaryVector(new Field("fixed", fixedField, null), allocator);
+
+    int rowCount = 3;
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(binaryVector, fixedVector);
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      binaryVector.setNull(0);
+      binaryVector.setSafe(1, new byte[]{});
+      binaryVector.setSafe(2, new byte[]{10, 11, 12});
+
+      fixedVector.setNull(0);
+      fixedVector.setSafe(1, new byte[]{0, 0, 0, 0, 0});
+      fixedVector.setSafe(2, new byte[]{10, 11, 12, 13, 14});
+
+      File dataFile = new File(TMP, "testWriteNullableBinary.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+
+        // Read and check values
+        GenericRecord record = datumReader.read(null, decoder);
+        assertNull(record.get("binary"));
+        assertNull(record.get("fixed"));
+
+        for (int row = 1; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          ByteBuffer buf = ((ByteBuffer) record.get("binary"));
+          byte[] bytes = new byte[buf.remaining()];
+          buf.get(bytes);
+          byte[] fixedBytes = ((GenericData.Fixed) record.get("fixed")).bytes();
+          assertArrayEquals(binaryVector.getObject(row), bytes);
+          assertArrayEquals(fixedVector.getObject(row), fixedBytes);
         }
       }
     }
