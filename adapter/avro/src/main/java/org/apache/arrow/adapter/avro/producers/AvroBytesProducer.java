@@ -36,7 +36,8 @@ public class AvroBytesProducer extends BaseAvroProducer<VarBinaryVector> {
   public void produce(Encoder encoder) throws IOException {
     // The nio ByteBuffer is created once per call, but underlying data is not copied
     long offset = vector.getStartOffset(currentIndex);
-    int length = vector.getEndOffset(currentIndex);
+    long endOffset = vector.getEndOffset(currentIndex);
+    int length = (int) (endOffset - offset);
     ByteBuffer nioBuffer = vector.getDataBuffer().nioBuffer(offset, length);
     encoder.writeBytes(nioBuffer);
     currentIndex++;

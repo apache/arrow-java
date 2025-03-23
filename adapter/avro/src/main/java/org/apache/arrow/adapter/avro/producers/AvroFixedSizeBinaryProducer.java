@@ -48,7 +48,7 @@ public class AvroFixedSizeBinaryProducer extends BaseAvroProducer<BaseFixedWidth
   public void produce(Encoder encoder) throws IOException {
     long offset = (long) currentIndex * vector.getTypeWidth();
     vector.getDataBuffer().getBytes(offset, reuseBytes);
-    encoder.writeBytes(reuseBytes);
+    encoder.writeFixed(reuseBytes);
     currentIndex++;
   }
 }
