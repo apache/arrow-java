@@ -31,8 +31,8 @@ public class AvroUint2Producer extends BaseAvroProducer<UInt2Vector> {
   @Override
   public void produce(Encoder encoder) throws IOException {
     short unsigned = vector.getDataBuffer().getShort(currentIndex * (long) UInt2Vector.TYPE_WIDTH);
-    int signed = unsigned & 0xffff;
-    encoder.writeInt(signed);
+    int unsignedInt = Short.toUnsignedInt(unsigned);
+    encoder.writeInt(unsignedInt);
     currentIndex++;
   }
 }

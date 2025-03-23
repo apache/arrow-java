@@ -31,8 +31,8 @@ public class AvroUint1Producer extends BaseAvroProducer<UInt1Vector> {
   @Override
   public void produce(Encoder encoder) throws IOException {
     byte unsigned = vector.getDataBuffer().getByte(currentIndex * (long) UInt1Vector.TYPE_WIDTH);
-    int signed = unsigned & 0xff;
-    encoder.writeInt(signed);
+    int unsignedInt = Byte.toUnsignedInt(unsigned);
+    encoder.writeInt(unsignedInt);
     currentIndex++;
   }
 }
