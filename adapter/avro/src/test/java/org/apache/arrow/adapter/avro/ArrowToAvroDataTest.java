@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +32,8 @@ import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.memory.util.Float16;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
+import org.apache.arrow.vector.DecimalVector;
+import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float2Vector;
@@ -50,6 +54,8 @@ import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.avro.Conversions;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
@@ -67,6 +73,8 @@ public class ArrowToAvroDataTest {
 
   @TempDir
   public static File TMP;
+
+  // Data production for primitive types, nullable and non-nullable
 
   @Test
   public void testWriteNullColumn() throws Exception {
@@ -780,7 +788,6 @@ public class ArrowToAvroDataTest {
           ByteBuffer buf = ((ByteBuffer) record.get("binary"));
           byte[] bytes = new byte[buf.remaining()];
           buf.get(bytes);
-          System.out.print(record);
           byte[] fixedBytes = ((GenericData.Fixed) record.get("fixed")).bytes();
           assertArrayEquals(binaryVector.getObject(row), bytes);
           assertArrayEquals(fixedVector.getObject(row), fixedBytes);
@@ -856,5 +863,169 @@ public class ArrowToAvroDataTest {
         }
       }
     }
+  }
+
+  // Data production for logical types, nullable and non-nullable
+
+  @Test
+  public void testWriteDecimals() throws Exception {
+
+    // Field definitions
+    FieldType decimal128Field1 = new FieldType(false, new ArrowType.Decimal(38, 10, 128), null);
+    FieldType decimal128Field2 = new FieldType(false, new ArrowType.Decimal(38, 5, 128), null);
+    FieldType decimal256Field1 = new FieldType(false, new ArrowType.Decimal(76, 20, 256), null);
+    FieldType decimal256Field2 = new FieldType(false, new ArrowType.Decimal(76, 10, 256), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    DecimalVector decimal128Vector1 = new DecimalVector(new Field("decimal128_1", decimal128Field1, null), allocator);
+    DecimalVector decimal128Vector2 = new DecimalVector(new Field("decimal128_2", decimal128Field2, null), allocator);
+    Decimal256Vector decimal256Vector1 = new Decimal256Vector(new Field("decimal256_1", decimal256Field1, null), allocator);
+    Decimal256Vector decimal256Vector2 = new Decimal256Vector(new Field("decimal256_2", decimal256Field2, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(decimal128Vector1, decimal128Vector2, decimal256Vector1, decimal256Vector2);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      decimal128Vector1.setSafe(0, new BigDecimal("12345.67890").setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(1, new BigDecimal("98765.43210").setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(2, new BigDecimal("54321.09876").setScale(10, RoundingMode.UNNECESSARY));
+
+      decimal128Vector2.setSafe(0, new BigDecimal("12345.67890").setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(1, new BigDecimal("98765.43210").setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(2, new BigDecimal("54321.09876").setScale(5, RoundingMode.UNNECESSARY));
+
+      decimal256Vector1.setSafe(0, new BigDecimal("12345678901234567890.12345678901234567890").setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(1, new BigDecimal("98765432109876543210.98765432109876543210").setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(2, new BigDecimal("54321098765432109876.54321098765432109876").setScale(20, RoundingMode.UNNECESSARY));
+
+      decimal256Vector2.setSafe(0, new BigDecimal("12345678901234567890.1234567890").setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(1, new BigDecimal("98765432109876543210.9876543210").setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(2, new BigDecimal("54321098765432109876.5432109876").setScale(10, RoundingMode.UNNECESSARY));
+
+      File dataFile = new File(TMP, "testWriteDecimals.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(decimal128Vector1.getObject(row), decodeFixedDecimal(record, "decimal128_1"));
+          assertEquals(decimal128Vector2.getObject(row), decodeFixedDecimal(record, "decimal128_2"));
+          assertEquals(decimal256Vector1.getObject(row), decodeFixedDecimal(record, "decimal256_1"));
+          assertEquals(decimal256Vector2.getObject(row), decodeFixedDecimal(record, "decimal256_2"));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNullableDecimals() throws Exception {
+
+    // Field definitions
+    FieldType decimal128Field1 = new FieldType(true, new ArrowType.Decimal(38, 10, 128), null);
+    FieldType decimal128Field2 = new FieldType(true, new ArrowType.Decimal(38, 5, 128), null);
+    FieldType decimal256Field1 = new FieldType(true, new ArrowType.Decimal(76, 20, 256), null);
+    FieldType decimal256Field2 = new FieldType(true, new ArrowType.Decimal(76, 10, 256), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    DecimalVector decimal128Vector1 = new DecimalVector(new Field("decimal128_1", decimal128Field1, null), allocator);
+    DecimalVector decimal128Vector2 = new DecimalVector(new Field("decimal128_2", decimal128Field2, null), allocator);
+    Decimal256Vector decimal256Vector1 = new Decimal256Vector(new Field("decimal256_1", decimal256Field1, null), allocator);
+    Decimal256Vector decimal256Vector2 = new Decimal256Vector(new Field("decimal256_2", decimal256Field2, null), allocator);
+
+    int rowCount = 3;
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(decimal128Vector1, decimal128Vector2, decimal256Vector1, decimal256Vector2);
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      decimal128Vector1.setNull(0);
+      decimal128Vector1.setSafe(1, BigDecimal.ZERO.setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(2, new BigDecimal("12345.67890").setScale(10, RoundingMode.UNNECESSARY));
+
+      decimal128Vector2.setNull(0);
+      decimal128Vector2.setSafe(1, BigDecimal.ZERO.setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(2, new BigDecimal("98765.43210").setScale(5, RoundingMode.UNNECESSARY));
+
+      decimal256Vector1.setNull(0);
+      decimal256Vector1.setSafe(1, BigDecimal.ZERO.setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(2, new BigDecimal("12345678901234567890.12345678901234567890").setScale(20, RoundingMode.UNNECESSARY));
+
+      decimal256Vector2.setNull(0);
+      decimal256Vector2.setSafe(1, BigDecimal.ZERO.setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(2, new BigDecimal("98765432109876543210.9876543210").setScale(10, RoundingMode.UNNECESSARY));
+
+      File dataFile = new File(TMP, "testWriteNullableDecimals.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+
+        // Read and check values
+        GenericRecord record = datumReader.read(null, decoder);
+        assertNull(record.get("decimal128_1"));
+        assertNull(record.get("decimal128_2"));
+        assertNull(record.get("decimal256_1"));
+        assertNull(record.get("decimal256_2"));
+
+        for (int row = 1; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(decimal128Vector1.getObject(row), decodeFixedDecimal(record, "decimal128_1"));
+          assertEquals(decimal128Vector2.getObject(row), decodeFixedDecimal(record, "decimal128_2"));
+          assertEquals(decimal256Vector1.getObject(row), decodeFixedDecimal(record, "decimal256_1"));
+          assertEquals(decimal256Vector2.getObject(row), decodeFixedDecimal(record, "decimal256_2"));
+        }
+      }
+    }
+  }
+
+  private static BigDecimal decodeFixedDecimal(GenericRecord record, String fieldName) {
+    GenericData.Fixed fixed = (GenericData.Fixed) record.get(fieldName);
+    var logicalType = LogicalTypes.fromSchema(fixed.getSchema());
+    return new Conversions.DecimalConversion().fromFixed(fixed, fixed.getSchema(), logicalType);
   }
 }
