@@ -17,39 +17,34 @@
 package org.apache.arrow.adapter.avro.producers.logical;
 
 import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
+import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.vector.TimeStampSecTZVector;
 import org.apache.arrow.vector.TimeStampVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that converts timestamps in zone-aware epoch seconds from a {@link TimeStampSecTZVector}
- * and produces UTC timestamp (millisecond) values, writes data to an Avro encoder.
+ * Producer that converts epoch seconds from a {@link TimeStampSecTZVector} and produces UTC
+ * timestamp (milliseconds) values, writes data to an Avro encoder.
  */
-public class AvroTimestampSecTzProducer extends BaseTimestampTzProducer<TimeStampSecTZVector> {
+public class AvroTimestampSecTzProducer extends BaseAvroProducer<TimeStampSecTZVector> {
 
   // Avro does not support timestamps in seconds, so convert to timestamp-millis type
   // Check for overflow and raise an exception
+
+  // Both Arrow and Avro store zone-aware times in UTC so zone conversion is not needed
 
   private static final long MILLIS_PER_SECOND = 1000;
   private static final long OVERFLOW_LIMIT = Long.MAX_VALUE / MILLIS_PER_SECOND;
 
   /** Instantiate an AvroTimestampSecTzProducer. */
   public AvroTimestampSecTzProducer(TimeStampSecTZVector vector) {
-    super(vector, vector.getTimeZone(), 1);
-  }
-
-  @Override
-  protected long convertToUtc(long tzValue, ZoneId zoneId) {
-    return Instant.ofEpochSecond(tzValue).atZone(zoneId).toInstant().getEpochSecond();
+    super(vector);
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    long tzSeconds =
+    long utcSeconds =
         vector.getDataBuffer().getLong(currentIndex * (long) TimeStampVector.TYPE_WIDTH);
-    long utcSeconds = fixedOffsetFlag ? tzSeconds + fixedOffset : convertToUtc(tzSeconds, zoneId);
     if (Math.abs(utcSeconds) > OVERFLOW_LIMIT) {
       throw new ArithmeticException("Timestamp value is too large for Avro encoding");
     }

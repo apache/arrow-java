@@ -16,32 +16,20 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import java.time.Instant;
-import java.time.ZoneId;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.vector.TimeStampNanoTZVector;
 
 /**
- * Producer that converts timestamps in zone-aware epoch nanoseconds from a {@link
- * TimeStampNanoTZVector} and produces UTC timestamp (nanoseconds) values, writes data to an Avro
- * encoder.
+ * Producer that produces local timestamp (nanoseconds) values from a {@link TimeStampNanoTZVector},
+ * writes data to an Avro encoder.
  */
-public class AvroTimestampNanoTzProducer extends BaseTimestampTzProducer<TimeStampNanoTZVector> {
+public class AvroTimestampNanoTzProducer extends AvroBigIntProducer {
 
-  private static final long NANOS_PER_SECOND = 1000000000;
+  // UTC timestamp in epoch nanoseconds stored as long, matches Avro timestamp-nanos type
+  // Both Arrow and Avro store zone-aware times in UTC so zone conversion is not needed
 
   /** Instantiate an AvroTimestampNanoTzProducer. */
   public AvroTimestampNanoTzProducer(TimeStampNanoTZVector vector) {
-    super(vector, vector.getTimeZone(), NANOS_PER_SECOND);
-  }
-
-  @Override
-  protected long convertToUtc(long tzValue, ZoneId zoneId) {
-    // For negative values, e.g. -.5 seconds = -1 second + .5 in nanos
-    long tzSeconds = tzValue >= 0 ? tzValue / NANOS_PER_SECOND : tzValue / NANOS_PER_SECOND - 1;
-    long tzNano = tzValue % NANOS_PER_SECOND;
-    Instant utcInstant = Instant.ofEpochSecond(tzSeconds, tzNano).atZone(zoneId).toInstant();
-    long utcSeconds = utcInstant.getEpochSecond();
-    long utcNano = utcInstant.getNano();
-    return utcSeconds * NANOS_PER_SECOND + utcNano;
+    super(vector);
   }
 }

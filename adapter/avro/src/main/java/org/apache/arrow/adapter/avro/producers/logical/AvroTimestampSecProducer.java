@@ -22,8 +22,8 @@ import org.apache.arrow.vector.TimeStampSecVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that converts epoch seconds from a {@link TimeStampSecVector} and produces local time
- * (milliseconds) values, writes data to an Avro encoder.
+ * Producer that converts epoch seconds from a {@link TimeStampSecVector} and produces local
+ * timestamp (milliseconds) values, writes data to an Avro encoder.
  */
 public class AvroTimestampSecProducer extends BaseAvroProducer<TimeStampSecVector> {
 

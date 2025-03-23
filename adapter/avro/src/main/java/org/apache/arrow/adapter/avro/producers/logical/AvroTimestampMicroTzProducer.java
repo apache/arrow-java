@@ -16,34 +16,20 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import java.time.Instant;
-import java.time.ZoneId;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
 
 /**
- * Producer that converts timestamps in zone-aware epoch microseconds from a {@link
- * TimeStampMicroTZVector} and produces UTC timestamp (microseconds) values, writes data to an Avro
- * encoder.
+ * Producer that produces UTC timestamp (microseconds) values from a {@link TimeStampMicroTZVector},
+ * writes data to an Avro encoder.
  */
-public class AvroTimestampMicroTzProducer extends BaseTimestampTzProducer<TimeStampMicroTZVector> {
+public class AvroTimestampMicroTzProducer extends AvroBigIntProducer {
 
-  private static final long MICROS_PER_SECOND = 1000000;
-  private static final long NANOS_PER_MICRO = 1000;
+  // UTC timestamp in epoch microseconds stored as long, matches Avro timestamp-micros type
+  // Both Arrow and Avro store zone-aware times in UTC so zone conversion is not needed
 
   /** Instantiate an AvroTimestampMicroTzProducer. */
   public AvroTimestampMicroTzProducer(TimeStampMicroTZVector vector) {
-    super(vector, vector.getTimeZone(), MICROS_PER_SECOND);
-  }
-
-  @Override
-  protected long convertToUtc(long tzValue, ZoneId zoneId) {
-    // For negative values, e.g. -.5 seconds = -1 second + .5 in micros
-    long tzSeconds = tzValue >= 0 ? tzValue / MICROS_PER_SECOND : tzValue / MICROS_PER_SECOND - 1;
-    long tzMicro = tzValue % MICROS_PER_SECOND;
-    Instant utcInstant =
-        Instant.ofEpochSecond(tzSeconds, tzMicro * NANOS_PER_MICRO).atZone(zoneId).toInstant();
-    long utcSeconds = utcInstant.getEpochSecond();
-    long utcMicro = utcInstant.getNano() / NANOS_PER_MICRO;
-    return utcSeconds * MICROS_PER_SECOND + utcMicro;
+    super(vector);
   }
 }

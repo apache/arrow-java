@@ -16,26 +16,20 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
-import java.time.Instant;
-import java.time.ZoneId;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.vector.TimeStampMilliTZVector;
 
 /**
- * Producer that converts timestamps in zone-aware epoch milliseconds from a {@link
- * TimeStampMilliTZVector} and produces UTC timestamp (milliseconds) values, writes data to an Avro
- * encoder.
+ * Producer that produces UTC timestamp (milliseconds) values from a {@link TimeStampMilliTZVector},
+ * writes data to an Avro encoder.
  */
-public class AvroTimestampMilliTzProducer extends BaseTimestampTzProducer<TimeStampMilliTZVector> {
+public class AvroTimestampMilliTzProducer extends AvroBigIntProducer {
 
-  private static final long MILLIS_PER_SECOND = 1000;
+  // UTC timestamp in epoch milliseconds stored as long, matches Avro timestamp-millis type
+  // Both Arrow and Avro store zone-aware times in UTC so zone conversion is not needed
 
   /** Instantiate an AvroTimestampMilliTzProducer. */
   public AvroTimestampMilliTzProducer(TimeStampMilliTZVector vector) {
-    super(vector, vector.getTimeZone(), MILLIS_PER_SECOND);
-  }
-
-  @Override
-  protected long convertToUtc(long tzValue, ZoneId zoneId) {
-    return Instant.ofEpochMilli(tzValue).atZone(zoneId).toInstant().toEpochMilli();
+    super(vector);
   }
 }
