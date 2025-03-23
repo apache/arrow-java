@@ -913,19 +913,19 @@ public class ArrowToAvroDataTest {
 
       // Set test data
       decimal128Vector1.setSafe(0, new BigDecimal("12345.67890").setScale(10, RoundingMode.UNNECESSARY));
-      decimal128Vector1.setSafe(1, new BigDecimal("98765.43210").setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(1, new BigDecimal("-98765.43210").setScale(10, RoundingMode.UNNECESSARY));
       decimal128Vector1.setSafe(2, new BigDecimal("54321.09876").setScale(10, RoundingMode.UNNECESSARY));
 
       decimal128Vector2.setSafe(0, new BigDecimal("12345.67890").setScale(5, RoundingMode.UNNECESSARY));
-      decimal128Vector2.setSafe(1, new BigDecimal("98765.43210").setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(1, new BigDecimal("-98765.43210").setScale(5, RoundingMode.UNNECESSARY));
       decimal128Vector2.setSafe(2, new BigDecimal("54321.09876").setScale(5, RoundingMode.UNNECESSARY));
 
       decimal256Vector1.setSafe(0, new BigDecimal("12345678901234567890.12345678901234567890").setScale(20, RoundingMode.UNNECESSARY));
-      decimal256Vector1.setSafe(1, new BigDecimal("98765432109876543210.98765432109876543210").setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(1, new BigDecimal("-98765432109876543210.98765432109876543210").setScale(20, RoundingMode.UNNECESSARY));
       decimal256Vector1.setSafe(2, new BigDecimal("54321098765432109876.54321098765432109876").setScale(20, RoundingMode.UNNECESSARY));
 
       decimal256Vector2.setSafe(0, new BigDecimal("12345678901234567890.1234567890").setScale(10, RoundingMode.UNNECESSARY));
-      decimal256Vector2.setSafe(1, new BigDecimal("98765432109876543210.9876543210").setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(1, new BigDecimal("-98765432109876543210.9876543210").setScale(10, RoundingMode.UNNECESSARY));
       decimal256Vector2.setSafe(2, new BigDecimal("54321098765432109876.5432109876").setScale(10, RoundingMode.UNNECESSARY));
 
       File dataFile = new File(TMP, "testWriteDecimals.avro");
