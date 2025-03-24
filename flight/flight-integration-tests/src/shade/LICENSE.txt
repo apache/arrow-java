@@ -265,7 +265,7 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Guava 33.4.0-jre.
+This binary artifact contains Guava 33.4.5-jre.
 
 Home page: https://github.com/google/guava
 License: https://www.apache.org/licenses/LICENSE-2.0
