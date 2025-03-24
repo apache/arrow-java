@@ -53,7 +53,7 @@ public class AvroListProducer extends BaseAvroProducer<ListVector> {
     currentIndex++;
   }
 
-  // Do not override skipNull(), the delegate delegate vector will not hold data
+  // Do not override skipNull(), delegate will not have an entry if the list is null
 
   @Override
   public void setPosition(int index) {

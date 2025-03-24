@@ -51,7 +51,12 @@ public class AvroFixedSizeListProducer extends BaseAvroProducer<FixedSizeListVec
     currentIndex++;
   }
 
-  // Do not override skipNull(), the delegate delegate vector will not hold data
+  @Override
+  public void skipNull() {
+    // Keep fixed sized child in sync
+    delegate.skipNull();
+    super.skipNull();
+  }
 
   @Override
   public void setPosition(int index) {
