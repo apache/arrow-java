@@ -118,37 +118,40 @@ public class ArrowToAvroUtils {
    * <p>This method currently performs following type mapping for Avro data types to corresponding
    * Arrow data types.
    *
-   * <ul>
-   *   <li>ArrowType.Null --> NULL
-   *   <li>ArrowType.Bool --> BOOLEAN
-   *   <li>ArrowType.Int(64 bit, unsigned 32 bit) --> LONG
-   *   <li>ArrowType.Int(signed 32 bit, < 32 bit) --> INT
-   *   <li>ArrowType.FloatingPoint(double) --> DOUBLE
-   *   <li>ArrowType.FloatingPoint(single, half) --> FLOAT
-   *   <li>ArrowType.Utf8 --> STRING
-   *   <li>ArrowType.LargeUtf8 --> STRING
-   *   <li>ArrowType.Binary --> BYTES
-   *   <li>ArrowType.LargeBinary --> BYTES
-   *   <li>ArrowType.FixedSizeBinary --> FIXED
-   *   <li>ArrowType.Decimal --> decimal (FIXED)
-   *   <li>ArrowType.Date --> date (INT)
-   *   <li>ArrowType.Time (SEC | MILLI) --> time-millis (INT)
-   *   <li>ArrowType.Time (MICRO | NANO) --> time-micros (LONG)
-   *   <li>ArrowType.Timestamp (NANOSECONDS, TZ != NULL) --> time-nanos (LONG)
-   *   <li>ArrowType.Timestamp (MICROSECONDS, TZ != NULL) --> time-micros (LONG)
-   *   <li>ArrowType.Timestamp (MILLISECONDS | SECONDS, TZ != NULL) --> time-millis (LONG)
-   *   <li>ArrowType.Timestamp (NANOSECONDS, TZ == NULL) --> local-time-nanos (LONG)
-   *   <li>ArrowType.Timestamp (MICROSECONDS, TZ == NULL) --> local-time-micros (LONG)
-   *   <li>ArrowType.Timestamp (MILLISECONDS | SECONDS, TZ == NULL) --> local-time-millis (LONG)
-   *   <li>ArrowType.Duration --> duration (FIXED)
-   *   <li>ArrowType.Interval --> duration (FIXED)
-   *   <li>ArrowType.Struct --> record
-   *   <li>ArrowType.List --> array
-   *   <li>ArrowType.LargeList --> array
-   *   <li>ArrowType.FixedSizeList --> array
-   *   <li>ArrowType.Map --> map
-   *   <li>ArrowType.Union --> union
-   * </ul>
+   * <table>
+   *   <thead><tr><th>Arrow type</th><th>Avro encoding</th></tr></thead>
+   *   <tbody>
+   *     <tr><td>ArrowType.Null</td><td>NULL</td></tr>
+   *     <tr><td>ArrowType.Bool</td><td>BOOLEAN</td></tr>
+   *     <tr><td>ArrowType.Int(64 bit, unsigned 32 bit)</td><td>LONG</td></tr>
+   *     <tr><td>ArrowType.Int(signed 32 bit, &lt; 32 bit)</td><td>INT</td></tr>
+   *     <tr><td>ArrowType.FloatingPoint(double)</td><td>DOUBLE</td></tr>
+   *     <tr><td>ArrowType.FloatingPoint(single, half)</td><td>FLOAT</td></tr>
+   *     <tr><td>ArrowType.Utf8</td><td>STRING</td></tr>
+   *     <tr><td>ArrowType.LargeUtf8</td><td>STRING</td></tr>
+   *     <tr><td>ArrowType.Binary</td><td>BYTES</td></tr>
+   *     <tr><td>ArrowType.LargeBinary</td><td>BYTES</td></tr>
+   *     <tr><td>ArrowType.FixedSizeBinary</td><td>FIXED</td></tr>
+   *     <tr><td>ArrowType.Decimal</td><td>decimal (FIXED)</td></tr>
+   *     <tr><td>ArrowType.Date</td><td>date (INT)</td></tr>
+   *     <tr><td>ArrowType.Time (SEC | MILLI)</td><td>time-millis (INT)</td></tr>
+   *     <tr><td>ArrowType.Time (MICRO | NANO)</td><td>time-micros (LONG)</td></tr>
+   *     <tr><td>ArrowType.Timestamp (NANOSECONDS, TZ != NULL)</td><td>time-nanos (LONG)</td></tr>
+   *     <tr><td>ArrowType.Timestamp (MICROSECONDS, TZ != NULL)</td><td>time-micros (LONG)</td></tr>
+   *     <tr><td>ArrowType.Timestamp (MILLISECONDS | SECONDS, TZ != NULL)</td><td>time-millis (LONG)</td></tr>
+   *     <tr><td>ArrowType.Timestamp (NANOSECONDS, TZ == NULL)</td><td>local-time-nanos (LONG)</td></tr>
+   *     <tr><td>ArrowType.Timestamp (MICROSECONDS, TZ == NULL)</td><td>local-time-micros (LONG)</td></tr>
+   *     <tr><td>ArrowType.Timestamp (MILLISECONDS | SECONDS, TZ == NULL)</td><td>local-time-millis (LONG)</td></tr>
+   *     <tr><td>ArrowType.Duration</td><td>duration (FIXED)</td></tr>
+   *     <tr><td>ArrowType.Interval</td><td>duration (FIXED)</td></tr>
+   *     <tr><td>ArrowType.Struct</td><td>record</td></tr>
+   *     <tr><td>ArrowType.List</td><td>array</td></tr>
+   *     <tr><td>ArrowType.LargeList</td><td>array</td></tr>
+   *     <tr><td>ArrowType.FixedSizeList</td><td>array</td></tr>
+   *     <tr><td>ArrowType.Map</td><td>map</td></tr>
+   *     <tr><td>ArrowType.Union</td><td>union</td></tr>
+   *   </tbody>
+   * </table>
    *
    * <p>Nullable fields are represented as a union of [null | base-type]. Special treatment is given
    * to nullability of unions - a union is considered nullable if the union field is nullable or any
