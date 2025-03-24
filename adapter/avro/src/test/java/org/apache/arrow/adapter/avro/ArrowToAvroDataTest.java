@@ -2589,4 +2589,116 @@ public class ArrowToAvroDataTest {
           }
       }
   }
+
+  @Test
+  public void testWriteNullableStructs() throws Exception {
+
+      // Field definitions
+      FieldType structFieldType = new FieldType(false, new ArrowType.Struct(), null);
+      FieldType nullableStructFieldType = new FieldType(true, new ArrowType.Struct(), null);
+      Field intField = new Field("intField", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+      Field nullableIntField = new Field("nullableIntField", FieldType.nullable(new ArrowType.Int(32, true)), null);
+      Field structField = new Field("struct", structFieldType, Arrays.asList(intField, nullableIntField));
+      Field nullableStructField = new Field("nullableStruct", nullableStructFieldType, Arrays.asList(intField, nullableIntField));
+
+      // Create empty vectors
+      BufferAllocator allocator = new RootAllocator();
+      StructVector structVector = new StructVector("struct", allocator, structFieldType, null);
+      StructVector nullableStructVector = new StructVector("nullableStruct", allocator, nullableStructFieldType, null);
+      structVector.initializeChildrenFromFields(Arrays.asList(intField, nullableIntField));
+      nullableStructVector.initializeChildrenFromFields(Arrays.asList(intField, nullableIntField));
+      structVector.allocateNew();
+      nullableStructVector.allocateNew();
+
+      // Set up VSR
+      List<FieldVector> vectors = Arrays.asList(structVector, nullableStructVector);
+      int rowCount = 4;
+
+      try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+          root.setRowCount(rowCount);
+          root.allocateNew();
+
+          // Set test data for structVector
+          IntVector intVector = (IntVector) structVector.getChild("intField");
+          IntVector nullableIntVector = (IntVector) structVector.getChild("nullableIntField");
+          for (int i = 0; i < rowCount; i++) {
+              structVector.setIndexDefined(i);
+              intVector.setSafe(i, i);
+              if (i % 2 == 0) {
+                  nullableIntVector.setSafe(i, i * 10);
+              } else {
+                  nullableIntVector.setNull(i);
+              }
+          }
+
+          // Set test data for nullableStructVector
+          IntVector nullableStructIntVector = (IntVector) nullableStructVector.getChild("intField");
+          IntVector nullableStructNullableIntVector = (IntVector) nullableStructVector.getChild("nullableIntField");
+          for (int i = 0; i < rowCount; i++) {
+            if (i >= 2) {
+              nullableStructVector.setIndexDefined(i);
+              nullableStructIntVector.setSafe(i, i);
+              if (i % 2 == 0) {
+                nullableStructNullableIntVector.setSafe(i, i * 10);
+              } else {
+                nullableStructNullableIntVector.setNull(i);
+              }
+            }else {
+                  nullableStructVector.setNull(i);
+            }
+          }
+
+          File dataFile = new File(TMP, "testWriteNullableStructs.avro");
+
+          // Write an AVRO block using the producer classes
+          try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+              BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+              CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+              for (int row = 0; row < rowCount; row++) {
+                  producer.produce(encoder);
+              }
+              encoder.flush();
+          }
+
+          // Set up reading the AVRO block as a GenericRecord
+          Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+          GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+          try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+              BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+              GenericRecord record = null;
+
+              // Read and check values
+              for (int row = 0; row < rowCount; row++) {
+                  record = datumReader.read(record, decoder);
+                  if (row % 2 == 0) {
+                      assertNotNull(record.get("struct"));
+                      GenericRecord structRecord = (GenericRecord) record.get("struct");
+                      assertEquals(row, structRecord.get("intField"));
+                      assertEquals(row * 10, structRecord.get("nullableIntField"));
+                  } else {
+                      assertNotNull(record.get("struct"));
+                      GenericRecord structRecord = (GenericRecord) record.get("struct");
+                      assertEquals(row, structRecord.get("intField"));
+                      assertNull(structRecord.get("nullableIntField"));
+
+                  }
+                  if (row >= 2) {
+                    assertNotNull(record.get("nullableStruct"));
+                    GenericRecord nullableStructRecord = (GenericRecord) record.get("nullableStruct");
+                    assertEquals(row, nullableStructRecord.get("intField"));
+                    if (row % 2 == 0) {
+                      assertEquals(row * 10, nullableStructRecord.get("nullableIntField"));
+                    } else {
+                      assertNull(nullableStructRecord.get("nullableIntField"));
+                    }
+                  } else {
+                    assertNull(record.get("nullableStruct"));
+                  }
+              }
+          }
+      }
+  }
 }
