@@ -45,6 +45,8 @@ import org.apache.arrow.vector.Float2Vector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.Float8Vector;
 import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.complex.FixedSizeListVector;
+import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.NullVector;
 import org.apache.arrow.vector.SmallIntVector;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
@@ -1637,6 +1639,415 @@ public class ArrowToAvroDataTest {
           assertEquals(timestampMillisVector.get(row), (int) (long) record.get("timestampMillis"));
           assertEquals(timestampMicrosVector.get(row), record.get("timestampMicros"));
           assertEquals(timestampNanosVector.get(row), record.get("timestampNanos"));
+        }
+      }
+    }
+  }
+
+  // Data production for containers of primitive and logical types, nullable and non-nullable
+
+  @Test
+  public void testWriteLists() throws Exception {
+
+    // Field definitions
+    FieldType intListField = new FieldType(false, new ArrowType.List(), null);
+    FieldType stringListField = new FieldType(false, new ArrowType.List(), null);
+    FieldType dateListField = new FieldType(false, new ArrowType.List(), null);
+
+    Field intField = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field stringField = new Field("item", FieldType.notNullable(new ArrowType.Utf8()), null);
+    Field dateField = new Field("item", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    ListVector intListVector = new ListVector("intList", allocator, intListField, null);
+    ListVector stringListVector = new ListVector("stringList", allocator, stringListField, null);
+    ListVector dateListVector = new ListVector("dateList", allocator, dateListField, null);
+
+    intListVector.initializeChildrenFromFields(Arrays.asList(intField));
+    stringListVector.initializeChildrenFromFields(Arrays.asList(stringField));
+    dateListVector.initializeChildrenFromFields(Arrays.asList(dateField));
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(intListVector, stringListVector, dateListVector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data for intList
+      for (int i = 0, offset = 0; i < rowCount; i++) {
+        intListVector.startNewValue(i);
+        IntVector indDataVector = (IntVector) intListVector.getDataVector();
+        for (int j = 0; j < 5 - i; j++) {
+          indDataVector.set(offset + j, j);
+        }
+        intListVector.endValue(i, 5 - i);
+        offset += 5 - i;
+      }
+
+      // Set test data for stringList
+      for (int i = 0, offset = 0; i < rowCount; i++) {
+        stringListVector.startNewValue(i);
+        VarCharVector varCharVector = (VarCharVector) stringListVector.getDataVector();
+        for (int j = 0; j < 5 - i; j++) {
+          varCharVector.setSafe(offset + j, ("string" + j).getBytes());
+        }
+        stringListVector.endValue(i, 5 - i);
+        offset += 5 - i;
+      }
+
+      // Set test data for dateList
+      for (int i = 0, offset = 0; i < rowCount; i++) {
+        dateListVector.startNewValue(i);
+        DateDayVector dateVector = (DateDayVector) dateListVector.getDataVector();
+        for (int j = 0; j < 5 - i; j++) {
+          dateVector.setSafe(offset + j, (int) LocalDate.now().plusDays(j).toEpochDay());
+        }
+        dateListVector.endValue(i, 5 - i);
+        offset += 5 - i;
+      }
+
+      File dataFile = new File(TMP, "testWriteLists.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(intListVector.getObject(row), record.get("intList"));
+          assertEquals(dateListVector.getObject(row), record.get("dateList"));
+          // Handle conversion from Arrow Text type
+          List<?> vectorList = stringListVector.getObject(row);
+          List<?> recordList = (List<?>) record.get("stringList");
+          assertEquals(vectorList.size(), recordList.size());
+          for (int i = 0; i < vectorList.size(); i++) {
+            assertEquals(vectorList.get(i).toString(), recordList.get(i).toString());
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNullableLists() throws Exception {
+
+    // Field definitions
+    FieldType nullListType = new FieldType(true, new ArrowType.List(), null);
+    FieldType nonNullListType = new FieldType(false, new ArrowType.List(), null);
+
+    Field nullFieldType = new Field("item", FieldType.nullable(new ArrowType.Int(32, true)), null);
+    Field nonNullFieldType = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    ListVector nullEntriesVector = new ListVector("nullEntriesVector", allocator, nonNullListType, null);
+    ListVector nullListVector = new ListVector("nullListVector", allocator, nullListType, null);
+    ListVector nullBothVector = new ListVector("nullBothVector", allocator, nullListType, null);
+
+    nullEntriesVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
+    nullListVector.initializeChildrenFromFields(Arrays.asList(nonNullFieldType));
+    nullBothVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
+
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(nullEntriesVector, nullListVector, nullBothVector);
+    int rowCount = 4;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data for nullEntriesVector
+      IntVector nullEntriesData = (IntVector) nullEntriesVector.getDataVector();
+      nullEntriesVector.startNewValue(0);
+      nullEntriesData.setNull(0);
+      nullEntriesVector.endValue(0, 1);
+      nullEntriesVector.startNewValue(1);
+      nullEntriesData.set(1, 0);
+      nullEntriesVector.endValue(1, 1);
+      nullEntriesVector.startNewValue(2);
+      nullEntriesData.set(2, 1);
+      nullEntriesVector.endValue(2, 1);
+      nullEntriesVector.startNewValue(3);
+      nullEntriesData.set(3, 2);
+      nullEntriesVector.endValue(3, 1);
+
+      // Set test data for nullListVector
+      IntVector nullListData = (IntVector) nullListVector.getDataVector();
+      nullListVector.setNull(0);
+      nullListVector.startNewValue(1);
+      nullListData.set(0, 0);
+      nullListVector.endValue(1, 1);
+      nullListVector.startNewValue(2);
+      nullListData.set(1, 1);
+      nullListVector.endValue(2, 1);
+      nullListVector.startNewValue(3);
+      nullListData.set(2, 2);
+      nullListVector.endValue(3, 1);
+
+      // Set test data for nullBothVector
+      IntVector nullBothData = (IntVector) nullBothVector.getDataVector();
+      nullBothVector.setNull(0);
+      nullBothVector.startNewValue(1);
+      nullBothData.setNull(0);
+      nullBothVector.endValue(1, 1);
+      nullBothVector.startNewValue(2);
+      nullBothData.set(1, 0);
+      nullBothVector.endValue(2, 1);
+      nullBothVector.startNewValue(3);
+      nullBothData.set(2, 1);
+      nullBothVector.endValue(3, 1);
+
+      File dataFile = new File(TMP, "testWriteNullableLists.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          for (String list : Arrays.asList("nullEntriesVector", "nullListVector", "nullBothVector")) {
+            ListVector vector = (ListVector) root.getVector(list);
+            Object recordField = record.get(list);
+            if (vector.isNull(row)) {
+              assertNull(recordField);
+            } else {
+              assertEquals(vector.getObject(row), recordField);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteFixedLists() throws Exception {
+
+    // Field definitions
+    FieldType intListField = new FieldType(false, new ArrowType.FixedSizeList(5), null);
+    FieldType stringListField = new FieldType(false, new ArrowType.FixedSizeList(5), null);
+    FieldType dateListField = new FieldType(false, new ArrowType.FixedSizeList(5), null);
+
+    Field intField = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field stringField = new Field("item", FieldType.notNullable(new ArrowType.Utf8()), null);
+    Field dateField = new Field("item", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    FixedSizeListVector intListVector = new FixedSizeListVector("intList", allocator, intListField, null);
+    FixedSizeListVector stringListVector = new FixedSizeListVector("stringList", allocator, stringListField, null);
+    FixedSizeListVector dateListVector = new FixedSizeListVector("dateList", allocator, dateListField, null);
+
+    intListVector.initializeChildrenFromFields(Arrays.asList(intField));
+    stringListVector.initializeChildrenFromFields(Arrays.asList(stringField));
+    dateListVector.initializeChildrenFromFields(Arrays.asList(dateField));
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(intListVector, stringListVector, dateListVector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data for intList
+      for (int i = 0, offset = 0; i < rowCount; i++) {
+        intListVector.startNewValue(i);
+        IntVector indDataVector = (IntVector) intListVector.getDataVector();
+        for (int j = 0; j < 5; j++) {
+          indDataVector.set(offset + j, j);
+        }
+        offset += 5;
+      }
+
+      // Set test data for stringList
+      for (int i = 0, offset = 0; i < rowCount; i++) {
+        stringListVector.startNewValue(i);
+        VarCharVector varCharVector = (VarCharVector) stringListVector.getDataVector();
+        for (int j = 0; j < 5; j++) {
+          varCharVector.setSafe(offset + j, ("string" + j).getBytes());
+        }
+        offset += 5;
+      }
+
+      // Set test data for dateList
+      for (int i = 0, offset = 0; i < rowCount; i++) {
+        dateListVector.startNewValue(i);
+        DateDayVector dateVector = (DateDayVector) dateListVector.getDataVector();
+        for (int j = 0; j < 5; j++) {
+          dateVector.setSafe(offset + j, (int) LocalDate.now().plusDays(j).toEpochDay());
+        }
+        offset += 5;
+      }
+
+      File dataFile = new File(TMP, "testWriteFixedLists.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(intListVector.getObject(row), record.get("intList"));
+          assertEquals(dateListVector.getObject(row), record.get("dateList"));
+          // Handle conversion from Arrow Text type
+          List<?> vectorList = stringListVector.getObject(row);
+          List<?> recordList = (List<?>) record.get("stringList");
+          assertEquals(vectorList.size(), recordList.size());
+          for (int i = 0; i < vectorList.size(); i++) {
+            assertEquals(vectorList.get(i).toString(), recordList.get(i).toString());
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNullableFixedLists() throws Exception {
+
+    // Field definitions
+    FieldType nullListType = new FieldType(true, new ArrowType.FixedSizeList(1), null);
+    FieldType nonNullListType = new FieldType(false, new ArrowType.FixedSizeList(1), null);
+
+    Field nullFieldType = new Field("item", FieldType.nullable(new ArrowType.Int(32, true)), null);
+    Field nonNullFieldType = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    FixedSizeListVector nullEntriesVector = new FixedSizeListVector("nullEntriesVector", allocator, nonNullListType, null);
+    FixedSizeListVector nullListVector = new FixedSizeListVector("nullListVector", allocator, nullListType, null);
+    FixedSizeListVector nullBothVector = new FixedSizeListVector("nullBothVector", allocator, nullListType, null);
+
+    nullEntriesVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
+    nullListVector.initializeChildrenFromFields(Arrays.asList(nonNullFieldType));
+    nullBothVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
+
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(nullEntriesVector, nullListVector, nullBothVector);
+    int rowCount = 4;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data for nullEntriesVector
+      IntVector nullEntriesData = (IntVector) nullEntriesVector.getDataVector();
+      nullEntriesVector.startNewValue(0);
+      nullEntriesData.setNull(0);
+      nullEntriesVector.startNewValue(1);
+      nullEntriesData.set(1, 0);
+      nullEntriesVector.startNewValue(2);
+      nullEntriesData.set(2, 1);
+      nullEntriesVector.startNewValue(3);
+      nullEntriesData.set(3, 2);
+
+      // Set test data for nullListVector
+      IntVector nullListData = (IntVector) nullListVector.getDataVector();
+      nullListVector.setNull(0);
+      nullListVector.startNewValue(1);
+      nullListData.set(1, 0);
+      nullListVector.startNewValue(2);
+      nullListData.set(2, 1);
+      nullListVector.startNewValue(3);
+      nullListData.set(3, 2);
+
+      // Set test data for nullBothVector
+      IntVector nullBothData = (IntVector) nullBothVector.getDataVector();
+      nullBothVector.setNull(0);
+      nullBothVector.startNewValue(1);
+      nullBothData.setNull(1);
+      nullBothVector.startNewValue(2);
+      nullBothData.set(2, 0);
+      nullBothVector.startNewValue(3);
+      nullBothData.set(3, 1);
+
+      File dataFile = new File(TMP, "testWriteNullableFixedLists.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          for (String list : Arrays.asList("nullEntriesVector", "nullListVector", "nullBothVector")) {
+            FixedSizeListVector vector = (FixedSizeListVector) root.getVector(list);
+            Object recordField = record.get(list);
+            if (vector.isNull(row)) {
+              assertNull(recordField);
+            } else {
+              assertEquals(vector.getObject(row), recordField);
+            }
+          }
         }
       }
     }
