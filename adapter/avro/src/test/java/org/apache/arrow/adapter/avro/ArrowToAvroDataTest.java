@@ -2061,7 +2061,7 @@ public class ArrowToAvroDataTest {
   }
 
   @Test
-  public void testWriteNonNullableMap() throws Exception {
+  public void testWriteMap() throws Exception {
 
     // Field definitions
     FieldType intMapField = new FieldType(false, new ArrowType.Map(false), null);
@@ -2135,7 +2135,7 @@ public class ArrowToAvroDataTest {
         dateWriter.endMap();
       }
 
-      File dataFile = new File(TMP, "testWriteNonNullableMap.avro");
+      File dataFile = new File(TMP, "testWriteMap.avro");
 
       // Write an AVRO block using the producer classes
       try (FileOutputStream fos = new FileOutputStream(dataFile)) {
@@ -2170,7 +2170,131 @@ public class ArrowToAvroDataTest {
     }
   }
 
+  @Test
+  public void testWriteNullableMap() throws Exception {
+
+    // Field definitions
+    FieldType nullMapType = new FieldType(true, new ArrowType.Map(false), null);
+    FieldType nonNullMapType = new FieldType(false, new ArrowType.Map(false), null);
+
+    Field keyField = new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null);
+    Field nullFieldType = new Field("value", FieldType.nullable(new ArrowType.Int(32, true)), null);
+    Field nonNullFieldType = new Field("value", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field nullEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, nullFieldType));
+    Field nonNullEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, nonNullFieldType));
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    MapVector nullEntriesVector = new MapVector("nullEntriesVector", allocator, nonNullMapType, null);
+    MapVector nullMapVector = new MapVector("nullMapVector", allocator, nullMapType, null);
+    MapVector nullBothVector = new MapVector("nullBothVector", allocator, nullMapType, null);
+
+    nullEntriesVector.initializeChildrenFromFields(Arrays.asList(nullEntryField));
+    nullMapVector.initializeChildrenFromFields(Arrays.asList(nonNullEntryField));
+    nullBothVector.initializeChildrenFromFields(Arrays.asList(nullEntryField));
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(nullEntriesVector, nullMapVector, nullBothVector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data for intList
+      BaseWriter.MapWriter writer = nullEntriesVector.getWriter();
+      writer.startMap();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key0");
+      writer.value().integer().writeNull();
+      writer.endEntry();
+      writer.endMap();
+      writer.startMap();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key1");
+      writer.value().integer().writeInt(0);
+      writer.endEntry();
+      writer.endMap();
+      writer.startMap();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key2");
+      writer.value().integer().writeInt(1);
+      writer.endEntry();
+      writer.endMap();
+
+      // Set test data for stringList
+      BaseWriter.MapWriter nullMapWriter = nullMapVector.getWriter();
+      nullMapWriter.writeNull();
+      nullMapWriter.startMap();
+      nullMapWriter.startEntry();
+      nullMapWriter.key().varChar().writeVarChar("key1");
+      nullMapWriter.value().integer().writeInt(0);
+      nullMapWriter.endEntry();
+      nullMapWriter.endMap();
+      nullMapWriter.startMap();
+      nullMapWriter.startEntry();
+      nullMapWriter.key().varChar().writeVarChar("key2");
+      nullMapWriter.value().integer().writeInt(1);
+      nullMapWriter.endEntry();
+      nullMapWriter.endMap();
+
+      // Set test data for dateList
+      BaseWriter.MapWriter nullBothWriter = nullBothVector.getWriter();
+      nullBothWriter.writeNull();
+      nullBothWriter.startMap();
+      nullBothWriter.startEntry();
+      nullBothWriter.key().varChar().writeVarChar("key1");
+      nullBothWriter.value().integer().writeNull();
+      nullBothWriter.endEntry();
+      nullBothWriter.endMap();
+      nullBothWriter.startMap();
+      nullBothWriter.startEntry();
+      nullBothWriter.key().varChar().writeVarChar("key2");
+      nullBothWriter.value().integer().writeInt(0);
+      nullBothWriter.endEntry();
+      nullBothWriter.endMap();
+
+      File dataFile = new File(TMP, "testWriteNullableMap.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          Map<String, Object> intMap = convertMap(nullEntriesVector.getObject(row));
+          Map<String, Object> stringMap = convertMap(nullMapVector.getObject(row));
+          Map<String, Object> dateMap = convertMap(nullBothVector.getObject(row));
+          compareMaps(intMap, (Map) record.get("nullEntriesVector"));
+          compareMaps(stringMap, (Map) record.get("nullMapVector"));
+          compareMaps(dateMap, (Map) record.get("nullBothVector"));
+        }
+      }
+    }
+  }
+
   private Map<String, Object> convertMap(List<?> entryList) {
+
+    if (entryList == null) {
+      return null;
+    }
 
     Map<String, Object> map = new HashMap<>();
     JsonStringArrayList<?> structList = (JsonStringArrayList<?>) entryList;
@@ -2184,14 +2308,19 @@ public class ArrowToAvroDataTest {
   }
 
   private void compareMaps(Map<String, ?> expected, Map<?, ?> actual) {
-    assertEquals(expected.size(), actual.size());
-    for (Object key : actual.keySet()) {
-      assertTrue(expected.containsKey(key.toString()));
-      Object actualValue = actual.get(key);
-      if (actualValue instanceof Utf8) {
-        assertEquals(expected.get(key.toString()).toString(), actualValue.toString());
-      } else {
-        assertEquals(expected.get(key.toString()), actual.get(key));
+    if (expected == null) {
+      assertNull(actual);
+    }
+    else {
+      assertEquals(expected.size(), actual.size());
+      for (Object key : actual.keySet()) {
+        assertTrue(expected.containsKey(key.toString()));
+        Object actualValue = actual.get(key);
+        if (actualValue instanceof Utf8) {
+          assertEquals(expected.get(key.toString()).toString(), actualValue.toString());
+        } else {
+          assertEquals(expected.get(key.toString()), actual.get(key));
+        }
       }
     }
   }
