@@ -2295,7 +2295,7 @@ public class ArrowToAvroDataTest {
       root.allocateNew();
 
       // Total number of entries that will be writen to each vector
-      int entryCount = 5 * 4 * 3;
+      int entryCount = 5 + 4 + 3;
 
       // Set test data for intList
       BaseWriter.MapWriter writer = intMapVector.getWriter();
