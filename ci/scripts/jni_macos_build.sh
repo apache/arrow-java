@@ -152,7 +152,7 @@ archery linking check-dependencies \
   --allow libgandiva_jni \
   --allow libncurses \
   --allow libobjc \
-  --allow libz \
+  --allow libz3 \
   "arrow_cdata_jni/${normalized_arch}/libarrow_cdata_jni.dylib" \
   "arrow_dataset_jni/${normalized_arch}/libarrow_dataset_jni.dylib" \
   "arrow_orc_jni/${normalized_arch}/libarrow_orc_jni.dylib" \
