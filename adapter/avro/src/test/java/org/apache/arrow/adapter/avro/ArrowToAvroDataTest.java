@@ -28,7 +28,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -47,6 +49,7 @@ import org.apache.arrow.vector.Float8Vector;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.NullVector;
 import org.apache.arrow.vector.SmallIntVector;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
@@ -69,12 +72,15 @@ import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.util.JsonStringArrayList;
+import org.apache.arrow.vector.util.JsonStringHashMap;
 import org.apache.avro.Conversions;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
@@ -85,6 +91,7 @@ import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.util.Utf8;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -2049,6 +2056,142 @@ public class ArrowToAvroDataTest {
             }
           }
         }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNonNullableMap() throws Exception {
+
+    // Field definitions
+    FieldType intMapField = new FieldType(false, new ArrowType.Map(false), null);
+    FieldType stringMapField = new FieldType(false, new ArrowType.Map(false), null);
+    FieldType dateMapField = new FieldType(false, new ArrowType.Map(false), null);
+
+    Field keyField = new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null);
+    Field intField = new Field("value", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field stringField = new Field("value", FieldType.notNullable(new ArrowType.Utf8()), null);
+    Field dateField = new Field("value", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
+
+    Field intEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, intField));
+    Field stringEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, stringField));
+    Field dateEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, dateField));
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    MapVector intMapVector = new MapVector("intMap", allocator, intMapField, null);
+    MapVector stringMapVector = new MapVector("stringMap", allocator, stringMapField, null);
+    MapVector dateMapVector = new MapVector("dateMap", allocator, dateMapField, null);
+
+    intMapVector.initializeChildrenFromFields(Arrays.asList(intEntryField));
+    stringMapVector.initializeChildrenFromFields(Arrays.asList(stringEntryField));
+    dateMapVector.initializeChildrenFromFields(Arrays.asList(dateEntryField));
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(intMapVector, stringMapVector, dateMapVector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data for intList
+      BaseWriter.MapWriter writer = intMapVector.getWriter();
+      for (int i = 0; i < rowCount; i++) {
+        writer.startMap();
+        for (int j = 0; j < 5 - i; j++) {
+          writer.startEntry();
+          writer.key().varChar().writeVarChar("key" + j);
+          writer.value().integer().writeInt(j);
+          writer.endEntry();
+        }
+        writer.endMap();
+      }
+
+      // Set test data for stringList
+      BaseWriter.MapWriter stringWriter = stringMapVector.getWriter();
+      for (int i = 0; i < rowCount; i++) {
+        stringWriter.startMap();
+        for (int j = 0; j < 5 - i; j++) {
+          stringWriter.startEntry();
+          stringWriter.key().varChar().writeVarChar("key" + j);
+          stringWriter.value().varChar().writeVarChar("string" + j);
+          stringWriter.endEntry();
+        }
+        stringWriter.endMap();
+      }
+
+      // Set test data for dateList
+      BaseWriter.MapWriter dateWriter = dateMapVector.getWriter();
+      for (int i = 0; i < rowCount; i++) {
+        dateWriter.startMap();
+        for (int j = 0; j < 5 - i; j++) {
+          dateWriter.startEntry();
+          dateWriter.key().varChar().writeVarChar("key" + j);
+          dateWriter.value().dateDay().writeDateDay((int) LocalDate.now().plusDays(j).toEpochDay());
+          dateWriter.endEntry();
+        }
+        dateWriter.endMap();
+      }
+
+      File dataFile = new File(TMP, "testWriteNonNullableMap.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          Map<String, Object> intMap = convertMap(intMapVector.getObject(row));
+          Map<String, Object> stringMap = convertMap(stringMapVector.getObject(row));
+          Map<String, Object> dateMap = convertMap(dateMapVector.getObject(row));
+          compareMaps(intMap, (Map) record.get("intMap"));
+          compareMaps(stringMap, (Map) record.get("stringMap"));
+          compareMaps(dateMap, (Map) record.get("dateMap"));
+        }
+      }
+    }
+  }
+
+  private Map<String, Object> convertMap(List<?> entryList) {
+
+    Map<String, Object> map = new HashMap<>();
+    JsonStringArrayList<?> structList = (JsonStringArrayList<?>) entryList;
+    for (Object entry : structList) {
+      JsonStringHashMap<String, ?> structEntry = (JsonStringHashMap<String, ?>) entry;
+      String key = structEntry.get(MapVector.KEY_NAME).toString();
+      Object value = structEntry.get(MapVector.VALUE_NAME);
+      map.put(key, value);
+    }
+    return map;
+  }
+
+  private void compareMaps(Map<String, ?> expected, Map<?, ?> actual) {
+    assertEquals(expected.size(), actual.size());
+    for (Object key : actual.keySet()) {
+      assertTrue(expected.containsKey(key.toString()));
+      Object actualValue = actual.get(key);
+      if (actualValue instanceof Utf8) {
+        assertEquals(expected.get(key.toString()).toString(), actualValue.toString());
+      } else {
+        assertEquals(expected.get(key.toString()), actual.get(key));
       }
     }
   }
