@@ -691,6 +691,10 @@ public class ArrowToAvroUtils {
       case MAP:
         MapVector mapVector = (MapVector) vector;
         StructVector entryVector = (StructVector) mapVector.getDataVector();
+        Types.MinorType keyType = entryVector.getChildrenFromFields().get(0).getMinorType();
+        if (keyType != Types.MinorType.VARCHAR) {
+          throw new IllegalArgumentException("MAP key type must be VARCHAR for Avro encoding");
+        }
         VarCharVector keyVector = (VarCharVector) entryVector.getChildrenFromFields().get(0);
         FieldVector valueVector = entryVector.getChildrenFromFields().get(1);
         Producer<?> keyProducer = new AvroStringProducer(keyVector);
