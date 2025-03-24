@@ -55,6 +55,9 @@ public class AvroStructProducer extends BaseAvroProducer<StructVector> {
 
   @Override
   public void setPosition(int index) {
+    if (index < 0 || index > vector.getValueCount()) {
+      throw new IllegalArgumentException("Index out of bounds: " + index);
+    }
     for (Producer<?> delegate : delegates) {
       delegate.setPosition(index);
     }

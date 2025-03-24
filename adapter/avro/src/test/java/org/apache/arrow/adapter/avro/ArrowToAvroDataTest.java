@@ -2294,6 +2294,9 @@ public class ArrowToAvroDataTest {
       root.setRowCount(rowCount);
       root.allocateNew();
 
+      // Total number of entries that will be writen to each vector
+      int entryCount = 5 * 4 * 3;
+
       // Set test data for intList
       BaseWriter.MapWriter writer = intMapVector.getWriter();
       for (int i = 0; i < rowCount; i++) {
@@ -2306,6 +2309,9 @@ public class ArrowToAvroDataTest {
         }
         writer.endMap();
       }
+
+      // Update count for data vector (map writer does not do this)
+      intMapVector.getDataVector().setValueCount(entryCount);
 
       // Set test data for stringList
       BaseWriter.MapWriter stringWriter = stringMapVector.getWriter();
@@ -2320,6 +2326,9 @@ public class ArrowToAvroDataTest {
         stringWriter.endMap();
       }
 
+      // Update count for data vector (map writer does not do this)
+      stringMapVector.getDataVector().setValueCount(entryCount);
+
       // Set test data for dateList
       BaseWriter.MapWriter dateWriter = dateMapVector.getWriter();
       for (int i = 0; i < rowCount; i++) {
@@ -2332,6 +2341,9 @@ public class ArrowToAvroDataTest {
         }
         dateWriter.endMap();
       }
+
+      // Update count for data vector (map writer does not do this)
+      dateMapVector.getDataVector().setValueCount(entryCount);
 
       File dataFile = new File(TMP, "testWriteMap.avro");
 
@@ -2431,6 +2443,9 @@ public class ArrowToAvroDataTest {
       writer.endEntry();
       writer.endMap();
 
+      // Update count for data vector (map writer does not do this)
+      nullEntriesVector.getDataVector().setValueCount(3);
+
       // Set test data for stringList
       BaseWriter.MapWriter nullMapWriter = nullMapVector.getWriter();
       nullMapWriter.writeNull();
@@ -2448,6 +2463,9 @@ public class ArrowToAvroDataTest {
       nullMapWriter.endEntry();
       nullMapWriter.endMap();
 
+      // Update count for data vector (map writer does not do this)
+      nullMapVector.getDataVector().setValueCount(2);
+
       // Set test data for dateList
       BaseWriter.MapWriter nullBothWriter = nullBothVector.getWriter();
       nullBothWriter.writeNull();
@@ -2464,6 +2482,9 @@ public class ArrowToAvroDataTest {
       nullBothWriter.value().integer().writeInt(0);
       nullBothWriter.endEntry();
       nullBothWriter.endMap();
+
+      // Update count for data vector (map writer does not do this)
+      nullBothVector.getDataVector().setValueCount(2);
 
       File dataFile = new File(TMP, "testWriteNullableMap.avro");
 

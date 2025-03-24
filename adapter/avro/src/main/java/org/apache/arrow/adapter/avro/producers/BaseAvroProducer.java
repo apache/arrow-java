@@ -44,6 +44,10 @@ public abstract class BaseAvroProducer<T extends FieldVector> implements Produce
 
   @Override
   public void setPosition(int index) {
+    // currentIndex == value is a valid state, no more values will be produced
+    if (index < 0 || index > vector.getValueCount()) {
+      throw new IllegalArgumentException("Index out of bounds");
+    }
     currentIndex = index;
   }
 

@@ -58,6 +58,9 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
 
   @Override
   public void setPosition(int index) {
+    if (index < 0 || index > vector.getValueCount()) {
+      throw new IllegalArgumentException("Index out of bounds");
+    }
     delegate.setPosition(index);
     super.setPosition(index);
   }

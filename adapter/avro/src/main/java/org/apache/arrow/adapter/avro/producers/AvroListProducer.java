@@ -57,6 +57,9 @@ public class AvroListProducer extends BaseAvroProducer<ListVector> {
 
   @Override
   public void setPosition(int index) {
+    if (index < 0 || index > vector.getValueCount()) {
+      throw new IllegalArgumentException("Index out of bounds");
+    }
     int delegateOffset = vector.getOffsetBuffer().getInt(index * (long) Integer.BYTES);
     delegate.setPosition(delegateOffset);
     super.setPosition(index);
