@@ -75,6 +75,7 @@ import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
@@ -1846,37 +1847,35 @@ public class ArrowToAvroDataTest {
       root.setRowCount(rowCount);
       root.allocateNew();
 
+      FieldWriter intListWriter = intListVector.getWriter();
+      FieldWriter stringListWriter = stringListVector.getWriter();
+      FieldWriter dateListWriter = dateListVector.getWriter();
+
       // Set test data for intList
-      for (int i = 0, offset = 0; i < rowCount; i++) {
-        intListVector.startNewValue(i);
-        IntVector indDataVector = (IntVector) intListVector.getDataVector();
+      for (int i = 0; i < rowCount; i++) {
+        intListWriter.startList();
         for (int j = 0; j < 5 - i; j++) {
-          indDataVector.set(offset + j, j);
+          intListWriter.writeInt(j);
         }
-        intListVector.endValue(i, 5 - i);
-        offset += 5 - i;
+        intListWriter.endList();
       }
 
       // Set test data for stringList
-      for (int i = 0, offset = 0; i < rowCount; i++) {
-        stringListVector.startNewValue(i);
-        VarCharVector varCharVector = (VarCharVector) stringListVector.getDataVector();
+      for (int i = 0; i < rowCount; i++) {
+        stringListWriter.startList();
         for (int j = 0; j < 5 - i; j++) {
-          varCharVector.setSafe(offset + j, ("string" + j).getBytes());
+          stringListWriter.writeVarChar("string" + j);
         }
-        stringListVector.endValue(i, 5 - i);
-        offset += 5 - i;
+        stringListWriter.endList();
       }
 
       // Set test data for dateList
-      for (int i = 0, offset = 0; i < rowCount; i++) {
-        dateListVector.startNewValue(i);
-        DateDayVector dateVector = (DateDayVector) dateListVector.getDataVector();
+      for (int i = 0; i < rowCount; i++) {
+        dateListWriter.startList();
         for (int j = 0; j < 5 - i; j++) {
-          dateVector.setSafe(offset + j, (int) LocalDate.now().plusDays(j).toEpochDay());
+          dateListWriter.writeDateDay((int) LocalDate.now().plusDays(j).toEpochDay());
         }
-        dateListVector.endValue(i, 5 - i);
-        offset += 5 - i;
+        dateListWriter.endList();
       }
 
       File dataFile = new File(TMP, "testWriteLists.avro");
@@ -1949,45 +1948,47 @@ public class ArrowToAvroDataTest {
       root.allocateNew();
 
       // Set test data for nullEntriesVector
-      IntVector nullEntriesData = (IntVector) nullEntriesVector.getDataVector();
-      nullEntriesVector.startNewValue(0);
-      nullEntriesData.setNull(0);
-      nullEntriesVector.endValue(0, 1);
-      nullEntriesVector.startNewValue(1);
-      nullEntriesData.set(1, 0);
-      nullEntriesVector.endValue(1, 1);
-      nullEntriesVector.startNewValue(2);
-      nullEntriesData.set(2, 1);
-      nullEntriesVector.endValue(2, 1);
-      nullEntriesVector.startNewValue(3);
-      nullEntriesData.set(3, 2);
-      nullEntriesVector.endValue(3, 1);
+      FieldWriter nullEntriesWriter = nullEntriesVector.getWriter();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeNull();
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(0);
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(1);
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(2);
+      nullEntriesWriter.endList();
 
       // Set test data for nullListVector
-      IntVector nullListData = (IntVector) nullListVector.getDataVector();
-      nullListVector.setNull(0);
-      nullListVector.startNewValue(1);
-      nullListData.set(0, 0);
-      nullListVector.endValue(1, 1);
-      nullListVector.startNewValue(2);
-      nullListData.set(1, 1);
-      nullListVector.endValue(2, 1);
-      nullListVector.startNewValue(3);
-      nullListData.set(2, 2);
-      nullListVector.endValue(3, 1);
+      FieldWriter nullListWriter = nullListVector.getWriter();
+      nullListWriter.writeNull();
+      nullListWriter.setPosition(1); // writeNull() does not inc. idx() on list vector
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(0);
+      nullListWriter.endList();
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(1);
+      nullListWriter.endList();
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(2);
+      nullListWriter.endList();
 
       // Set test data for nullBothVector
-      IntVector nullBothData = (IntVector) nullBothVector.getDataVector();
-      nullBothVector.setNull(0);
-      nullBothVector.startNewValue(1);
-      nullBothData.setNull(0);
-      nullBothVector.endValue(1, 1);
-      nullBothVector.startNewValue(2);
-      nullBothData.set(1, 0);
-      nullBothVector.endValue(2, 1);
-      nullBothVector.startNewValue(3);
-      nullBothData.set(2, 1);
-      nullBothVector.endValue(3, 1);
+      FieldWriter nullBothWriter = nullBothVector.getWriter();
+      nullBothWriter.writeNull();
+      nullBothWriter.setPosition(1);
+      nullBothWriter.startList();
+      nullBothWriter.integer().writeNull();
+      nullBothWriter.endList();
+      nullBothWriter.startList();
+      nullBothWriter.integer().writeInt(0);
+      nullBothWriter.endList();
+      nullBothWriter.startList();
+      nullBothWriter.integer().writeInt(1);
+      nullBothWriter.endList();
 
       File dataFile = new File(TMP, "testWriteNullableLists.avro");
 
@@ -2062,36 +2063,36 @@ public class ArrowToAvroDataTest {
       root.setRowCount(rowCount);
       root.allocateNew();
 
+      FieldWriter intListWriter = intListVector.getWriter();
+      FieldWriter stringListWriter = stringListVector.getWriter();
+      FieldWriter dateListWriter = dateListVector.getWriter();
+
       // Set test data for intList
-      for (int i = 0, offset = 0; i < rowCount; i++) {
-        intListVector.startNewValue(i);
-        IntVector indDataVector = (IntVector) intListVector.getDataVector();
+      for (int i = 0; i < rowCount; i++) {
+        intListWriter.startList();
         for (int j = 0; j < 5; j++) {
-          indDataVector.set(offset + j, j);
+          intListWriter.writeInt(j);
         }
-        offset += 5;
+        intListWriter.endList();
       }
 
       // Set test data for stringList
-      for (int i = 0, offset = 0; i < rowCount; i++) {
-        stringListVector.startNewValue(i);
-        VarCharVector varCharVector = (VarCharVector) stringListVector.getDataVector();
+      for (int i = 0; i < rowCount; i++) {
+        stringListWriter.startList();
         for (int j = 0; j < 5; j++) {
-          varCharVector.setSafe(offset + j, ("string" + j).getBytes());
+          stringListWriter.writeVarChar("string" + j);
         }
-        offset += 5;
+        stringListWriter.endList();
       }
 
       // Set test data for dateList
-      for (int i = 0, offset = 0; i < rowCount; i++) {
-        dateListVector.startNewValue(i);
-        DateDayVector dateVector = (DateDayVector) dateListVector.getDataVector();
+      for (int i = 0; i < rowCount; i++) {
+        dateListWriter.startList();
         for (int j = 0; j < 5; j++) {
-          dateVector.setSafe(offset + j, (int) LocalDate.now().plusDays(j).toEpochDay());
+          dateListWriter.writeDateDay((int) LocalDate.now().plusDays(j).toEpochDay());
         }
-        offset += 5;
+        dateListWriter.endList();
       }
-
       File dataFile = new File(TMP, "testWriteFixedLists.avro");
 
       // Write an AVRO block using the producer classes
@@ -2164,35 +2165,47 @@ public class ArrowToAvroDataTest {
       root.allocateNew();
 
       // Set test data for nullEntriesVector
-      IntVector nullEntriesData = (IntVector) nullEntriesVector.getDataVector();
-      nullEntriesVector.startNewValue(0);
-      nullEntriesData.setNull(0);
-      nullEntriesVector.startNewValue(1);
-      nullEntriesData.set(1, 0);
-      nullEntriesVector.startNewValue(2);
-      nullEntriesData.set(2, 1);
-      nullEntriesVector.startNewValue(3);
-      nullEntriesData.set(3, 2);
+      FieldWriter nullEntriesWriter = nullEntriesVector.getWriter();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeNull();
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(0);
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(1);
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(2);
+      nullEntriesWriter.endList();
 
       // Set test data for nullListVector
-      IntVector nullListData = (IntVector) nullListVector.getDataVector();
-      nullListVector.setNull(0);
-      nullListVector.startNewValue(1);
-      nullListData.set(1, 0);
-      nullListVector.startNewValue(2);
-      nullListData.set(2, 1);
-      nullListVector.startNewValue(3);
-      nullListData.set(3, 2);
+      FieldWriter nullListWriter = nullListVector.getWriter();
+      nullListWriter.writeNull();
+      nullListWriter.setPosition(1); // writeNull() does not inc. idx() on list vector
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(0);
+      nullListWriter.endList();
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(1);
+      nullListWriter.endList();
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(2);
+      nullListWriter.endList();
 
       // Set test data for nullBothVector
-      IntVector nullBothData = (IntVector) nullBothVector.getDataVector();
-      nullBothVector.setNull(0);
-      nullBothVector.startNewValue(1);
-      nullBothData.setNull(1);
-      nullBothVector.startNewValue(2);
-      nullBothData.set(2, 0);
-      nullBothVector.startNewValue(3);
-      nullBothData.set(3, 1);
+      FieldWriter nullBothWriter = nullBothVector.getWriter();
+      nullBothWriter.writeNull();
+      nullBothWriter.setPosition(1);
+      nullBothWriter.startList();
+      nullBothWriter.integer().writeNull();
+      nullBothWriter.endList();
+      nullBothWriter.startList();
+      nullBothWriter.integer().writeInt(0);
+      nullBothWriter.endList();
+      nullBothWriter.startList();
+      nullBothWriter.integer().writeInt(1);
+      nullBothWriter.endList();
 
       File dataFile = new File(TMP, "testWriteNullableFixedLists.avro");
 
@@ -2421,6 +2434,7 @@ public class ArrowToAvroDataTest {
       // Set test data for stringList
       BaseWriter.MapWriter nullMapWriter = nullMapVector.getWriter();
       nullMapWriter.writeNull();
+      nullMapWriter.setPosition(1); // writeNull() does not inc. idx() on map (list) vector
       nullMapWriter.startMap();
       nullMapWriter.startEntry();
       nullMapWriter.key().varChar().writeVarChar("key1");
@@ -2437,6 +2451,7 @@ public class ArrowToAvroDataTest {
       // Set test data for dateList
       BaseWriter.MapWriter nullBothWriter = nullBothVector.getWriter();
       nullBothWriter.writeNull();
+      nullBothWriter.setPosition(1);
       nullBothWriter.startMap();
       nullBothWriter.startEntry();
       nullBothWriter.key().varChar().writeVarChar("key1");
@@ -2522,183 +2537,182 @@ public class ArrowToAvroDataTest {
   @Test
   public void testWriteStruct() throws Exception {
 
-      // Field definitions
-      FieldType structFieldType = new FieldType(false, new ArrowType.Struct(), null);
-      Field intField = new Field("intField", FieldType.notNullable(new ArrowType.Int(32, true)), null);
-      Field stringField = new Field("stringField", FieldType.notNullable(new ArrowType.Utf8()), null);
-      Field dateField = new Field("dateField", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
-      Field structField = new Field("struct", structFieldType, Arrays.asList(intField, stringField, dateField));
+    // Field definitions
+    FieldType structFieldType = new FieldType(false, new ArrowType.Struct(), null);
+    Field intField =
+        new Field("intField", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field stringField = new Field("stringField", FieldType.notNullable(new ArrowType.Utf8()), null);
+    Field dateField =
+        new Field("dateField", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
 
-      // Create empty vector
-      BufferAllocator allocator = new RootAllocator();
-      StructVector structVector = new StructVector("struct", allocator, structFieldType, null);
-      structVector.initializeChildrenFromFields(Arrays.asList(intField, stringField, dateField));
-      structVector.allocateNew();
+    // Create empty vector
+    BufferAllocator allocator = new RootAllocator();
+    StructVector structVector = new StructVector("struct", allocator, structFieldType, null);
+    structVector.initializeChildrenFromFields(Arrays.asList(intField, stringField, dateField));
 
-      // Set up VSR
-      List<FieldVector> vectors = Arrays.asList(structVector);
-      int rowCount = 3;
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(structVector);
+    int rowCount = 3;
 
-      try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
 
-          root.setRowCount(rowCount);
-          root.allocateNew();
+      root.setRowCount(rowCount);
+      root.allocateNew();
 
-          // Set test data
-          IntVector intVector = (IntVector) structVector.getChild("intField");
-          VarCharVector stringVector = (VarCharVector) structVector.getChild("stringField");
-          DateDayVector dateVector = (DateDayVector) structVector.getChild("dateField");
+      // Set test data
+      BaseWriter.StructWriter structWriter = structVector.getWriter();
 
-          for (int i = 0; i < rowCount; i++) {
-              structVector.setIndexDefined(i);
-              intVector.setSafe(i, i);
-              stringVector.setSafe(i, ("string" + i).getBytes());
-              dateVector.setSafe(i, (int) LocalDate.now().toEpochDay() + i);
-          }
-
-          File dataFile = new File(TMP, "testWriteStruct.avro");
-
-          // Write an AVRO block using the producer classes
-          try (FileOutputStream fos = new FileOutputStream(dataFile)) {
-              BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
-              CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
-              for (int row = 0; row < rowCount; row++) {
-                  producer.produce(encoder);
-              }
-              encoder.flush();
-          }
-
-          // Set up reading the AVRO block as a GenericRecord
-          Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
-          GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
-
-          try (InputStream inputStream = new FileInputStream(dataFile)) {
-
-              BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
-              GenericRecord record = null;
-
-              // Read and check values
-              for (int row = 0; row < rowCount; row++) {
-                  record = datumReader.read(record, decoder);
-                  assertNotNull(record.get("struct"));
-                  GenericRecord structRecord = (GenericRecord) record.get("struct");
-                  assertEquals(row, structRecord.get("intField"));
-                  assertEquals("string" + row, structRecord.get("stringField").toString());
-                  assertEquals((int) LocalDate.now().toEpochDay() + row, structRecord.get("dateField"));
-              }
-          }
+      for (int i = 0; i < rowCount; i++) {
+        structWriter.start();
+        structWriter.integer("intField").writeInt(i);
+        structWriter.varChar("stringField").writeVarChar("string" + i);
+        structWriter.dateDay("dateField").writeDateDay((int) LocalDate.now().toEpochDay() + i);
+        structWriter.end();
       }
+
+      File dataFile = new File(TMP, "testWriteStruct.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertNotNull(record.get("struct"));
+          GenericRecord structRecord = (GenericRecord) record.get("struct");
+          assertEquals(row, structRecord.get("intField"));
+          assertEquals("string" + row, structRecord.get("stringField").toString());
+          assertEquals((int) LocalDate.now().toEpochDay() + row, structRecord.get("dateField"));
+        }
+      }
+    }
   }
 
   @Test
   public void testWriteNullableStructs() throws Exception {
 
-      // Field definitions
-      FieldType structFieldType = new FieldType(false, new ArrowType.Struct(), null);
-      FieldType nullableStructFieldType = new FieldType(true, new ArrowType.Struct(), null);
-      Field intField = new Field("intField", FieldType.notNullable(new ArrowType.Int(32, true)), null);
-      Field nullableIntField = new Field("nullableIntField", FieldType.nullable(new ArrowType.Int(32, true)), null);
-      Field structField = new Field("struct", structFieldType, Arrays.asList(intField, nullableIntField));
-      Field nullableStructField = new Field("nullableStruct", nullableStructFieldType, Arrays.asList(intField, nullableIntField));
+    // Field definitions
+    FieldType structFieldType = new FieldType(false, new ArrowType.Struct(), null);
+    FieldType nullableStructFieldType = new FieldType(true, new ArrowType.Struct(), null);
+    Field intField =
+        new Field("intField", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field nullableIntField =
+        new Field("nullableIntField", FieldType.nullable(new ArrowType.Int(32, true)), null);
 
-      // Create empty vectors
-      BufferAllocator allocator = new RootAllocator();
-      StructVector structVector = new StructVector("struct", allocator, structFieldType, null);
-      StructVector nullableStructVector = new StructVector("nullableStruct", allocator, nullableStructFieldType, null);
-      structVector.initializeChildrenFromFields(Arrays.asList(intField, nullableIntField));
-      nullableStructVector.initializeChildrenFromFields(Arrays.asList(intField, nullableIntField));
-      structVector.allocateNew();
-      nullableStructVector.allocateNew();
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    StructVector structVector = new StructVector("struct", allocator, structFieldType, null);
+    StructVector nullableStructVector =
+        new StructVector("nullableStruct", allocator, nullableStructFieldType, null);
+    structVector.initializeChildrenFromFields(Arrays.asList(intField, nullableIntField));
+    nullableStructVector.initializeChildrenFromFields(Arrays.asList(intField, nullableIntField));
 
-      // Set up VSR
-      List<FieldVector> vectors = Arrays.asList(structVector, nullableStructVector);
-      int rowCount = 4;
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(structVector, nullableStructVector);
+    int rowCount = 4;
 
-      try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
 
-          root.setRowCount(rowCount);
-          root.allocateNew();
+      root.setRowCount(rowCount);
+      root.allocateNew();
 
-          // Set test data for structVector
-          IntVector intVector = (IntVector) structVector.getChild("intField");
-          IntVector nullableIntVector = (IntVector) structVector.getChild("nullableIntField");
-          for (int i = 0; i < rowCount; i++) {
-              structVector.setIndexDefined(i);
-              intVector.setSafe(i, i);
-              if (i % 2 == 0) {
-                  nullableIntVector.setSafe(i, i * 10);
-              } else {
-                  nullableIntVector.setNull(i);
-              }
-          }
-
-          // Set test data for nullableStructVector
-          IntVector nullableStructIntVector = (IntVector) nullableStructVector.getChild("intField");
-          IntVector nullableStructNullableIntVector = (IntVector) nullableStructVector.getChild("nullableIntField");
-          for (int i = 0; i < rowCount; i++) {
-            if (i >= 2) {
-              nullableStructVector.setIndexDefined(i);
-              nullableStructIntVector.setSafe(i, i);
-              if (i % 2 == 0) {
-                nullableStructNullableIntVector.setSafe(i, i * 10);
-              } else {
-                nullableStructNullableIntVector.setNull(i);
-              }
-            }else {
-                  nullableStructVector.setNull(i);
-            }
-          }
-
-          File dataFile = new File(TMP, "testWriteNullableStructs.avro");
-
-          // Write an AVRO block using the producer classes
-          try (FileOutputStream fos = new FileOutputStream(dataFile)) {
-              BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
-              CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
-              for (int row = 0; row < rowCount; row++) {
-                  producer.produce(encoder);
-              }
-              encoder.flush();
-          }
-
-          // Set up reading the AVRO block as a GenericRecord
-          Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
-          GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
-
-          try (InputStream inputStream = new FileInputStream(dataFile)) {
-
-              BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
-              GenericRecord record = null;
-
-              // Read and check values
-              for (int row = 0; row < rowCount; row++) {
-                  record = datumReader.read(record, decoder);
-                  if (row % 2 == 0) {
-                      assertNotNull(record.get("struct"));
-                      GenericRecord structRecord = (GenericRecord) record.get("struct");
-                      assertEquals(row, structRecord.get("intField"));
-                      assertEquals(row * 10, structRecord.get("nullableIntField"));
-                  } else {
-                      assertNotNull(record.get("struct"));
-                      GenericRecord structRecord = (GenericRecord) record.get("struct");
-                      assertEquals(row, structRecord.get("intField"));
-                      assertNull(structRecord.get("nullableIntField"));
-
-                  }
-                  if (row >= 2) {
-                    assertNotNull(record.get("nullableStruct"));
-                    GenericRecord nullableStructRecord = (GenericRecord) record.get("nullableStruct");
-                    assertEquals(row, nullableStructRecord.get("intField"));
-                    if (row % 2 == 0) {
-                      assertEquals(row * 10, nullableStructRecord.get("nullableIntField"));
-                    } else {
-                      assertNull(nullableStructRecord.get("nullableIntField"));
-                    }
-                  } else {
-                    assertNull(record.get("nullableStruct"));
-                  }
-              }
-          }
+      // Set test data for structVector
+      BaseWriter.StructWriter structWriter = structVector.getWriter();
+      for (int i = 0; i < rowCount; i++) {
+        structWriter.setPosition(i);
+        structWriter.start();
+        structWriter.integer("intField").writeInt(i);
+        if (i % 2 == 0) {
+          structWriter.integer("nullableIntField").writeInt(i * 10);
+        } else {
+          structWriter.integer("nullableIntField").writeNull();
+        }
+        structWriter.end();
       }
+
+      // Set test data for nullableStructVector
+      BaseWriter.StructWriter nullableStructWriter = nullableStructVector.getWriter();
+      for (int i = 0; i < rowCount; i++) {
+        nullableStructWriter.setPosition(i);
+        if (i >= 2) {
+          nullableStructWriter.start();
+          nullableStructWriter.integer("intField").writeInt(i);
+          if (i % 2 == 0) {
+            nullableStructWriter.integer("nullableIntField").writeInt(i * 10);
+          } else {
+            nullableStructWriter.integer("nullableIntField").writeNull();
+          }
+          nullableStructWriter.end();
+        } else {
+          nullableStructWriter.writeNull();
+        }
+      }
+
+      File dataFile = new File(TMP, "testWriteNullableStructs.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          if (row % 2 == 0) {
+            assertNotNull(record.get("struct"));
+            GenericRecord structRecord = (GenericRecord) record.get("struct");
+            assertEquals(row, structRecord.get("intField"));
+            assertEquals(row * 10, structRecord.get("nullableIntField"));
+          } else {
+            assertNotNull(record.get("struct"));
+            GenericRecord structRecord = (GenericRecord) record.get("struct");
+            assertEquals(row, structRecord.get("intField"));
+            assertNull(structRecord.get("nullableIntField"));
+          }
+          if (row >= 2) {
+            assertNotNull(record.get("nullableStruct"));
+            GenericRecord nullableStructRecord = (GenericRecord) record.get("nullableStruct");
+            assertEquals(row, nullableStructRecord.get("intField"));
+            if (row % 2 == 0) {
+              assertEquals(row * 10, nullableStructRecord.get("nullableIntField"));
+            } else {
+              assertNull(nullableStructRecord.get("nullableIntField"));
+            }
+          } else {
+            assertNull(record.get("nullableStruct"));
+          }
+        }
+      }
+    }
   }
 }
