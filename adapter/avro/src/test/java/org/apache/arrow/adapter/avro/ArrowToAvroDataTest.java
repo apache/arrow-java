@@ -73,6 +73,7 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
+import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
@@ -2516,5 +2517,76 @@ public class ArrowToAvroDataTest {
         }
       }
     }
+  }
+
+  @Test
+  public void testWriteStruct() throws Exception {
+
+      // Field definitions
+      FieldType structFieldType = new FieldType(false, new ArrowType.Struct(), null);
+      Field intField = new Field("intField", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+      Field stringField = new Field("stringField", FieldType.notNullable(new ArrowType.Utf8()), null);
+      Field dateField = new Field("dateField", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
+      Field structField = new Field("struct", structFieldType, Arrays.asList(intField, stringField, dateField));
+
+      // Create empty vector
+      BufferAllocator allocator = new RootAllocator();
+      StructVector structVector = new StructVector("struct", allocator, structFieldType, null);
+      structVector.initializeChildrenFromFields(Arrays.asList(intField, stringField, dateField));
+      structVector.allocateNew();
+
+      // Set up VSR
+      List<FieldVector> vectors = Arrays.asList(structVector);
+      int rowCount = 3;
+
+      try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+          root.setRowCount(rowCount);
+          root.allocateNew();
+
+          // Set test data
+          IntVector intVector = (IntVector) structVector.getChild("intField");
+          VarCharVector stringVector = (VarCharVector) structVector.getChild("stringField");
+          DateDayVector dateVector = (DateDayVector) structVector.getChild("dateField");
+
+          for (int i = 0; i < rowCount; i++) {
+              structVector.setIndexDefined(i);
+              intVector.setSafe(i, i);
+              stringVector.setSafe(i, ("string" + i).getBytes());
+              dateVector.setSafe(i, (int) LocalDate.now().toEpochDay() + i);
+          }
+
+          File dataFile = new File(TMP, "testWriteStruct.avro");
+
+          // Write an AVRO block using the producer classes
+          try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+              BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+              CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+              for (int row = 0; row < rowCount; row++) {
+                  producer.produce(encoder);
+              }
+              encoder.flush();
+          }
+
+          // Set up reading the AVRO block as a GenericRecord
+          Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+          GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+          try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+              BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+              GenericRecord record = null;
+
+              // Read and check values
+              for (int row = 0; row < rowCount; row++) {
+                  record = datumReader.read(record, decoder);
+                  assertNotNull(record.get("struct"));
+                  GenericRecord structRecord = (GenericRecord) record.get("struct");
+                  assertEquals(row, structRecord.get("intField"));
+                  assertEquals("string" + row, structRecord.get("stringField").toString());
+                  assertEquals((int) LocalDate.now().toEpochDay() + row, structRecord.get("dateField"));
+              }
+          }
+      }
   }
 }
