@@ -51,15 +51,12 @@ public class AvroMapProducer extends BaseAvroProducer<MapVector> {
     currentIndex++;
   }
 
-  @Override
-  public void skipNull() {
-    delegate.skipNull();
-    super.skipNull();
-  }
+  // Do not override skipNull(), delegate will not have an entry if the map is null
 
   @Override
   public void setPosition(int index) {
-    delegate.setPosition(index);
+    int delegateOffset = vector.getOffsetBuffer().getInt(index * (long) Integer.BYTES);
+    delegate.setPosition(delegateOffset);
     super.setPosition(index);
   }
 
