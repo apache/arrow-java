@@ -16,12 +16,11 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.avro.io.Encoder;
-
-import java.io.IOException;
-import java.math.BigDecimal;
 
 /**
  * Producer that produces decimal values from a {@link Decimal256Vector}, writes data to an Avro

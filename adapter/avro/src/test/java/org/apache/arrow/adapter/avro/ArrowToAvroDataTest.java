@@ -14,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,19 +40,20 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
-import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float2Vector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.Float8Vector;
 import org.apache.arrow.vector.IntVector;
-import org.apache.arrow.vector.complex.FixedSizeListVector;
-import org.apache.arrow.vector.complex.ListVector;
-import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.NullVector;
 import org.apache.arrow.vector.SmallIntVector;
+import org.apache.arrow.vector.TimeMicroVector;
+import org.apache.arrow.vector.TimeMilliVector;
+import org.apache.arrow.vector.TimeNanoVector;
+import org.apache.arrow.vector.TimeSecVector;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
 import org.apache.arrow.vector.TimeStampMicroVector;
 import org.apache.arrow.vector.TimeStampMilliTZVector;
@@ -60,10 +62,6 @@ import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.TimeStampNanoVector;
 import org.apache.arrow.vector.TimeStampSecTZVector;
 import org.apache.arrow.vector.TimeStampSecVector;
-import org.apache.arrow.vector.TimeSecVector;
-import org.apache.arrow.vector.TimeMilliVector;
-import org.apache.arrow.vector.TimeMicroVector;
-import org.apache.arrow.vector.TimeNanoVector;
 import org.apache.arrow.vector.TinyIntVector;
 import org.apache.arrow.vector.UInt1Vector;
 import org.apache.arrow.vector.UInt2Vector;
@@ -72,6 +70,9 @@ import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.complex.FixedSizeListVector;
+import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
@@ -95,12 +96,9 @@ import org.apache.avro.util.Utf8;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 public class ArrowToAvroDataTest {
 
-  @TempDir
-  public static File TMP;
+  @TempDir public static File TMP;
 
   // Data production for primitive types, nullable and non-nullable
 
@@ -289,7 +287,8 @@ public class ArrowToAvroDataTest {
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
     TinyIntVector int8Vector = new TinyIntVector(new Field("int8", int8Field, null), allocator);
-    SmallIntVector int16Vector = new SmallIntVector(new Field("int16", int16Field, null), allocator);
+    SmallIntVector int16Vector =
+        new SmallIntVector(new Field("int16", int16Field, null), allocator);
     IntVector int32Vector = new IntVector(new Field("int32", int32Field, null), allocator);
     BigIntVector int64Vector = new BigIntVector(new Field("int64", int64Field, null), allocator);
     UInt1Vector uint8Vector = new UInt1Vector(new Field("uint8", uint8Field, null), allocator);
@@ -298,9 +297,16 @@ public class ArrowToAvroDataTest {
     UInt8Vector uint64Vector = new UInt8Vector(new Field("uint64", uint64Field, null), allocator);
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(
-        int8Vector, int16Vector, int32Vector, int64Vector,
-        uint8Vector, uint16Vector, uint32Vector, uint64Vector);
+    List<FieldVector> vectors =
+        Arrays.asList(
+            int8Vector,
+            int16Vector,
+            int32Vector,
+            int64Vector,
+            uint8Vector,
+            uint16Vector,
+            uint32Vector,
+            uint64Vector);
 
     int rowCount = 12;
 
@@ -394,7 +400,8 @@ public class ArrowToAvroDataTest {
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
     TinyIntVector int8Vector = new TinyIntVector(new Field("int8", int8Field, null), allocator);
-    SmallIntVector int16Vector = new SmallIntVector(new Field("int16", int16Field, null), allocator);
+    SmallIntVector int16Vector =
+        new SmallIntVector(new Field("int16", int16Field, null), allocator);
     IntVector int32Vector = new IntVector(new Field("int32", int32Field, null), allocator);
     BigIntVector int64Vector = new BigIntVector(new Field("int64", int64Field, null), allocator);
     UInt1Vector uint8Vector = new UInt1Vector(new Field("uint8", uint8Field, null), allocator);
@@ -405,9 +412,16 @@ public class ArrowToAvroDataTest {
     int rowCount = 3;
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(
-        int8Vector, int16Vector, int32Vector, int64Vector,
-        uint8Vector, uint16Vector, uint32Vector, uint64Vector);
+    List<FieldVector> vectors =
+        Arrays.asList(
+            int8Vector,
+            int16Vector,
+            int32Vector,
+            int64Vector,
+            uint8Vector,
+            uint16Vector,
+            uint32Vector,
+            uint64Vector);
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
 
@@ -494,15 +508,21 @@ public class ArrowToAvroDataTest {
   public void testWriteFloatingPoints() throws Exception {
 
     // Field definitions
-    FieldType float16Field = new FieldType(false, new ArrowType.FloatingPoint(FloatingPointPrecision.HALF), null);
-    FieldType float32Field = new FieldType(false, new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE), null);
-    FieldType float64Field = new FieldType(false, new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE), null);
+    FieldType float16Field =
+        new FieldType(false, new ArrowType.FloatingPoint(FloatingPointPrecision.HALF), null);
+    FieldType float32Field =
+        new FieldType(false, new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE), null);
+    FieldType float64Field =
+        new FieldType(false, new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    Float2Vector float16Vector = new Float2Vector(new Field("float16", float16Field, null), allocator);
-    Float4Vector float32Vector = new Float4Vector(new Field("float32", float32Field, null), allocator);
-    Float8Vector float64Vector = new Float8Vector(new Field("float64", float64Field, null), allocator);
+    Float2Vector float16Vector =
+        new Float2Vector(new Field("float16", float16Field, null), allocator);
+    Float4Vector float32Vector =
+        new Float4Vector(new Field("float32", float32Field, null), allocator);
+    Float8Vector float64Vector =
+        new Float8Vector(new Field("float64", float64Field, null), allocator);
 
     // Set up VSR
     List<FieldVector> vectors = Arrays.asList(float16Vector, float32Vector, float64Vector);
@@ -575,15 +595,21 @@ public class ArrowToAvroDataTest {
   public void testWriteNullableFloatingPoints() throws Exception {
 
     // Field definitions
-    FieldType float16Field = new FieldType(true, new ArrowType.FloatingPoint(FloatingPointPrecision.HALF), null);
-    FieldType float32Field = new FieldType(true, new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE), null);
-    FieldType float64Field = new FieldType(true, new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE), null);
+    FieldType float16Field =
+        new FieldType(true, new ArrowType.FloatingPoint(FloatingPointPrecision.HALF), null);
+    FieldType float32Field =
+        new FieldType(true, new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE), null);
+    FieldType float64Field =
+        new FieldType(true, new ArrowType.FloatingPoint(FloatingPointPrecision.DOUBLE), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    Float2Vector float16Vector = new Float2Vector(new Field("float16", float16Field, null), allocator);
-    Float4Vector float32Vector = new Float4Vector(new Field("float32", float32Field, null), allocator);
-    Float8Vector float64Vector = new Float8Vector(new Field("float64", float64Field, null), allocator);
+    Float2Vector float16Vector =
+        new Float2Vector(new Field("float16", float16Field, null), allocator);
+    Float4Vector float32Vector =
+        new Float4Vector(new Field("float32", float32Field, null), allocator);
+    Float8Vector float64Vector =
+        new Float8Vector(new Field("float64", float64Field, null), allocator);
 
     int rowCount = 3;
 
@@ -654,7 +680,8 @@ public class ArrowToAvroDataTest {
 
     // Create empty vector
     BufferAllocator allocator = new RootAllocator();
-    VarCharVector stringVector = new VarCharVector(new Field("string", stringField, null), allocator);
+    VarCharVector stringVector =
+        new VarCharVector(new Field("string", stringField, null), allocator);
 
     // Set up VSR
     List<FieldVector> vectors = Arrays.asList(stringVector);
@@ -710,7 +737,8 @@ public class ArrowToAvroDataTest {
 
     // Create empty vector
     BufferAllocator allocator = new RootAllocator();
-    VarCharVector stringVector = new VarCharVector(new Field("string", stringField, null), allocator);
+    VarCharVector stringVector =
+        new VarCharVector(new Field("string", stringField, null), allocator);
 
     int rowCount = 3;
 
@@ -768,8 +796,10 @@ public class ArrowToAvroDataTest {
 
     // Create empty vector
     BufferAllocator allocator = new RootAllocator();
-    VarBinaryVector binaryVector = new VarBinaryVector(new Field("binary", binaryField, null), allocator);
-    FixedSizeBinaryVector fixedVector = new FixedSizeBinaryVector(new Field("fixed", fixedField, null), allocator);
+    VarBinaryVector binaryVector =
+        new VarBinaryVector(new Field("binary", binaryField, null), allocator);
+    FixedSizeBinaryVector fixedVector =
+        new FixedSizeBinaryVector(new Field("fixed", fixedField, null), allocator);
 
     // Set up VSR
     List<FieldVector> vectors = Arrays.asList(binaryVector, fixedVector);
@@ -781,13 +811,13 @@ public class ArrowToAvroDataTest {
       root.allocateNew();
 
       // Set test data
-      binaryVector.setSafe(0, new byte[]{1, 2, 3});
-      binaryVector.setSafe(1, new byte[]{4, 5, 6, 7});
-      binaryVector.setSafe(2, new byte[]{8, 9});
+      binaryVector.setSafe(0, new byte[] {1, 2, 3});
+      binaryVector.setSafe(1, new byte[] {4, 5, 6, 7});
+      binaryVector.setSafe(2, new byte[] {8, 9});
 
-      fixedVector.setSafe(0, new byte[]{1, 2, 3, 4, 5});
-      fixedVector.setSafe(1, new byte[]{4, 5, 6, 7, 8, 9});
-      fixedVector.setSafe(2, new byte[]{8, 9, 10, 11, 12});
+      fixedVector.setSafe(0, new byte[] {1, 2, 3, 4, 5});
+      fixedVector.setSafe(1, new byte[] {4, 5, 6, 7, 8, 9});
+      fixedVector.setSafe(2, new byte[] {8, 9, 10, 11, 12});
 
       File dataFile = new File(TMP, "testWriteBinary.avro");
 
@@ -833,8 +863,10 @@ public class ArrowToAvroDataTest {
 
     // Create empty vector
     BufferAllocator allocator = new RootAllocator();
-    VarBinaryVector binaryVector = new VarBinaryVector(new Field("binary", binaryField, null), allocator);
-    FixedSizeBinaryVector fixedVector = new FixedSizeBinaryVector(new Field("fixed", fixedField, null), allocator);
+    VarBinaryVector binaryVector =
+        new VarBinaryVector(new Field("binary", binaryField, null), allocator);
+    FixedSizeBinaryVector fixedVector =
+        new FixedSizeBinaryVector(new Field("fixed", fixedField, null), allocator);
 
     int rowCount = 3;
 
@@ -848,12 +880,12 @@ public class ArrowToAvroDataTest {
 
       // Set test data
       binaryVector.setNull(0);
-      binaryVector.setSafe(1, new byte[]{});
-      binaryVector.setSafe(2, new byte[]{10, 11, 12});
+      binaryVector.setSafe(1, new byte[] {});
+      binaryVector.setSafe(2, new byte[] {10, 11, 12});
 
       fixedVector.setNull(0);
-      fixedVector.setSafe(1, new byte[]{0, 0, 0, 0, 0});
-      fixedVector.setSafe(2, new byte[]{10, 11, 12, 13, 14});
+      fixedVector.setSafe(1, new byte[] {0, 0, 0, 0, 0});
+      fixedVector.setSafe(2, new byte[] {10, 11, 12, 13, 14});
 
       File dataFile = new File(TMP, "testWriteNullableBinary.avro");
 
@@ -906,13 +938,18 @@ public class ArrowToAvroDataTest {
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    DecimalVector decimal128Vector1 = new DecimalVector(new Field("decimal128_1", decimal128Field1, null), allocator);
-    DecimalVector decimal128Vector2 = new DecimalVector(new Field("decimal128_2", decimal128Field2, null), allocator);
-    Decimal256Vector decimal256Vector1 = new Decimal256Vector(new Field("decimal256_1", decimal256Field1, null), allocator);
-    Decimal256Vector decimal256Vector2 = new Decimal256Vector(new Field("decimal256_2", decimal256Field2, null), allocator);
+    DecimalVector decimal128Vector1 =
+        new DecimalVector(new Field("decimal128_1", decimal128Field1, null), allocator);
+    DecimalVector decimal128Vector2 =
+        new DecimalVector(new Field("decimal128_2", decimal128Field2, null), allocator);
+    Decimal256Vector decimal256Vector1 =
+        new Decimal256Vector(new Field("decimal256_1", decimal256Field1, null), allocator);
+    Decimal256Vector decimal256Vector2 =
+        new Decimal256Vector(new Field("decimal256_2", decimal256Field2, null), allocator);
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(decimal128Vector1, decimal128Vector2, decimal256Vector1, decimal256Vector2);
+    List<FieldVector> vectors =
+        Arrays.asList(decimal128Vector1, decimal128Vector2, decimal256Vector1, decimal256Vector2);
     int rowCount = 3;
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
@@ -921,21 +958,43 @@ public class ArrowToAvroDataTest {
       root.allocateNew();
 
       // Set test data
-      decimal128Vector1.setSafe(0, new BigDecimal("12345.67890").setScale(10, RoundingMode.UNNECESSARY));
-      decimal128Vector1.setSafe(1, new BigDecimal("-98765.43210").setScale(10, RoundingMode.UNNECESSARY));
-      decimal128Vector1.setSafe(2, new BigDecimal("54321.09876").setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(
+          0, new BigDecimal("12345.67890").setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(
+          1, new BigDecimal("-98765.43210").setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(
+          2, new BigDecimal("54321.09876").setScale(10, RoundingMode.UNNECESSARY));
 
-      decimal128Vector2.setSafe(0, new BigDecimal("12345.67890").setScale(5, RoundingMode.UNNECESSARY));
-      decimal128Vector2.setSafe(1, new BigDecimal("-98765.43210").setScale(5, RoundingMode.UNNECESSARY));
-      decimal128Vector2.setSafe(2, new BigDecimal("54321.09876").setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(
+          0, new BigDecimal("12345.67890").setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(
+          1, new BigDecimal("-98765.43210").setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(
+          2, new BigDecimal("54321.09876").setScale(5, RoundingMode.UNNECESSARY));
 
-      decimal256Vector1.setSafe(0, new BigDecimal("12345678901234567890.12345678901234567890").setScale(20, RoundingMode.UNNECESSARY));
-      decimal256Vector1.setSafe(1, new BigDecimal("-98765432109876543210.98765432109876543210").setScale(20, RoundingMode.UNNECESSARY));
-      decimal256Vector1.setSafe(2, new BigDecimal("54321098765432109876.54321098765432109876").setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(
+          0,
+          new BigDecimal("12345678901234567890.12345678901234567890")
+              .setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(
+          1,
+          new BigDecimal("-98765432109876543210.98765432109876543210")
+              .setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(
+          2,
+          new BigDecimal("54321098765432109876.54321098765432109876")
+              .setScale(20, RoundingMode.UNNECESSARY));
 
-      decimal256Vector2.setSafe(0, new BigDecimal("12345678901234567890.1234567890").setScale(10, RoundingMode.UNNECESSARY));
-      decimal256Vector2.setSafe(1, new BigDecimal("-98765432109876543210.9876543210").setScale(10, RoundingMode.UNNECESSARY));
-      decimal256Vector2.setSafe(2, new BigDecimal("54321098765432109876.5432109876").setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(
+          0,
+          new BigDecimal("12345678901234567890.1234567890").setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(
+          1,
+          new BigDecimal("-98765432109876543210.9876543210")
+              .setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(
+          2,
+          new BigDecimal("54321098765432109876.5432109876").setScale(10, RoundingMode.UNNECESSARY));
 
       File dataFile = new File(TMP, "testWriteDecimals.avro");
 
@@ -961,10 +1020,14 @@ public class ArrowToAvroDataTest {
         // Read and check values
         for (int row = 0; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(decimal128Vector1.getObject(row), decodeFixedDecimal(record, "decimal128_1"));
-          assertEquals(decimal128Vector2.getObject(row), decodeFixedDecimal(record, "decimal128_2"));
-          assertEquals(decimal256Vector1.getObject(row), decodeFixedDecimal(record, "decimal256_1"));
-          assertEquals(decimal256Vector2.getObject(row), decodeFixedDecimal(record, "decimal256_2"));
+          assertEquals(
+              decimal128Vector1.getObject(row), decodeFixedDecimal(record, "decimal128_1"));
+          assertEquals(
+              decimal128Vector2.getObject(row), decodeFixedDecimal(record, "decimal128_2"));
+          assertEquals(
+              decimal256Vector1.getObject(row), decodeFixedDecimal(record, "decimal256_1"));
+          assertEquals(
+              decimal256Vector2.getObject(row), decodeFixedDecimal(record, "decimal256_2"));
         }
       }
     }
@@ -981,15 +1044,20 @@ public class ArrowToAvroDataTest {
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    DecimalVector decimal128Vector1 = new DecimalVector(new Field("decimal128_1", decimal128Field1, null), allocator);
-    DecimalVector decimal128Vector2 = new DecimalVector(new Field("decimal128_2", decimal128Field2, null), allocator);
-    Decimal256Vector decimal256Vector1 = new Decimal256Vector(new Field("decimal256_1", decimal256Field1, null), allocator);
-    Decimal256Vector decimal256Vector2 = new Decimal256Vector(new Field("decimal256_2", decimal256Field2, null), allocator);
+    DecimalVector decimal128Vector1 =
+        new DecimalVector(new Field("decimal128_1", decimal128Field1, null), allocator);
+    DecimalVector decimal128Vector2 =
+        new DecimalVector(new Field("decimal128_2", decimal128Field2, null), allocator);
+    Decimal256Vector decimal256Vector1 =
+        new Decimal256Vector(new Field("decimal256_1", decimal256Field1, null), allocator);
+    Decimal256Vector decimal256Vector2 =
+        new Decimal256Vector(new Field("decimal256_2", decimal256Field2, null), allocator);
 
     int rowCount = 3;
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(decimal128Vector1, decimal128Vector2, decimal256Vector1, decimal256Vector2);
+    List<FieldVector> vectors =
+        Arrays.asList(decimal128Vector1, decimal128Vector2, decimal256Vector1, decimal256Vector2);
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
 
@@ -999,19 +1067,26 @@ public class ArrowToAvroDataTest {
       // Set test data
       decimal128Vector1.setNull(0);
       decimal128Vector1.setSafe(1, BigDecimal.ZERO.setScale(10, RoundingMode.UNNECESSARY));
-      decimal128Vector1.setSafe(2, new BigDecimal("12345.67890").setScale(10, RoundingMode.UNNECESSARY));
+      decimal128Vector1.setSafe(
+          2, new BigDecimal("12345.67890").setScale(10, RoundingMode.UNNECESSARY));
 
       decimal128Vector2.setNull(0);
       decimal128Vector2.setSafe(1, BigDecimal.ZERO.setScale(5, RoundingMode.UNNECESSARY));
-      decimal128Vector2.setSafe(2, new BigDecimal("98765.43210").setScale(5, RoundingMode.UNNECESSARY));
+      decimal128Vector2.setSafe(
+          2, new BigDecimal("98765.43210").setScale(5, RoundingMode.UNNECESSARY));
 
       decimal256Vector1.setNull(0);
       decimal256Vector1.setSafe(1, BigDecimal.ZERO.setScale(20, RoundingMode.UNNECESSARY));
-      decimal256Vector1.setSafe(2, new BigDecimal("12345678901234567890.12345678901234567890").setScale(20, RoundingMode.UNNECESSARY));
+      decimal256Vector1.setSafe(
+          2,
+          new BigDecimal("12345678901234567890.12345678901234567890")
+              .setScale(20, RoundingMode.UNNECESSARY));
 
       decimal256Vector2.setNull(0);
       decimal256Vector2.setSafe(1, BigDecimal.ZERO.setScale(10, RoundingMode.UNNECESSARY));
-      decimal256Vector2.setSafe(2, new BigDecimal("98765432109876543210.9876543210").setScale(10, RoundingMode.UNNECESSARY));
+      decimal256Vector2.setSafe(
+          2,
+          new BigDecimal("98765432109876543210.9876543210").setScale(10, RoundingMode.UNNECESSARY));
 
       File dataFile = new File(TMP, "testWriteNullableDecimals.avro");
 
@@ -1042,10 +1117,14 @@ public class ArrowToAvroDataTest {
 
         for (int row = 1; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(decimal128Vector1.getObject(row), decodeFixedDecimal(record, "decimal128_1"));
-          assertEquals(decimal128Vector2.getObject(row), decodeFixedDecimal(record, "decimal128_2"));
-          assertEquals(decimal256Vector1.getObject(row), decodeFixedDecimal(record, "decimal256_1"));
-          assertEquals(decimal256Vector2.getObject(row), decodeFixedDecimal(record, "decimal256_2"));
+          assertEquals(
+              decimal128Vector1.getObject(row), decodeFixedDecimal(record, "decimal128_1"));
+          assertEquals(
+              decimal128Vector2.getObject(row), decodeFixedDecimal(record, "decimal128_2"));
+          assertEquals(
+              decimal256Vector1.getObject(row), decodeFixedDecimal(record, "decimal256_1"));
+          assertEquals(
+              decimal256Vector2.getObject(row), decodeFixedDecimal(record, "decimal256_2"));
         }
       }
     }
@@ -1062,12 +1141,15 @@ public class ArrowToAvroDataTest {
 
     // Field definitions
     FieldType dateDayField = new FieldType(false, new ArrowType.Date(DateUnit.DAY), null);
-    FieldType dateMillisField = new FieldType(false, new ArrowType.Date(DateUnit.MILLISECOND), null);
+    FieldType dateMillisField =
+        new FieldType(false, new ArrowType.Date(DateUnit.MILLISECOND), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    DateDayVector dateDayVector = new DateDayVector(new Field("dateDay", dateDayField, null), allocator);
-    DateMilliVector dateMillisVector = new DateMilliVector(new Field("dateMillis", dateMillisField, null), allocator);
+    DateDayVector dateDayVector =
+        new DateDayVector(new Field("dateDay", dateDayField, null), allocator);
+    DateMilliVector dateMillisVector =
+        new DateMilliVector(new Field("dateMillis", dateMillisField, null), allocator);
 
     // Set up VSR
     List<FieldVector> vectors = Arrays.asList(dateDayVector, dateMillisVector);
@@ -1112,7 +1194,8 @@ public class ArrowToAvroDataTest {
         for (int row = 0; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
           assertEquals(dateDayVector.get(row), record.get("dateDay"));
-          assertEquals(dateMillisVector.get(row), ((long) (Integer) record.get("dateMillis")) * 86400000L);
+          assertEquals(
+              dateMillisVector.get(row), ((long) (Integer) record.get("dateMillis")) * 86400000L);
         }
       }
     }
@@ -1127,8 +1210,10 @@ public class ArrowToAvroDataTest {
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    DateDayVector dateDayVector = new DateDayVector(new Field("dateDay", dateDayField, null), allocator);
-    DateMilliVector dateMillisVector = new DateMilliVector(new Field("dateMillis", dateMillisField, null), allocator);
+    DateDayVector dateDayVector =
+        new DateDayVector(new Field("dateDay", dateDayField, null), allocator);
+    DateMilliVector dateMillisVector =
+        new DateMilliVector(new Field("dateMillis", dateMillisField, null), allocator);
 
     int rowCount = 3;
 
@@ -1177,7 +1262,8 @@ public class ArrowToAvroDataTest {
         for (int row = 1; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
           assertEquals(dateDayVector.get(row), record.get("dateDay"));
-          assertEquals(dateMillisVector.get(row), ((long) (Integer) record.get("dateMillis")) * 86400000L);
+          assertEquals(
+              dateMillisVector.get(row), ((long) (Integer) record.get("dateMillis")) * 86400000L);
         }
       }
     }
@@ -1188,19 +1274,27 @@ public class ArrowToAvroDataTest {
 
     // Field definitions
     FieldType timeSecField = new FieldType(false, new ArrowType.Time(TimeUnit.SECOND, 32), null);
-    FieldType timeMillisField = new FieldType(false, new ArrowType.Time(TimeUnit.MILLISECOND, 32), null);
-    FieldType timeMicrosField = new FieldType(false, new ArrowType.Time(TimeUnit.MICROSECOND, 64), null);
-    FieldType timeNanosField = new FieldType(false, new ArrowType.Time(TimeUnit.NANOSECOND, 64), null);
+    FieldType timeMillisField =
+        new FieldType(false, new ArrowType.Time(TimeUnit.MILLISECOND, 32), null);
+    FieldType timeMicrosField =
+        new FieldType(false, new ArrowType.Time(TimeUnit.MICROSECOND, 64), null);
+    FieldType timeNanosField =
+        new FieldType(false, new ArrowType.Time(TimeUnit.NANOSECOND, 64), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    TimeSecVector timeSecVector = new TimeSecVector(new Field("timeSec", timeSecField, null), allocator);
-    TimeMilliVector timeMillisVector = new TimeMilliVector(new Field("timeMillis", timeMillisField, null), allocator);
-    TimeMicroVector timeMicrosVector = new TimeMicroVector(new Field("timeMicros", timeMicrosField, null), allocator);
-    TimeNanoVector timeNanosVector = new TimeNanoVector(new Field("timeNanos", timeNanosField, null), allocator);
+    TimeSecVector timeSecVector =
+        new TimeSecVector(new Field("timeSec", timeSecField, null), allocator);
+    TimeMilliVector timeMillisVector =
+        new TimeMilliVector(new Field("timeMillis", timeMillisField, null), allocator);
+    TimeMicroVector timeMicrosVector =
+        new TimeMicroVector(new Field("timeMicros", timeMicrosField, null), allocator);
+    TimeNanoVector timeNanosVector =
+        new TimeNanoVector(new Field("timeNanos", timeNanosField, null), allocator);
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(timeSecVector, timeMillisVector, timeMicrosVector, timeNanosVector);
+    List<FieldVector> vectors =
+        Arrays.asList(timeSecVector, timeMillisVector, timeMicrosVector, timeNanosVector);
     int rowCount = 3;
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
@@ -1213,9 +1307,12 @@ public class ArrowToAvroDataTest {
       timeSecVector.setSafe(1, ZonedDateTime.now().toLocalTime().toSecondOfDay() - 1);
       timeSecVector.setSafe(2, ZonedDateTime.now().toLocalTime().toSecondOfDay() - 2);
 
-      timeMillisVector.setSafe(0, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000));
-      timeMillisVector.setSafe(1, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000) - 1000);
-      timeMillisVector.setSafe(2, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000) - 2000);
+      timeMillisVector.setSafe(
+          0, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000));
+      timeMillisVector.setSafe(
+          1, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000) - 1000);
+      timeMillisVector.setSafe(
+          2, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000) - 2000);
 
       timeMicrosVector.setSafe(0, ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000);
       timeMicrosVector.setSafe(1, ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000 - 1000000);
@@ -1263,21 +1360,29 @@ public class ArrowToAvroDataTest {
 
     // Field definitions
     FieldType timeSecField = new FieldType(true, new ArrowType.Time(TimeUnit.SECOND, 32), null);
-    FieldType timeMillisField = new FieldType(true, new ArrowType.Time(TimeUnit.MILLISECOND, 32), null);
-    FieldType timeMicrosField = new FieldType(true, new ArrowType.Time(TimeUnit.MICROSECOND, 64), null);
-    FieldType timeNanosField = new FieldType(true, new ArrowType.Time(TimeUnit.NANOSECOND, 64), null);
+    FieldType timeMillisField =
+        new FieldType(true, new ArrowType.Time(TimeUnit.MILLISECOND, 32), null);
+    FieldType timeMicrosField =
+        new FieldType(true, new ArrowType.Time(TimeUnit.MICROSECOND, 64), null);
+    FieldType timeNanosField =
+        new FieldType(true, new ArrowType.Time(TimeUnit.NANOSECOND, 64), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    TimeSecVector timeSecVector = new TimeSecVector(new Field("timeSec", timeSecField, null), allocator);
-    TimeMilliVector timeMillisVector = new TimeMilliVector(new Field("timeMillis", timeMillisField, null), allocator);
-    TimeMicroVector timeMicrosVector = new TimeMicroVector(new Field("timeMicros", timeMicrosField, null), allocator);
-    TimeNanoVector timeNanosVector = new TimeNanoVector(new Field("timeNanos", timeNanosField, null), allocator);
+    TimeSecVector timeSecVector =
+        new TimeSecVector(new Field("timeSec", timeSecField, null), allocator);
+    TimeMilliVector timeMillisVector =
+        new TimeMilliVector(new Field("timeMillis", timeMillisField, null), allocator);
+    TimeMicroVector timeMicrosVector =
+        new TimeMicroVector(new Field("timeMicros", timeMicrosField, null), allocator);
+    TimeNanoVector timeNanosVector =
+        new TimeNanoVector(new Field("timeNanos", timeNanosField, null), allocator);
 
     int rowCount = 3;
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(timeSecVector, timeMillisVector, timeMicrosVector, timeNanosVector);
+    List<FieldVector> vectors =
+        Arrays.asList(timeSecVector, timeMillisVector, timeMicrosVector, timeNanosVector);
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
 
@@ -1291,7 +1396,8 @@ public class ArrowToAvroDataTest {
 
       timeMillisVector.setNull(0);
       timeMillisVector.setSafe(1, 0);
-      timeMillisVector.setSafe(2, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000));
+      timeMillisVector.setSafe(
+          2, (int) (ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000000));
 
       timeMicrosVector.setNull(0);
       timeMicrosVector.setSafe(1, 0);
@@ -1343,20 +1449,33 @@ public class ArrowToAvroDataTest {
   public void testWriteZoneAwareTimestamps() throws Exception {
 
     // Field definitions
-    FieldType timestampSecField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.SECOND, "UTC"), null);
-    FieldType timestampMillisField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC"), null);
-    FieldType timestampMicrosField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"), null);
-    FieldType timestampNanosField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC"), null);
+    FieldType timestampSecField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.SECOND, "UTC"), null);
+    FieldType timestampMillisField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC"), null);
+    FieldType timestampMicrosField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"), null);
+    FieldType timestampNanosField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC"), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    TimeStampSecTZVector timestampSecVector = new TimeStampSecTZVector(new Field("timestampSec", timestampSecField, null), allocator);
-    TimeStampMilliTZVector timestampMillisVector = new TimeStampMilliTZVector(new Field("timestampMillis", timestampMillisField, null), allocator);
-    TimeStampMicroTZVector timestampMicrosVector = new TimeStampMicroTZVector(new Field("timestampMicros", timestampMicrosField, null), allocator);
-    TimeStampNanoTZVector timestampNanosVector = new TimeStampNanoTZVector(new Field("timestampNanos", timestampNanosField, null), allocator);
+    TimeStampSecTZVector timestampSecVector =
+        new TimeStampSecTZVector(new Field("timestampSec", timestampSecField, null), allocator);
+    TimeStampMilliTZVector timestampMillisVector =
+        new TimeStampMilliTZVector(
+            new Field("timestampMillis", timestampMillisField, null), allocator);
+    TimeStampMicroTZVector timestampMicrosVector =
+        new TimeStampMicroTZVector(
+            new Field("timestampMicros", timestampMicrosField, null), allocator);
+    TimeStampNanoTZVector timestampNanosVector =
+        new TimeStampNanoTZVector(
+            new Field("timestampNanos", timestampNanosField, null), allocator);
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
+    List<FieldVector> vectors =
+        Arrays.asList(
+            timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
     int rowCount = 3;
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
@@ -1405,7 +1524,8 @@ public class ArrowToAvroDataTest {
         // Read and check values
         for (int row = 0; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
+          assertEquals(
+              timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
           assertEquals(timestampMillisVector.get(row), (int) (long) record.get("timestampMillis"));
           assertEquals(timestampMicrosVector.get(row), record.get("timestampMicros"));
           assertEquals(timestampNanosVector.get(row), record.get("timestampNanos"));
@@ -1418,22 +1538,35 @@ public class ArrowToAvroDataTest {
   public void testWriteNullableZoneAwareTimestamps() throws Exception {
 
     // Field definitions
-    FieldType timestampSecField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.SECOND, "UTC"), null);
-    FieldType timestampMillisField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC"), null);
-    FieldType timestampMicrosField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"), null);
-    FieldType timestampNanosField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC"), null);
+    FieldType timestampSecField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.SECOND, "UTC"), null);
+    FieldType timestampMillisField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC"), null);
+    FieldType timestampMicrosField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"), null);
+    FieldType timestampNanosField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC"), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    TimeStampSecTZVector timestampSecVector = new TimeStampSecTZVector(new Field("timestampSec", timestampSecField, null), allocator);
-    TimeStampMilliTZVector timestampMillisVector = new TimeStampMilliTZVector(new Field("timestampMillis", timestampMillisField, null), allocator);
-    TimeStampMicroTZVector timestampMicrosVector = new TimeStampMicroTZVector(new Field("timestampMicros", timestampMicrosField, null), allocator);
-    TimeStampNanoTZVector timestampNanosVector = new TimeStampNanoTZVector(new Field("timestampNanos", timestampNanosField, null), allocator);
+    TimeStampSecTZVector timestampSecVector =
+        new TimeStampSecTZVector(new Field("timestampSec", timestampSecField, null), allocator);
+    TimeStampMilliTZVector timestampMillisVector =
+        new TimeStampMilliTZVector(
+            new Field("timestampMillis", timestampMillisField, null), allocator);
+    TimeStampMicroTZVector timestampMicrosVector =
+        new TimeStampMicroTZVector(
+            new Field("timestampMicros", timestampMicrosField, null), allocator);
+    TimeStampNanoTZVector timestampNanosVector =
+        new TimeStampNanoTZVector(
+            new Field("timestampNanos", timestampNanosField, null), allocator);
 
     int rowCount = 3;
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
+    List<FieldVector> vectors =
+        Arrays.asList(
+            timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
 
@@ -1486,7 +1619,8 @@ public class ArrowToAvroDataTest {
 
         for (int row = 1; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
+          assertEquals(
+              timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
           assertEquals(timestampMillisVector.get(row), (int) (long) record.get("timestampMillis"));
           assertEquals(timestampMicrosVector.get(row), record.get("timestampMicros"));
           assertEquals(timestampNanosVector.get(row), record.get("timestampNanos"));
@@ -1499,20 +1633,32 @@ public class ArrowToAvroDataTest {
   public void testWriteLocalTimestamps() throws Exception {
 
     // Field definitions
-    FieldType timestampSecField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.SECOND, null), null);
-    FieldType timestampMillisField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.MILLISECOND, null), null);
-    FieldType timestampMicrosField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.MICROSECOND, null), null);
-    FieldType timestampNanosField = new FieldType(false, new ArrowType.Timestamp(TimeUnit.NANOSECOND, null), null);
+    FieldType timestampSecField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.SECOND, null), null);
+    FieldType timestampMillisField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.MILLISECOND, null), null);
+    FieldType timestampMicrosField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.MICROSECOND, null), null);
+    FieldType timestampNanosField =
+        new FieldType(false, new ArrowType.Timestamp(TimeUnit.NANOSECOND, null), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    TimeStampSecVector timestampSecVector = new TimeStampSecVector(new Field("timestampSec", timestampSecField, null), allocator);
-    TimeStampMilliVector timestampMillisVector = new TimeStampMilliVector(new Field("timestampMillis", timestampMillisField, null), allocator);
-    TimeStampMicroVector timestampMicrosVector = new TimeStampMicroVector(new Field("timestampMicros", timestampMicrosField, null), allocator);
-    TimeStampNanoVector timestampNanosVector = new TimeStampNanoVector(new Field("timestampNanos", timestampNanosField, null), allocator);
+    TimeStampSecVector timestampSecVector =
+        new TimeStampSecVector(new Field("timestampSec", timestampSecField, null), allocator);
+    TimeStampMilliVector timestampMillisVector =
+        new TimeStampMilliVector(
+            new Field("timestampMillis", timestampMillisField, null), allocator);
+    TimeStampMicroVector timestampMicrosVector =
+        new TimeStampMicroVector(
+            new Field("timestampMicros", timestampMicrosField, null), allocator);
+    TimeStampNanoVector timestampNanosVector =
+        new TimeStampNanoVector(new Field("timestampNanos", timestampNanosField, null), allocator);
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
+    List<FieldVector> vectors =
+        Arrays.asList(
+            timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
     int rowCount = 3;
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
@@ -1561,7 +1707,8 @@ public class ArrowToAvroDataTest {
         // Read and check values
         for (int row = 0; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
+          assertEquals(
+              timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
           assertEquals(timestampMillisVector.get(row), (int) (long) record.get("timestampMillis"));
           assertEquals(timestampMicrosVector.get(row), record.get("timestampMicros"));
           assertEquals(timestampNanosVector.get(row), record.get("timestampNanos"));
@@ -1574,22 +1721,34 @@ public class ArrowToAvroDataTest {
   public void testWriteNullableLocalTimestamps() throws Exception {
 
     // Field definitions
-    FieldType timestampSecField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.SECOND, null), null);
-    FieldType timestampMillisField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.MILLISECOND, null), null);
-    FieldType timestampMicrosField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.MICROSECOND, null), null);
-    FieldType timestampNanosField = new FieldType(true, new ArrowType.Timestamp(TimeUnit.NANOSECOND, null), null);
+    FieldType timestampSecField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.SECOND, null), null);
+    FieldType timestampMillisField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.MILLISECOND, null), null);
+    FieldType timestampMicrosField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.MICROSECOND, null), null);
+    FieldType timestampNanosField =
+        new FieldType(true, new ArrowType.Timestamp(TimeUnit.NANOSECOND, null), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    TimeStampSecVector timestampSecVector = new TimeStampSecVector(new Field("timestampSec", timestampSecField, null), allocator);
-    TimeStampMilliVector timestampMillisVector = new TimeStampMilliVector(new Field("timestampMillis", timestampMillisField, null), allocator);
-    TimeStampMicroVector timestampMicrosVector = new TimeStampMicroVector(new Field("timestampMicros", timestampMicrosField, null), allocator);
-    TimeStampNanoVector timestampNanosVector = new TimeStampNanoVector(new Field("timestampNanos", timestampNanosField, null), allocator);
+    TimeStampSecVector timestampSecVector =
+        new TimeStampSecVector(new Field("timestampSec", timestampSecField, null), allocator);
+    TimeStampMilliVector timestampMillisVector =
+        new TimeStampMilliVector(
+            new Field("timestampMillis", timestampMillisField, null), allocator);
+    TimeStampMicroVector timestampMicrosVector =
+        new TimeStampMicroVector(
+            new Field("timestampMicros", timestampMicrosField, null), allocator);
+    TimeStampNanoVector timestampNanosVector =
+        new TimeStampNanoVector(new Field("timestampNanos", timestampNanosField, null), allocator);
 
     int rowCount = 3;
 
     // Set up VSR
-    List<FieldVector> vectors = Arrays.asList(timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
+    List<FieldVector> vectors =
+        Arrays.asList(
+            timestampSecVector, timestampMillisVector, timestampMicrosVector, timestampNanosVector);
 
     try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
 
@@ -1642,7 +1801,8 @@ public class ArrowToAvroDataTest {
 
         for (int row = 1; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          assertEquals(timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
+          assertEquals(
+              timestampSecVector.get(row), (int) ((long) record.get("timestampSec") / 1000));
           assertEquals(timestampMillisVector.get(row), (int) (long) record.get("timestampMillis"));
           assertEquals(timestampMicrosVector.get(row), record.get("timestampMicros"));
           assertEquals(timestampNanosVector.get(row), record.get("timestampNanos"));
@@ -1663,7 +1823,8 @@ public class ArrowToAvroDataTest {
 
     Field intField = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
     Field stringField = new Field("item", FieldType.notNullable(new ArrowType.Utf8()), null);
-    Field dateField = new Field("item", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
+    Field dateField =
+        new Field("item", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
@@ -1763,18 +1924,19 @@ public class ArrowToAvroDataTest {
     FieldType nonNullListType = new FieldType(false, new ArrowType.List(), null);
 
     Field nullFieldType = new Field("item", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    Field nonNullFieldType = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field nonNullFieldType =
+        new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    ListVector nullEntriesVector = new ListVector("nullEntriesVector", allocator, nonNullListType, null);
+    ListVector nullEntriesVector =
+        new ListVector("nullEntriesVector", allocator, nonNullListType, null);
     ListVector nullListVector = new ListVector("nullListVector", allocator, nullListType, null);
     ListVector nullBothVector = new ListVector("nullBothVector", allocator, nullListType, null);
 
     nullEntriesVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
     nullListVector.initializeChildrenFromFields(Arrays.asList(nonNullFieldType));
     nullBothVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
-
 
     // Set up VSR
     List<FieldVector> vectors = Arrays.asList(nullEntriesVector, nullListVector, nullBothVector);
@@ -1849,7 +2011,8 @@ public class ArrowToAvroDataTest {
         // Read and check values
         for (int row = 0; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          for (String list : Arrays.asList("nullEntriesVector", "nullListVector", "nullBothVector")) {
+          for (String list :
+              Arrays.asList("nullEntriesVector", "nullListVector", "nullBothVector")) {
             ListVector vector = (ListVector) root.getVector(list);
             Object recordField = record.get(list);
             if (vector.isNull(row)) {
@@ -1873,13 +2036,17 @@ public class ArrowToAvroDataTest {
 
     Field intField = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
     Field stringField = new Field("item", FieldType.notNullable(new ArrowType.Utf8()), null);
-    Field dateField = new Field("item", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
+    Field dateField =
+        new Field("item", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    FixedSizeListVector intListVector = new FixedSizeListVector("intList", allocator, intListField, null);
-    FixedSizeListVector stringListVector = new FixedSizeListVector("stringList", allocator, stringListField, null);
-    FixedSizeListVector dateListVector = new FixedSizeListVector("dateList", allocator, dateListField, null);
+    FixedSizeListVector intListVector =
+        new FixedSizeListVector("intList", allocator, intListField, null);
+    FixedSizeListVector stringListVector =
+        new FixedSizeListVector("stringList", allocator, stringListField, null);
+    FixedSizeListVector dateListVector =
+        new FixedSizeListVector("dateList", allocator, dateListField, null);
 
     intListVector.initializeChildrenFromFields(Arrays.asList(intField));
     stringListVector.initializeChildrenFromFields(Arrays.asList(stringField));
@@ -1970,18 +2137,21 @@ public class ArrowToAvroDataTest {
     FieldType nonNullListType = new FieldType(false, new ArrowType.FixedSizeList(1), null);
 
     Field nullFieldType = new Field("item", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    Field nonNullFieldType = new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field nonNullFieldType =
+        new Field("item", FieldType.notNullable(new ArrowType.Int(32, true)), null);
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    FixedSizeListVector nullEntriesVector = new FixedSizeListVector("nullEntriesVector", allocator, nonNullListType, null);
-    FixedSizeListVector nullListVector = new FixedSizeListVector("nullListVector", allocator, nullListType, null);
-    FixedSizeListVector nullBothVector = new FixedSizeListVector("nullBothVector", allocator, nullListType, null);
+    FixedSizeListVector nullEntriesVector =
+        new FixedSizeListVector("nullEntriesVector", allocator, nonNullListType, null);
+    FixedSizeListVector nullListVector =
+        new FixedSizeListVector("nullListVector", allocator, nullListType, null);
+    FixedSizeListVector nullBothVector =
+        new FixedSizeListVector("nullBothVector", allocator, nullListType, null);
 
     nullEntriesVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
     nullListVector.initializeChildrenFromFields(Arrays.asList(nonNullFieldType));
     nullBothVector.initializeChildrenFromFields(Arrays.asList(nullFieldType));
-
 
     // Set up VSR
     List<FieldVector> vectors = Arrays.asList(nullEntriesVector, nullListVector, nullBothVector);
@@ -2046,7 +2216,8 @@ public class ArrowToAvroDataTest {
         // Read and check values
         for (int row = 0; row < rowCount; row++) {
           record = datumReader.read(record, decoder);
-          for (String list : Arrays.asList("nullEntriesVector", "nullListVector", "nullBothVector")) {
+          for (String list :
+              Arrays.asList("nullEntriesVector", "nullListVector", "nullBothVector")) {
             FixedSizeListVector vector = (FixedSizeListVector) root.getVector(list);
             Object recordField = record.get(list);
             if (vector.isNull(row)) {
@@ -2071,11 +2242,24 @@ public class ArrowToAvroDataTest {
     Field keyField = new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null);
     Field intField = new Field("value", FieldType.notNullable(new ArrowType.Int(32, true)), null);
     Field stringField = new Field("value", FieldType.notNullable(new ArrowType.Utf8()), null);
-    Field dateField = new Field("value", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
+    Field dateField =
+        new Field("value", FieldType.notNullable(new ArrowType.Date(DateUnit.DAY)), null);
 
-    Field intEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, intField));
-    Field stringEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, stringField));
-    Field dateEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, dateField));
+    Field intEntryField =
+        new Field(
+            "entries",
+            FieldType.notNullable(new ArrowType.Struct()),
+            Arrays.asList(keyField, intField));
+    Field stringEntryField =
+        new Field(
+            "entries",
+            FieldType.notNullable(new ArrowType.Struct()),
+            Arrays.asList(keyField, stringField));
+    Field dateEntryField =
+        new Field(
+            "entries",
+            FieldType.notNullable(new ArrowType.Struct()),
+            Arrays.asList(keyField, dateField));
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
@@ -2179,13 +2363,23 @@ public class ArrowToAvroDataTest {
 
     Field keyField = new Field("key", FieldType.notNullable(new ArrowType.Utf8()), null);
     Field nullFieldType = new Field("value", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    Field nonNullFieldType = new Field("value", FieldType.notNullable(new ArrowType.Int(32, true)), null);
-    Field nullEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, nullFieldType));
-    Field nonNullEntryField = new Field("entries", FieldType.notNullable(new ArrowType.Struct()), Arrays.asList(keyField, nonNullFieldType));
+    Field nonNullFieldType =
+        new Field("value", FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field nullEntryField =
+        new Field(
+            "entries",
+            FieldType.notNullable(new ArrowType.Struct()),
+            Arrays.asList(keyField, nullFieldType));
+    Field nonNullEntryField =
+        new Field(
+            "entries",
+            FieldType.notNullable(new ArrowType.Struct()),
+            Arrays.asList(keyField, nonNullFieldType));
 
     // Create empty vectors
     BufferAllocator allocator = new RootAllocator();
-    MapVector nullEntriesVector = new MapVector("nullEntriesVector", allocator, nonNullMapType, null);
+    MapVector nullEntriesVector =
+        new MapVector("nullEntriesVector", allocator, nonNullMapType, null);
     MapVector nullMapVector = new MapVector("nullMapVector", allocator, nullMapType, null);
     MapVector nullBothVector = new MapVector("nullBothVector", allocator, nullMapType, null);
 
@@ -2310,8 +2504,7 @@ public class ArrowToAvroDataTest {
   private void compareMaps(Map<String, ?> expected, Map<?, ?> actual) {
     if (expected == null) {
       assertNull(actual);
-    }
-    else {
+    } else {
       assertEquals(expected.size(), actual.size());
       for (Object key : actual.keySet()) {
         assertTrue(expected.containsKey(key.toString()));

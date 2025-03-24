@@ -16,13 +16,12 @@
  */
 package org.apache.arrow.adapter.avro.producers.logical;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.avro.io.Encoder;
-
-import java.io.IOException;
-import java.math.BigDecimal;
 
 /**
  * Producer that produces decimal values from a {@link DecimalVector}, writes data to an Avro
@@ -54,6 +53,7 @@ public class AvroDecimalProducer extends BaseAvroProducer<DecimalVector> {
     byte[] valueBytes = value.unscaledValue().toByteArray();
     byte[] padding = valueBytes[0] < 0 ? DecimalUtility.minus_one : DecimalUtility.zeroes;
     System.arraycopy(padding, 0, encodedBytes, 0, encodedBytes.length - valueBytes.length);
-    System.arraycopy(valueBytes, 0, encodedBytes, encodedBytes.length - valueBytes.length, valueBytes.length);
+    System.arraycopy(
+        valueBytes, 0, encodedBytes, encodedBytes.length - valueBytes.length, valueBytes.length);
   }
 }
