@@ -1351,7 +1351,9 @@ public class ArrowToAvroDataTest {
           assertEquals(timeSecVector.get(row), (int) (record.get("timeSec")) / 1000);
           assertEquals(timeMillisVector.get(row), record.get("timeMillis"));
           assertEquals(timeMicrosVector.get(row), record.get("timeMicros"));
-          assertEquals(timeNanosVector.get(row), (long) record.get("timeNanos") * 1000);
+          // Avro doesn't have time-nanos (mar 2025), so expect column to be saved as micros
+          long nanosAsMicros = (timeNanosVector.get(row) / 1000);
+          assertEquals(nanosAsMicros, (long) record.get("timeNanos"));
         }
       }
     }
@@ -1403,7 +1405,7 @@ public class ArrowToAvroDataTest {
 
       timeMicrosVector.setNull(0);
       timeMicrosVector.setSafe(1, 0);
-      timeMicrosVector.setSafe(2, ZonedDateTime.now().toLocalTime().toSecondOfDay() / 1000);
+      timeMicrosVector.setSafe(2, ZonedDateTime.now().toLocalTime().toNanoOfDay() / 1000);
 
       timeNanosVector.setNull(0);
       timeNanosVector.setSafe(1, 0);
@@ -1441,7 +1443,9 @@ public class ArrowToAvroDataTest {
           assertEquals(timeSecVector.get(row), ((int) record.get("timeSec") / 1000));
           assertEquals(timeMillisVector.get(row), record.get("timeMillis"));
           assertEquals(timeMicrosVector.get(row), record.get("timeMicros"));
-          assertEquals(timeNanosVector.get(row), (long) record.get("timeNanos") * 1000);
+          // Avro doesn't have time-nanos (mar 2025), so expect column to be saved as micros
+          long nanosAsMicros = (timeNanosVector.get(row) / 1000);
+          assertEquals(nanosAsMicros, (long) record.get("timeNanos"));
         }
       }
     }
