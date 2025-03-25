@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
-import org.apache.arrow.adapter.avro.producers.AvroDenseUnionProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedSizeBinaryProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedSizeListProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat2Producer;
@@ -40,7 +39,6 @@ import org.apache.arrow.adapter.avro.producers.AvroUint1Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUint2Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUint4Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUint8Producer;
-import org.apache.arrow.adapter.avro.producers.AvroUnionProducer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
 import org.apache.arrow.adapter.avro.producers.Producer;
@@ -94,12 +92,10 @@ import org.apache.arrow.vector.UInt4Vector;
 import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
-import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
-import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
@@ -158,11 +154,11 @@ public class ArrowToAvroUtils {
    * of its child fields are nullable. The schema for a nullable union will always contain a null
    * type,none of the direct child types will be nullable.
    *
-   * <p>List fields must contain precisely one child field, which may be nullable. Map fields must
-   * contain precisely two child fields, the key field and the value field. The key field must
-   * always be of type STRING (Utf8) and cannot be nullable. The value can be of any type and may be
-   * nullable. Record types must contain at least one child field and cannot contain multiple fields
-   * with the same name
+   * <p>List fields must contain precisely one child field, which may be nullable. Map fields are
+   * represented as a list of structs, where the struct fields are "key" and "value". The key field
+   * must always be of type STRING (Utf8) and cannot be nullable. The value can be of any type and
+   * may be nullable. Record types must contain at least one child field and cannot contain multiple
+   * fields with the same name
    *
    * @param arrowFields The arrow fields used to generate the Avro schema
    * @param typeName Name of the top level Avro record type
@@ -707,27 +703,9 @@ public class ArrowToAvroUtils {
             new AvroStructProducer(entryVector, new Producer<?>[] {keyProducer, valueProducer});
         return new AvroMapProducer(mapVector, entryProducer);
 
-      case UNION:
-        UnionVector unionVector = (UnionVector) vector;
-        List<FieldVector> unionChildVectors = unionVector.getChildrenFromFields();
-        Producer<?>[] unionChildProducers = new Producer<?>[unionChildVectors.size()];
-        for (int i = 0; i < unionChildVectors.size(); i++) {
-          FieldVector unionChildVector = unionChildVectors.get(i);
-          unionChildProducers[i] =
-              createProducer(unionChildVector, /* nullable = */ false); // Do not nest union types
-        }
-        return new AvroUnionProducer(unionVector, unionChildProducers);
-
-      case DENSEUNION:
-        DenseUnionVector denseUnionVector = (DenseUnionVector) vector;
-        List<FieldVector> denseChildVectors = denseUnionVector.getChildrenFromFields();
-        Producer<?>[] denseChildProducers = new Producer<?>[denseChildVectors.size()];
-        for (int i = 0; i < denseChildVectors.size(); i++) {
-          FieldVector denseChildVector = denseChildVectors.get(i);
-          denseChildProducers[i] =
-              createProducer(denseChildVector, /* nullable = */ false); // Do not nest union types
-        }
-        return new AvroDenseUnionProducer(denseUnionVector, denseChildProducers);
+        // Support for UNION and DENSEUNION is not currently available
+        // This is pending fixes in the implementation of the union vectors themselves
+        // https://github.com/apache/arrow-java/issues/108
 
       default:
         // Not all Arrow types are supported for encoding (yet)!
