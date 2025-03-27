@@ -845,6 +845,7 @@ under the License.
       -->
       <id>error-prone</id>
       <activation>
+        <jdk>[17,)</jdk>
         <property>
           <name>!m2e.version</name>
         </property>
