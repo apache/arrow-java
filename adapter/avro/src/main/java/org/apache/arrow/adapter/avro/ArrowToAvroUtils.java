@@ -150,9 +150,9 @@ public class ArrowToAvroUtils {
    * </table>
    *
    * <p>Nullable fields are represented as a union of [null | base-type]. Special treatment is given
-   * to nullability of unions - a union is considered nullable if the union field is nullable or any
-   * of its child fields are nullable. The schema for a nullable union will always contain a null
-   * type,none of the direct child types will be nullable.
+   * to nullability of unions - a union is considered nullable if any of its child fields are nullable.
+   * The schema for a nullable union will always contain a null type as its first member, with none of the
+   * child types being nullable.
    *
    * <p>List fields must contain precisely one child field, which may be nullable. Map fields are
    * represented as a list of structs, where the struct fields are "key" and "value". The key field
@@ -326,9 +326,10 @@ public class ArrowToAvroUtils {
       case Time:
         ArrowType.Time timeType = (ArrowType.Time) field.getType();
         if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
+          // Second and millisecond time types are encoded as time-millis (INT)
           return builder.intBuilder().prop("logicalType", "time-millis").endInt();
         } else {
-          // All other time types (sec, micro, nano) are encoded as time-micros (LONG)
+          // All other time types (micro, nano) are encoded as time-micros (LONG)
           return builder.longBuilder().prop("logicalType", "time-micros").endLong();
         }
 
@@ -410,9 +411,10 @@ public class ArrowToAvroUtils {
       case Time:
         ArrowType.Time timeType = (ArrowType.Time) field.getType();
         if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
+          // Second and millisecond time types are encoded as time-millis (INT)
           return builder.intBuilder().prop("logicalType", "time-millis").endInt().noDefault();
         } else {
-          // All other time types (sec, micro, nano) are encoded as time-micros (LONG)
+          // All other time types (micro, nano) are encoded as time-micros (LONG)
           return builder.longBuilder().prop("logicalType", "time-micros").endLong().noDefault();
         }
 
@@ -504,11 +506,12 @@ public class ArrowToAvroUtils {
       case Time:
         ArrowType.Time timeType = (ArrowType.Time) field.getType();
         if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
+          // Second and millisecond time types are encoded as time-millis (INT)
           return (SchemaBuilder.UnionAccumulator)
               builder.intBuilder().prop("logicalType", "time-millis").endInt();
         } else {
           return (SchemaBuilder.UnionAccumulator)
-              // All other time types (sec, micro, nano) are encoded as time-micros (LONG)
+              // All other time types (micro, nano) are encoded as time-micros (LONG)
               builder.longBuilder().prop("logicalType", "time-micros").endLong();
         }
 
