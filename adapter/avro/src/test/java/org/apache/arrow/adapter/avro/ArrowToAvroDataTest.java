@@ -1955,15 +1955,19 @@ public class ArrowToAvroDataTest {
       FieldWriter nullEntriesWriter = nullEntriesVector.getWriter();
       nullEntriesWriter.startList();
       nullEntriesWriter.integer().writeNull();
+      nullEntriesWriter.integer().writeNull();
       nullEntriesWriter.endList();
       nullEntriesWriter.startList();
       nullEntriesWriter.integer().writeInt(0);
+      nullEntriesWriter.integer().writeInt(0);
       nullEntriesWriter.endList();
       nullEntriesWriter.startList();
-      nullEntriesWriter.integer().writeInt(1);
+      nullEntriesWriter.integer().writeInt(123);
+      nullEntriesWriter.integer().writeInt(456);
       nullEntriesWriter.endList();
       nullEntriesWriter.startList();
-      nullEntriesWriter.integer().writeInt(2);
+      nullEntriesWriter.integer().writeInt(789);
+      nullEntriesWriter.integer().writeInt(789);
       nullEntriesWriter.endList();
 
       // Set test data for nullListVector
@@ -1972,13 +1976,16 @@ public class ArrowToAvroDataTest {
       nullListWriter.setPosition(1); // writeNull() does not inc. idx() on list vector
       nullListWriter.startList();
       nullListWriter.integer().writeInt(0);
+      nullListWriter.integer().writeInt(0);
       nullListWriter.endList();
-      nullListWriter.startList();
-      nullListWriter.integer().writeInt(1);
-      nullListWriter.endList();
-      nullListWriter.startList();
-      nullListWriter.integer().writeInt(2);
-      nullListWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(123);
+      nullEntriesWriter.integer().writeInt(456);
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(789);
+      nullEntriesWriter.integer().writeInt(789);
+      nullEntriesWriter.endList();
 
       // Set test data for nullBothVector
       FieldWriter nullBothWriter = nullBothVector.getWriter();
@@ -1986,13 +1993,16 @@ public class ArrowToAvroDataTest {
       nullBothWriter.setPosition(1);
       nullBothWriter.startList();
       nullBothWriter.integer().writeNull();
+      nullBothWriter.integer().writeNull();
       nullBothWriter.endList();
-      nullBothWriter.startList();
-      nullBothWriter.integer().writeInt(0);
-      nullBothWriter.endList();
-      nullBothWriter.startList();
-      nullBothWriter.integer().writeInt(1);
-      nullBothWriter.endList();
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(0);
+      nullListWriter.integer().writeInt(0);
+      nullListWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(123);
+      nullEntriesWriter.integer().writeInt(456);
+      nullEntriesWriter.endList();
 
       File dataFile = new File(TMP, "testWriteNullableLists.avro");
 
@@ -2139,8 +2149,8 @@ public class ArrowToAvroDataTest {
   public void testWriteNullableFixedLists() throws Exception {
 
     // Field definitions
-    FieldType nullListType = new FieldType(true, new ArrowType.FixedSizeList(1), null);
-    FieldType nonNullListType = new FieldType(false, new ArrowType.FixedSizeList(1), null);
+    FieldType nullListType = new FieldType(true, new ArrowType.FixedSizeList(2), null);
+    FieldType nonNullListType = new FieldType(false, new ArrowType.FixedSizeList(2), null);
 
     Field nullFieldType = new Field("item", FieldType.nullable(new ArrowType.Int(32, true)), null);
     Field nonNullFieldType =
@@ -2172,15 +2182,19 @@ public class ArrowToAvroDataTest {
       FieldWriter nullEntriesWriter = nullEntriesVector.getWriter();
       nullEntriesWriter.startList();
       nullEntriesWriter.integer().writeNull();
+      nullEntriesWriter.integer().writeNull();
       nullEntriesWriter.endList();
       nullEntriesWriter.startList();
       nullEntriesWriter.integer().writeInt(0);
+      nullEntriesWriter.integer().writeInt(0);
       nullEntriesWriter.endList();
       nullEntriesWriter.startList();
-      nullEntriesWriter.integer().writeInt(1);
+      nullEntriesWriter.integer().writeInt(123);
+      nullEntriesWriter.integer().writeInt(456);
       nullEntriesWriter.endList();
       nullEntriesWriter.startList();
-      nullEntriesWriter.integer().writeInt(2);
+      nullEntriesWriter.integer().writeInt(789);
+      nullEntriesWriter.integer().writeInt(789);
       nullEntriesWriter.endList();
 
       // Set test data for nullListVector
@@ -2188,28 +2202,34 @@ public class ArrowToAvroDataTest {
       nullListWriter.writeNull();
       nullListWriter.setPosition(1); // writeNull() does not inc. idx() on list vector
       nullListWriter.startList();
-      nullListWriter.integer().writeInt(0);
+      nullListWriter.integer().writeInt(123);
+      nullListWriter.integer().writeInt(456);
       nullListWriter.endList();
-      nullListWriter.startList();
-      nullListWriter.integer().writeInt(1);
-      nullListWriter.endList();
-      nullListWriter.startList();
-      nullListWriter.integer().writeInt(2);
-      nullListWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(789);
+      nullEntriesWriter.integer().writeInt(456);
+      nullEntriesWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(12345);
+      nullEntriesWriter.integer().writeInt(67891);
+      nullEntriesWriter.endList();
 
       // Set test data for nullBothVector
       FieldWriter nullBothWriter = nullBothVector.getWriter();
       nullBothWriter.writeNull();
       nullBothWriter.setPosition(1);
       nullBothWriter.startList();
-      nullBothWriter.integer().writeNull();
+      nullListWriter.integer().writeNull();
+      nullListWriter.integer().writeNull();
       nullBothWriter.endList();
-      nullBothWriter.startList();
-      nullBothWriter.integer().writeInt(0);
-      nullBothWriter.endList();
-      nullBothWriter.startList();
-      nullBothWriter.integer().writeInt(1);
-      nullBothWriter.endList();
+      nullListWriter.startList();
+      nullListWriter.integer().writeInt(123);
+      nullListWriter.integer().writeInt(456);
+      nullListWriter.endList();
+      nullEntriesWriter.startList();
+      nullEntriesWriter.integer().writeInt(789);
+      nullEntriesWriter.integer().writeInt(456);
+      nullEntriesWriter.endList();
 
       File dataFile = new File(TMP, "testWriteNullableFixedLists.avro");
 
@@ -2433,17 +2453,29 @@ public class ArrowToAvroDataTest {
       writer.key().varChar().writeVarChar("key0");
       writer.value().integer().writeNull();
       writer.endEntry();
-      writer.endMap();
-      writer.startMap();
       writer.startEntry();
       writer.key().varChar().writeVarChar("key1");
-      writer.value().integer().writeInt(0);
+      writer.value().integer().writeNull();
       writer.endEntry();
       writer.endMap();
       writer.startMap();
       writer.startEntry();
       writer.key().varChar().writeVarChar("key2");
-      writer.value().integer().writeInt(1);
+      writer.value().integer().writeInt(0);
+      writer.endEntry();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key3");
+      writer.value().integer().writeInt(0);
+      writer.endEntry();
+      writer.endMap();
+      writer.startMap();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key4");
+      writer.value().integer().writeInt(123);
+      writer.endEntry();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key5");
+      writer.value().integer().writeInt(456);
       writer.endEntry();
       writer.endMap();
 
@@ -2456,15 +2488,24 @@ public class ArrowToAvroDataTest {
       nullMapWriter.setPosition(1); // writeNull() does not inc. idx() on map (list) vector
       nullMapWriter.startMap();
       nullMapWriter.startEntry();
-      nullMapWriter.key().varChar().writeVarChar("key1");
+      nullMapWriter.key().varChar().writeVarChar("key2");
       nullMapWriter.value().integer().writeInt(0);
       nullMapWriter.endEntry();
+      writer.startMap();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key3");
+      writer.value().integer().writeInt(0);
+      writer.endEntry();
       nullMapWriter.endMap();
       nullMapWriter.startMap();
-      nullMapWriter.startEntry();
-      nullMapWriter.key().varChar().writeVarChar("key2");
-      nullMapWriter.value().integer().writeInt(1);
-      nullMapWriter.endEntry();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key4");
+      writer.value().integer().writeInt(123);
+      writer.endEntry();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key5");
+      writer.value().integer().writeInt(456);
+      writer.endEntry();
       nullMapWriter.endMap();
 
       // Update count for data vector (map writer does not do this)
@@ -2476,15 +2517,23 @@ public class ArrowToAvroDataTest {
       nullBothWriter.setPosition(1);
       nullBothWriter.startMap();
       nullBothWriter.startEntry();
-      nullBothWriter.key().varChar().writeVarChar("key1");
+      nullBothWriter.key().varChar().writeVarChar("key2");
+      nullBothWriter.value().integer().writeNull();
+      nullBothWriter.endEntry();
+      nullBothWriter.startEntry();
+      nullBothWriter.key().varChar().writeVarChar("key3");
       nullBothWriter.value().integer().writeNull();
       nullBothWriter.endEntry();
       nullBothWriter.endMap();
       nullBothWriter.startMap();
-      nullBothWriter.startEntry();
-      nullBothWriter.key().varChar().writeVarChar("key2");
-      nullBothWriter.value().integer().writeInt(0);
-      nullBothWriter.endEntry();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key4");
+      writer.value().integer().writeInt(123);
+      writer.endEntry();
+      writer.startEntry();
+      writer.key().varChar().writeVarChar("key5");
+      writer.value().integer().writeInt(456);
+      writer.endEntry();
       nullBothWriter.endMap();
 
       // Update count for data vector (map writer does not do this)
