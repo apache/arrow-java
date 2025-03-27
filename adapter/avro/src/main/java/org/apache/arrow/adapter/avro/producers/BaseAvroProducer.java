@@ -45,9 +45,9 @@ public abstract class BaseAvroProducer<T extends FieldVector> implements Produce
   /**
    * Sets the current index for this producer against the underlying vector.
    *
-   * <P>For a vector of length N, the valid range is [0, N] inclusive. Setting index = N
-   * signifies that no further data is available for production (this is the state the
-   * produce will be in when production for the current vector is complete).
+   * <p>For a vector of length N, the valid range is [0, N] inclusive. Setting index = N signifies
+   * that no further data is available for production (this is the state the produce will be in when
+   * production for the current vector is complete).
    *
    * @param index New current index for the producer
    */

@@ -150,9 +150,9 @@ public class ArrowToAvroUtils {
    * </table>
    *
    * <p>Nullable fields are represented as a union of [null | base-type]. Special treatment is given
-   * to nullability of unions - a union is considered nullable if any of its child fields are nullable.
-   * The schema for a nullable union will always contain a null type as its first member, with none of the
-   * child types being nullable.
+   * to nullability of unions - a union is considered nullable if any of its child fields are
+   * nullable. The schema for a nullable union will always contain a null type as its first member,
+   * with none of the child types being nullable.
    *
    * <p>List fields must contain precisely one child field, which may be nullable. Map fields are
    * represented as a list of structs, where the struct fields are "key" and "value". The key field
