@@ -1882,6 +1882,11 @@ public class ArrowToAvroDataTest {
         dateListWriter.endList();
       }
 
+      // Update count for the vectors
+      intListVector.setValueCount(rowCount);
+      stringListVector.setValueCount(rowCount);
+      dateListVector.setValueCount(rowCount);
+
       File dataFile = new File(TMP, "testWriteLists.avro");
 
       // Write an AVRO block using the producer classes
@@ -2004,6 +2009,11 @@ public class ArrowToAvroDataTest {
       nullEntriesWriter.integer().writeInt(456);
       nullEntriesWriter.endList();
 
+      // Update count for the vectors
+      nullListVector.setValueCount(4);
+      nullEntriesVector.setValueCount(4);
+      nullBothVector.setValueCount(4);
+
       File dataFile = new File(TMP, "testWriteNullableLists.avro");
 
       // Write an AVRO block using the producer classes
@@ -2108,6 +2118,11 @@ public class ArrowToAvroDataTest {
         dateListWriter.endList();
       }
       File dataFile = new File(TMP, "testWriteFixedLists.avro");
+
+      // Update count for the vectors
+      intListVector.setValueCount(rowCount);
+      stringListVector.setValueCount(rowCount);
+      dateListVector.setValueCount(rowCount);
 
       // Write an AVRO block using the producer classes
       try (FileOutputStream fos = new FileOutputStream(dataFile)) {
@@ -2231,6 +2246,11 @@ public class ArrowToAvroDataTest {
       nullEntriesWriter.integer().writeInt(456);
       nullEntriesWriter.endList();
 
+      // Update count for the vectors
+      nullListVector.setValueCount(4);
+      nullEntriesVector.setValueCount(4);
+      nullBothVector.setValueCount(4);
+
       File dataFile = new File(TMP, "testWriteNullableFixedLists.avro");
 
       // Write an AVRO block using the producer classes
@@ -2349,6 +2369,11 @@ public class ArrowToAvroDataTest {
         }
         stringWriter.endMap();
       }
+
+      // Update count for the vectors
+      intMapVector.setValueCount(rowCount);
+      stringMapVector.setValueCount(rowCount);
+      dateMapVector.setValueCount(rowCount);
 
       // Update count for data vector (map writer does not do this)
       stringMapVector.getDataVector().setValueCount(entryCount);
@@ -2479,9 +2504,6 @@ public class ArrowToAvroDataTest {
       writer.endEntry();
       writer.endMap();
 
-      // Update count for data vector (map writer does not do this)
-      nullEntriesVector.getDataVector().setValueCount(3);
-
       // Set test data for stringList
       BaseWriter.MapWriter nullMapWriter = nullMapVector.getWriter();
       nullMapWriter.writeNull();
@@ -2508,9 +2530,6 @@ public class ArrowToAvroDataTest {
       writer.endEntry();
       nullMapWriter.endMap();
 
-      // Update count for data vector (map writer does not do this)
-      nullMapVector.getDataVector().setValueCount(2);
-
       // Set test data for dateList
       BaseWriter.MapWriter nullBothWriter = nullBothVector.getWriter();
       nullBothWriter.writeNull();
@@ -2536,8 +2555,10 @@ public class ArrowToAvroDataTest {
       writer.endEntry();
       nullBothWriter.endMap();
 
-      // Update count for data vector (map writer does not do this)
-      nullBothVector.getDataVector().setValueCount(2);
+      // Update count for the vectors
+      nullEntriesVector.setValueCount(3);
+      nullMapVector.setValueCount(3);
+      nullBothVector.setValueCount(3);
 
       File dataFile = new File(TMP, "testWriteNullableMap.avro");
 
@@ -2656,6 +2677,9 @@ public class ArrowToAvroDataTest {
         encoder.flush();
       }
 
+      // Update count for the vector
+      structVector.setValueCount(rowCount);
+
       // Set up reading the AVRO block as a GenericRecord
       Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
       GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
@@ -2737,6 +2761,10 @@ public class ArrowToAvroDataTest {
           nullableStructWriter.writeNull();
         }
       }
+
+      // Update count for the vector
+      structVector.setValueCount(rowCount);
+      nullableStructVector.setValueCount(rowCount);
 
       File dataFile = new File(TMP, "testWriteNullableStructs.avro");
 
