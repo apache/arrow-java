@@ -53,9 +53,10 @@ public class AvroFixedSizeListProducer extends BaseAvroProducer<FixedSizeListVec
 
   @Override
   public void skipNull() {
-    // Keep fixed sized child in sync
-    delegate.skipNull();
     super.skipNull();
+    // Child vector contains a fixed number of elements for each entry
+    int childIndex = currentIndex * vector.getListSize();
+    delegate.setPosition(childIndex);
   }
 
   @Override
@@ -63,9 +64,10 @@ public class AvroFixedSizeListProducer extends BaseAvroProducer<FixedSizeListVec
     if (index < 0 || index > vector.getValueCount()) {
       throw new IllegalArgumentException("Index out of bounds");
     }
-    int delegateOffset = vector.getOffsetBuffer().getInt(index * (long) Integer.BYTES);
-    delegate.setPosition(delegateOffset);
     super.setPosition(index);
+    // Child vector contains a fixed number of elements for each entry
+    int childIndex = currentIndex * vector.getListSize();
+    delegate.setPosition(childIndex);
   }
 
   @Override
