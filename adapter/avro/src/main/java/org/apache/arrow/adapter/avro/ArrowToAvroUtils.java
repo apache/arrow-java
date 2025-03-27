@@ -149,7 +149,7 @@ public class ArrowToAvroUtils {
    *   </tbody>
    * </table>
    *
-   * <p>Nullable fields are represented as a union of [null | base-type]. Special treatment is given
+   * <p>Nullable fields are represented as a union of [base-type | null]. Special treatment is given
    * to nullability of unions - a union is considered nullable if any of its child fields are
    * nullable. The schema for a nullable union will always contain a null type as its first member,
    * with none of the child types being nullable.
