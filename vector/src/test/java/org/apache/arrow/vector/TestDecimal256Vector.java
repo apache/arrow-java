@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -373,6 +374,33 @@ public class TestDecimal256Vector {
     // Field inside a new vector created by reusing a field should be the same in memory as the
     // original field.
     assertSame(fromVector.getField(), toVector.getField());
+  }
+
+  @Test
+  public void testGetTransferPairWithoutField() {
+    final Decimal256Vector fromVector = new Decimal256Vector("decimal", allocator, 10, scale);
+    final TransferPair transferPair =
+        fromVector.getTransferPair(fromVector.getField().getName(), allocator);
+    final Decimal256Vector toVector = (Decimal256Vector) transferPair.getTo();
+    // A new Field created inside a new vector should reuse the field type (should be the same in
+    // memory as the original Field's field type).
+    assertSame(fromVector.getField().getFieldType(), toVector.getField().getFieldType());
+  }
+
+  @Test
+  public void testGetTransferPairWithoutFieldNonNullable() {
+    final FieldType decimal256NonNullableType =
+        new FieldType(
+            false, new ArrowType.Decimal(10, scale, Decimal256Vector.TYPE_WIDTH * 8), null);
+    final Decimal256Vector fromVector =
+        new Decimal256Vector("decimal", decimal256NonNullableType, allocator);
+    final TransferPair transferPair =
+        fromVector.getTransferPair(fromVector.getField().getName(), allocator);
+    final Decimal256Vector toVector = (Decimal256Vector) transferPair.getTo();
+    // A new Field created inside a new vector should reuse the field type (should be the same in
+    // memory as the original Field's field type).
+    assertSame(fromVector.getField().getFieldType(), toVector.getField().getFieldType());
+    assertSame(decimal256NonNullableType, toVector.getField().getFieldType());
   }
 
   private void verifyWritingArrowBufWithBigEndianBytes(

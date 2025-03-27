@@ -566,9 +566,7 @@ public final class Decimal256Vector extends BaseFixedWidthVector
     Decimal256Vector to;
 
     public TransferImpl(String ref, BufferAllocator allocator) {
-      to =
-          new Decimal256Vector(
-              ref, allocator, Decimal256Vector.this.precision, Decimal256Vector.this.scale);
+      to = new Decimal256Vector(ref, Decimal256Vector.this.field.getFieldType(), allocator);
     }
 
     public TransferImpl(Field field, BufferAllocator allocator) {
