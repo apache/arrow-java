@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -369,6 +370,31 @@ public class TestDecimalVector {
     // Field inside a new vector created by reusing a field should be the same in memory as the
     // original field.
     assertSame(fromVector.getField(), toVector.getField());
+  }
+
+  @Test
+  public void testGetTransferPairWithoutField() {
+    final DecimalVector fromVector = new DecimalVector("decimal", allocator, 10, scale);
+    final TransferPair transferPair =
+        fromVector.getTransferPair(fromVector.getField().getName(), allocator);
+    final DecimalVector toVector = (DecimalVector) transferPair.getTo();
+    // A new Field created inside a new vector should reuse the field type (should be the same in
+    // memory as the original Field's field type).
+    assertSame(fromVector.getField().getFieldType(), toVector.getField().getFieldType());
+  }
+
+  @Test
+  public void testGetTransferPairWithoutFieldNonNullable() {
+    final FieldType decimalNonNullableType =
+        new FieldType(false, new ArrowType.Decimal(10, scale), null);
+    final DecimalVector fromVector =
+        new DecimalVector("decimal", decimalNonNullableType, allocator);
+    final TransferPair transferPair =
+        fromVector.getTransferPair(fromVector.getField().getName(), allocator);
+    final DecimalVector toVector = (DecimalVector) transferPair.getTo();
+    // A new Field created inside a new vector should reuse the field type (should be the same in
+    // memory as the original Field's field type).
+    assertSame(fromVector.getField().getFieldType(), toVector.getField().getFieldType());
   }
 
   private void verifyWritingArrowBufWithBigEndianBytes(
