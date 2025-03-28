@@ -14,15 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import java.io.IOException;
+import org.apache.arrow.vector.UInt2Vector;
+import org.apache.avro.io.Encoder;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/** Producer that produces int values from a {@link UInt2Vector}, writes data to an avro encoder. */
+public class AvroUint2Producer extends BaseAvroProducer<UInt2Vector> {
+
+  /** Instantiate an AvroUint2Producer. */
+  public AvroUint2Producer(UInt2Vector vector) {
+    super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    short unsigned = vector.getDataBuffer().getShort(currentIndex * (long) UInt2Vector.TYPE_WIDTH);
+    int unsignedInt = Short.toUnsignedInt(unsigned);
+    encoder.writeInt(unsignedInt);
+    currentIndex++;
+  }
 }

@@ -14,15 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers.logical;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
+import org.apache.arrow.vector.TimeStampMilliTZVector;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces UTC timestamp (milliseconds) values from a {@link TimeStampMilliTZVector},
+ * writes data to an Avro encoder.
+ */
+public class AvroTimestampMilliTzProducer extends AvroBigIntProducer {
+
+  // UTC timestamp in epoch milliseconds stored as long, matches Avro timestamp-millis type
+  // Both Arrow and Avro store zone-aware times in UTC so zone conversion is not needed
+
+  /** Instantiate an AvroTimestampMilliTzProducer. */
+  public AvroTimestampMilliTzProducer(TimeStampMilliTZVector vector) {
+    super(vector);
+  }
 }

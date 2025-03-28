@@ -14,15 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import java.io.IOException;
+import org.apache.arrow.vector.UInt8Vector;
+import org.apache.avro.io.Encoder;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces long values from a {@link UInt8Vector}, writes data to an avro encoder.
+ */
+public class AvroUint8Producer extends BaseAvroProducer<UInt8Vector> {
+
+  /** Instantiate an AvroUint8Producer. */
+  public AvroUint8Producer(UInt8Vector vector) {
+    super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    long unsigned = vector.getDataBuffer().getLong(currentIndex * (long) UInt8Vector.TYPE_WIDTH);
+    if (unsigned < 0) {
+      throw new ArithmeticException("Unsigned long value is too large for Avro encoding");
+    }
+    encoder.writeLong(unsigned);
+    currentIndex++;
+  }
 }

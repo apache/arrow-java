@@ -14,15 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers.logical;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
+import org.apache.arrow.vector.TimeStampNanoTZVector;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces local timestamp (nanoseconds) values from a {@link TimeStampNanoTZVector},
+ * writes data to an Avro encoder.
+ */
+public class AvroTimestampNanoTzProducer extends AvroBigIntProducer {
+
+  // UTC timestamp in epoch nanoseconds stored as long, matches Avro timestamp-nanos type
+  // Both Arrow and Avro store zone-aware times in UTC so zone conversion is not needed
+
+  /** Instantiate an AvroTimestampNanoTzProducer. */
+  public AvroTimestampNanoTzProducer(TimeStampNanoTZVector vector) {
+    super(vector);
+  }
 }
