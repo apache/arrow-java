@@ -61,6 +61,7 @@ public interface BaseWriter extends AutoCloseable, Positionable {
 
     void copyReaderToField(String name, FieldReader reader);
     StructWriter struct(String name);
+    ExtensionWriter extension(String name, ArrowType arrowType);
     ListWriter list(String name);
     ListWriter listView(String name);
     MapWriter map(String name);
@@ -79,6 +80,7 @@ public interface BaseWriter extends AutoCloseable, Positionable {
     ListWriter listView();
     MapWriter map();
     MapWriter map(boolean keysSorted);
+    ExtensionWriter extension(ArrowType arrowType);
     void copyReader(FieldReader reader);
 
     <#list vv.types as type><#list type.minor as minor>
@@ -99,6 +101,13 @@ public interface BaseWriter extends AutoCloseable, Positionable {
 
     MapWriter key();
     MapWriter value();
+  }
+
+  public interface ExtensionWriter extends BaseWriter {
+    void writeNull();
+    <T extends ExtensionHolder> void write(T var1);
+    void writeExtensionType(Object var1);
+    <T extends ExtensionTypeWriterFactory> void addExtensionTypeFactory(T var1);
   }
 
   public interface ScalarWriter extends

@@ -37,9 +37,11 @@ import org.apache.arrow.vector.complex.writer.IntWriter;
 import org.apache.arrow.vector.holders.ComplexHolder;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.Types.MinorType;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.Struct;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.TestExtensionType;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -334,6 +336,40 @@ public class TestStructVector {
       assertSame(toVector.getField(), fromVector.getField());
       toVector.clear();
     }
+  }
+
+  @Test
+  public void testStructVectorWithExtensionTypes() {
+    TestExtensionType.UuidType uuidType = new TestExtensionType.UuidType();
+    Field uuidField = new Field("struct_child", FieldType.nullable(uuidType), null);
+    Field structField =
+        new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(uuidField));
+    StructVector s1 = new StructVector(structField, allocator, null);
+    StructVector s2 = (StructVector) structField.createVector(allocator);
+    s1.close();
+    s2.close();
+  }
+
+  @Test
+  public void testStructVectorTransferPairWithExtensionType() {
+    TestExtensionType.UuidType uuidType = new TestExtensionType.UuidType();
+    Field uuidField = new Field("uuid_child", FieldType.nullable(uuidType), null);
+    Field structField =
+        new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(uuidField));
+
+    StructVector s1 = (StructVector) structField.createVector(allocator);
+    TestExtensionType.UuidVector uuidVector =
+        s1.addOrGet("uuid_child", FieldType.nullable(uuidType), TestExtensionType.UuidVector.class);
+    s1.setValueCount(1);
+    uuidVector.set(0, new UUID(1, 2));
+    s1.setIndexDefined(0);
+
+    TransferPair tp = s1.getTransferPair(structField, allocator);
+    final StructVector toVector = (StructVector) tp.getTo();
+    assertEquals(s1.getField(), toVector.getField());
+
+    s1.close();
+    toVector.close();
   }
 
   private StructVector simpleStructVector(String name, BufferAllocator allocator) {

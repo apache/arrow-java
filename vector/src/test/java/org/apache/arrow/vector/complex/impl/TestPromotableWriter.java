@@ -26,10 +26,12 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DirtyRootAllocator;
+import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.LargeVarBinaryVector;
 import org.apache.arrow.vector.LargeVarCharVector;
 import org.apache.arrow.vector.VarBinaryVector;
@@ -52,6 +54,8 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ArrowTypeID;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.TestExtensionType.UuidType;
+import org.apache.arrow.vector.types.pojo.TestExtensionType.UuidVector;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.AfterEach;
@@ -774,6 +778,97 @@ public class TestPromotableWriter {
 
       assertEquals(1, intHolder.isSet);
       assertEquals(1, intHolder.value);
+    }
+  }
+
+  @Test
+  public void testExtensionType() throws Exception {
+    try (final NonNullableStructVector container =
+        NonNullableStructVector.empty(EMPTY_SCHEMA_PATH, allocator);
+        final UuidVector v =
+            container.addOrGet("uuid", FieldType.nullable(new UuidType()), UuidVector.class);
+        final PromotableWriter writer = new PromotableWriter(v, container)) {
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      container.allocateNew();
+      container.setValueCount(1);
+      writer.addExtensionTypeFactory(new UuidWriterFactory());
+
+      writer.setPosition(0);
+      writer.writeExtensionType(u1);
+      writer.setPosition(1);
+      writer.writeExtensionType(u2);
+
+      container.setValueCount(2);
+
+      UuidVector uuidVector = (UuidVector) container.getChild("uuid");
+      assertEquals(u1, uuidVector.getObject(0));
+      assertEquals(u2, uuidVector.getObject(1));
+    }
+  }
+
+  public class UuidWriterFactory implements ExtensionTypeWriterFactory {
+
+    @Override
+    public AbstractFieldWriter getWriterImpl(ExtensionTypeVector extensionTypeVector) {
+      if (extensionTypeVector instanceof UuidVector) {
+        return new UuidWriterImpl((UuidVector) extensionTypeVector);
+      }
+      return null;
+    }
+  }
+
+  public class UuidWriterImpl extends AbstractFieldWriter {
+    private final UuidVector vector;
+
+    public UuidWriterImpl(UuidVector vector) {
+      this.vector = vector;
+    }
+
+    @Override
+    public Field getField() {
+      return this.vector.getField();
+    }
+
+    @Override
+    public int getValueCapacity() {
+      return this.vector.getValueCapacity();
+    }
+
+    @Override
+    public void allocate() {
+      this.vector.allocateNew();
+    }
+
+    @Override
+    public void close() {
+      this.vector.close();
+    }
+
+    @Override
+    public void clear() {
+      this.vector.clear();
+    }
+
+    @Override
+    protected int idx() {
+      return super.idx();
+    }
+
+    @Override
+    public void writeExtensionType(Object var1) {
+      UUID uuid = (UUID) var1;
+      ByteBuffer bb = ByteBuffer.allocate(16);
+      bb.putLong(uuid.getMostSignificantBits());
+      bb.putLong(uuid.getLeastSignificantBits());
+      this.vector.setSafe(this.idx(), bb.array());
+      this.vector.setValueCount(this.idx() + 1);
+    }
+
+    @Override
+    public void writeNull() {
+      this.vector.setNull(this.idx());
+      this.vector.setValueCount(this.idx() + 1);
     }
   }
 }

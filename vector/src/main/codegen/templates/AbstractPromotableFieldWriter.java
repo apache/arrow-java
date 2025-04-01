@@ -294,6 +294,11 @@ abstract class AbstractPromotableFieldWriter extends AbstractFieldWriter {
   }
 
   @Override
+  public ExtensionWriter extension(ArrowType arrowType) {
+    return getWriter(MinorType.EXTENSIONTYPE).extension(arrowType);
+  }
+
+  @Override
   public StructWriter struct(String name) {
     return getWriter(MinorType.STRUCT).struct(name);
   }
@@ -316,6 +321,11 @@ abstract class AbstractPromotableFieldWriter extends AbstractFieldWriter {
   @Override
   public MapWriter map(String name, boolean keysSorted) {
     return getWriter(MinorType.STRUCT).map(name, keysSorted);
+  }
+
+  @Override
+  public ExtensionWriter extension(String name, ArrowType arrowType) {
+    return getWriter(MinorType.EXTENSIONTYPE).extension(name, arrowType);
   }
 
   <#list vv.types as type><#list type.minor as minor>

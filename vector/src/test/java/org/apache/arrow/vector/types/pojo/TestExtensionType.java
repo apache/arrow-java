@@ -295,7 +295,7 @@ public class TestExtensionType {
     }
   }
 
-  static class UuidType extends ExtensionType {
+  public static class UuidType extends ExtensionType {
 
     @Override
     public ArrowType storageType() {
@@ -332,12 +332,14 @@ public class TestExtensionType {
     }
   }
 
-  static class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
+  public static class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
       implements ValueIterableVector<UUID> {
+    private final Field field;
 
     public UuidVector(
         String name, BufferAllocator allocator, FixedSizeBinaryVector underlyingVector) {
       super(name, allocator, underlyingVector);
+      this.field = new Field(name, FieldType.nullable(new UuidType()), null);
     }
 
     @Override
@@ -361,6 +363,55 @@ public class TestExtensionType {
       bb.putLong(uuid.getMostSignificantBits());
       bb.putLong(uuid.getLeastSignificantBits());
       getUnderlyingVector().set(index, bb.array());
+    }
+
+    @Override
+    public void copyFromSafe(int fromIndex, int thisIndex, ValueVector from) {
+      getUnderlyingVector()
+          .copyFromSafe(fromIndex, thisIndex, ((UuidVector) from).getUnderlyingVector());
+    }
+
+    @Override
+    public Field getField() {
+      return field;
+    }
+
+    @Override
+    public TransferPair makeTransferPair(ValueVector to) {
+      return new TransferImpl((UuidVector) to);
+    }
+
+    public void setSafe(int index, byte[] value) {
+      getUnderlyingVector().setIndexDefined(index);
+      getUnderlyingVector().setSafe(index, value);
+    }
+
+    public class TransferImpl implements TransferPair {
+      UuidVector to;
+      ValueVector targetUnderlyingVector;
+      TransferPair tp;
+
+      public TransferImpl(UuidVector to) {
+        this.to = to;
+        targetUnderlyingVector = this.to.getUnderlyingVector();
+        tp = getUnderlyingVector().makeTransferPair(targetUnderlyingVector);
+      }
+
+      public UuidVector getTo() {
+        return this.to;
+      }
+
+      public void transfer() {
+        tp.transfer();
+      }
+
+      public void splitAndTransfer(int startIndex, int length) {
+        tp.splitAndTransfer(startIndex, length);
+      }
+
+      public void copyValueSafe(int fromIndex, int toIndex) {
+        tp.copyValueSafe(fromIndex, toIndex);
+      }
     }
   }
 

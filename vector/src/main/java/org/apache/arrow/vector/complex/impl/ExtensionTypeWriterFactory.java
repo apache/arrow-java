@@ -14,19 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.complex.writer;
+package org.apache.arrow.vector.complex.impl;
 
-import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
-import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
-import org.apache.arrow.vector.complex.writer.BaseWriter.ScalarWriter;
-import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
+import org.apache.arrow.vector.ExtensionTypeVector;
 
-/**
- * Composite of all writer types. Writers are convenience classes for incrementally adding values to
- * {@linkplain org.apache.arrow.vector.ValueVector}s.
- */
-public interface FieldWriter extends StructWriter, ListWriter, MapWriter, ScalarWriter, ExtensionWriter {
-  void allocate();
-
-  void clear();
+public interface ExtensionTypeWriterFactory<T extends AbstractFieldWriter> {
+  T getWriterImpl(ExtensionTypeVector vector);
 }
