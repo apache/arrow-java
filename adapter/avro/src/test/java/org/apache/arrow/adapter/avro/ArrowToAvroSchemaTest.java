@@ -27,6 +27,7 @@ import org.apache.arrow.vector.types.UnionMode;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.junit.jupiter.api.Test;
 
@@ -344,7 +345,7 @@ public class ArrowToAvroSchemaTest {
         schema.getField("nullableDecimal128").schema().getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimal128Schema.getType());
     assertEquals(16, nullableDecimal128Schema.getFixedSize());
-    assertEquals("decimal", nullableDecimal128Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(10, 2), nullableDecimal128Schema.getLogicalType());
     assertEquals(10, nullableDecimal128Schema.getObjectProp("precision"));
     assertEquals(2, nullableDecimal128Schema.getObjectProp("scale"));
     assertEquals(
@@ -355,7 +356,7 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal1281Schema = schema.getField("nonNullableDecimal1281").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal1281Schema.getType());
     assertEquals(16, nonNullableDecimal1281Schema.getFixedSize());
-    assertEquals("decimal", nonNullableDecimal1281Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(10, 2), nonNullableDecimal1281Schema.getLogicalType());
     assertEquals(10, nonNullableDecimal1281Schema.getObjectProp("precision"));
     assertEquals(2, nonNullableDecimal1281Schema.getObjectProp("scale"));
 
@@ -363,7 +364,7 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal1282Schema = schema.getField("nonNullableDecimal1282").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal1282Schema.getType());
     assertEquals(16, nonNullableDecimal1282Schema.getFixedSize());
-    assertEquals("decimal", nonNullableDecimal1282Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(15, 5), nonNullableDecimal1282Schema.getLogicalType());
     assertEquals(15, nonNullableDecimal1282Schema.getObjectProp("precision"));
     assertEquals(5, nonNullableDecimal1282Schema.getObjectProp("scale"));
 
@@ -371,7 +372,7 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal1283Schema = schema.getField("nonNullableDecimal1283").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal1283Schema.getType());
     assertEquals(16, nonNullableDecimal1283Schema.getFixedSize());
-    assertEquals("decimal", nonNullableDecimal1283Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(20, 10), nonNullableDecimal1283Schema.getLogicalType());
     assertEquals(20, nonNullableDecimal1283Schema.getObjectProp("precision"));
     assertEquals(10, nonNullableDecimal1283Schema.getObjectProp("scale"));
 
@@ -382,7 +383,7 @@ public class ArrowToAvroSchemaTest {
         schema.getField("nullableDecimal256").schema().getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimal256Schema.getType());
     assertEquals(32, nullableDecimal256Schema.getFixedSize());
-    assertEquals("decimal", nullableDecimal256Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(20, 4), nullableDecimal256Schema.getLogicalType());
     assertEquals(20, nullableDecimal256Schema.getObjectProp("precision"));
     assertEquals(4, nullableDecimal256Schema.getObjectProp("scale"));
     assertEquals(
@@ -393,7 +394,7 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal2561Schema = schema.getField("nonNullableDecimal2561").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2561Schema.getType());
     assertEquals(32, nonNullableDecimal2561Schema.getFixedSize());
-    assertEquals("decimal", nonNullableDecimal2561Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(20, 4), nonNullableDecimal2561Schema.getLogicalType());
     assertEquals(20, nonNullableDecimal2561Schema.getObjectProp("precision"));
     assertEquals(4, nonNullableDecimal2561Schema.getObjectProp("scale"));
 
@@ -401,7 +402,7 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal2562Schema = schema.getField("nonNullableDecimal2562").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2562Schema.getType());
     assertEquals(32, nonNullableDecimal2562Schema.getFixedSize());
-    assertEquals("decimal", nonNullableDecimal2562Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(25, 8), nonNullableDecimal2562Schema.getLogicalType());
     assertEquals(25, nonNullableDecimal2562Schema.getObjectProp("precision"));
     assertEquals(8, nonNullableDecimal2562Schema.getObjectProp("scale"));
 
@@ -409,7 +410,7 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal2563Schema = schema.getField("nonNullableDecimal2563").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2563Schema.getType());
     assertEquals(32, nonNullableDecimal2563Schema.getFixedSize());
-    assertEquals("decimal", nonNullableDecimal2563Schema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(30, 15), nonNullableDecimal2563Schema.getLogicalType());
     assertEquals(30, nonNullableDecimal2563Schema.getObjectProp("precision"));
     assertEquals(15, nonNullableDecimal2563Schema.getObjectProp("scale"));
   }
@@ -443,14 +444,14 @@ public class ArrowToAvroSchemaTest {
     assertEquals(2, schema.getField("nullableDateDay").schema().getTypes().size());
     Schema nullableDateDaySchema = schema.getField("nullableDateDay").schema().getTypes().get(0);
     assertEquals(Schema.Type.INT, nullableDateDaySchema.getType());
-    assertEquals("date", nullableDateDaySchema.getLogicalType());
+    assertEquals(LogicalTypes.date(), nullableDateDaySchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL, schema.getField("nullableDateDay").schema().getTypes().get(1).getType());
 
     // Assertions for nonNullableDateDay
     Schema nonNullableDateDaySchema = schema.getField("nonNullableDateDay").schema();
     assertEquals(Schema.Type.INT, nonNullableDateDaySchema.getType());
-    assertEquals("date", nonNullableDateDaySchema.getLogicalType());
+    assertEquals(LogicalTypes.date(), nonNullableDateDaySchema.getLogicalType());
 
     // Assertions for nullableDateMilli
     assertEquals(Schema.Type.UNION, schema.getField("nullableDateMilli").schema().getType());
@@ -458,7 +459,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableDateMilliSchema =
         schema.getField("nullableDateMilli").schema().getTypes().get(0);
     assertEquals(Schema.Type.INT, nullableDateMilliSchema.getType());
-    assertEquals("date", nullableDateMilliSchema.getLogicalType());
+    assertEquals(LogicalTypes.date(), nullableDateMilliSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableDateMilli").schema().getTypes().get(1).getType());
@@ -466,7 +467,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableDateMilli
     Schema nonNullableDateMilliSchema = schema.getField("nonNullableDateMilli").schema();
     assertEquals(Schema.Type.INT, nonNullableDateMilliSchema.getType());
-    assertEquals("date", nonNullableDateMilliSchema.getLogicalType());
+    assertEquals(LogicalTypes.date(), nonNullableDateMilliSchema.getLogicalType());
   }
 
   @Test
@@ -516,14 +517,14 @@ public class ArrowToAvroSchemaTest {
     assertEquals(2, schema.getField("nullableTimeSec").schema().getTypes().size());
     Schema nullableTimeSecSchema = schema.getField("nullableTimeSec").schema().getTypes().get(0);
     assertEquals(Schema.Type.INT, nullableTimeSecSchema.getType());
-    assertEquals("time-millis", nullableTimeSecSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMillis(), nullableTimeSecSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL, schema.getField("nullableTimeSec").schema().getTypes().get(1).getType());
 
     // Assertions for nonNullableTimeSec
     Schema nonNullableTimeSecSchema = schema.getField("nonNullableTimeSec").schema();
     assertEquals(Schema.Type.INT, nonNullableTimeSecSchema.getType());
-    assertEquals("time-millis", nonNullableTimeSecSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMillis(), nonNullableTimeSecSchema.getLogicalType());
 
     // Assertions for nullableTimeMillis
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimeMillis").schema().getType());
@@ -531,7 +532,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimeMillisSchema =
         schema.getField("nullableTimeMillis").schema().getTypes().get(0);
     assertEquals(Schema.Type.INT, nullableTimeMillisSchema.getType());
-    assertEquals("time-millis", nullableTimeMillisSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMillis(), nullableTimeMillisSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimeMillis").schema().getTypes().get(1).getType());
@@ -539,7 +540,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableTimeMillis
     Schema nonNullableTimeMillisSchema = schema.getField("nonNullableTimeMillis").schema();
     assertEquals(Schema.Type.INT, nonNullableTimeMillisSchema.getType());
-    assertEquals("time-millis", nonNullableTimeMillisSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMillis(), nonNullableTimeMillisSchema.getLogicalType());
 
     // Assertions for nullableTimeMicros
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimeMicros").schema().getType());
@@ -547,7 +548,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimeMicrosSchema =
         schema.getField("nullableTimeMicros").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimeMicrosSchema.getType());
-    assertEquals("time-micros", nullableTimeMicrosSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMicros(), nullableTimeMicrosSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimeMicros").schema().getTypes().get(1).getType());
@@ -555,7 +556,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableTimeMicros
     Schema nonNullableTimeMicrosSchema = schema.getField("nonNullableTimeMicros").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimeMicrosSchema.getType());
-    assertEquals("time-micros", nonNullableTimeMicrosSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMicros(), nonNullableTimeMicrosSchema.getLogicalType());
 
     // Assertions for nullableTimeNanos
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimeNanos").schema().getType());
@@ -563,7 +564,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimeNanosSchema =
         schema.getField("nullableTimeNanos").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimeNanosSchema.getType());
-    assertEquals("time-micros", nullableTimeNanosSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMicros(), nullableTimeNanosSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimeNanos").schema().getTypes().get(1).getType());
@@ -571,7 +572,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableTimeNanos
     Schema nonNullableTimeNanosSchema = schema.getField("nonNullableTimeNanos").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimeNanosSchema.getType());
-    assertEquals("time-micros", nonNullableTimeNanosSchema.getLogicalType());
+    assertEquals(LogicalTypes.timeMicros(), nonNullableTimeNanosSchema.getLogicalType());
   }
 
   @Test
@@ -622,7 +623,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampSecTzSchema =
         schema.getField("nullableTimestampSecTz").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampSecTzSchema.getType());
-    assertEquals("timestamp-millis", nullableTimestampSecTzSchema.getLogicalType());
+    assertEquals(LogicalTypes.timestampMillis(), nullableTimestampSecTzSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampSecTz").schema().getTypes().get(1).getType());
@@ -630,7 +631,7 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableTimestampSecTz
     Schema nonNullableTimestampSecTzSchema = schema.getField("nonNullableTimestampSecTz").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampSecTzSchema.getType());
-    assertEquals("timestamp-millis", nonNullableTimestampSecTzSchema.getLogicalType());
+    assertEquals(LogicalTypes.timestampMillis(), nonNullableTimestampSecTzSchema.getLogicalType());
 
     // Assertions for nullableTimestampMillisTz
     assertEquals(
@@ -639,7 +640,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampMillisTzSchema =
         schema.getField("nullableTimestampMillisTz").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampMillisTzSchema.getType());
-    assertEquals("timestamp-millis", nullableTimestampMillisTzSchema.getLogicalType());
+    assertEquals(LogicalTypes.timestampMillis(), nullableTimestampMillisTzSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampMillisTz").schema().getTypes().get(1).getType());
@@ -648,7 +649,8 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableTimestampMillisTzSchema =
         schema.getField("nonNullableTimestampMillisTz").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampMillisTzSchema.getType());
-    assertEquals("timestamp-millis", nonNullableTimestampMillisTzSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.timestampMillis(), nonNullableTimestampMillisTzSchema.getLogicalType());
 
     // Assertions for nullableTimestampMicrosTz
     assertEquals(
@@ -657,7 +659,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampMicrosTzSchema =
         schema.getField("nullableTimestampMicrosTz").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampMicrosTzSchema.getType());
-    assertEquals("timestamp-micros", nullableTimestampMicrosTzSchema.getLogicalType());
+    assertEquals(LogicalTypes.timestampMicros(), nullableTimestampMicrosTzSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampMicrosTz").schema().getTypes().get(1).getType());
@@ -666,7 +668,8 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableTimestampMicrosTzSchema =
         schema.getField("nonNullableTimestampMicrosTz").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampMicrosTzSchema.getType());
-    assertEquals("timestamp-micros", nonNullableTimestampMicrosTzSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.timestampMicros(), nonNullableTimestampMicrosTzSchema.getLogicalType());
 
     // Assertions for nullableTimestampNanosTz
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimestampNanosTz").schema().getType());
@@ -674,7 +677,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampNanosTzSchema =
         schema.getField("nullableTimestampNanosTz").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampNanosTzSchema.getType());
-    assertEquals("timestamp-nanos", nullableTimestampNanosTzSchema.getLogicalType());
+    assertEquals(LogicalTypes.timestampNanos(), nullableTimestampNanosTzSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampNanosTz").schema().getTypes().get(1).getType());
@@ -683,7 +686,7 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableTimestampNanosTzSchema =
         schema.getField("nonNullableTimestampNanosTz").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampNanosTzSchema.getType());
-    assertEquals("timestamp-nanos", nonNullableTimestampNanosTzSchema.getLogicalType());
+    assertEquals(LogicalTypes.timestampNanos(), nonNullableTimestampNanosTzSchema.getLogicalType());
   }
 
   @Test
@@ -734,7 +737,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampSecSchema =
         schema.getField("nullableTimestampSec").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampSecSchema.getType());
-    assertEquals("local-timestamp-millis", nullableTimestampSecSchema.getLogicalType());
+    assertEquals(LogicalTypes.localTimestampMillis(), nullableTimestampSecSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampSec").schema().getTypes().get(1).getType());
@@ -742,7 +745,8 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableTimestampSec
     Schema nonNullableTimestampSecSchema = schema.getField("nonNullableTimestampSec").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampSecSchema.getType());
-    assertEquals("local-timestamp-millis", nonNullableTimestampSecSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.localTimestampMillis(), nonNullableTimestampSecSchema.getLogicalType());
 
     // Assertions for nullableTimestampMillis
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimestampMillis").schema().getType());
@@ -750,7 +754,8 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampMillisSchema =
         schema.getField("nullableTimestampMillis").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampMillisSchema.getType());
-    assertEquals("local-timestamp-millis", nullableTimestampMillisSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.localTimestampMillis(), nullableTimestampMillisSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampMillis").schema().getTypes().get(1).getType());
@@ -759,7 +764,8 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableTimestampMillisSchema =
         schema.getField("nonNullableTimestampMillis").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampMillisSchema.getType());
-    assertEquals("local-timestamp-millis", nonNullableTimestampMillisSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.localTimestampMillis(), nonNullableTimestampMillisSchema.getLogicalType());
 
     // Assertions for nullableTimestampMicros
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimestampMicros").schema().getType());
@@ -767,7 +773,8 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampMicrosSchema =
         schema.getField("nullableTimestampMicros").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampMicrosSchema.getType());
-    assertEquals("local-timestamp-micros", nullableTimestampMicrosSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.localTimestampMicros(), nullableTimestampMicrosSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampMicros").schema().getTypes().get(1).getType());
@@ -776,7 +783,8 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableTimestampMicrosSchema =
         schema.getField("nonNullableTimestampMicros").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampMicrosSchema.getType());
-    assertEquals("local-timestamp-micros", nonNullableTimestampMicrosSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.localTimestampMicros(), nonNullableTimestampMicrosSchema.getLogicalType());
 
     // Assertions for nullableTimestampNanos
     assertEquals(Schema.Type.UNION, schema.getField("nullableTimestampNanos").schema().getType());
@@ -784,7 +792,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableTimestampNanosSchema =
         schema.getField("nullableTimestampNanos").schema().getTypes().get(0);
     assertEquals(Schema.Type.LONG, nullableTimestampNanosSchema.getType());
-    assertEquals("local-timestamp-nanos", nullableTimestampNanosSchema.getLogicalType());
+    assertEquals(LogicalTypes.localTimestampNanos(), nullableTimestampNanosSchema.getLogicalType());
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableTimestampNanos").schema().getTypes().get(1).getType());
@@ -792,7 +800,8 @@ public class ArrowToAvroSchemaTest {
     // Assertions for nonNullableTimestampNanos
     Schema nonNullableTimestampNanosSchema = schema.getField("nonNullableTimestampNanos").schema();
     assertEquals(Schema.Type.LONG, nonNullableTimestampNanosSchema.getType());
-    assertEquals("local-timestamp-nanos", nonNullableTimestampNanosSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.localTimestampNanos(), nonNullableTimestampNanosSchema.getLogicalType());
   }
 
   // Schema conversion for complex types, where the contents are primitive and logical types
@@ -871,7 +880,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableDecimalSchema = nonNullableDecimalListItemSchema.getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimalSchema.getType());
     assertEquals(16, nullableDecimalSchema.getFixedSize());
-    assertEquals("decimal", nullableDecimalSchema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(10, 2), nullableDecimalSchema.getLogicalType());
     assertEquals(10, nullableDecimalSchema.getObjectProp("precision"));
     assertEquals(2, nullableDecimalSchema.getObjectProp("scale"));
     assertEquals(Schema.Type.NULL, nonNullableDecimalListItemSchema.getTypes().get(1).getType());
@@ -881,7 +890,8 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableTimestampListItemSchema =
         schema.getField("nonNullableTimestampList").schema().getElementType();
     assertEquals(Schema.Type.LONG, nonNullableTimestampListItemSchema.getType());
-    assertEquals("timestamp-millis", nonNullableTimestampListItemSchema.getLogicalType());
+    assertEquals(
+        LogicalTypes.timestampMillis(), nonNullableTimestampListItemSchema.getLogicalType());
   }
 
   @Test
@@ -962,7 +972,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableDecimalSchema = nonNullableFixedSizeDecimalListItemSchema.getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimalSchema.getType());
     assertEquals(16, nullableDecimalSchema.getFixedSize());
-    assertEquals("decimal", nullableDecimalSchema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(10, 2), nullableDecimalSchema.getLogicalType());
     assertEquals(10, nullableDecimalSchema.getObjectProp("precision"));
     assertEquals(2, nullableDecimalSchema.getObjectProp("scale"));
     assertEquals(
@@ -975,7 +985,8 @@ public class ArrowToAvroSchemaTest {
         schema.getField("nonNullableFixedSizeTimestampList").schema().getElementType();
     assertEquals(Schema.Type.LONG, nonNullableFixedSizeTimestampListItemSchema.getType());
     assertEquals(
-        "timestamp-millis", nonNullableFixedSizeTimestampListItemSchema.getLogicalType());
+        LogicalTypes.timestampMillis(),
+        nonNullableFixedSizeTimestampListItemSchema.getLogicalType());
   }
 
   @Test
@@ -1088,7 +1099,7 @@ public class ArrowToAvroSchemaTest {
     Schema nullableDecimalSchema = nonNullableMapWithNullableDecimalValueSchema.getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimalSchema.getType());
     assertEquals(16, nullableDecimalSchema.getFixedSize());
-    assertEquals("decimal", nullableDecimalSchema.getLogicalType());
+    assertEquals(LogicalTypes.decimal(10, 2), nullableDecimalSchema.getLogicalType());
     assertEquals(10, nullableDecimalSchema.getObjectProp("precision"));
     assertEquals(2, nullableDecimalSchema.getObjectProp("scale"));
     assertEquals(
@@ -1102,7 +1113,7 @@ public class ArrowToAvroSchemaTest {
         schema.getField("nonNullableMapWithNonNullableTimestamp").schema().getValueType();
     assertEquals(Schema.Type.LONG, nonNullableMapWithNonNullableTimestampValueSchema.getType());
     assertEquals(
-        "timestamp-millis",
+        LogicalTypes.timestampMillis(),
         nonNullableMapWithNonNullableTimestampValueSchema.getLogicalType());
   }
 
@@ -1170,7 +1181,7 @@ public class ArrowToAvroSchemaTest {
     assertEquals(
         16, nullableRecordSchema.getField("field3").schema().getTypes().get(0).getFixedSize());
     assertEquals(
-        "decimal",
+        LogicalTypes.decimal(10, 2),
         nullableRecordSchema.getField("field3").schema().getTypes().get(0).getLogicalType());
     assertEquals(
         10,
@@ -1188,7 +1199,7 @@ public class ArrowToAvroSchemaTest {
         nullableRecordSchema.getField("field3").schema().getTypes().get(1).getType());
     assertEquals(Schema.Type.LONG, nullableRecordSchema.getField("field4").schema().getType());
     assertEquals(
-        "timestamp-millis",
+        LogicalTypes.timestampMillis(),
         nullableRecordSchema.getField("field4").schema().getLogicalType());
 
     // Assertions for nonNullableRecord
@@ -1208,13 +1219,8 @@ public class ArrowToAvroSchemaTest {
     assertEquals(
         16, nullableRecordSchema.getField("field3").schema().getTypes().get(0).getFixedSize());
     assertEquals(
-        "decimal",
-        nonNullableRecordSchema
-            .getField("field3")
-            .schema()
-            .getTypes()
-            .get(0)
-            .getLogicalType());
+        LogicalTypes.decimal(10, 2),
+        nonNullableRecordSchema.getField("field3").schema().getTypes().get(0).getLogicalType());
     assertEquals(
         10,
         nonNullableRecordSchema
@@ -1236,7 +1242,7 @@ public class ArrowToAvroSchemaTest {
         nonNullableRecordSchema.getField("field3").schema().getTypes().get(1).getType());
     assertEquals(Schema.Type.LONG, nonNullableRecordSchema.getField("field4").schema().getType());
     assertEquals(
-        "timestamp-millis",
+        LogicalTypes.timestampMillis(),
         nonNullableRecordSchema.getField("field4").schema().getLogicalType());
   }
 

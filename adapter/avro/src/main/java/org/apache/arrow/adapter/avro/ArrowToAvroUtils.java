@@ -101,6 +101,8 @@ import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaBuilder;
 
@@ -296,30 +298,31 @@ public class ArrowToAvroUtils {
 
       case Decimal:
         ArrowType.Decimal decimalType = (ArrowType.Decimal) field.getType();
-        return builder
-            .fixed(field.getName())
-            .prop("logicalType", "decimal")
-            .prop("precision", decimalType.getPrecision())
-            .prop("scale", decimalType.getScale())
-            .size(decimalType.getBitWidth() / 8);
+        return builder.type(
+            LogicalTypes.decimal(decimalType.getPrecision(), decimalType.getScale())
+                .addToSchema(
+                    Schema.createFixed(
+                        field.getName(), namespace, "", decimalType.getBitWidth() / 8)));
 
       case Date:
-        return builder.intBuilder().prop("logicalType", "date").endInt();
+        return builder.type(LogicalTypes.date().addToSchema(Schema.create(Schema.Type.INT)));
 
       case Time:
         ArrowType.Time timeType = (ArrowType.Time) field.getType();
         if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
           // Second and millisecond time types are encoded as time-millis (INT)
-          return builder.intBuilder().prop("logicalType", "time-millis").endInt();
+          return builder.type(
+              LogicalTypes.timeMillis().addToSchema(Schema.create(Schema.Type.INT)));
         } else {
           // All other time types (micro, nano) are encoded as time-micros (LONG)
-          return builder.longBuilder().prop("logicalType", "time-micros").endLong();
+          return builder.type(
+              LogicalTypes.timeMicros().addToSchema(Schema.create(Schema.Type.LONG)));
         }
 
       case Timestamp:
         ArrowType.Timestamp timestampType = (ArrowType.Timestamp) field.getType();
-        String timestampLogicalType = timestampLogicalType(timestampType);
-        return builder.longBuilder().prop("logicalType", timestampLogicalType).endLong();
+        LogicalType timestampLogicalType = timestampLogicalType(timestampType);
+        return builder.type(timestampLogicalType.addToSchema(Schema.create(Schema.Type.LONG)));
 
       case Struct:
         String childNamespace =
@@ -348,15 +351,15 @@ public class ArrowToAvroUtils {
     return accumulator.endUnion();
   }
 
-  private static String timestampLogicalType(ArrowType.Timestamp timestampType) {
+  private static LogicalType timestampLogicalType(ArrowType.Timestamp timestampType) {
     boolean zoneAware = timestampType.getTimezone() != null;
     if (timestampType.getUnit() == TimeUnit.NANOSECOND) {
-      return zoneAware ? "timestamp-nanos" : "local-timestamp-nanos";
+      return zoneAware ? LogicalTypes.timestampNanos() : LogicalTypes.localTimestampNanos();
     } else if (timestampType.getUnit() == TimeUnit.MICROSECOND) {
-      return zoneAware ? "timestamp-micros" : "local-timestamp-micros";
+      return zoneAware ? LogicalTypes.timestampMicros() : LogicalTypes.localTimestampMicros();
     } else {
       // Timestamp in seconds will be cast to milliseconds, Avro does not support seconds
-      return zoneAware ? "timestamp-millis" : "local-timestamp-millis";
+      return zoneAware ? LogicalTypes.timestampMillis() : LogicalTypes.localTimestampMillis();
     }
   }
 
