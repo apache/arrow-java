@@ -198,26 +198,32 @@ public class ArrowToAvroUtils {
   private static <T> SchemaBuilder.FieldAssembler<T> buildFieldSchema(
       SchemaBuilder.FieldAssembler<T> assembler, Field field, String namespace) {
 
-    SchemaBuilder.FieldTypeBuilder<T> builder = assembler.name(field.getName()).type();
+    return assembler
+        .name(field.getName())
+        .type(buildTypeSchema(SchemaBuilder.builder(), field, namespace))
+        .noDefault();
+  }
+
+  private static <T> T buildTypeSchema(
+      SchemaBuilder.TypeBuilder<T> builder, Field field, String namespace) {
 
     // Nullable unions need special handling, since union types cannot be directly nested
     if (field.getType().getTypeID() == ArrowType.ArrowTypeID.Union) {
       boolean unionNullable = field.getChildren().stream().anyMatch(Field::isNullable);
       if (unionNullable) {
-        SchemaBuilder.UnionAccumulator<SchemaBuilder.NullDefault<T>> union =
-            builder.unionOf().nullType();
-        return addTypesToUnion(union, field.getChildren(), namespace).nullDefault();
+        SchemaBuilder.UnionAccumulator<T> union = builder.unionOf().nullType();
+        return addTypesToUnion(union, field.getChildren(), namespace);
       } else {
         Field headType = field.getChildren().get(0);
         List<Field> tailTypes = field.getChildren().subList(1, field.getChildren().size());
-        SchemaBuilder.UnionAccumulator<SchemaBuilder.FieldDefault<T, ?>> union =
-            buildUnionFieldSchema(builder.unionOf(), headType, namespace);
-        return addTypesToUnion(union, tailTypes, namespace).noDefault();
+        SchemaBuilder.UnionAccumulator<T> union =
+            buildBaseTypeSchema(builder.unionOf(), headType, namespace);
+        return addTypesToUnion(union, tailTypes, namespace);
       }
     } else if (field.isNullable()) {
-      return buildBaseFieldSchema(builder.nullable(), field, namespace);
+      return buildBaseTypeSchema(builder.nullable(), field, namespace);
     } else {
-      return buildBaseFieldSchema(builder, field, namespace);
+      return buildBaseTypeSchema(builder, field, namespace);
     }
   }
 
@@ -246,29 +252,6 @@ public class ArrowToAvroUtils {
           "Map keys must be of type string and cannot be nullable for conversion to Avro");
     }
     return buildTypeSchema(builder.values(), valueField, namespace);
-  }
-
-  private static <T> T buildTypeSchema(
-      SchemaBuilder.TypeBuilder<T> builder, Field field, String namespace) {
-
-    // Nullable unions need special handling, since union types cannot be directly nested
-    if (field.getType().getTypeID() == ArrowType.ArrowTypeID.Union) {
-      boolean unionNullable = field.getChildren().stream().anyMatch(Field::isNullable);
-      if (unionNullable) {
-        SchemaBuilder.UnionAccumulator<T> union = builder.unionOf().nullType();
-        return addTypesToUnion(union, field.getChildren(), namespace);
-      } else {
-        Field headType = field.getChildren().get(0);
-        List<Field> tailTypes = field.getChildren().subList(1, field.getChildren().size());
-        SchemaBuilder.UnionAccumulator<T> union =
-            buildBaseTypeSchema(builder.unionOf(), headType, namespace);
-        return addTypesToUnion(union, tailTypes, namespace);
-      }
-    } else if (field.isNullable()) {
-      return buildBaseTypeSchema(builder.nullable(), field, namespace);
-    } else {
-      return buildBaseTypeSchema(builder, field, namespace);
-    }
   }
 
   private static <T> T buildBaseTypeSchema(
@@ -354,189 +337,6 @@ public class ArrowToAvroUtils {
       default:
         throw new IllegalArgumentException(
             "Element type not supported for Avro conversion: " + typeID.name());
-    }
-  }
-
-  private static <T> SchemaBuilder.FieldAssembler<T> buildBaseFieldSchema(
-      SchemaBuilder.BaseFieldTypeBuilder<T> builder, Field field, String namespace) {
-
-    ArrowType.ArrowTypeID typeID = field.getType().getTypeID();
-
-    switch (typeID) {
-      case Null:
-        return builder.nullType().noDefault();
-
-      case Bool:
-        return builder.booleanType().noDefault();
-
-      case Int:
-        ArrowType.Int intType = (ArrowType.Int) field.getType();
-        if (intType.getBitWidth() > 32 || (intType.getBitWidth() == 32 && !intType.getIsSigned())) {
-          return builder.longType().noDefault();
-        } else {
-          return builder.intType().noDefault();
-        }
-
-      case FloatingPoint:
-        ArrowType.FloatingPoint floatType = (ArrowType.FloatingPoint) field.getType();
-        if (floatType.getPrecision() == FloatingPointPrecision.DOUBLE) {
-          return builder.doubleType().noDefault();
-        } else {
-          return builder.floatType().noDefault();
-        }
-
-      case Utf8:
-        return builder.stringType().noDefault();
-
-      case Binary:
-        return builder.bytesType().noDefault();
-
-      case FixedSizeBinary:
-        ArrowType.FixedSizeBinary fixedType = (ArrowType.FixedSizeBinary) field.getType();
-        return builder.fixed(field.getName()).size(fixedType.getByteWidth()).noDefault();
-
-      case Decimal:
-        ArrowType.Decimal decimalType = (ArrowType.Decimal) field.getType();
-        return builder
-            .fixed(field.getName())
-            .prop("logicalType", "decimal")
-            .prop("precision", decimalType.getPrecision())
-            .prop("scale", decimalType.getScale())
-            .size(decimalType.getBitWidth() / 8)
-            .noDefault();
-
-      case Date:
-        return builder.intBuilder().prop("logicalType", "date").endInt().noDefault();
-
-      case Time:
-        ArrowType.Time timeType = (ArrowType.Time) field.getType();
-        if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
-          // Second and millisecond time types are encoded as time-millis (INT)
-          return builder.intBuilder().prop("logicalType", "time-millis").endInt().noDefault();
-        } else {
-          // All other time types (micro, nano) are encoded as time-micros (LONG)
-          return builder.longBuilder().prop("logicalType", "time-micros").endLong().noDefault();
-        }
-
-      case Timestamp:
-        ArrowType.Timestamp timestampType = (ArrowType.Timestamp) field.getType();
-        String timestampLogicalType = timestampLogicalType(timestampType);
-        return builder
-            .longBuilder()
-            .prop("logicalType", timestampLogicalType)
-            .endLong()
-            .noDefault();
-
-      case Struct:
-        String childNamespace =
-            namespace == null ? field.getName() : namespace + "." + field.getName();
-        return buildRecordSchema(
-                builder.record(field.getName()), field.getChildren(), childNamespace)
-            .noDefault();
-
-      case List:
-      case FixedSizeList:
-        return buildArraySchema(builder.array(), field, namespace).noDefault();
-
-      case Map:
-        return buildMapSchema(builder.map(), field, namespace).noDefault();
-
-      default:
-        throw new IllegalArgumentException(
-            "Field type not supported for Avro conversion: " + typeID.name());
-    }
-  }
-
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  private static <T>
-      SchemaBuilder.UnionAccumulator<SchemaBuilder.FieldDefault<T, ?>> buildUnionFieldSchema(
-          SchemaBuilder.UnionFieldTypeBuilder<T> builder, Field field, String namespace) {
-
-    ArrowType.ArrowTypeID typeID = field.getType().getTypeID();
-
-    switch (typeID) {
-      case Null:
-        return (SchemaBuilder.UnionAccumulator) builder.nullType();
-
-      case Bool:
-        return (SchemaBuilder.UnionAccumulator) builder.booleanType();
-
-      case Int:
-        ArrowType.Int intType = (ArrowType.Int) field.getType();
-        if (intType.getBitWidth() > 32 || (intType.getBitWidth() == 32 && !intType.getIsSigned())) {
-          return (SchemaBuilder.UnionAccumulator) builder.longType();
-        } else {
-          return (SchemaBuilder.UnionAccumulator) builder.intType();
-        }
-
-      case FloatingPoint:
-        ArrowType.FloatingPoint floatType = (ArrowType.FloatingPoint) field.getType();
-        if (floatType.getPrecision() == FloatingPointPrecision.DOUBLE) {
-          return (SchemaBuilder.UnionAccumulator) builder.doubleType();
-        } else {
-          return (SchemaBuilder.UnionAccumulator) builder.floatType();
-        }
-
-      case Utf8:
-        return (SchemaBuilder.UnionAccumulator) builder.stringType();
-
-      case Binary:
-        return (SchemaBuilder.UnionAccumulator) builder.bytesType();
-
-      case FixedSizeBinary:
-        ArrowType.FixedSizeBinary fixedType = (ArrowType.FixedSizeBinary) field.getType();
-        String fixedTypeName = field.getName();
-        int fixedTypeWidth = fixedType.getByteWidth();
-        return (SchemaBuilder.UnionAccumulator) builder.fixed(fixedTypeName).size(fixedTypeWidth);
-
-      case Decimal:
-        ArrowType.Decimal decimalType = (ArrowType.Decimal) field.getType();
-        return (SchemaBuilder.UnionAccumulator)
-            builder
-                .fixed(field.getName())
-                .prop("logicalType", "decimal")
-                .prop("precision", decimalType.getPrecision())
-                .prop("scale", decimalType.getScale())
-                .size(decimalType.getBitWidth() / 8);
-
-      case Date:
-        return (SchemaBuilder.UnionAccumulator)
-            builder.intBuilder().prop("logicalType", "date").endInt();
-
-      case Time:
-        ArrowType.Time timeType = (ArrowType.Time) field.getType();
-        if ((timeType.getUnit() == TimeUnit.SECOND || timeType.getUnit() == TimeUnit.MILLISECOND)) {
-          // Second and millisecond time types are encoded as time-millis (INT)
-          return (SchemaBuilder.UnionAccumulator)
-              builder.intBuilder().prop("logicalType", "time-millis").endInt();
-        } else {
-          return (SchemaBuilder.UnionAccumulator)
-              // All other time types (micro, nano) are encoded as time-micros (LONG)
-              builder.longBuilder().prop("logicalType", "time-micros").endLong();
-        }
-
-      case Timestamp:
-        ArrowType.Timestamp timestampType = (ArrowType.Timestamp) field.getType();
-        String timestampLogicalType = timestampLogicalType(timestampType);
-        return (SchemaBuilder.UnionAccumulator)
-            builder.longBuilder().prop("logicalType", timestampLogicalType).endLong();
-
-      case Struct:
-        String childNamespace =
-            namespace == null ? field.getName() : namespace + "." + field.getName();
-        return (SchemaBuilder.UnionAccumulator)
-            buildRecordSchema(builder.record(field.getName()), field.getChildren(), childNamespace);
-
-      case List:
-      case FixedSizeList:
-        return (SchemaBuilder.UnionAccumulator) buildArraySchema(builder.array(), field, namespace);
-
-      case Map:
-        return (SchemaBuilder.UnionAccumulator) buildMapSchema(builder.map(), field, namespace);
-
-      default:
-        throw new IllegalArgumentException(
-            "Union member type not supported for Avro conversion: " + typeID.name());
     }
   }
 
