@@ -17,12 +17,13 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ExtensionTypeVector;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.types.pojo.Field;
 
 public class UnionExtensionWriter extends AbstractFieldWriter {
   protected ExtensionTypeVector vector;
-  protected AbstractFieldWriter writer;
+  protected FieldWriter writer;
 
   public UnionExtensionWriter(ExtensionTypeVector vector) {
     this.vector = vector;
@@ -59,13 +60,13 @@ public class UnionExtensionWriter extends AbstractFieldWriter {
   }
 
   @Override
-  public <S extends ExtensionTypeWriterFactory> void addExtensionTypeFactory(S var1) {
-    this.writer = var1.getWriterImpl(vector);
+  public void addExtensionTypeFactory(ExtensionTypeWriterFactory factory) {
+    this.writer = factory.getWriterImpl(vector);
     this.writer.setPosition(idx());
   }
 
-  public <T extends ExtensionHolder> void write(T var1) {
-    this.writer.write(var1);
+  public void write(ExtensionHolder holder) {
+    this.writer.write(holder);
   }
 
   @Override

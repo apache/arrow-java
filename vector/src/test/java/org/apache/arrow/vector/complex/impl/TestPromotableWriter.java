@@ -31,9 +31,9 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DirtyRootAllocator;
-import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.LargeVarBinaryVector;
 import org.apache.arrow.vector.LargeVarCharVector;
+import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.ListVector;
@@ -54,8 +54,7 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ArrowTypeID;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
-import org.apache.arrow.vector.types.pojo.TestUuidVector.UuidType;
-import org.apache.arrow.vector.types.pojo.TestUuidVector.UuidVector;
+import org.apache.arrow.vector.types.pojo.UuidType;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.AfterEach;
@@ -804,34 +803,6 @@ public class TestPromotableWriter {
       UuidVector uuidVector = (UuidVector) container.getChild("uuid");
       assertEquals(u1, uuidVector.getObject(0));
       assertEquals(u2, uuidVector.getObject(1));
-    }
-  }
-
-  public class UuidWriterFactory implements ExtensionTypeWriterFactory {
-
-    @Override
-    public AbstractFieldWriter getWriterImpl(ExtensionTypeVector extensionTypeVector) {
-      if (extensionTypeVector instanceof UuidVector) {
-        return new UuidWriterImpl((UuidVector) extensionTypeVector);
-      }
-      return null;
-    }
-  }
-
-  public class UuidWriterImpl extends AbstractExtensionTypeWriter {
-
-    public UuidWriterImpl(UuidVector vector) {
-      super(vector);
-    }
-
-    @Override
-    public void writeExtensionType(Object var1) {
-      UUID uuid = (UUID) var1;
-      ByteBuffer bb = ByteBuffer.allocate(16);
-      bb.putLong(uuid.getMostSignificantBits());
-      bb.putLong(uuid.getLeastSignificantBits());
-      ((UuidVector) this.vector).setSafe(this.idx(), bb.array());
-      this.vector.setValueCount(this.idx() + 1);
     }
   }
 }

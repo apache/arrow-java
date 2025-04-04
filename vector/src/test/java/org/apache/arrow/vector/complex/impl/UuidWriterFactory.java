@@ -17,22 +17,15 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ExtensionTypeVector;
-import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.UuidVector;
 
-/**
- * A factory interface for creating instances of {@link ExtensionTypeWriter}. This factory allows
- * configuring writer implementations for specific {@link ExtensionTypeVector}.
- *
- * @param <T> the type of writer implementation for a specific {@link ExtensionTypeVector}.
- */
-public interface ExtensionTypeWriterFactory<T extends FieldWriter> {
+public class UuidWriterFactory implements ExtensionTypeWriterFactory {
 
-  /**
-   * Returns an instance of the writer implementation for the given {@link ExtensionTypeVector}.
-   *
-   * @param vector the {@link ExtensionTypeVector} for which the writer implementation is to be
-   *     returned.
-   * @return an instance of the writer implementation for the given {@link ExtensionTypeVector}.
-   */
-  T getWriterImpl(ExtensionTypeVector vector);
+  @Override
+  public AbstractFieldWriter getWriterImpl(ExtensionTypeVector extensionTypeVector) {
+    if (extensionTypeVector instanceof UuidVector) {
+      return new UuidWriterImpl((UuidVector) extensionTypeVector);
+    }
+    return null;
+  }
 }

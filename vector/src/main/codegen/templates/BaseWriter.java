@@ -104,10 +104,32 @@ public interface BaseWriter extends AutoCloseable, Positionable {
   }
 
   public interface ExtensionWriter extends BaseWriter {
+    
+    /**
+     * Writes a null value.
+     */
     void writeNull();
-    <T extends ExtensionHolder> void write(T var1);
-    void writeExtensionType(Object var1);
-    <T extends ExtensionTypeWriterFactory> void addExtensionTypeFactory(T var1);
+
+    /**
+     * Writes vlaue from the given extension holder.
+     *
+     * @param holder the extension holder to write
+     */
+    void write(ExtensionHolder holder);
+
+    /**
+     * Writes the given extension type value.
+     *
+     * @param value the extension type value to write
+     */
+    void writeExtensionType(Object value);
+    
+    /**
+     * Adds the given extension type factory. This factory allows configuring writer implementations for specific ExtensionTypeVector.
+     *
+     * @param factory the extension type factory to add
+     */
+    void addExtensionTypeFactory(ExtensionTypeWriterFactory factory);
   }
 
   public interface ScalarWriter extends

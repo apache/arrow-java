@@ -20,16 +20,20 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.ByteBuffer;
+import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.LargeVarBinaryVector;
 import org.apache.arrow.vector.LargeVarCharVector;
+import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.impl.LargeVarBinaryWriterImpl;
 import org.apache.arrow.vector.complex.impl.LargeVarCharWriterImpl;
+import org.apache.arrow.vector.complex.impl.UuidWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarBinaryWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarCharWriterImpl;
+import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -182,6 +186,22 @@ public class TestSimpleWriter {
       writer.writeLargeVarChar(new Text(input));
       String result = vector.getObject(0).toString();
       assertEquals(input, result);
+    }
+  }
+
+  @Test
+  public void testWriteToExtensionVector() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator);
+        UuidWriterImpl writer = new UuidWriterImpl(vector)) {
+      UUID uuid = UUID.randomUUID();
+      ByteBuffer bb = ByteBuffer.allocate(16);
+      bb.putLong(uuid.getMostSignificantBits());
+      bb.putLong(uuid.getLeastSignificantBits());
+      UuidHolder holder = new UuidHolder();
+      holder.value = bb.array();
+      writer.write(holder);
+      UUID result = vector.getObject(0);
+      assertEquals(uuid, result);
     }
   }
 }

@@ -546,8 +546,8 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
   }
 
   @Override
-  public <T extends ExtensionTypeWriterFactory> void addExtensionTypeFactory(T var1) {
-    getWriter(MinorType.EXTENSIONTYPE).addExtensionTypeFactory(var1);
+  public void addExtensionTypeFactory(ExtensionTypeWriterFactory factory) {
+    getWriter(MinorType.EXTENSIONTYPE).addExtensionTypeFactory(factory);
   }
 
   @Override
