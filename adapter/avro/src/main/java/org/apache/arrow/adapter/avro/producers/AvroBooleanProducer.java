@@ -14,15 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import java.io.IOException;
+import org.apache.arrow.vector.BitVector;
+import org.apache.avro.io.Encoder;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces boolean values from a {@link BitVector}, writes data to an Avro encoder.
+ */
+public class AvroBooleanProducer extends BaseAvroProducer<BitVector> {
+
+  /** Instantiate am AvroBooleanProducer. */
+  public AvroBooleanProducer(BitVector vector) {
+    super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    int bitValue = vector.get(currentIndex++);
+    encoder.writeBoolean(bitValue != 0);
+  }
 }

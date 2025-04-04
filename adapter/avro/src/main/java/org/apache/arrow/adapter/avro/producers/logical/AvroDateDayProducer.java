@@ -14,15 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers.logical;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import org.apache.arrow.adapter.avro.producers.AvroIntProducer;
+import org.apache.arrow.vector.DateDayVector;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces date values from a {@link DateDayVector}, writes data to an Avro encoder.
+ */
+public class AvroDateDayProducer extends AvroIntProducer {
+
+  // Date stored as integer number of days, matches Avro date type
+
+  /** Instantiate an AvroDateProducer. */
+  public AvroDateDayProducer(DateDayVector vector) {
+    super(vector);
+  }
 }

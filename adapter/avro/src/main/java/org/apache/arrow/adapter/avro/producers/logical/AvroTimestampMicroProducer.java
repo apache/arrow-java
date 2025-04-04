@@ -14,15 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers.logical;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
+import org.apache.arrow.vector.TimeStampMicroVector;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces local timestamp (microseconds) values from a {@link TimeStampMicroVector},
+ * writes data to an Avro encoder.
+ */
+public class AvroTimestampMicroProducer extends AvroBigIntProducer {
+
+  // Local timestamp in epoch microseconds stored as long, matches Avro local-timestamp-micros type
+
+  /** Instantiate an AvroTimestampMicroProducer. */
+  public AvroTimestampMicroProducer(TimeStampMicroVector vector) {
+    super(vector);
+  }
 }

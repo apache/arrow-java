@@ -14,15 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.arrow.adapter.avro.producers;
 
-module org.apache.arrow.adapter.avro {
-  exports org.apache.arrow.adapter.avro.consumers;
-  exports org.apache.arrow.adapter.avro.consumers.logical;
-  exports org.apache.arrow.adapter.avro.producers;
-  exports org.apache.arrow.adapter.avro.producers.logical;
-  exports org.apache.arrow.adapter.avro;
+import java.io.IOException;
+import org.apache.arrow.vector.Float8Vector;
+import org.apache.avro.io.Encoder;
 
-  requires org.apache.arrow.memory.core;
-  requires org.apache.arrow.vector;
-  requires org.apache.avro;
+/**
+ * Producer that produces double values from a {@link Float8Vector}, writes data to an Avro encoder.
+ */
+public class AvroFloat8Producer extends BaseAvroProducer<Float8Vector> {
+
+  /** Instantiate an AvroFloat8Producer. */
+  public AvroFloat8Producer(Float8Vector vector) {
+    super(vector);
+  }
+
+  @Override
+  public void produce(Encoder encoder) throws IOException {
+    double value = vector.getDataBuffer().getDouble(currentIndex * (long) Float8Vector.TYPE_WIDTH);
+    encoder.writeDouble(value);
+    currentIndex++;
+  }
 }
