@@ -231,4 +231,16 @@ public class UnionMapWriter extends UnionListWriter {
         return super.map();
     }
   }
+
+  @Override
+  public ExtensionWriter extension(ArrowType type) {
+    switch (mode) {
+      case KEY:
+        return entryWriter.extension(MapVector.KEY_NAME, type);
+      case VALUE:
+        return entryWriter.extension(MapVector.VALUE_NAME, type);
+      default:
+        return super.extension(type);
+    }
+  }
 }

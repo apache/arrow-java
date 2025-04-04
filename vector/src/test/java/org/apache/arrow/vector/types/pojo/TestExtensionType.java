@@ -41,6 +41,7 @@ import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float4Vector;
+import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.ValueIterableVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.compare.Range;
@@ -292,75 +293,6 @@ public class TestExtensionType {
       VectorBatchAppender.batchAppend(a1, a2, bb);
       assertEquals(6, a1.getValueCount());
       validateVisitor.visit(a1, null);
-    }
-  }
-
-  static class UuidType extends ExtensionType {
-
-    @Override
-    public ArrowType storageType() {
-      return new ArrowType.FixedSizeBinary(16);
-    }
-
-    @Override
-    public String extensionName() {
-      return "uuid";
-    }
-
-    @Override
-    public boolean extensionEquals(ExtensionType other) {
-      return other instanceof UuidType;
-    }
-
-    @Override
-    public ArrowType deserialize(ArrowType storageType, String serializedData) {
-      if (!storageType.equals(storageType())) {
-        throw new UnsupportedOperationException(
-            "Cannot construct UuidType from underlying type " + storageType);
-      }
-      return new UuidType();
-    }
-
-    @Override
-    public String serialize() {
-      return "";
-    }
-
-    @Override
-    public FieldVector getNewVector(String name, FieldType fieldType, BufferAllocator allocator) {
-      return new UuidVector(name, allocator, new FixedSizeBinaryVector(name, allocator, 16));
-    }
-  }
-
-  static class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
-      implements ValueIterableVector<UUID> {
-
-    public UuidVector(
-        String name, BufferAllocator allocator, FixedSizeBinaryVector underlyingVector) {
-      super(name, allocator, underlyingVector);
-    }
-
-    @Override
-    public UUID getObject(int index) {
-      final ByteBuffer bb = ByteBuffer.wrap(getUnderlyingVector().getObject(index));
-      return new UUID(bb.getLong(), bb.getLong());
-    }
-
-    @Override
-    public int hashCode(int index) {
-      return hashCode(index, null);
-    }
-
-    @Override
-    public int hashCode(int index, ArrowBufHasher hasher) {
-      return getUnderlyingVector().hashCode(index, hasher);
-    }
-
-    public void set(int index, UUID uuid) {
-      ByteBuffer bb = ByteBuffer.allocate(16);
-      bb.putLong(uuid.getMostSignificantBits());
-      bb.putLong(uuid.getLeastSignificantBits());
-      getUnderlyingVector().set(index, bb.array());
     }
   }
 

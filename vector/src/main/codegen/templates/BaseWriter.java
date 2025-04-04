@@ -61,6 +61,7 @@ public interface BaseWriter extends AutoCloseable, Positionable {
 
     void copyReaderToField(String name, FieldReader reader);
     StructWriter struct(String name);
+    ExtensionWriter extension(String name, ArrowType arrowType);
     ListWriter list(String name);
     ListWriter listView(String name);
     MapWriter map(String name);
@@ -79,6 +80,7 @@ public interface BaseWriter extends AutoCloseable, Positionable {
     ListWriter listView();
     MapWriter map();
     MapWriter map(boolean keysSorted);
+    ExtensionWriter extension(ArrowType arrowType);
     void copyReader(FieldReader reader);
 
     <#list vv.types as type><#list type.minor as minor>
@@ -99,6 +101,35 @@ public interface BaseWriter extends AutoCloseable, Positionable {
 
     MapWriter key();
     MapWriter value();
+  }
+
+  public interface ExtensionWriter extends BaseWriter {
+    
+    /**
+     * Writes a null value.
+     */
+    void writeNull();
+
+    /**
+     * Writes vlaue from the given extension holder.
+     *
+     * @param holder the extension holder to write
+     */
+    void write(ExtensionHolder holder);
+
+    /**
+     * Writes the given extension type value.
+     *
+     * @param value the extension type value to write
+     */
+    void writeExtensionType(Object value);
+    
+    /**
+     * Adds the given extension type factory. This factory allows configuring writer implementations for specific ExtensionTypeVector.
+     *
+     * @param factory the extension type factory to add
+     */
+    void addExtensionTypeFactory(ExtensionTypeWriterFactory factory);
   }
 
   public interface ScalarWriter extends
