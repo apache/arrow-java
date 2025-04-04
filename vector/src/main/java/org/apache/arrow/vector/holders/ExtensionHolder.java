@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector.holders;
 
+/** Base {@link ValueHolder} class for a {@link org.apache.arrow.vector.ExtensionTypeVector}. */
 public abstract class ExtensionHolder implements ValueHolder {
   public int isSet;
 }

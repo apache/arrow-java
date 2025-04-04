@@ -54,8 +54,8 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ArrowTypeID;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
-import org.apache.arrow.vector.types.pojo.TestExtensionType.UuidType;
-import org.apache.arrow.vector.types.pojo.TestExtensionType.UuidVector;
+import org.apache.arrow.vector.types.pojo.TestUuidVector.UuidType;
+import org.apache.arrow.vector.types.pojo.TestUuidVector.UuidVector;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.AfterEach;
@@ -784,7 +784,7 @@ public class TestPromotableWriter {
   @Test
   public void testExtensionType() throws Exception {
     try (final NonNullableStructVector container =
-        NonNullableStructVector.empty(EMPTY_SCHEMA_PATH, allocator);
+            NonNullableStructVector.empty(EMPTY_SCHEMA_PATH, allocator);
         final UuidVector v =
             container.addOrGet("uuid", FieldType.nullable(new UuidType()), UuidVector.class);
         final PromotableWriter writer = new PromotableWriter(v, container)) {
@@ -818,41 +818,10 @@ public class TestPromotableWriter {
     }
   }
 
-  public class UuidWriterImpl extends AbstractFieldWriter {
-    private final UuidVector vector;
+  public class UuidWriterImpl extends AbstractExtensionTypeWriter {
 
     public UuidWriterImpl(UuidVector vector) {
-      this.vector = vector;
-    }
-
-    @Override
-    public Field getField() {
-      return this.vector.getField();
-    }
-
-    @Override
-    public int getValueCapacity() {
-      return this.vector.getValueCapacity();
-    }
-
-    @Override
-    public void allocate() {
-      this.vector.allocateNew();
-    }
-
-    @Override
-    public void close() {
-      this.vector.close();
-    }
-
-    @Override
-    public void clear() {
-      this.vector.clear();
-    }
-
-    @Override
-    protected int idx() {
-      return super.idx();
+      super(vector);
     }
 
     @Override
@@ -861,13 +830,7 @@ public class TestPromotableWriter {
       ByteBuffer bb = ByteBuffer.allocate(16);
       bb.putLong(uuid.getMostSignificantBits());
       bb.putLong(uuid.getLeastSignificantBits());
-      this.vector.setSafe(this.idx(), bb.array());
-      this.vector.setValueCount(this.idx() + 1);
-    }
-
-    @Override
-    public void writeNull() {
-      this.vector.setNull(this.idx());
+      ((UuidVector) this.vector).setSafe(this.idx(), bb.array());
       this.vector.setValueCount(this.idx() + 1);
     }
   }

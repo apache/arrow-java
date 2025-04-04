@@ -18,6 +18,12 @@ package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ExtensionTypeVector;
 
+/**
+ * A factory for {@link ExtensionTypeWriter} instances. The factory allow to configure writer
+ * implementation for specific ExtensionTypeVector.
+ *
+ * @param <T> writer implementation for specific {@link ExtensionTypeVector}.
+ */
 public interface ExtensionTypeWriterFactory<T extends AbstractFieldWriter> {
   T getWriterImpl(ExtensionTypeVector vector);
 }

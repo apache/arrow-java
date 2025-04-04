@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.complex.AbstractStructVector;
 import org.apache.arrow.vector.complex.ListVector;
@@ -41,7 +42,7 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.Struct;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
-import org.apache.arrow.vector.types.pojo.TestExtensionType;
+import org.apache.arrow.vector.types.pojo.TestUuidVector;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -340,7 +341,7 @@ public class TestStructVector {
 
   @Test
   public void testStructVectorWithExtensionTypes() {
-    TestExtensionType.UuidType uuidType = new TestExtensionType.UuidType();
+    TestUuidVector.UuidType uuidType = new TestUuidVector.UuidType();
     Field uuidField = new Field("struct_child", FieldType.nullable(uuidType), null);
     Field structField =
         new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(uuidField));
@@ -352,14 +353,14 @@ public class TestStructVector {
 
   @Test
   public void testStructVectorTransferPairWithExtensionType() {
-    TestExtensionType.UuidType uuidType = new TestExtensionType.UuidType();
+    TestUuidVector.UuidType uuidType = new TestUuidVector.UuidType();
     Field uuidField = new Field("uuid_child", FieldType.nullable(uuidType), null);
     Field structField =
         new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(uuidField));
 
     StructVector s1 = (StructVector) structField.createVector(allocator);
-    TestExtensionType.UuidVector uuidVector =
-        s1.addOrGet("uuid_child", FieldType.nullable(uuidType), TestExtensionType.UuidVector.class);
+    TestUuidVector.UuidVector uuidVector =
+        s1.addOrGet("uuid_child", FieldType.nullable(uuidType), TestUuidVector.UuidVector.class);
     s1.setValueCount(1);
     uuidVector.set(0, new UUID(1, 2));
     s1.setIndexDefined(0);
