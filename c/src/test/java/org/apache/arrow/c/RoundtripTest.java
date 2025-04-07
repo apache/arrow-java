@@ -79,7 +79,6 @@ import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
-import org.apache.arrow.vector.VariableWidthVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.ViewVarBinaryVector;
 import org.apache.arrow.vector.ViewVarCharVector;
@@ -185,7 +184,8 @@ public class RoundtripTest {
           String.format("expected %s but was %s", clazz, imported.getClass()));
       result = VectorEqualsVisitor.vectorEquals(vector, imported);
 
-      if (imported instanceof BaseVariableWidthVector || imported instanceof BaseLargeVariableWidthVector) {
+      if (imported instanceof BaseVariableWidthVector
+          || imported instanceof BaseLargeVariableWidthVector) {
         ArrowBuf offsetBuffer = imported.getOffsetBuffer();
         assertTrue(offsetBuffer.capacity() > 0);
         assertEquals(0, offsetBuffer.getInt(0));
@@ -614,7 +614,6 @@ public class RoundtripTest {
   @Test
   public void testEmptyVarCharVector() {
     try (final VarCharVector vector = new VarCharVector("v", allocator)) {
-      setVector(vector, new String[] {});
       assertTrue(roundtrip(vector, VarCharVector.class));
     }
   }
@@ -655,7 +654,6 @@ public class RoundtripTest {
   @Test
   public void testEmptyLargeVarCharVector() {
     try (final LargeVarCharVector vector = new LargeVarCharVector("v", allocator)) {
-      setVector(vector, new String[] {});
       assertTrue(roundtrip(vector, LargeVarCharVector.class));
     }
   }
