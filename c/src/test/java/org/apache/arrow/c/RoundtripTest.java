@@ -38,6 +38,8 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.vector.BaseLargeVariableWidthVector;
+import org.apache.arrow.vector.BaseVariableWidthVector;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
@@ -77,6 +79,7 @@ import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.VariableWidthVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.ViewVarBinaryVector;
 import org.apache.arrow.vector.ViewVarCharVector;
@@ -181,6 +184,12 @@ public class RoundtripTest {
           clazz.isInstance(imported),
           String.format("expected %s but was %s", clazz, imported.getClass()));
       result = VectorEqualsVisitor.vectorEquals(vector, imported);
+
+      if (imported instanceof BaseVariableWidthVector || imported instanceof BaseLargeVariableWidthVector) {
+        ArrowBuf offsetBuffer = imported.getOffsetBuffer();
+        assertTrue(offsetBuffer.capacity() > 0);
+        assertEquals(0, offsetBuffer.getInt(0));
+      }
     }
 
     // Check that the ref counts of the buffers are the same after the roundtrip
@@ -603,6 +612,14 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testEmptyVarCharVector() {
+    try (final VarCharVector vector = new VarCharVector("v", allocator)) {
+      setVector(vector, new String[] {});
+      assertTrue(roundtrip(vector, VarCharVector.class));
+    }
+  }
+
+  @Test
   public void testLargeVarBinaryVector() {
     try (final LargeVarBinaryVector vector = new LargeVarBinaryVector("", allocator)) {
       vector.allocateNew(5, 1);
@@ -631,6 +648,14 @@ public class RoundtripTest {
   public void testLargeVarCharVector() {
     try (final LargeVarCharVector vector = new LargeVarCharVector("v", allocator)) {
       setVector(vector, "abc", "def", null);
+      assertTrue(roundtrip(vector, LargeVarCharVector.class));
+    }
+  }
+
+  @Test
+  public void testEmptyLargeVarCharVector() {
+    try (final LargeVarCharVector vector = new LargeVarCharVector("v", allocator)) {
+      setVector(vector, new String[] {});
       assertTrue(roundtrip(vector, LargeVarCharVector.class));
     }
   }
