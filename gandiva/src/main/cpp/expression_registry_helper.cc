@@ -138,7 +138,7 @@ void ArrowToProtobuf(DataTypePtr type, gandiva::types::ExtGandivaType* gandiva_d
     default:
       // un-supported types. test ensures that
       // when one of these are added build breaks.
-      DCHECK(false);
+      ARROW_DCHECK(false);
   }
 }
 

@@ -751,7 +751,7 @@ Status JavaResizableBuffer::Resize(const int64_t new_size, bool shrink_to_fit) {
   }
 
   RETURN_NOT_OK(Reserve(new_size));
-  DCHECK_GE(capacity_, new_size);
+  ARROW_DCHECK_GE(capacity_, new_size);
   size_ = new_size;
   return Status::OK();
 }

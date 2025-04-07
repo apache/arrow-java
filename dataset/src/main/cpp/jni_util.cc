@@ -187,7 +187,7 @@ ReservationListenableMemoryPool::~ReservationListenableMemoryPool() {}
 std::string Describe(JNIEnv* env, jthrowable t) {
   jclass describer_class =
       env->FindClass("org/apache/arrow/dataset/jni/JniExceptionDescriber");
-  DCHECK_NE(describer_class, nullptr);
+  ARROW_DCHECK_NE(describer_class, nullptr);
   jmethodID describe_method = env->GetStaticMethodID(
       describer_class, "describe", "(Ljava/lang/Throwable;)Ljava/lang/String;");
   std::string description = JStringToCString(
@@ -197,7 +197,7 @@ std::string Describe(JNIEnv* env, jthrowable t) {
 
 bool IsErrorInstanceOf(JNIEnv* env, jthrowable t, std::string class_name) {
   jclass java_class = env->FindClass(class_name.c_str());
-  DCHECK_NE(java_class, nullptr) << "Could not find Java class " << class_name;
+  ARROW_DCHECK_NE(java_class, nullptr) << "Could not find Java class " << class_name;
   return env->IsInstanceOf(t, java_class);
 }
 
