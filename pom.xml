@@ -347,7 +347,7 @@ under the License.
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.12</version>
+          <version>0.8.13</version>
         </plugin>
 
         <!--This plugin's configuration is used to store Eclipse m2e settings
