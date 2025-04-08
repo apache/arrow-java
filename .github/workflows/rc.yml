@@ -261,6 +261,10 @@ jobs:
           # bundled Protobuf.
           brew uninstall protobuf
 
+          # We need Flatbuffers 24, not the latest version
+          brew uninstall flatbuffers || :
+          brew install flatbuffers@24.3.6 || :
+
           brew bundle --file=Brewfile
       - name: Prepare ccache
         run: |
