@@ -24,6 +24,7 @@ import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PORT;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.THREAD_POOL_SIZE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USER;
+import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USE_CLIENT_CACHE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USE_ENCRYPTION;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -122,6 +123,12 @@ public final class ArrowFlightConnectionConfigImplTest {
             5000,
             Duration.ofMillis(5000),
             (Function<ArrowFlightConnectionConfigImpl, ?>)
-                ArrowFlightConnectionConfigImpl::getConnectTimeout));
+                ArrowFlightConnectionConfigImpl::getConnectTimeout),
+        Arguments.of(
+            USE_CLIENT_CACHE,
+            false,
+            false,
+            (Function<ArrowFlightConnectionConfigImpl, ?>)
+                ArrowFlightConnectionConfigImpl::useClientCache));
   }
 }
