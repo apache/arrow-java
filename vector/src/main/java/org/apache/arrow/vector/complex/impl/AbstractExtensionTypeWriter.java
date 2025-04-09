@@ -59,13 +59,8 @@ public class AbstractExtensionTypeWriter<T extends ExtensionTypeVector>
   }
 
   @Override
-  protected int idx() {
-    return super.idx();
-  }
-
-  @Override
   public void writeNull() {
-    this.vector.setNull(this.idx());
-    this.vector.setValueCount(this.idx() + 1);
+    this.vector.setNull(getPosition());
+    this.vector.setValueCount(getPosition() + 1);
   }
 }

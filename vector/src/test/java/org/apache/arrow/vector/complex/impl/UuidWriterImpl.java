@@ -34,14 +34,14 @@ public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
     ByteBuffer bb = ByteBuffer.allocate(16);
     bb.putLong(uuid.getMostSignificantBits());
     bb.putLong(uuid.getLeastSignificantBits());
-    vector.setSafe(idx(), bb.array());
-    vector.setValueCount(this.idx() + 1);
+    vector.setSafe(getPosition(), bb.array());
+    vector.setValueCount(getPosition() + 1);
   }
 
   @Override
   public void write(ExtensionHolder holder) {
     UuidHolder uuidHolder = (UuidHolder) holder;
-    vector.setSafe(this.idx(), uuidHolder.value);
-    vector.setValueCount(this.idx() + 1);
+    vector.setSafe(getPosition(), uuidHolder.value);
+    vector.setValueCount(getPosition() + 1);
   }
 }
