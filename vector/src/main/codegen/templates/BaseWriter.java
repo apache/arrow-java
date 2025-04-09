@@ -104,7 +104,7 @@ public interface BaseWriter extends AutoCloseable, Positionable {
   }
 
   public interface ExtensionWriter extends BaseWriter {
-    
+
     /**
      * Writes a null value.
      */
@@ -123,7 +123,7 @@ public interface BaseWriter extends AutoCloseable, Positionable {
      * @param value the extension type value to write
      */
     void writeExtension(Object value);
-    
+
     /**
      * Adds the given extension type factory. This factory allows configuring writer implementations for specific ExtensionTypeVector.
      *
