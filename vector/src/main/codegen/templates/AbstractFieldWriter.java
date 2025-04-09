@@ -251,7 +251,7 @@ abstract class AbstractFieldWriter extends AbstractBaseWriter implements FieldWr
     fail("Map");
     return null;
   }
-  
+
   @Override
   public ExtensionWriter extension(String name, ArrowType arrowType) {
     fail("Extension");
