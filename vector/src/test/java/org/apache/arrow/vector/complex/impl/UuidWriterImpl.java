@@ -22,28 +22,26 @@ import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 
-public class UuidWriterImpl extends AbstractExtensionTypeWriter {
+public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
 
   public UuidWriterImpl(UuidVector vector) {
     super(vector);
   }
 
   @Override
-  public void writeExtensionType(Object value) {
+  public void writeExtension(Object value) {
     UUID uuid = (UUID) value;
     ByteBuffer bb = ByteBuffer.allocate(16);
     bb.putLong(uuid.getMostSignificantBits());
     bb.putLong(uuid.getLeastSignificantBits());
-    ((UuidVector) this.vector).setSafe(this.idx(), bb.array());
-    this.vector.setValueCount(this.idx() + 1);
+    vector.setSafe(idx(), bb.array());
+    vector.setValueCount(this.idx() + 1);
   }
 
   @Override
   public void write(ExtensionHolder holder) {
-    if (holder instanceof UuidHolder) {
-      UuidHolder uuidHolder = (UuidHolder) holder;
-      ((UuidVector) this.vector).setSafe(this.idx(), uuidHolder.value);
-      this.vector.setValueCount(this.idx() + 1);
-    }
+    UuidHolder uuidHolder = (UuidHolder) holder;
+    vector.setSafe(this.idx(), uuidHolder.value);
+    vector.setValueCount(this.idx() + 1);
   }
 }

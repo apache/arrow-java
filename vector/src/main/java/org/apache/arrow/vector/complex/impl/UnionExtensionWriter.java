@@ -55,12 +55,12 @@ public class UnionExtensionWriter extends AbstractFieldWriter {
   }
 
   @Override
-  public void writeExtensionType(Object var1) {
-    this.writer.writeExtensionType(var1);
+  public void writeExtension(Object var1) {
+    this.writer.writeExtension(var1);
   }
 
   @Override
-  public void addExtensionTypeFactory(ExtensionTypeWriterFactory factory) {
+  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory factory) {
     this.writer = factory.getWriterImpl(vector);
     this.writer.setPosition(idx());
   }

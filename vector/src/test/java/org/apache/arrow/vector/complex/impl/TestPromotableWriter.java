@@ -791,12 +791,12 @@ public class TestPromotableWriter {
       UUID u2 = UUID.randomUUID();
       container.allocateNew();
       container.setValueCount(1);
-      writer.addExtensionTypeFactory(new UuidWriterFactory());
+      writer.addExtensionTypeWriterFactory(new UuidWriterFactory());
 
       writer.setPosition(0);
-      writer.writeExtensionType(u1);
+      writer.writeExtension(u1);
       writer.setPosition(1);
-      writer.writeExtensionType(u2);
+      writer.writeExtension(u2);
 
       container.setValueCount(2);
 

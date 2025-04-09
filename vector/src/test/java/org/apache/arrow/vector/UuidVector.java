@@ -34,7 +34,7 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     super(name, allocator, underlyingVector);
     this.field = new Field(name, FieldType.nullable(new UuidType()), null);
   }
-  
+
   public UuidVector(String name, BufferAllocator allocator) {
     super(name, allocator, new FixedSizeBinaryVector(name, allocator, 16));
     this.field = new Field(name, FieldType.nullable(new UuidType()), null);
