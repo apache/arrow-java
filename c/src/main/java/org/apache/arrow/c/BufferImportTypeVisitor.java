@@ -228,9 +228,8 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
           type,
           start,
           end);
-      final int len = end - start;
       offsets.getReferenceManager().retain();
-      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, len));
+      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, end));
     }
   }
 
@@ -279,9 +278,8 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
           type,
           start,
           end);
-      final long len = end - start;
       offsets.getReferenceManager().retain();
-      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, len));
+      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, end));
     }
   }
 
@@ -296,9 +294,8 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
           type,
           start,
           end);
-      final int len = end - start;
       offsets.getReferenceManager().retain();
-      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, len));
+      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, end));
     }
   }
 
@@ -320,9 +317,8 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
           type,
           start,
           end);
-      final long len = end - start;
       offsets.getReferenceManager().retain();
-      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, len));
+      return Arrays.asList(maybeImportBitmap(type), offsets, importData(type, end));
     }
   }
 
