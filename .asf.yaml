@@ -31,9 +31,6 @@ github:
   features:
     discussions: true
     issues: true
-  labels:
-    - arrow
-    - java
   protected_branches:
     main:
       required_linear_history: true
