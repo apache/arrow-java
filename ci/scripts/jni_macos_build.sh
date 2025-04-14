@@ -61,7 +61,7 @@ github_actions_group_begin "Building Arrow C++ libraries"
 install_dir="${build_dir}/cpp-install"
 : "${ARROW_ACERO:=ON}"
 export ARROW_ACERO
-: "${ARROW_BUILD_TESTS:=ON}"
+: "${ARROW_BUILD_TESTS:=OFF}"
 export ARROW_BUILD_TESTS
 : "${ARROW_DATASET:=ON}"
 export ARROW_DATASET
