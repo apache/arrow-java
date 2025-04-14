@@ -261,11 +261,6 @@ jobs:
           # bundled Protobuf.
           brew uninstall protobuf
 
-          # We need Flatbuffers 24, not the latest version
-          # Homebrew does not offer older versions, so remove the Homebrew
-          # package and rely on Arrow using a bundled version instead
-          brew uninstall flatbuffers
-
           brew bundle --file=Brewfile
       - name: Prepare ccache
         run: |
@@ -281,6 +276,7 @@ jobs:
           set -e
           # make brew Java available to CMake
           export JAVA_HOME=$(brew --prefix openjdk@11)/libexec/openjdk.jdk/Contents/Home
+          export ARROW_BUILD_TESTS=OFF
           ci/scripts/jni_macos_build.sh . arrow build jni
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
