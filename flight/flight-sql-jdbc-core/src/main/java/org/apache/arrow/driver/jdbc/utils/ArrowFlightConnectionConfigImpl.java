@@ -174,6 +174,11 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     return Duration.ofMillis(timeout);
   }
 
+  /** Whether to enable the client cache. */
+  public boolean useClientCache() {
+    return ArrowFlightConnectionProperty.USE_CLIENT_CACHE.getBoolean(properties);
+  }
+
   /**
    * Gets the {@link CallOption}s from this {@link ConnectionConfig}.
    *
@@ -226,6 +231,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     RETAIN_AUTH("retainAuth", true, Type.BOOLEAN, false),
     CATALOG("catalog", null, Type.STRING, false),
     CONNECT_TIMEOUT_MILLIS("connectTimeoutMs", 10000, Type.NUMBER, false),
+    USE_CLIENT_CACHE("useClientCache", true, Type.BOOLEAN, false),
     ;
 
     private final String camelName;
