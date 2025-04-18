@@ -18,17 +18,17 @@ package org.apache.arrow.adapter.avro.consumers.logical;
 
 import java.io.IOException;
 import org.apache.arrow.adapter.avro.consumers.BaseAvroConsumer;
-import org.apache.arrow.vector.TimeStampMicroVector;
+import org.apache.arrow.vector.TimeStampNanoVector;
 import org.apache.avro.io.Decoder;
 
 /**
- * Consumer which consumes local-timestamp-micros values from avro decoder. Write the data to {@link
- * TimeStampMicroVector}.
+ * Consumer which consume local-timestamp-nanos values from avro decoder. Write the data to {@link
+ * TimeStampNanoVector}.
  */
-public class AvroTimestampMicrosConsumer extends BaseAvroConsumer<TimeStampMicroVector> {
+public class AvroTimestampNanosConsumer extends BaseAvroConsumer<TimeStampNanoVector> {
 
-  /** Instantiate a AvroTimestampMicroConsumer. */
-  public AvroTimestampMicrosConsumer(TimeStampMicroVector vector) {
+  /** Instantiate a AvroTimestampNanosConsumer. */
+  public AvroTimestampNanosConsumer(TimeStampNanoVector vector) {
     super(vector);
   }
 

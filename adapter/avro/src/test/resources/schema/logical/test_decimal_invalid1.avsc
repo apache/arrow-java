@@ -20,6 +20,6 @@
  "name": "test",
  "type": "bytes",
  "logicalType" : "decimal",
- "precision": 39,
+ "precision": 77,
  "scale": 2
 }

@@ -332,7 +332,17 @@ public class ArrowToAvroUtils {
 
       case List:
       case FixedSizeList:
-        return buildArraySchema(builder.array(), field, namespace);
+        // Arrow uses "$data$" as the field name for list items, that is not a valid Avro name
+        Field itemField = field.getChildren().get(0);
+        if (ListVector.DATA_VECTOR_NAME.equals(itemField.getName())) {
+          Field safeItemField =
+              new Field("item", itemField.getFieldType(), itemField.getChildren());
+          Field safeListField =
+              new Field(field.getName(), field.getFieldType(), List.of(safeItemField));
+          return buildArraySchema(builder.array(), safeListField, namespace);
+        } else {
+          return buildArraySchema(builder.array(), field, namespace);
+        }
 
       case Map:
         return buildMapSchema(builder.map(), field, namespace);

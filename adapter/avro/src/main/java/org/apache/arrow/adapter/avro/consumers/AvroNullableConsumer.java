@@ -14,45 +14,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.adapter.avro.producers;
+package org.apache.arrow.adapter.avro.consumers;
 
 import java.io.IOException;
 import org.apache.arrow.vector.FieldVector;
-import org.apache.avro.io.Encoder;
+import org.apache.avro.io.Decoder;
 
 /**
- * Producer wrapper which produces nullable types to an avro encoder. Read data from the underlying
- * {@link FieldVector}.
+ * Consumer wrapper which consumes nullable type values from avro decoder. Write the data to the
+ * underlying {@link FieldVector}.
  *
- * @param <T> The vector within producer or its delegate, used for partially produce purpose.
+ * @param <T> The vector within consumer or its delegate.
  */
-public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProducer<T> {
+public class AvroNullableConsumer<T extends FieldVector> extends BaseAvroConsumer<T> {
 
-  private final Producer<T> delegate;
+  private final Consumer<T> delegate;
+  private final int nullIndex;
 
-  /** Instantiate a AvroNullableProducer. */
-  public AvroNullableProducer(Producer<T> delegate) {
-    super(delegate.getVector());
+  /** Instantiate a AvroNullableConsumer. */
+  @SuppressWarnings("unchecked")
+  public AvroNullableConsumer(Consumer<T> delegate, int nullIndex) {
+    super((T) delegate.getVector());
     this.delegate = delegate;
+    this.nullIndex = nullIndex;
   }
 
   @Override
-  public void produce(Encoder encoder) throws IOException {
-    if (vector.isNull(currentIndex)) {
-      encoder.writeInt(1);
-      encoder.writeNull();
-      delegate.skipNull();
+  public void consume(Decoder decoder) throws IOException {
+    int typeIndex = decoder.readInt();
+    if (typeIndex == nullIndex) {
+      decoder.readNull();
+      delegate.addNull();
     } else {
-      encoder.writeInt(0);
-      delegate.produce(encoder);
+      delegate.consume(decoder);
     }
     currentIndex++;
   }
 
   @Override
-  public void skipNull() {
+  public void addNull() {
     // Can be called by containers of nullable types
-    delegate.skipNull();
+    delegate.addNull();
     currentIndex++;
   }
 
@@ -66,12 +68,15 @@ public class AvroNullableProducer<T extends FieldVector> extends BaseAvroProduce
   }
 
   @Override
-  public void resetValueVector(T vector) {
-    delegate.resetValueVector(vector);
+  public boolean resetValueVector(T vector) {
+    boolean delegateOk = delegate.resetValueVector(vector);
+    boolean thisOk = super.resetValueVector(vector);
+    return thisOk && delegateOk;
   }
 
   @Override
-  public T getVector() {
-    return delegate.getVector();
+  public void close() throws Exception {
+    super.close();
+    delegate.close();
   }
 }

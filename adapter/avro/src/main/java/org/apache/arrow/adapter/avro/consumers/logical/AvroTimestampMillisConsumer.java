@@ -22,7 +22,7 @@ import org.apache.arrow.vector.TimeStampMilliVector;
 import org.apache.avro.io.Decoder;
 
 /**
- * Consumer which consume date timestamp-millis values from avro decoder. Write the data to {@link
+ * Consumer which consume local-timestamp-millis values from avro decoder. Write the data to {@link
  * TimeStampMilliVector}.
  */
 public class AvroTimestampMillisConsumer extends BaseAvroConsumer<TimeStampMilliVector> {

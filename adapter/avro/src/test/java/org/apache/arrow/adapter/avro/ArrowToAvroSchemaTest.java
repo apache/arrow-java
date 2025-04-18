@@ -319,10 +319,10 @@ public class ArrowToAvroSchemaTest {
                 FieldType.notNullable(new ArrowType.Decimal(20, 10, 128)),
                 null),
             new Field(
-                "nullableDecimal256", FieldType.nullable(new ArrowType.Decimal(20, 4, 256)), null),
+                "nullableDecimal256", FieldType.nullable(new ArrowType.Decimal(55, 15, 256)), null),
             new Field(
                 "nonNullableDecimal2561",
-                FieldType.notNullable(new ArrowType.Decimal(20, 4, 256)),
+                FieldType.notNullable(new ArrowType.Decimal(55, 25, 256)),
                 null),
             new Field(
                 "nonNullableDecimal2562",
@@ -330,7 +330,7 @@ public class ArrowToAvroSchemaTest {
                 null),
             new Field(
                 "nonNullableDecimal2563",
-                FieldType.notNullable(new ArrowType.Decimal(30, 15, 256)),
+                FieldType.notNullable(new ArrowType.Decimal(60, 50, 256)),
                 null));
 
     Schema schema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord");
@@ -383,9 +383,9 @@ public class ArrowToAvroSchemaTest {
         schema.getField("nullableDecimal256").schema().getTypes().get(0);
     assertEquals(Schema.Type.FIXED, nullableDecimal256Schema.getType());
     assertEquals(32, nullableDecimal256Schema.getFixedSize());
-    assertEquals(LogicalTypes.decimal(20, 4), nullableDecimal256Schema.getLogicalType());
-    assertEquals(20, nullableDecimal256Schema.getObjectProp("precision"));
-    assertEquals(4, nullableDecimal256Schema.getObjectProp("scale"));
+    assertEquals(LogicalTypes.decimal(55, 15), nullableDecimal256Schema.getLogicalType());
+    assertEquals(55, nullableDecimal256Schema.getObjectProp("precision"));
+    assertEquals(15, nullableDecimal256Schema.getObjectProp("scale"));
     assertEquals(
         Schema.Type.NULL,
         schema.getField("nullableDecimal256").schema().getTypes().get(1).getType());
@@ -394,9 +394,9 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal2561Schema = schema.getField("nonNullableDecimal2561").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2561Schema.getType());
     assertEquals(32, nonNullableDecimal2561Schema.getFixedSize());
-    assertEquals(LogicalTypes.decimal(20, 4), nonNullableDecimal2561Schema.getLogicalType());
-    assertEquals(20, nonNullableDecimal2561Schema.getObjectProp("precision"));
-    assertEquals(4, nonNullableDecimal2561Schema.getObjectProp("scale"));
+    assertEquals(LogicalTypes.decimal(55, 25), nonNullableDecimal2561Schema.getLogicalType());
+    assertEquals(55, nonNullableDecimal2561Schema.getObjectProp("precision"));
+    assertEquals(25, nonNullableDecimal2561Schema.getObjectProp("scale"));
 
     // Assertions for nonNullableDecimal2562
     Schema nonNullableDecimal2562Schema = schema.getField("nonNullableDecimal2562").schema();
@@ -410,9 +410,9 @@ public class ArrowToAvroSchemaTest {
     Schema nonNullableDecimal2563Schema = schema.getField("nonNullableDecimal2563").schema();
     assertEquals(Schema.Type.FIXED, nonNullableDecimal2563Schema.getType());
     assertEquals(32, nonNullableDecimal2563Schema.getFixedSize());
-    assertEquals(LogicalTypes.decimal(30, 15), nonNullableDecimal2563Schema.getLogicalType());
-    assertEquals(30, nonNullableDecimal2563Schema.getObjectProp("precision"));
-    assertEquals(15, nonNullableDecimal2563Schema.getObjectProp("scale"));
+    assertEquals(LogicalTypes.decimal(60, 50), nonNullableDecimal2563Schema.getLogicalType());
+    assertEquals(60, nonNullableDecimal2563Schema.getObjectProp("precision"));
+    assertEquals(50, nonNullableDecimal2563Schema.getObjectProp("scale"));
   }
 
   @Test

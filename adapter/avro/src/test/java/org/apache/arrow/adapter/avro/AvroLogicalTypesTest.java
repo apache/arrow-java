@@ -173,7 +173,7 @@ public class AvroLogicalTypesTest extends AvroTestBase {
 
     IllegalArgumentException e =
         assertThrows(IllegalArgumentException.class, () -> writeAndRead(schema, data));
-    assertTrue(e.getMessage().contains("Precision must be in range of 1 to 38"));
+    assertTrue(e.getMessage().contains("Precision must be in range of 1 to 76"));
   }
 
   @Test

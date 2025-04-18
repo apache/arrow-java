@@ -59,4 +59,23 @@ public class AvroToArrow {
 
     return AvroToArrowVectorIterator.create(decoder, schema, config);
   }
+
+  /**
+   * Convert an Avro schema to its Arrow equivalent.
+   *
+   * <p>The resulting set of Arrow fields matches what would be set in the VSR after calling
+   * avroToArrow() or avroToArrowIterator(), respecting the configuration in the config parameter.
+   *
+   * @param schema The Avro schema to convert
+   * @param config Configuration options for conversion
+   * @return The equivalent Arrow schema
+   */
+  public static org.apache.arrow.vector.types.pojo.Schema avroToAvroSchema(
+      Schema schema, AvroToArrowConfig config) {
+
+    Preconditions.checkNotNull(schema, "Avro schema object cannot be null");
+    Preconditions.checkNotNull(config, "config cannot be null");
+
+    return AvroToArrowUtils.createArrowSchema(schema, config);
+  }
 }

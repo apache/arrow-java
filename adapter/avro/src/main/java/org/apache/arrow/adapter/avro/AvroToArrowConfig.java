@@ -42,6 +42,12 @@ public class AvroToArrowConfig {
   private final Set<String> skipFieldNames;
 
   /**
+   * Use legacy-mode to keep compatibility with old behavior (pre-2025), enabled by default.
+   * This affects how the AvroToArrow code interprets the Avro schema.
+   */
+  private final boolean legacyMode;
+
+  /**
    * Instantiate an instance.
    *
    * @param allocator The memory allocator to construct the Arrow vectors with.
@@ -64,6 +70,37 @@ public class AvroToArrowConfig {
     this.targetBatchSize = targetBatchSize;
     this.provider = provider;
     this.skipFieldNames = skipFieldNames;
+
+    // Default values for optional parameters
+    legacyMode = true; // Keep compatibility with old behavior by default
+  }
+
+  /**
+   * Instantiate an instance.
+   *
+   * @param allocator The memory allocator to construct the Arrow vectors with.
+   * @param targetBatchSize The maximum rowCount to read each time when partially convert data.
+   * @param provider The dictionary provider used for enum type, adapter will update this provider.
+   * @param skipFieldNames Field names which to skip.
+   * @param legacyMode Keep compatibility with old behavior (pre-2025)
+   */
+  AvroToArrowConfig(
+      BufferAllocator allocator,
+      int targetBatchSize,
+      DictionaryProvider.MapDictionaryProvider provider,
+      Set<String> skipFieldNames,
+      boolean legacyMode) {
+
+    Preconditions.checkArgument(
+        targetBatchSize == AvroToArrowVectorIterator.NO_LIMIT_BATCH_SIZE || targetBatchSize > 0,
+        "invalid targetBatchSize: %s",
+        targetBatchSize);
+
+    this.allocator = allocator;
+    this.targetBatchSize = targetBatchSize;
+    this.provider = provider;
+    this.skipFieldNames = skipFieldNames;
+    this.legacyMode = legacyMode;
   }
 
   public BufferAllocator getAllocator() {
@@ -80,5 +117,9 @@ public class AvroToArrowConfig {
 
   public Set<String> getSkipFieldNames() {
     return skipFieldNames;
+  }
+
+  public boolean isLegacyMode() {
+    return legacyMode;
   }
 }
