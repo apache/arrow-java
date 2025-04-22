@@ -571,8 +571,8 @@ public abstract class BaseVariableWidthVector extends BaseValueVector
       return;
     }
 
-    final long newAllocationSize = Math.min(CommonUtil.nextPowerOfTwo(desiredAllocSize),
-        MAX_BUFFER_SIZE);
+    final long newAllocationSize =
+        Math.min(CommonUtil.nextPowerOfTwo(desiredAllocSize), MAX_BUFFER_SIZE);
     assert newAllocationSize >= 1;
 
     if (newAllocationSize < desiredAllocSize) {
