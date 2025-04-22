@@ -95,7 +95,7 @@ public class TestValueVector {
   private static final byte[] STR5 = "EEE5".getBytes(utf8Charset);
   private static final byte[] STR6 = "FFFFF6".getBytes(utf8Charset);
   private static final int MAX_VALUE_COUNT =
-      (int) (Integer.getInteger("arrow.vector.max_allocation_bytes", Integer.MAX_VALUE) / 7);
+      (int) (Integer.getInteger("arrow.vector.max_allocation_bytes", Integer.MAX_VALUE) / 9);
   private static final int MAX_VALUE_COUNT_8BYTE = (int) (MAX_VALUE_COUNT / 2);
 
   @AfterEach

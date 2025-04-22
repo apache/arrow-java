@@ -28,6 +28,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.memory.util.CommonUtil;
 import org.apache.arrow.vector.BaseValueVector;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
 import org.apache.arrow.vector.BigIntVector;
@@ -309,7 +310,15 @@ public class TestVectorAppender {
 
   @Test
   public void testAppendLargeAndSmallVariableVectorsWithinLimit() {
-    int sixteenthOfMaxAllocation = Math.toIntExact(BaseValueVector.MAX_ALLOCATION_SIZE / 16);
+    // Using the max power of 2 allocation size to avoid hitting the max limit at round ups
+    long maxPowerOfTwoAllocationSize =
+        CommonUtil.nextPowerOfTwo(BaseValueVector.MAX_ALLOCATION_SIZE);
+    if (maxPowerOfTwoAllocationSize > BaseValueVector.MAX_ALLOCATION_SIZE) {
+      maxPowerOfTwoAllocationSize =
+          CommonUtil.nextPowerOfTwo(BaseValueVector.MAX_ALLOCATION_SIZE / 2);
+    }
+
+    int sixteenthOfMaxAllocation = Math.toIntExact(maxPowerOfTwoAllocationSize / 16);
     try (VarCharVector target = makeVarCharVec(1, sixteenthOfMaxAllocation);
         VarCharVector delta = makeVarCharVec(sixteenthOfMaxAllocation, 1)) {
       new VectorAppender(delta).visit(target, null);
