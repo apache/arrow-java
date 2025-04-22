@@ -550,14 +550,17 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
     if (desiredAllocSize == 0) {
       return;
     }
-    long newAllocationSize = CommonUtil.nextPowerOfTwo(desiredAllocSize);
+    long newAllocationSize = Math.min(CommonUtil.nextPowerOfTwo(desiredAllocSize), MAX_BUFFER_SIZE);
     assert newAllocationSize >= 1;
 
-    checkDataBufferSize(newAllocationSize);
     // for each set operation, we have to allocate 16 bytes
     // here we are adjusting the desired allocation-based allocation size
     // to align with the 16bytes requirement.
     newAllocationSize = roundUpToMultipleOf16(newAllocationSize);
+
+    if (newAllocationSize < desiredAllocSize) {
+      checkDataBufferSize(desiredAllocSize);
+    }
 
     final ArrowBuf newBuf = allocator.buffer(newAllocationSize);
     newBuf.setBytes(0, viewBuffer, 0, viewBuffer.capacity());
@@ -587,10 +590,13 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       return;
     }
 
-    final long newAllocationSize = CommonUtil.nextPowerOfTwo(desiredAllocSize);
+    final long newAllocationSize = Math.min(CommonUtil.nextPowerOfTwo(desiredAllocSize),
+        MAX_BUFFER_SIZE);
     assert newAllocationSize >= 1;
 
-    checkDataBufferSize(newAllocationSize);
+    if (newAllocationSize < desiredAllocSize) {
+      checkDataBufferSize(desiredAllocSize);
+    }
 
     final ArrowBuf newBuf = allocator.buffer(newAllocationSize);
     dataBuffers.add(newBuf);
