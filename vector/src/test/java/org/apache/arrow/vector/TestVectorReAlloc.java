@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.nio.charset.StandardCharsets;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.memory.util.CommonUtil;
 import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
@@ -219,6 +220,17 @@ public class TestVectorReAlloc {
        */
       assertEquals(vector.getValueCapacity(), savedValueCapacity);
       assertEquals(vector.valueBuffer.capacity(), savedValueBufferSize);
+    }
+  }
+
+  @Test
+  public void testVariableReAllocAbove1GB() throws Exception {
+    try (final VarCharVector vector = new VarCharVector("", allocator)) {
+      long desiredSizeAboveLastPowerOf2 =
+          CommonUtil.nextPowerOfTwo(BaseVariableWidthVector.MAX_ALLOCATION_SIZE) / 2 + 1;
+      vector.reallocDataBuffer(desiredSizeAboveLastPowerOf2);
+
+      assertTrue(vector.getDataBuffer().capacity() >= desiredSizeAboveLastPowerOf2);
     }
   }
 
