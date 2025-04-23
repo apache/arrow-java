@@ -27,45 +27,38 @@
   4. Publish (detailed later)
   5. Bump version for new development (detailed later)
 
-### Bump version for new release
+### Prepare release environment
 
-Run `dev/release/bump_version.sh` on a working copy of your fork not
-`git@github.com:apache/arrow-java`:
+This step is needed only when you act as a release manager first time.
+
+We use the following variables in multiple steps:
+
+* `GH_TOKEN`: GitHub personal access token to automate GitHub related
+  operations
+* `GPG_KEY_ID`: PGP key ID that is used for signing official artifacts
+  by GnuPG
+
+We use `dev/release/.env` to share these variables in multiple
+steps. You can use `dev/release/.env.example` as a template:
 
 ```console
-$ git clone git@github.com:${YOUR_GITHUB_ACCOUNT}/arrow-java.git arrow-java.${YOUR_GITHUB_ACCOUNT}
-$ cd arrow-java.${YOUR_GITHUB_ACCOUNT}
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh ${NEW_VERSION}
+$ cp dev/release/.env{.example,}
+$ chmod go-r dev/release/.env
+$ editor dev/release/.env
 ```
 
-Here is an example to bump version to 19.0.0:
-
-```
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh 19.0.0
-```
-
-It creates a feature branch and adds a commit that bumps version. This
-opens a pull request from the feature branch by `gh pr create`. So you
-need `gh` command and GitHub personal access token.
-
-See also:
+See
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+how to prepare GitHub personal access token for `GH_TOKEN`.
 
-We need to merge the pull request before we cut a RC. If we try cut a
-RC without merging the pull request, the script to cut a RC is failed.
+Note that you also need to install `gh` command because our scripts
+use `gh` command to use GitHub API. See
+https://github.com/cli/cli#installation how to install `gh`
+command.
 
-### Prepare RC and vote
-
-You can use `dev/release/release_rc.sh`.
-
-Requirements to run `release_rc.sh`:
-
-  * You must be an Apache Arrow committer or PMC member
-  * You must prepare your PGP key for signing
-  * You must configure Maven
-
-If you don't have a PGP key,
-https://infra.apache.org/release-signing.html#generate may be helpful.
+If you don't have a PGP key for `GPG_KEY_ID`, see
+https://infra.apache.org/release-signing.html#genegrate how to
+generate your PGP key.
 
 Your PGP key must be registered to the followings:
 
@@ -85,6 +78,40 @@ $ head KEYS
 $ svn ci KEYS
 ```
 
+### Bump version for new release
+
+Run `dev/release/bump_version.sh` on a working copy of your fork not
+`git@github.com:apache/arrow-java`:
+
+```console
+$ git clone git@github.com:${YOUR_GITHUB_ACCOUNT}/arrow-java.git arrow-java.${YOUR_GITHUB_ACCOUNT}
+$ cd arrow-java.${YOUR_GITHUB_ACCOUNT}
+$ dev/release/bump_version.sh ${NEW_VERSION}
+```
+
+Here is an example to bump version to 19.0.0:
+
+```
+$ dev/release/bump_version.sh 19.0.0
+```
+
+It creates a feature branch and adds a commit that bumps version. This
+opens a pull request from the feature branch.
+
+We need to merge the pull request before we cut a RC. If we try
+cutting a RC without merging the pull request, the script to cut a RC
+is failed.
+
+### Prepare RC and vote
+
+You can use `dev/release/release_rc.sh`.
+
+Requirements to run `release_rc.sh`:
+
+  * You must be an Apache Arrow committer or PMC member
+  * You must prepare your PGP key for signing
+  * You must configure Maven
+
 Configure Maven to publish artifacts to Apache repositories. You will
 need to setup a master password at `~/.m2/settings-security.xml` and
 `~/.m2/settings.xml` as specified on [the Apache
@@ -102,7 +129,7 @@ Run `dev/release/release_rc.sh` on a working copy of
 ```console
 $ git clone git@github.com:apache/arrow-java.git
 $ cd arrow-java
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh ${RC}
+$ dev/release/release_rc.sh ${RC}
 (Send a vote email to dev@arrow.apache.org.
  You can use a draft shown by release_rc.sh for the email.)
 ```
@@ -110,7 +137,7 @@ $ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh ${RC}
 Here is an example to release RC1:
 
 ```console
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh 1
+$ dev/release/release_rc.sh 1
 ```
 
 The argument of `release_rc.sh` is the RC number. If RC1 has a
@@ -128,13 +155,13 @@ Run `dev/release/release.sh` on a working copy of
 archive to apache.org:
 
 ```console
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release.sh ${VERSION} ${RC}
+$ dev/release/release.sh ${VERSION} ${RC}
 ```
 
 Here is an example to release 19.0.0 RC1:
 
 ```console
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release.sh 19.0.0 1
+$ dev/release/release.sh 19.0.0 1
 ```
 
 Add the release to ASF's report database via [Apache Committee Report
@@ -160,13 +187,13 @@ Run `dev/release/bump_version.sh` on a working copy of your fork not
 ```console
 $ git clone git@github.com:${YOUR_GITHUB_ACCOUNT}/arrow-java.git arrow-java.${YOUR_GITHUB_ACCOUNT}
 $ cd arrow-java.${YOUR_GITHUB_ACCOUNT}
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh ${NEW_VERSION}-SNAPSHOT
+$ dev/release/bump_version.sh ${NEW_VERSION}-SNAPSHOT
 ```
 
 Here is an example to bump version to 19.0.1-SNAPSHOT:
 
 ```
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/bump_version.sh 19.0.0-SNAPSHOT
+$ dev/release/bump_version.sh 19.0.0-SNAPSHOT
 ```
 
 It creates a feature branch and adds a commit that bumps version. This

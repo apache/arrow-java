@@ -36,6 +36,13 @@ rc=$1
 : "${RELEASE_SIGN:=${RELEASE_DEFAULT}}"
 : "${RELEASE_UPLOAD:=${RELEASE_DEFAULT}}"
 
+if [ ! -f "${SOURCE_DIR}/.env" ]; then
+  echo "You must create ${SOURCE_DIR}/.env"
+  echo "You can use ${SOURCE_DIR}/.env.example as template"
+  exit 1
+fi
+. "${SOURCE_DIR}/.env"
+
 cd "${SOURCE_TOP_DIR}"
 
 if [ "${RELEASE_PULL}" -gt 0 ] || [ "${RELEASE_PUSH_TAG}" -gt 0 ]; then
@@ -84,13 +91,6 @@ artifacts_dir="apache-arrow-java-${version}-rc${rc}"
 signed_artifacts_dir="${artifacts_dir}-signed"
 
 if [ "${RELEASE_SIGN}" -gt 0 ]; then
-  if [ ! -f "${SOURCE_DIR}/.env" ]; then
-    echo "You must create ${SOURCE_DIR}/.env"
-    echo "You can use ${SOURCE_DIR}/.env.example as template"
-    exit 1
-  fi
-  . "${SOURCE_DIR}/.env"
-
   git_origin_url="$(git remote get-url origin)"
   repository="${git_origin_url#*github.com?}"
   repository="${repository%.git}"

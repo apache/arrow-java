@@ -28,6 +28,13 @@ fi
 version=$1
 rc=$2
 
+if [ ! -f "${SOURCE_DIR}/.env" ]; then
+  echo "You must create ${SOURCE_DIR}/.env"
+  echo "You can use ${SOURCE_DIR}/.env.example as template"
+  exit 1
+fi
+. "${SOURCE_DIR}/.env"
+
 git_origin_url="$(git remote get-url origin)"
 repository="${git_origin_url#*github.com?}"
 repository="${repository%.git}"
