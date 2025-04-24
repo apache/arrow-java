@@ -1066,6 +1066,7 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
         (VarCharVector) currentRoot.getVector("IS_AUTOINCREMENT");
     final VarCharVector isGeneratedColumnVector =
         (VarCharVector) currentRoot.getVector("IS_GENERATEDCOLUMN");
+    final VarCharVector remarksVector = (VarCharVector) currentRoot.getVector("REMARKS");
 
     for (int i = 0; i < tableColumnsSize; i++, ordinalIndex++) {
       final Field field = tableColumns.get(i);
@@ -1137,6 +1138,11 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
         isAutoincrementVector.setSafe(insertIndex, booleanToYesOrNo(autoIncrement));
       } else {
         isAutoincrementVector.setSafe(insertIndex, EMPTY_BYTE_ARRAY);
+      }
+
+      String remarks = columnMetadata.getRemarks();
+      if (remarks != null) {
+        remarksVector.setSafe(insertIndex, remarks.getBytes(CHARSET));
       }
 
       // Fields also don't hold information about IS_AUTOINCREMENT and IS_GENERATEDCOLUMN,

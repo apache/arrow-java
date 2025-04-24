@@ -136,6 +136,10 @@ public final class ConvertUtils {
     if (searchable != null) {
       builder.setSearchable(searchable);
     }
+    final String remarks = columnMetadata.getRemarks();
+    if (remarks != null) {
+      builder.setLabel(remarks);
+    }
   }
 
   /**

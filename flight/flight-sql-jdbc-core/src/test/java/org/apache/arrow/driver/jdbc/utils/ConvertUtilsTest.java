@@ -46,6 +46,7 @@ public class ConvertUtilsTest {
             .isSearchable(true)
             .precision(20)
             .scale(10)
+            .remarks("test column")
             .build();
     ConvertUtils.setOnColumnMetaDataBuilder(builder, expectedColumnMetaData.getMetadataMap());
     assertBuilder(builder, expectedColumnMetaData);
@@ -119,5 +120,6 @@ public class ConvertUtilsTest {
     assertThat(flightSqlColumnMetaData.isReadOnly(), equalTo(builder.getReadOnly()));
     assertThat(precision == null ? 0 : precision, equalTo(builder.getPrecision()));
     assertThat(scale == null ? 0 : scale, equalTo(builder.getScale()));
+    assertThat(flightSqlColumnMetaData.getRemarks(), equalTo(builder.getLabel()));
   }
 }

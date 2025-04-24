@@ -26,7 +26,6 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer.serializeSchema;
-import static org.apache.arrow.flight.sql.impl.FlightSql.CommandGetCrossReference;
 import static org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportsConvert.SQL_CONVERT_BIGINT_VALUE;
 import static org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportsConvert.SQL_CONVERT_BIT_VALUE;
 import static org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportsConvert.SQL_CONVERT_INTEGER_VALUE;
@@ -55,9 +54,11 @@ import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
 import org.apache.arrow.driver.jdbc.utils.ResultSetTestUtils;
 import org.apache.arrow.driver.jdbc.utils.ThrowableAssertionUtils;
 import org.apache.arrow.flight.FlightProducer.ServerStreamListener;
+import org.apache.arrow.flight.sql.FlightSqlColumnMetadata;
 import org.apache.arrow.flight.sql.FlightSqlProducer.Schemas;
 import org.apache.arrow.flight.sql.impl.FlightSql;
 import org.apache.arrow.flight.sql.impl.FlightSql.CommandGetCatalogs;
+import org.apache.arrow.flight.sql.impl.FlightSql.CommandGetCrossReference;
 import org.apache.arrow.flight.sql.impl.FlightSql.CommandGetDbSchemas;
 import org.apache.arrow.flight.sql.impl.FlightSql.CommandGetExportedKeys;
 import org.apache.arrow.flight.sql.impl.FlightSql.CommandGetImportedKeys;
@@ -79,6 +80,7 @@ import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.AfterAll;
@@ -322,7 +324,7 @@ public class ArrowDatabaseMetadataTest {
                       expectedGetColumnsDecimalDigits.get(i % 3),
                       expectedGetColumnsRadix.get(i % 3),
                       !Objects.equals(expectedGetColumnsIsNullable.get(i % 3), "NO") ? 1 : 0,
-                      null,
+                      format("column description #%d", (i % 3) + 1),
                       null,
                       null,
                       null,
@@ -419,17 +421,44 @@ public class ArrowDatabaseMetadataTest {
           try (final BufferAllocator allocator = new RootAllocator();
               final VectorSchemaRoot root =
                   VectorSchemaRoot.create(Schemas.GET_TABLES_SCHEMA, allocator)) {
+            final Field field1 =
+                new Field(
+                    "column_1",
+                    new FieldType(
+                        true,
+                        ArrowType.Decimal.createDecimal(5, 2, 128),
+                        null,
+                        new FlightSqlColumnMetadata.Builder()
+                            .remarks("column description #1")
+                            .build()
+                            .getMetadataMap()),
+                    null);
+            final Field field2 =
+                new Field(
+                    "column_2",
+                    new FieldType(
+                        true,
+                        new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC"),
+                        null,
+                        new FlightSqlColumnMetadata.Builder()
+                            .remarks("column description #2")
+                            .build()
+                            .getMetadataMap()),
+                    null);
+            final Field field3 =
+                new Field(
+                    "column_3",
+                    new FieldType(
+                        false,
+                        Types.MinorType.INT.getType(),
+                        null,
+                        new FlightSqlColumnMetadata.Builder()
+                            .remarks("column description #3")
+                            .build()
+                            .getMetadataMap()),
+                    null);
             final byte[] filledTableSchemaBytes =
-                copyFrom(
-                        serializeSchema(
-                            new Schema(
-                                Arrays.asList(
-                                    Field.nullable(
-                                        "column_1", ArrowType.Decimal.createDecimal(5, 2, 128)),
-                                    Field.nullable(
-                                        "column_2",
-                                        new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC")),
-                                    Field.notNullable("column_3", Types.MinorType.INT.getType())))))
+                copyFrom(serializeSchema(new Schema(Arrays.asList(field1, field2, field3))))
                     .toByteArray();
             final VarCharVector catalogName = (VarCharVector) root.getVector("catalog_name");
             final VarCharVector schemaName = (VarCharVector) root.getVector("db_schema_name");

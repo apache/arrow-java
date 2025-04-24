@@ -53,6 +53,7 @@ public class FlightSqlColumnMetadata {
   private static final String IS_CASE_SENSITIVE = "ARROW:FLIGHT:SQL:IS_CASE_SENSITIVE";
   private static final String IS_READ_ONLY = "ARROW:FLIGHT:SQL:IS_READ_ONLY";
   private static final String IS_SEARCHABLE = "ARROW:FLIGHT:SQL:IS_SEARCHABLE";
+  private static final String REMARKS = "ARROW:FLIGHT:SQL:REMARKS";
 
   private static final String BOOLEAN_TRUE_STR = "1";
   private static final String BOOLEAN_FALSE_STR = "0";
@@ -193,6 +194,15 @@ public class FlightSqlColumnMetadata {
     return stringToBoolean(value);
   }
 
+  /**
+   * Returns the comment describing the column.
+   *
+   * @return The comment describing the column.
+   */
+  public String getRemarks() {
+    return metadataMap.get(REMARKS);
+  }
+
   /** Builder of FlightSqlColumnMetadata, used on FlightSqlProducer implementations. */
   public static class Builder {
     private final Map<String, String> metadataMap;
@@ -309,6 +319,17 @@ public class FlightSqlColumnMetadata {
      */
     public Builder isSearchable(boolean isSearchable) {
       metadataMap.put(IS_SEARCHABLE, booleanToString(isSearchable));
+      return this;
+    }
+
+    /**
+     * Sets the comment describing the column.
+     *
+     * @param remarks The comment describing the column.
+     * @return This builder.
+     */
+    public Builder remarks(String remarks) {
+      metadataMap.put(REMARKS, remarks);
       return this;
     }
 
