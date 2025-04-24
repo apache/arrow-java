@@ -82,8 +82,10 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
   @Override
   public <T> T getObject(final Class<T> type) throws SQLException {
     final Object value;
-    if (!this.isZoned & Set.of(OffsetDateTime.class, ZonedDateTime.class, Instant.class).contains(type)) {
-      throw new SQLException("Vectors without timezones can't be converted to objects with offset/tz info.");
+    if (!this.isZoned
+        & Set.of(OffsetDateTime.class, ZonedDateTime.class, Instant.class).contains(type)) {
+      throw new SQLException(
+          "Vectors without timezones can't be converted to objects with offset/tz info.");
     } else if (type == OffsetDateTime.class) {
       value = getOffsetDateTime();
     } else if (type == LocalDateTime.class) {
