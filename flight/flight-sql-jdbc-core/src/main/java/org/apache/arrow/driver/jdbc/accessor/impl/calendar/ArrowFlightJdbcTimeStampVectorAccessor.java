@@ -32,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.function.IntSupplier;
@@ -81,7 +82,9 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
   @Override
   public <T> T getObject(final Class<T> type) throws SQLException {
     final Object value;
-    if (type == OffsetDateTime.class) {
+    if (!this.isZoned & Set.of(OffsetDateTime.class, ZonedDateTime.class, Instant.class).contains(type)) {
+      throw new SQLException("Vectors without timezones can't be converted to objects with offset/tz info.");
+    } else if (type == OffsetDateTime.class) {
       value = getOffsetDateTime();
     } else if (type == LocalDateTime.class) {
       value = getLocalDateTime(null);
@@ -92,8 +95,9 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     } else if (type == Timestamp.class) {
       value = getObject();
     } else {
-      throw new SQLException("invalid class");
+      throw new SQLException("Object type not supported for TimeStamp Vector");
     }
+
     return !type.isPrimitive() && wasNull ? null : type.cast(value);
   }
 
@@ -160,7 +164,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
       return null;
     }
 
-    return new Date(getTimstampWithOffset(calendar, localDateTime).getTime());
+    return new Date(getTimestampWithOffset(calendar, localDateTime).getTime());
   }
 
   @Override
@@ -170,7 +174,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
       return null;
     }
 
-    return new Time(getTimstampWithOffset(calendar, localDateTime).getTime());
+    return new Time(getTimestampWithOffset(calendar, localDateTime).getTime());
   }
 
   @Override
@@ -180,7 +184,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
       return null;
     }
 
-    return getTimstampWithOffset(calendar, localDateTime);
+    return getTimestampWithOffset(calendar, localDateTime);
   }
 
   /**
@@ -190,7 +194,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
    * vector includes TZ info. In order to maintain backward compatibility, we apply the offset if
    * needed for getDate, getTime, and getTimestamp.
    */
-  private Timestamp getTimstampWithOffset(Calendar calendar, LocalDateTime localDateTime) {
+  private Timestamp getTimestampWithOffset(Calendar calendar, LocalDateTime localDateTime) {
     if (calendar != null && !isZoned) {
       TimeZone timeZone = calendar.getTimeZone();
       long millis = Timestamp.valueOf(localDateTime).getTime();

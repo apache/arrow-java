@@ -95,7 +95,7 @@ public class ArrowFlightJdbcDateVectorAccessor extends ArrowFlightJdbcAccessor {
     } else if (type == Date.class) {
       value = getObject();
     } else {
-      throw new SQLException("invalid class");
+      throw new SQLException("Object type not supported for Date Vector");
     }
     return !type.isPrimitive() && wasNull ? null : type.cast(value);
   }

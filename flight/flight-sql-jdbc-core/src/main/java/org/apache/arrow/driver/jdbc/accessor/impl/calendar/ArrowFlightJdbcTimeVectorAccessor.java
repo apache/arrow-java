@@ -131,7 +131,7 @@ public class ArrowFlightJdbcTimeVectorAccessor extends ArrowFlightJdbcAccessor {
     } else if (type == Time.class) {
       value = getObject();
     } else {
-      throw new SQLException("invalid class");
+      throw new SQLException("Object type not supported for Time Vector");
     }
     return !type.isPrimitive() && wasNull ? null : type.cast(value);
   }
