@@ -124,7 +124,7 @@ abstract class AbstractFieldReader extends AbstractBaseReader implements FieldRe
   public void copyAsField(String name, AbstractExtensionTypeWriter writer) {
     fail("CopyAsFieldExtension");
   }
-  
+
   public FieldReader reader(String name) {
     fail("reader(String name)");
     return null;
