@@ -98,6 +98,7 @@ public class FlightSqlScenarioProducer implements FlightSqlProducer {
                         .isSearchable(true)
                         .catalogName("catalog_test")
                         .precision(100)
+                        .remarks("test column")
                         .build()
                         .getMetadataMap()),
                 null)));
@@ -126,6 +127,7 @@ public class FlightSqlScenarioProducer implements FlightSqlProducer {
                         .isSearchable(true)
                         .catalogName("catalog_test")
                         .precision(100)
+                        .remarks("test column")
                         .build()
                         .getMetadataMap()),
                 null)));
