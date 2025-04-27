@@ -20,8 +20,10 @@ import static org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdb
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.Date;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -230,15 +232,20 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
       throws Exception {
     setup(vectorSupplier);
     final String expectedTimeZone = Objects.requireNonNullElse(timeZone, "UTC");
-
+    final boolean vectorHasTz = timeZone != null;
     accessorIterator.iterate(
         vector,
         (accessor, currentRow) -> {
-          final Instant value = accessor.getObject(Instant.class);
-          final Instant expectedValue = getZonedDateTime(currentRow, expectedTimeZone).toInstant();
+          if (vectorHasTz) {
+            final Instant value = accessor.getObject(Instant.class);
+            final Instant expectedValue =
+                getZonedDateTime(currentRow, expectedTimeZone).toInstant();
 
-          assertThat(value, equalTo(expectedValue));
-          assertThat(accessor.wasNull(), is(false));
+            assertThat(value, equalTo(expectedValue));
+            assertThat(accessor.wasNull(), is(false));
+          } else {
+            assertThrows(SQLException.class, () -> accessor.getObject(Instant.class));
+          }
         });
   }
 
@@ -249,17 +256,21 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
       throws Exception {
     setup(vectorSupplier);
     final String expectedTimeZone = Objects.requireNonNullElse(timeZone, "UTC");
-
+    final boolean vectorHasTz = timeZone != null;
     accessorIterator.iterate(
         vector,
         (accessor, currentRow) -> {
-          final OffsetDateTime value = accessor.getObject(OffsetDateTime.class);
-          final OffsetDateTime expectedValue =
-              getZonedDateTime(currentRow, expectedTimeZone).toOffsetDateTime();
+          if (vectorHasTz) {
+            final OffsetDateTime value = accessor.getObject(OffsetDateTime.class);
+            final OffsetDateTime expectedValue =
+                getZonedDateTime(currentRow, expectedTimeZone).toOffsetDateTime();
 
-          assertThat(value, equalTo(expectedValue));
-          assertThat(value.getOffset(), equalTo(expectedValue.getOffset()));
-          assertThat(accessor.wasNull(), is(false));
+            assertThat(value, equalTo(expectedValue));
+            assertThat(value.getOffset(), equalTo(expectedValue.getOffset()));
+            assertThat(accessor.wasNull(), is(false));
+          } else {
+            assertThrows(SQLException.class, () -> accessor.getObject(OffsetDateTime.class));
+          }
         });
   }
 
@@ -270,16 +281,20 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
       throws Exception {
     setup(vectorSupplier);
     final String expectedTimeZone = Objects.requireNonNullElse(timeZone, "UTC");
-
+    final boolean vectorHasTz = timeZone != null;
     accessorIterator.iterate(
         vector,
         (accessor, currentRow) -> {
-          final ZonedDateTime value = accessor.getObject(ZonedDateTime.class);
-          final ZonedDateTime expectedValue = getZonedDateTime(currentRow, expectedTimeZone);
+          if (vectorHasTz) {
+            final ZonedDateTime value = accessor.getObject(ZonedDateTime.class);
+            final ZonedDateTime expectedValue = getZonedDateTime(currentRow, expectedTimeZone);
 
-          assertThat(value, equalTo(expectedValue));
-          assertThat(value.getZone(), equalTo(ZoneId.of(expectedTimeZone)));
-          assertThat(accessor.wasNull(), is(false));
+            assertThat(value, equalTo(expectedValue));
+            assertThat(value.getZone(), equalTo(ZoneId.of(expectedTimeZone)));
+            assertThat(accessor.wasNull(), is(false));
+          } else {
+            assertThrows(SQLException.class, () -> accessor.getObject(ZonedDateTime.class));
+          }
         });
   }
 
