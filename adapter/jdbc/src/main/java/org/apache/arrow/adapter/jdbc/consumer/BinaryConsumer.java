@@ -51,13 +51,15 @@ public abstract class BinaryConsumer extends BaseConsumer<VarBinaryVector> {
 
   /** consume a InputStream. */
   public void consume(InputStream is) throws IOException {
+    while (currentIndex >= vector.getValueCapacity()) {
+      vector.reallocValidityAndOffsetBuffers();
+    }
+
+    final int startOffset = vector.getStartOffset(currentIndex);
+    final ArrowBuf offsetBuffer = vector.getOffsetBuffer();
+    int dataLength = 0;
+
     if (is != null) {
-      while (currentIndex >= vector.getValueCapacity()) {
-        vector.reallocValidityAndOffsetBuffers();
-      }
-      final int startOffset = vector.getStartOffset(currentIndex);
-      final ArrowBuf offsetBuffer = vector.getOffsetBuffer();
-      int dataLength = 0;
       int read;
       while ((read = is.read(reuseBytes)) != -1) {
         while (vector.getDataBuffer().capacity() < (startOffset + dataLength + read)) {
@@ -66,11 +68,12 @@ public abstract class BinaryConsumer extends BaseConsumer<VarBinaryVector> {
         vector.getDataBuffer().setBytes(startOffset + dataLength, reuseBytes, 0, read);
         dataLength += read;
       }
-      offsetBuffer.setInt(
-          (currentIndex + 1) * ((long) VarBinaryVector.OFFSET_WIDTH), startOffset + dataLength);
+
       BitVectorHelper.setBit(vector.getValidityBuffer(), currentIndex);
-      vector.setLastSet(currentIndex);
     }
+    offsetBuffer.setInt(
+            (currentIndex + 1) * ((long) VarBinaryVector.OFFSET_WIDTH), startOffset + dataLength);
+    vector.setLastSet(currentIndex);
   }
 
   public void moveWriterPosition() {
@@ -95,9 +98,7 @@ public abstract class BinaryConsumer extends BaseConsumer<VarBinaryVector> {
     @Override
     public void consume(ResultSet resultSet) throws SQLException, IOException {
       InputStream is = resultSet.getBinaryStream(columnIndexInResultSet);
-      if (!resultSet.wasNull()) {
-        consume(is);
-      }
+      consume(is);
       moveWriterPosition();
     }
   }
