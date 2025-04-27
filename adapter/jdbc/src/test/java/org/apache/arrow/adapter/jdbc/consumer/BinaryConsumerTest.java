@@ -124,14 +124,9 @@ public class BinaryConsumerTest extends AbstractConsumerTest {
       testRecords[i] = createBytes(DEFAULT_RECORD_BYTE_COUNT);
     }
     testConsumeInputStream(testRecords, false);
+
     byte[] bytes1 = new byte[] {1, 2, 3};
     byte[] bytes2 = new byte[] {4, 5, 6};
-    testConsumeInputStream(
-            new byte[][] {
-                    bytes1,
-                    null,
-                    bytes2
-            },
-            true);
+    testConsumeInputStream(new byte[][] {bytes1, null, bytes2}, true);
   }
 }
