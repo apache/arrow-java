@@ -287,7 +287,11 @@ class ArrowMessage implements AutoCloseable {
       ArrowBuf body = null;
       ArrowBuf appMetadata = null;
       while (stream.available() > 0) {
-        int tag = readRawVarint32(stream);
+        final int tagFirstByte = stream.read();
+        if (tagFirstByte == -1) {
+          break;
+        }
+        int tag = readRawVarint32(tagFirstByte, stream);
         switch (tag) {
           case DESCRIPTOR_TAG:
             {
@@ -366,6 +370,10 @@ class ArrowMessage implements AutoCloseable {
 
   private static int readRawVarint32(InputStream is) throws IOException {
     int firstByte = is.read();
+    return readRawVarint32(firstByte, is);
+  }
+
+  private static int readRawVarint32(int firstByte, InputStream is) throws IOException {
     return CodedInputStream.readRawVarint32(firstByte, is);
   }
 
