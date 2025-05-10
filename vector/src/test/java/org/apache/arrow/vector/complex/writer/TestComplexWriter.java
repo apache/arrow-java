@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -64,6 +65,7 @@ import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.impl.UnionMapReader;
 import org.apache.arrow.vector.complex.impl.UnionReader;
 import org.apache.arrow.vector.complex.impl.UnionWriter;
+import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
 import org.apache.arrow.vector.complex.reader.BaseReader.StructReader;
 import org.apache.arrow.vector.complex.reader.BigIntReader;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -71,9 +73,11 @@ import org.apache.arrow.vector.complex.reader.Float4Reader;
 import org.apache.arrow.vector.complex.reader.Float8Reader;
 import org.apache.arrow.vector.complex.reader.IntReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ComplexWriter;
+import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
+import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.DecimalHolder;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
@@ -93,6 +97,7 @@ import org.apache.arrow.vector.types.pojo.ArrowType.Union;
 import org.apache.arrow.vector.types.pojo.ArrowType.Utf8;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.UuidType;
 import org.apache.arrow.vector.util.CallBack;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.arrow.vector.util.JsonStringArrayList;
@@ -2487,6 +2492,37 @@ public class TestComplexWriter {
           "row11", new String(vector.getLargeVarBinaryVector().get(10), StandardCharsets.UTF_8));
       assertEquals(
           "row12", new String(vector.getLargeVarBinaryVector().get(11), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  public void extensionWriterReader() throws Exception {
+    // test values
+    UUID u1 = UUID.randomUUID();
+
+    try (NonNullableStructVector parent = NonNullableStructVector.empty("parent", allocator)) {
+      // write
+
+      ComplexWriter writer = new ComplexWriterImpl("root", parent);
+      StructWriter rootWriter = writer.rootAsStruct();
+
+      {
+        ExtensionWriter extensionWriter = rootWriter.extension("uuid1", new UuidType());
+        extensionWriter.setPosition(0);
+        extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+        extensionWriter.writeExtension(u1);
+      }
+      // read
+      StructReader rootReader = new SingleStructReaderImpl(parent).reader("root");
+      {
+        FieldReader uuidReader = rootReader.reader("uuid1");
+        uuidReader.setPosition(0);
+        UuidHolder uuidHolder = new UuidHolder();
+        uuidReader.read(uuidHolder);
+        final ByteBuffer bb = ByteBuffer.wrap(uuidHolder.value);
+        UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+        assertEquals(u1, actualUuid);
+      }
     }
   }
 }
