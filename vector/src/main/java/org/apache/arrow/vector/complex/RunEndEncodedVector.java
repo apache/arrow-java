@@ -820,4 +820,54 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
 
     return result;
   }
+
+  public static class RangeIterator {
+
+    private final RunEndEncodedVector runEndEncodedVector;
+    private final int rangeEnd;
+    private int runIndex;
+    private int runEnd;
+    private int logicalPos;
+
+    public RangeIterator(RunEndEncodedVector runEndEncodedVector, int startIndex, int length) {
+      this.runEndEncodedVector = runEndEncodedVector;
+      this.rangeEnd = startIndex + length;
+      this.runIndex = runEndEncodedVector.getPhysicalIndex(startIndex) - 1;
+      this.runEnd = startIndex;
+      this.logicalPos = -1;
+    }
+
+    public boolean nextRun() {
+      logicalPos = runEnd;
+      if (logicalPos >= rangeEnd) {
+        return false;
+      }
+      updateRun();
+      return true;
+    }
+
+    private void updateRun() {
+      runIndex++;
+      runEnd = (int) ((BaseIntVector) runEndEncodedVector.runEndsVector).getValueAsLong(runIndex);
+    }
+
+    public boolean nextValue() {
+      logicalPos++;
+      if (logicalPos >= rangeEnd) {
+        return false;
+      }
+      if (logicalPos == runEnd) {
+        updateRun();
+      }
+      return true;
+    }
+
+    public int getRunIndex() {
+      return runIndex;
+    }
+
+    public int getRunLength() {
+      return Math.min(runEnd, rangeEnd) - logicalPos;
+    }
+  }
 }
