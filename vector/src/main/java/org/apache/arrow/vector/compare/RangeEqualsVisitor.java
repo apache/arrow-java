@@ -272,16 +272,17 @@ public class RangeEqualsVisitor implements VectorVisitor<Boolean, Range> {
     RunEndEncodedVector rightVector = (RunEndEncodedVector) right;
 
     final RunEndEncodedVector.RangeIterator leftIterator =
-        new RangeIterator(leftVector, range.getLeftStart(), range.getLength());
+        new RunEndEncodedVector.RangeIterator(leftVector, range.getLeftStart(), range.getLength());
     final RunEndEncodedVector.RangeIterator rightIterator =
-        new RangeIterator(rightVector, range.getRightStart(), range.getLength());
+        new RunEndEncodedVector.RangeIterator(
+            rightVector, range.getRightStart(), range.getLength());
 
     FieldVector leftValuesVector = leftVector.getValuesVector();
     FieldVector rightValuesVector = rightVector.getValuesVector();
 
     RangeEqualsVisitor innerVisitor = createInnerVisitor(leftValuesVector, rightValuesVector, null);
 
-    while (leftIterator.nextRun() | rightIterator.nextRun()) {
+    while (nextRun(leftIterator, rightIterator)) {
       int leftPhysicalIndex = leftIterator.getRunIndex();
       int rightPhysicalIndex = rightIterator.getRunIndex();
 
@@ -295,7 +296,13 @@ public class RangeEqualsVisitor implements VectorVisitor<Boolean, Range> {
       }
     }
 
-    return true;
+    return leftIterator.isEnd() && rightIterator.isEnd();
+  }
+
+  private static boolean nextRun(RangeIterator leftIterator, RangeIterator rightIterator) {
+    boolean left = leftIterator.nextRun();
+    boolean right = rightIterator.nextRun();
+    return left && right;
   }
 
   protected RangeEqualsVisitor createInnerVisitor(

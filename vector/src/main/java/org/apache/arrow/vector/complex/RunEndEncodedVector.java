@@ -28,6 +28,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.OutOfMemoryException;
 import org.apache.arrow.memory.util.ByteFunctionHelpers;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.BaseIntVector;
 import org.apache.arrow.vector.BaseValueVector;
 import org.apache.arrow.vector.BigIntVector;
@@ -830,8 +831,17 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
     private int logicalPos;
 
     public RangeIterator(RunEndEncodedVector runEndEncodedVector, int startIndex, int length) {
+      int rangeEnd = startIndex + length;
+      Preconditions.checkArgument(
+          startIndex >= 0, "startIndex %s must be non negative.", startIndex);
+      Preconditions.checkArgument(
+          rangeEnd <= runEndEncodedVector.getValueCount(),
+          "(startIndex + length) %s out of range[0, %s].",
+          rangeEnd,
+          runEndEncodedVector.getValueCount());
+
+      this.rangeEnd = rangeEnd;
       this.runEndEncodedVector = runEndEncodedVector;
-      this.rangeEnd = startIndex + length;
       this.runIndex = runEndEncodedVector.getPhysicalIndex(startIndex) - 1;
       this.runEnd = startIndex;
       this.logicalPos = -1;
@@ -868,6 +878,10 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
 
     public int getRunLength() {
       return Math.min(runEnd, rangeEnd) - logicalPos;
+    }
+
+    public boolean isEnd() {
+      return logicalPos >= rangeEnd;
     }
   }
 }

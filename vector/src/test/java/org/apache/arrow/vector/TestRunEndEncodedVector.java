@@ -148,12 +148,18 @@ public class TestRunEndEncodedVector {
     assertTrue(
         constantVector.accept(
             new RangeEqualsVisitor(constantVector, constantVector), new Range(1, 2, 13)));
-    assertFalse(
-        constantVector.accept(
-            new RangeEqualsVisitor(constantVector, constantVector), new Range(1, 10, 10)));
-    assertFalse(
-        constantVector.accept(
-            new RangeEqualsVisitor(constantVector, constantVector), new Range(10, 1, 10)));
+
+    // throws exception if the range end is out the bound of the vector
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            constantVector.accept(
+                new RangeEqualsVisitor(constantVector, constantVector), new Range(1, 10, 10)));
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            constantVector.accept(
+                new RangeEqualsVisitor(constantVector, constantVector), new Range(10, 1, 10)));
 
     // Create REE vector representing: [1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5].
     RunEndEncodedVector reeVector =
