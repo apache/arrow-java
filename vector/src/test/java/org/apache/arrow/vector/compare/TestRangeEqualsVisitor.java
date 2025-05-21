@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.BigIntVector;
@@ -39,6 +40,7 @@ import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListViewVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.ListViewVector;
+import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.complex.impl.NullableStructWriter;
@@ -53,7 +55,9 @@ import org.apache.arrow.vector.holders.NullableIntHolder;
 import org.apache.arrow.vector.holders.NullableUInt4Holder;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.Types;
+import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.ArrowType.RunEndEncoded;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.junit.jupiter.api.AfterEach;
@@ -1000,6 +1004,54 @@ public class TestRangeEqualsVisitor {
       Range range = new Range(0, 0, right.getValueCount());
       assertTrue(new ApproxEqualsVisitor(left1, right, epsilon, epsilon).rangeEquals(range));
       assertFalse(new ApproxEqualsVisitor(left2, right, epsilon, epsilon).rangeEquals(range));
+    }
+  }
+
+  @Test
+  public void testRunEndEncodedFloat8ApproxEquals() {
+    try (final Float8Vector vector1 = new Float8Vector("float", allocator);
+        final Float8Vector vector2 = new Float8Vector("float", allocator);
+        final Float8Vector vector3 = new Float8Vector("float", allocator);
+        final IntVector reeVector = new IntVector("ree", allocator)) {
+
+      final float epsilon = 1.0E-6f;
+      setVector(vector1, 1.1, 2.2);
+      setVector(vector2, 1.1 + epsilon / 2, 2.2 + epsilon / 2);
+      setVector(vector3, 1.1 + epsilon * 2, 2.2 + epsilon * 2);
+      setVector(reeVector, 1, 3);
+
+      ArrowType type = MinorType.FLOAT8.getType();
+      final FieldType valueType = FieldType.notNullable(type);
+      final FieldType runEndType = FieldType.notNullable(MinorType.INT.getType());
+
+      final Field valueField = new Field("value", valueType, null);
+      final Field runEndField = new Field("ree", runEndType, null);
+
+      Field field =
+          new Field(
+              "ree_float",
+              FieldType.notNullable(RunEndEncoded.INSTANCE),
+              List.of(runEndField, valueField));
+
+      try (final RunEndEncodedVector encodedVector1 =
+              new RunEndEncodedVector(field, allocator, reeVector, vector1, null);
+          final RunEndEncodedVector encodedVector2 =
+              new RunEndEncodedVector(field, allocator, reeVector, vector2, null);
+          final RunEndEncodedVector encodedVector3 =
+              new RunEndEncodedVector(field, allocator, reeVector, vector3, null)) {
+
+        encodedVector1.setValueCount(3);
+        encodedVector2.setValueCount(3);
+        encodedVector3.setValueCount(3);
+
+        Range range = new Range(0, 0, encodedVector1.getValueCount());
+        assertTrue(
+            new ApproxEqualsVisitor(encodedVector1, encodedVector2, epsilon, epsilon)
+                .rangeEquals(range));
+        assertFalse(
+            new ApproxEqualsVisitor(encodedVector1, encodedVector3, epsilon, epsilon)
+                .rangeEquals(range));
+      }
     }
   }
 
