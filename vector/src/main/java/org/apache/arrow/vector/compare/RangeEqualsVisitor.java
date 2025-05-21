@@ -286,12 +286,8 @@ public class RangeEqualsVisitor implements VectorVisitor<Boolean, Range> {
       int leftPhysicalIndex = leftIterator.getRunIndex();
       int rightPhysicalIndex = rightIterator.getRunIndex();
 
-      if (leftValuesVector.accept(
+      if (leftIterator.getRunLength() != rightIterator.getRunLength() || !leftValuesVector.accept(
           innerVisitor, new Range(leftPhysicalIndex, rightPhysicalIndex, 1))) {
-        if (leftIterator.getRunLength() != rightIterator.getRunLength()) {
-          return false;
-        }
-      } else {
         return false;
       }
     }
