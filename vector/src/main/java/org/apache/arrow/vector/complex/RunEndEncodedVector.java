@@ -830,6 +830,14 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
     private int runEnd;
     private int logicalPos;
 
+    /**
+     * Constructs a new RangeIterator for iterating over a range of values in a RunEndEncodedVector.
+     *
+     * @param runEndEncodedVector The vector to iterate over
+     * @param startIndex The logical start index of the range (inclusive)
+     * @param length The number of values to include in the range
+     * @throws IllegalArgumentException if startIndex is negative or (startIndex + length) exceeds vector bounds
+     */
     public RangeIterator(RunEndEncodedVector runEndEncodedVector, int startIndex, int length) {
       int rangeEnd = startIndex + length;
       Preconditions.checkArgument(
@@ -847,6 +855,11 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
       this.logicalPos = -1;
     }
 
+    /**
+     * Advances to the next run in the range.
+     *
+     * @return true if there is another run available, false if iteration has completed
+     */
     public boolean nextRun() {
       logicalPos = runEnd;
       if (logicalPos >= rangeEnd) {
@@ -861,6 +874,11 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
       runEnd = (int) ((BaseIntVector) runEndEncodedVector.runEndsVector).getValueAsLong(runIndex);
     }
 
+    /**
+     * Advances to the next value in the range.
+     *
+     * @return true if there is another value available, false if iteration has completed
+     */
     public boolean nextValue() {
       logicalPos++;
       if (logicalPos >= rangeEnd) {
@@ -872,14 +890,29 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
       return true;
     }
 
+    /**
+     * Gets the current run index (physical position in the run-ends vector).
+     *
+     * @return the current run index
+     */
     public int getRunIndex() {
       return runIndex;
     }
 
+    /**
+     * Gets the length of the current run within the iterator's range.
+     *
+     * @return the number of remaining values in current run within the iterator's range
+     */
     public int getRunLength() {
       return Math.min(runEnd, rangeEnd) - logicalPos;
     }
 
+    /**
+     * Checks if iteration has completed.
+     *
+     * @return true if all values in the range have been processed, false otherwise
+     */
     public boolean isEnd() {
       return logicalPos >= rangeEnd;
     }
