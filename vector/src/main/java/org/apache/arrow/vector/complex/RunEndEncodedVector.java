@@ -836,7 +836,8 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
      * @param runEndEncodedVector The vector to iterate over
      * @param startIndex The logical start index of the range (inclusive)
      * @param length The number of values to include in the range
-     * @throws IllegalArgumentException if startIndex is negative or (startIndex + length) exceeds vector bounds
+     * @throws IllegalArgumentException if startIndex is negative or (startIndex + length) exceeds
+     *     vector bounds
      */
     public RangeIterator(RunEndEncodedVector runEndEncodedVector, int startIndex, int length) {
       int rangeEnd = startIndex + length;
