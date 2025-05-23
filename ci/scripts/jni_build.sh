@@ -50,11 +50,15 @@ Darwin)
 esac
 
 : "${ARROW_JAVA_BUILD_TESTS:=${ARROW_BUILD_TESTS:-ON}}"
+: "${ARROW_VCPKG:=OFF}"
 : "${CMAKE_BUILD_TYPE:=release}"
 read -ra EXTRA_CMAKE_OPTIONS <<<"${JAVA_JNI_CMAKE_ARGS:-}"
+# Must set ARROW_VCPKG because upstream Findutf8proc.cmake checks that to
+# determine what to do
 cmake \
   -S "${source_dir}" \
   -B "${build_dir}" \
+  -DARROW_VCPKG="${ARROW_VCPKG}" \
   -DARROW_JAVA_JNI_ENABLE_DATASET="${ARROW_DATASET:-OFF}" \
   -DARROW_JAVA_JNI_ENABLE_GANDIVA="${ARROW_GANDIVA:-OFF}" \
   -DARROW_JAVA_JNI_ENABLE_ORC="${ARROW_ORC:-OFF}" \
