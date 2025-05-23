@@ -58,7 +58,6 @@ final class ArrayImporter {
     ArrowArray ownedArray = ArrowArray.allocateNew(allocator);
     ownedArray.save(snapshot);
     src.markReleased();
-    src.close();
 
     recursionLevel = 0;
 
