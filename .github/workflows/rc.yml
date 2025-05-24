@@ -221,6 +221,10 @@ jobs:
           # llvm@14 because llvm is newer than llvm@14.
           brew uninstall llvm || :
 
+          # We can remove this when we drop support for
+          # macos-13. because macos-14 or later uses /opt/homebrew/
+          # not /usr/local/.
+          #
           # Ensure updating python@XXX with the "--overwrite" option.
           # If python@XXX is updated without "--overwrite", it causes
           # a conflict error. Because Python 3 installed not by
@@ -229,10 +233,10 @@ jobs:
           # tries to replace /usr/local/bin/2to3 and so on and causes
           # a conflict error.
           brew update
-          for python_package in $(brew list | grep python@); do
+          for python_package in $(brew list | grep python@ | sort -r); do
             brew install --overwrite ${python_package}
           done
-          brew install --overwrite python
+          brew install --overwrite python3
 
           if [ "$(uname -m)" = "arm64" ]; then
             # pkg-config formula is deprecated but it's still installed
