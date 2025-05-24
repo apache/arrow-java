@@ -44,7 +44,6 @@ final class ArrowArrayStreamReader extends ArrowReader {
     this.ownedStream = ArrowArrayStream.allocateNew(allocator);
     this.ownedStream.save(snapshot);
     stream.markReleased();
-    stream.close();
   }
 
   @Override

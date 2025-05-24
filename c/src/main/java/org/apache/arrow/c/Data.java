@@ -232,6 +232,21 @@ public final class Data {
   }
 
   /**
+   * Equivalent to calling {@link #importField(BufferAllocator, ArrowSchema, CDataDictionaryProvider, boolean) importField(allocator, schema, provider, true)}.
+   *
+   * @param allocator Buffer allocator for allocating dictionary vectors
+   * @param schema C data interface struct representing the field [inout]
+   * @param provider A dictionary provider will be initialized with empty dictionary vectors
+   *     (optional)
+   * @return Imported field object
+   * @see #importField(BufferAllocator, ArrowSchema, CDataDictionaryProvider, boolean)
+   */
+  public static Field importField(
+      BufferAllocator allocator, ArrowSchema schema, CDataDictionaryProvider provider) {
+    return importField(allocator, schema, provider, true);
+  }
+
+  /**
    * Import Java Field from the C data interface.
    *
    * <p>The given ArrowSchema struct is released (as per the C data interface specification), even
@@ -241,17 +256,38 @@ public final class Data {
    * @param schema C data interface struct representing the field [inout]
    * @param provider A dictionary provider will be initialized with empty dictionary vectors
    *     (optional)
+   * @param closeImportedStructs if true, the ArrowSchema struct will be closed when this method completes.
    * @return Imported field object
    */
   public static Field importField(
-      BufferAllocator allocator, ArrowSchema schema, CDataDictionaryProvider provider) {
+          BufferAllocator allocator,
+          ArrowSchema schema,
+          CDataDictionaryProvider provider,
+          boolean closeImportedStructs) {
     try {
       SchemaImporter importer = new SchemaImporter(allocator);
       return importer.importField(schema, provider);
     } finally {
       schema.release();
-      schema.close();
+      if (closeImportedStructs) {
+        schema.close();
+      }
     }
+  }
+
+  /**
+   * Equivalent to calling {@link #importSchema(BufferAllocator, ArrowSchema, CDataDictionaryProvider, boolean) importSchema(allocator, schema, provider, true)}.
+   *
+   * @param allocator Buffer allocator for allocating dictionary vectors
+   * @param schema C data interface struct representing the field
+   * @param provider A dictionary provider will be initialized with empty dictionary vectors
+   *     (optional)
+   * @return Imported schema object
+   * @see #importSchema(BufferAllocator, ArrowSchema, CDataDictionaryProvider, boolean)
+   */
+  public static Schema importSchema(
+      BufferAllocator allocator, ArrowSchema schema, CDataDictionaryProvider provider) {
+    return importSchema(allocator, schema, provider, true);
   }
 
   /**
@@ -264,11 +300,15 @@ public final class Data {
    * @param schema C data interface struct representing the field
    * @param provider A dictionary provider will be initialized with empty dictionary vectors
    *     (optional)
+   * @param closeImportedStructs if true, the ArrowSchema struct will be closed when this method completes.
    * @return Imported schema object
    */
   public static Schema importSchema(
-      BufferAllocator allocator, ArrowSchema schema, CDataDictionaryProvider provider) {
-    Field structField = importField(allocator, schema, provider);
+            BufferAllocator allocator,
+            ArrowSchema schema,
+            CDataDictionaryProvider provider,
+            boolean closeImportedStructs) {
+    Field structField = importField(allocator, schema, provider, closeImportedStructs);
     if (structField.getType().getTypeID() != ArrowTypeID.Struct) {
       throw new IllegalArgumentException(
           "Cannot import schema: ArrowSchema describes non-struct type");
@@ -277,23 +317,63 @@ public final class Data {
   }
 
   /**
-   * Import Java vector from the C data interface.
-   *
-   * <p>The ArrowArray struct has its contents moved (as per the C data interface specification) to
-   * a private object held alive by the resulting array.
+   * Equivalent to calling {@link #importIntoVector(BufferAllocator, ArrowArray, FieldVector, DictionaryProvider, boolean)}  importIntoVector(allocator, array, vector, provider, true)}.
    *
    * @param allocator Buffer allocator
    * @param array C data interface struct holding the array data
    * @param vector Imported vector object [out]
    * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @see #importIntoVector(BufferAllocator, ArrowArray, FieldVector, DictionaryProvider, boolean)
    */
   public static void importIntoVector(
       BufferAllocator allocator,
       ArrowArray array,
       FieldVector vector,
       DictionaryProvider provider) {
+    importIntoVector(allocator, array, vector, provider, true);
+  }
+
+  /**
+   * Import Java vector from the C data interface.
+   *
+   * <p>On successful completion, the ArrowArray struct will have been moved (as per the C data interface specification)
+   * to a private object held alive by the resulting array.
+   *
+   * @param allocator Buffer allocator
+   * @param array C data interface struct holding the array data
+   * @param vector Imported vector object [out]
+   * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @param closeImportedStructs if true, the ArrowArray struct will be closed when this method completes successfully.
+   */
+  public static void importIntoVector(
+          BufferAllocator allocator,
+          ArrowArray array,
+          FieldVector vector,
+          DictionaryProvider provider,
+          boolean closeImportedStructs) {
     ArrayImporter importer = new ArrayImporter(allocator, vector, provider);
     importer.importArray(array);
+    if (closeImportedStructs) {
+      array.close();
+    }
+  }
+
+  /**
+   * Equivalent to calling {@link #importVector(BufferAllocator, ArrowArray, ArrowSchema, CDataDictionaryProvider, boolean) importVector(allocator, array, schema, provider, true)}
+   *
+   * @param allocator Buffer allocator for allocating the output FieldVector
+   * @param array C data interface struct holding the array data
+   * @param schema C data interface struct holding the array type
+   * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @return Imported vector object
+   * @see #importVector(BufferAllocator, ArrowArray, ArrowSchema, CDataDictionaryProvider, boolean)
+   */
+  public static FieldVector importVector(
+      BufferAllocator allocator,
+      ArrowArray array,
+      ArrowSchema schema,
+      CDataDictionaryProvider provider) {
+    return importVector(allocator, array, schema, provider, true);
   }
 
   /**
@@ -307,17 +387,37 @@ public final class Data {
    * @param array C data interface struct holding the array data
    * @param schema C data interface struct holding the array type
    * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @param closeImportedStructs if true, the ArrowArray struct will be closed when this method completes successfully and
+   *                             the ArrowSchema struct will be always be closed.
    * @return Imported vector object
    */
   public static FieldVector importVector(
+          BufferAllocator allocator,
+          ArrowArray array,
+          ArrowSchema schema,
+          CDataDictionaryProvider provider,
+          boolean closeImportedStructs) {
+    Field field = importField(allocator, schema, provider, closeImportedStructs);
+    FieldVector vector = field.createVector(allocator);
+    importIntoVector(allocator, array, vector, provider, closeImportedStructs);
+    return vector;
+  }
+
+  /**
+   * Equivalent to calling {@link #importIntoVectorSchemaRoot(BufferAllocator, ArrowArray, VectorSchemaRoot, DictionaryProvider, boolean) importIntoVectorSchemaRoot(allocator, array, root, provider, true)}.
+   *
+   * @param allocator Buffer allocator
+   * @param array C data interface struct holding the record batch data
+   * @param root vector schema root to load into
+   * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @see #importIntoVectorSchemaRoot(BufferAllocator, ArrowArray, VectorSchemaRoot, DictionaryProvider, boolean)
+   */
+  public static void importIntoVectorSchemaRoot(
       BufferAllocator allocator,
       ArrowArray array,
-      ArrowSchema schema,
-      CDataDictionaryProvider provider) {
-    Field field = importField(allocator, schema, provider);
-    FieldVector vector = field.createVector(allocator);
-    importIntoVector(allocator, array, vector, provider);
-    return vector;
+      VectorSchemaRoot root,
+      DictionaryProvider provider) {
+    importIntoVectorSchemaRoot(allocator, array, root, provider, true);
   }
 
   /**
@@ -333,21 +433,37 @@ public final class Data {
    * @param array C data interface struct holding the record batch data
    * @param root vector schema root to load into
    * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @param closeImportedStructs if true, the ArrowArray struct will be closed when this method completes successfully
    */
   public static void importIntoVectorSchemaRoot(
-      BufferAllocator allocator,
-      ArrowArray array,
-      VectorSchemaRoot root,
-      DictionaryProvider provider) {
+          BufferAllocator allocator,
+          ArrowArray array,
+          VectorSchemaRoot root,
+          DictionaryProvider provider,
+          boolean closeImportedStructs) {
     try (StructVector structVector = StructVector.emptyWithDuplicates("", allocator)) {
       structVector.initializeChildrenFromFields(root.getSchema().getFields());
-      importIntoVector(allocator, array, structVector, provider);
+      importIntoVector(allocator, array, structVector, provider, closeImportedStructs);
       StructVectorUnloader unloader = new StructVectorUnloader(structVector);
       VectorLoader loader = new VectorLoader(root);
       try (ArrowRecordBatch recordBatch = unloader.getRecordBatch()) {
         loader.load(recordBatch);
       }
     }
+  }
+
+  /**
+   * Equivalent to calling {@link #importVectorSchemaRoot(BufferAllocator, ArrowSchema, CDataDictionaryProvider, boolean) importVectorSchemaRoot(allocator, schema, provider, true)}.
+   *
+   * @param allocator Buffer allocator for allocating the output VectorSchemaRoot
+   * @param schema C data interface struct holding the record batch schema
+   * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @return Imported vector schema root
+   * @see #importVectorSchemaRoot(BufferAllocator, ArrowSchema, CDataDictionaryProvider, boolean)
+   */
+  public static VectorSchemaRoot importVectorSchemaRoot(
+      BufferAllocator allocator, ArrowSchema schema, CDataDictionaryProvider provider) {
+    return importVectorSchemaRoot(allocator, schema, provider, true);
   }
 
   /**
@@ -360,11 +476,33 @@ public final class Data {
    * @param allocator Buffer allocator for allocating the output VectorSchemaRoot
    * @param schema C data interface struct holding the record batch schema
    * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @param closeImportedStructs if true, the ArrowSchema struct will be closed when this method completes
    * @return Imported vector schema root
    */
   public static VectorSchemaRoot importVectorSchemaRoot(
-      BufferAllocator allocator, ArrowSchema schema, CDataDictionaryProvider provider) {
-    return importVectorSchemaRoot(allocator, null, schema, provider);
+          BufferAllocator allocator,
+          ArrowSchema schema,
+          CDataDictionaryProvider provider,
+          boolean closeImportedStructs) {
+    return importVectorSchemaRoot(allocator, null, schema, provider, closeImportedStructs);
+  }
+
+  /**
+   * Equivalent to calling {@link #importVectorSchemaRoot(BufferAllocator, ArrowArray, ArrowSchema, CDataDictionaryProvider, boolean) importVectorSchemaRoot(allocator, array, schema, provider, true)}.
+   *
+   * @param allocator Buffer allocator for allocating the output VectorSchemaRoot
+   * @param array C data interface struct holding the record batch data (optional)
+   * @param schema C data interface struct holding the record batch schema
+   * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @return Imported vector schema root
+   * @see #importVectorSchemaRoot(BufferAllocator, ArrowArray, ArrowSchema, CDataDictionaryProvider, boolean)
+   */
+  public static VectorSchemaRoot importVectorSchemaRoot(
+      BufferAllocator allocator,
+      ArrowArray array,
+      ArrowSchema schema,
+      CDataDictionaryProvider provider) {
+    return importVectorSchemaRoot(allocator, array, schema, provider, true);
   }
 
   /**
@@ -383,29 +521,52 @@ public final class Data {
    * @param array C data interface struct holding the record batch data (optional)
    * @param schema C data interface struct holding the record batch schema
    * @param provider Dictionary provider to load dictionary vectors to (optional)
+   * @param closeImportedStructs if true, the ArrowArray struct will be closed when this method completes successfully and
+   *                             the ArrowSchema struct will be always be closed.
    * @return Imported vector schema root
    */
   public static VectorSchemaRoot importVectorSchemaRoot(
-      BufferAllocator allocator,
-      ArrowArray array,
-      ArrowSchema schema,
-      CDataDictionaryProvider provider) {
+            BufferAllocator allocator,
+            ArrowArray array,
+            ArrowSchema schema,
+            CDataDictionaryProvider provider,
+            boolean closeImportedStructs) {
     VectorSchemaRoot vsr =
-        VectorSchemaRoot.create(importSchema(allocator, schema, provider), allocator);
+        VectorSchemaRoot.create(importSchema(allocator, schema, provider, closeImportedStructs), allocator);
     if (array != null) {
-      importIntoVectorSchemaRoot(allocator, array, vsr, provider);
+      importIntoVectorSchemaRoot(allocator, array, vsr, provider, closeImportedStructs);
     }
     return vsr;
   }
 
   /**
-   * Import an ArrowArrayStream as an {@link ArrowReader}.
+   * Equivalent to calling {@link ##importArrayStream(BufferAllocator, ArrowArrayStream, boolean) importArrayStream(allocator, stream, true)}.
    *
    * @param allocator Buffer allocator for allocating the output data.
    * @param stream C stream interface struct to import.
    * @return Imported reader
+   * @see #importArrayStream(BufferAllocator, ArrowArrayStream, boolean)
    */
   public static ArrowReader importArrayStream(BufferAllocator allocator, ArrowArrayStream stream) {
-    return new ArrowArrayStreamReader(allocator, stream);
+    return importArrayStream(allocator, stream, true);
+  }
+
+  /**
+   * Import an ArrowArrayStream as an {@link ArrowReader}.
+   *
+   * <p>On successful completion, the ArrowArrayStream struct will have been moved (as per the C data interface specification)
+   *  to a private object held alive by the resulting ArrowReader.
+   *
+   * @param allocator Buffer allocator for allocating the output data.
+   * @param stream C stream interface struct to import.
+   * @param closeImportedStructs if true, the ArrowArrayStream struct will be closed when this method completes successfully
+   * @return Imported reader
+   */
+  public static ArrowReader importArrayStream(BufferAllocator allocator, ArrowArrayStream stream, boolean closeImportedStructs) {
+    ArrowArrayStreamReader reader = new ArrowArrayStreamReader(allocator, stream);
+      if (closeImportedStructs) {
+          stream.close();
+      }
+      return reader;
   }
 }
