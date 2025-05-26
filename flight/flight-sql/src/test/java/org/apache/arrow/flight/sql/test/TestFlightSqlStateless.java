@@ -18,7 +18,6 @@ package org.apache.arrow.flight.sql.test;
 
 import static org.apache.arrow.flight.sql.util.FlightStreamUtils.getResults;
 import static org.apache.arrow.util.AutoCloseables.close;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import org.apache.arrow.flight.FlightClient;
@@ -34,7 +33,7 @@ import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.Schema;
-import org.hamcrest.MatcherAssert;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -89,10 +88,10 @@ public class TestFlightSqlStateless extends TestFlightSql {
         for (FlightEndpoint endpoint : flightInfo.getEndpoints()) {
           try (FlightStream stream = sqlClient.getStream(endpoint.getTicket())) {
             assertAll(
-                () -> MatcherAssert.assertThat(stream.getSchema(), is(SCHEMA_INT_TABLE)),
+                () -> Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
                 () ->
-                    MatcherAssert.assertThat(
-                        getResults(stream), is(EXPECTED_RESULTS_FOR_PARAMETER_BINDING)));
+                    Assertions.assertThat(
+                        getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_PARAMETER_BINDING));
           }
         }
       }
