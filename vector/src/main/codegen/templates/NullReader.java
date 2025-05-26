@@ -86,6 +86,10 @@ public class NullReader extends AbstractBaseReader implements FieldReader{
   }
   </#list></#list>
 
+  public void read(ExtensionHolder holder) {
+    holder.isSet = 0;
+  }
+
   public int size(){
     return 0;
   }

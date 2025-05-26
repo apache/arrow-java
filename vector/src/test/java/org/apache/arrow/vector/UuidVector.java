@@ -20,6 +20,9 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
+import org.apache.arrow.vector.complex.reader.FieldReader;
+import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.UuidType;
@@ -79,9 +82,19 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     return new TransferImpl((UuidVector) to);
   }
 
+  @Override
+  protected FieldReader getReaderImpl() {
+    return new UuidReaderImpl(this);
+  }
+
   public void setSafe(int index, byte[] value) {
     getUnderlyingVector().setIndexDefined(index);
     getUnderlyingVector().setSafe(index, value);
+  }
+
+  public void get(int index, UuidHolder holder) {
+    holder.value = getUnderlyingVector().get(index);
+    holder.isSet = 1;
   }
 
   public class TransferImpl implements TransferPair {
