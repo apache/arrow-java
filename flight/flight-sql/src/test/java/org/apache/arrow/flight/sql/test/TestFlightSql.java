@@ -21,9 +21,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.apache.arrow.flight.sql.util.FlightStreamUtils.getResults;
 import static org.apache.arrow.util.AutoCloseables.close;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,6 +37,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import org.apache.arrow.flight.CancelFlightInfoRequest;
@@ -75,9 +74,7 @@ import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Text;
 import org.apache.arrow.vector.util.VectorBatchAppender;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.Condition;
-import org.assertj.core.api.HamcrestCondition;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -247,14 +244,14 @@ public class TestFlightSql {
   @Test
   public void testGetTablesSchema() {
     final FlightInfo info = sqlClient.getTables(null, null, null, null, true);
-    Assertions.assertThat(info.getSchemaOptional())
+    assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA));
   }
 
   @Test
   public void testGetTablesSchemaExcludeSchema() {
     final FlightInfo info = sqlClient.getTables(null, null, null, null, false);
-    Assertions.assertThat(info.getSchemaOptional())
+    assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA));
   }
 
@@ -265,7 +262,7 @@ public class TestFlightSql {
             sqlClient.getTables(null, null, null, null, false).getEndpoints().get(0).getTicket())) {
       assertAll(
           () -> {
-            Assertions.assertThat(stream.getSchema())
+            assertThat(stream.getSchema())
                 .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA);
           },
           () -> {
@@ -300,7 +297,7 @@ public class TestFlightSql {
                     asList(null /* TODO No catalog yet */, "SYSIBM", "SYSDUMMY1", "SYSTEM TABLE"),
                     asList(null /* TODO No catalog yet */, "APP", "FOREIGNTABLE", "TABLE"),
                     asList(null /* TODO No catalog yet */, "APP", "INTTABLE", "TABLE"));
-            Assertions.assertThat(results).isEqualTo(expectedResults);
+            assertThat(results).isEqualTo(expectedResults);
           });
     }
   }
@@ -317,7 +314,7 @@ public class TestFlightSql {
 
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA),
           () -> {
             final List<List<String>> results = getResults(stream);
@@ -326,7 +323,7 @@ public class TestFlightSql {
                     // catalog_name | schema_name | table_name | table_type | table_schema
                     asList(null /* TODO No catalog yet */, "APP", "FOREIGNTABLE", "TABLE"),
                     asList(null /* TODO No catalog yet */, "APP", "INTTABLE", "TABLE"));
-            Assertions.assertThat(results).isEqualTo(expectedResults);
+            assertThat(results).isEqualTo(expectedResults);
           });
     }
   }
@@ -342,11 +339,9 @@ public class TestFlightSql {
                 .getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
-                  .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA),
+              assertThat(stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA),
           () -> {
-            Assertions.assertThat(stream.getSchema())
-                .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA);
+            assertThat(stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA);
             final List<List<String>> results = getResults(stream);
             final List<List<String>> expectedResults =
                 ImmutableList.of(
@@ -486,7 +481,7 @@ public class TestFlightSql {
                                                 .getMetadataMap()),
                                         null)))
                             .toJson()));
-            Assertions.assertThat(results).isEqualTo(expectedResults);
+            assertThat(results).isEqualTo(expectedResults);
           });
     }
   }
@@ -497,12 +492,11 @@ public class TestFlightSql {
       assertAll(
           () -> {
             final Schema actualSchema = preparedStatement.getResultSetSchema();
-            Assertions.assertThat(actualSchema).isEqualTo(SCHEMA_INT_TABLE);
+            assertThat(actualSchema).isEqualTo(SCHEMA_INT_TABLE);
           },
           () -> {
             final FlightInfo info = preparedStatement.execute();
-            Assertions.assertThat(info.getSchemaOptional())
-                .isEqualTo(Optional.of(SCHEMA_INT_TABLE));
+            assertThat(info.getSchemaOptional()).isEqualTo(Optional.of(SCHEMA_INT_TABLE));
           });
     }
   }
@@ -513,10 +507,8 @@ public class TestFlightSql {
         final FlightStream stream =
             sqlClient.getStream(preparedStatement.execute().getEndpoints().get(0).getTicket())) {
       assertAll(
-          () -> Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
-          () ->
-              Assertions.assertThat(getResults(stream))
-                  .isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY));
+          () -> assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
+          () -> assertThat(getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY));
     }
   }
 
@@ -538,10 +530,8 @@ public class TestFlightSql {
         FlightStream stream = sqlClient.getStream(flightInfo.getEndpoints().get(0).getTicket());
 
         assertAll(
-            () -> Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
-            () ->
-                Assertions.assertThat(getResults(stream))
-                    .isEqualTo(EXPECTED_RESULTS_FOR_PARAMETER_BINDING));
+            () -> assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
+            () -> assertThat(getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_PARAMETER_BINDING));
       }
     }
   }
@@ -579,8 +569,8 @@ public class TestFlightSql {
           deletedRows = deletePrepare.executeUpdate();
         }
         assertAll(
-            () -> Assertions.assertThat(updatedRows).isEqualTo(10L),
-            () -> Assertions.assertThat(deletedRows).isEqualTo(10L));
+            () -> assertThat(updatedRows).isEqualTo(10L),
+            () -> assertThat(deletedRows).isEqualTo(10L));
       }
     }
   }
@@ -647,7 +637,7 @@ public class TestFlightSql {
                     null,
                     null));
 
-        Assertions.assertThat(updatedRows).isEqualTo(-1L);
+        assertThat(updatedRows).isEqualTo(-1L);
 
         // Ingest directly using VectorSchemaRoot
         populateNext10RowsInIngestRootBatch(
@@ -672,7 +662,7 @@ public class TestFlightSql {
             deletedRows = deletePrepare.executeUpdate();
           }
 
-          Assertions.assertThat(deletedRows).isEqualTo(30L);
+          assertThat(deletedRows).isEqualTo(30L);
         }
       }
     }
@@ -709,8 +699,7 @@ public class TestFlightSql {
       final long deletedRows = deletePrepare.executeUpdate();
 
       assertAll(
-          () -> Assertions.assertThat(updatedRows).isEqualTo(1L),
-          () -> Assertions.assertThat(deletedRows).isEqualTo(1L));
+          () -> assertThat(updatedRows).isEqualTo(1L), () -> assertThat(deletedRows).isEqualTo(1L));
     }
   }
 
@@ -719,18 +708,18 @@ public class TestFlightSql {
     final PreparedStatement preparedStatement = sqlClient.prepare("SELECT * FROM intTable");
     assertAll(
         () -> {
-          Assertions.assertThat(preparedStatement.isClosed()).isEqualTo(false);
+          assertThat(preparedStatement.isClosed()).isEqualTo(false);
         },
         () -> {
           preparedStatement.close();
-          Assertions.assertThat(preparedStatement.isClosed()).isEqualTo(true);
+          assertThat(preparedStatement.isClosed()).isEqualTo(true);
         });
   }
 
   @Test
   public void testGetCatalogsSchema() {
     final FlightInfo info = sqlClient.getCatalogs();
-    Assertions.assertThat(info.getSchemaOptional())
+    assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_CATALOGS_SCHEMA));
   }
 
@@ -740,11 +729,11 @@ public class TestFlightSql {
         sqlClient.getStream(sqlClient.getCatalogs().getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_CATALOGS_SCHEMA),
           () -> {
             List<List<String>> catalogs = getResults(stream);
-            Assertions.assertThat(catalogs).isEqualTo(emptyList());
+            assertThat(catalogs).isEqualTo(emptyList());
           });
     }
   }
@@ -752,7 +741,7 @@ public class TestFlightSql {
   @Test
   public void testGetTableTypesSchema() {
     final FlightInfo info = sqlClient.getTableTypes();
-    Assertions.assertThat(info.getSchemaOptional())
+    assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA));
   }
 
@@ -762,7 +751,7 @@ public class TestFlightSql {
         sqlClient.getStream(sqlClient.getTableTypes().getEndpoints().get(0).getTicket())) {
       assertAll(
           () -> {
-            Assertions.assertThat(stream.getSchema())
+            assertThat(stream.getSchema())
                 .isEqualTo(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA);
           },
           () -> {
@@ -774,7 +763,7 @@ public class TestFlightSql {
                     singletonList("SYSTEM TABLE"),
                     singletonList("TABLE"),
                     singletonList("VIEW"));
-            Assertions.assertThat(tableTypes).isEqualTo(expectedTableTypes);
+            assertThat(tableTypes).isEqualTo(expectedTableTypes);
           });
     }
   }
@@ -782,7 +771,7 @@ public class TestFlightSql {
   @Test
   public void testGetSchemasSchema() {
     final FlightInfo info = sqlClient.getSchemas(null, null);
-    Assertions.assertThat(info.getSchemaOptional())
+    assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_SCHEMAS_SCHEMA));
   }
 
@@ -792,8 +781,7 @@ public class TestFlightSql {
         sqlClient.getStream(sqlClient.getSchemas(null, null).getEndpoints().get(0).getTicket())) {
       assertAll(
           () -> {
-            Assertions.assertThat(stream.getSchema())
-                .isEqualTo(FlightSqlProducer.Schemas.GET_SCHEMAS_SCHEMA);
+            assertThat(stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_SCHEMAS_SCHEMA);
           },
           () -> {
             final List<List<String>> schemas = getResults(stream);
@@ -811,7 +799,7 @@ public class TestFlightSql {
                     asList(null /* TODO Add catalog. */, "SYSIBM"),
                     asList(null /* TODO Add catalog. */, "SYSPROC"),
                     asList(null /* TODO Add catalog. */, "SYSSTAT"));
-            Assertions.assertThat(schemas).isEqualTo(expectedSchemas);
+            assertThat(schemas).isEqualTo(expectedSchemas);
           });
     }
   }
@@ -824,23 +812,23 @@ public class TestFlightSql {
     final List<List<String>> results = getResults(stream);
 
     assertAll(
-        () -> Assertions.assertThat(results.size()).isEqualTo(1),
+        () -> assertThat(results.size()).isEqualTo(1),
         () -> {
           final List<String> result = results.get(0);
           assertAll(
-              () -> Assertions.assertThat(result.get(0)).isEqualTo(""),
-              () -> Assertions.assertThat(result.get(1)).isEqualTo("APP"),
-              () -> Assertions.assertThat(result.get(2)).isEqualTo("INTTABLE"),
-              () -> Assertions.assertThat(result.get(3)).isEqualTo("ID"),
-              () -> Assertions.assertThat(result.get(4)).isEqualTo("1"),
-              () -> Assertions.assertThat(result.get(5)).isNotNull());
+              () -> assertThat(result.get(0)).isEqualTo(""),
+              () -> assertThat(result.get(1)).isEqualTo("APP"),
+              () -> assertThat(result.get(2)).isEqualTo("INTTABLE"),
+              () -> assertThat(result.get(3)).isEqualTo("ID"),
+              () -> assertThat(result.get(4)).isEqualTo("1"),
+              () -> assertThat(result.get(5)).isNotNull());
         });
   }
 
   @Test
   public void testGetSqlInfoSchema() {
     final FlightInfo info = sqlClient.getSqlInfo();
-    Assertions.assertThat(info.getSchemaOptional())
+    assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA));
   }
 
@@ -850,10 +838,10 @@ public class TestFlightSql {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
           () ->
-              Assertions.assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream)))
+              assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream)))
                   .isEqualTo(emptyList()));
     }
   }
@@ -865,10 +853,10 @@ public class TestFlightSql {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
           () ->
-              Assertions.assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream), arg))
+              assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream), arg))
                   .isEqualTo(emptyList()));
     }
   }
@@ -894,10 +882,10 @@ public class TestFlightSql {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
           () ->
-              Assertions.assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream), args))
+              assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream), args))
                   .isEqualTo(emptyList()));
     }
   }
@@ -916,26 +904,28 @@ public class TestFlightSql {
 
       final List<Condition<String>> matchers =
           asList(
-              new HamcrestCondition<>(nullValue(String.class)), // pk_catalog_name
-              new HamcrestCondition<>(is("APP")), // pk_schema_name
-              new HamcrestCondition<>(is("FOREIGNTABLE")), // pk_table_name
-              new HamcrestCondition<>(is("ID")), // pk_column_name
-              new HamcrestCondition<>(nullValue(String.class)), // fk_catalog_name
-              new HamcrestCondition<>(is("APP")), // fk_schema_name
-              new HamcrestCondition<>(is("INTTABLE")), // fk_table_name
-              new HamcrestCondition<>(is("FOREIGNID")), // fk_column_name
-              new HamcrestCondition<>(is("1")), // key_sequence
-              new HamcrestCondition<>(containsString("SQL")), // fk_key_name
-              new HamcrestCondition<>(containsString("SQL")), // pk_key_name
-              new HamcrestCondition<>(is("3")), // update_rule
-              new HamcrestCondition<>(is("3"))); // delete_rule
+              new Condition<>(Objects::isNull, "pk_catalog_name expected to be null"),
+              new Condition<>(c -> c.equals("APP"), "pk_schema_name expected to equal APP"),
+              new Condition<>(
+                  c -> c.equals("FOREIGNTABLE"), "pk_table_name should equal FOREIGNTABLE"),
+              new Condition<>(c -> c.equals("ID"), "pk_column_name should equal ID"),
+              new Condition<>(Objects::isNull, "fk_catalog_name expected to be null"),
+              new Condition<>(c -> c.equals("APP"), "fk_schema_name expected to be APP"),
+              new Condition<>(c -> c.equals("INTTABLE"), "fk_table_name expeced to be INTTABLE"),
+              new Condition<>(
+                  c -> c.equals("FOREIGNID"), "fk_column_name expected to equal FOREIGNID"),
+              new Condition<>(c -> c.equals("1"), "key_sequence expected to equal 1"),
+              new Condition<>(c -> c.contains("SQL"), "fk_key_name expected to contain SQL"),
+              new Condition<>(c -> c.contains("SQL"), "pk_key_name expected to contain SQL"),
+              new Condition<>(c -> c.equals("3"), "update_rule expected to equal 3"),
+              new Condition<>(c -> c.equals("3"), "delete_rule expected to equal 3"));
 
       final List<Executable> assertions = new ArrayList<>();
       assertEquals(1, results.size());
       for (int i = 0; i < matchers.size(); i++) {
         final String actual = results.get(0).get(i);
         final Condition<String> expected = matchers.get(i);
-        assertions.add(() -> Assertions.assertThat(actual).satisfies(expected));
+        assertions.add(() -> assertThat(actual).satisfies(expected));
       }
       assertAll(assertions);
     }
@@ -955,26 +945,28 @@ public class TestFlightSql {
 
       final List<Condition<String>> matchers =
           asList(
-              new HamcrestCondition<>(nullValue(String.class)), // pk_catalog_name
-              new HamcrestCondition<>(is("APP")), // pk_schema_name
-              new HamcrestCondition<>(is("FOREIGNTABLE")), // pk_table_name
-              new HamcrestCondition<>(is("ID")), // pk_column_name
-              new HamcrestCondition<>(nullValue(String.class)), // fk_catalog_name
-              new HamcrestCondition<>(is("APP")), // fk_schema_name
-              new HamcrestCondition<>(is("INTTABLE")), // fk_table_name
-              new HamcrestCondition<>(is("FOREIGNID")), // fk_column_name
-              new HamcrestCondition<>(is("1")), // key_sequence
-              new HamcrestCondition<>(containsString("SQL")), // fk_key_name
-              new HamcrestCondition<>(containsString("SQL")), // pk_key_name
-              new HamcrestCondition<>(is("3")), // update_rule
-              new HamcrestCondition<>(is("3"))); // delete_rule
+              new Condition<>(Objects::isNull, "pk_catalog_name expected to be null"),
+              new Condition<>(c -> c.equals("APP"), "pk_schema_name expected to equal APP"),
+              new Condition<>(
+                  c -> c.equals("FOREIGNTABLE"), "pk_table_name should equal FOREIGNTABLE"),
+              new Condition<>(c -> c.equals("ID"), "pk_column_name should equal ID"),
+              new Condition<>(Objects::isNull, "fk_catalog_name expected to be null"),
+              new Condition<>(c -> c.equals("APP"), "fk_schema_name expected to be APP"),
+              new Condition<>(c -> c.equals("INTTABLE"), "fk_table_name expeced to be INTTABLE"),
+              new Condition<>(
+                  c -> c.equals("FOREIGNID"), "fk_column_name expected to equal FOREIGNID"),
+              new Condition<>(c -> c.equals("1"), "key_sequence expected to equal 1"),
+              new Condition<>(c -> c.contains("SQL"), "fk_key_name expected to contain SQL"),
+              new Condition<>(c -> c.contains("SQL"), "pk_key_name expected to contain SQL"),
+              new Condition<>(c -> c.equals("3"), "update_rule expected to equal 3"),
+              new Condition<>(c -> c.equals("3"), "delete_rule expected to equal 3"));
 
       assertEquals(1, results.size());
       final List<Executable> assertions = new ArrayList<>();
       for (int i = 0; i < matchers.size(); i++) {
         final String actual = results.get(0).get(i);
         final Condition<String> expected = matchers.get(i);
-        assertions.add(() -> Assertions.assertThat(actual).satisfies(expected));
+        assertions.add(() -> assertThat(actual).satisfies(expected));
       }
       assertAll(assertions);
     }
@@ -1430,7 +1422,7 @@ public class TestFlightSql {
                   null,
                   null,
                   null));
-      Assertions.assertThat(results).isEqualTo(matchers);
+      assertThat(results).isEqualTo(matchers);
     }
   }
 
@@ -1464,7 +1456,7 @@ public class TestFlightSql {
                   null,
                   "10",
                   null));
-      Assertions.assertThat(results).isEqualTo(matchers);
+      assertThat(results).isEqualTo(matchers);
     }
   }
 
@@ -1480,26 +1472,28 @@ public class TestFlightSql {
 
       final List<Condition<String>> matchers =
           asList(
-              new HamcrestCondition<>(nullValue(String.class)), // pk_catalog_name
-              new HamcrestCondition<>(is("APP")), // pk_schema_name
-              new HamcrestCondition<>(is("FOREIGNTABLE")), // pk_table_name
-              new HamcrestCondition<>(is("ID")), // pk_column_name
-              new HamcrestCondition<>(nullValue(String.class)), // fk_catalog_name
-              new HamcrestCondition<>(is("APP")), // fk_schema_name
-              new HamcrestCondition<>(is("INTTABLE")), // fk_table_name
-              new HamcrestCondition<>(is("FOREIGNID")), // fk_column_name
-              new HamcrestCondition<>(is("1")), // key_sequence
-              new HamcrestCondition<>(containsString("SQL")), // fk_key_name
-              new HamcrestCondition<>(containsString("SQL")), // pk_key_name
-              new HamcrestCondition<>(is("3")), // update_rule
-              new HamcrestCondition<>(is("3"))); // delete_rule
+              new Condition<>(Objects::isNull, "pk_catalog_name expected to be null"),
+              new Condition<>(c -> c.equals("APP"), "pk_schema_name expected to equal APP"),
+              new Condition<>(
+                  c -> c.equals("FOREIGNTABLE"), "pk_table_name should equal FOREIGNTABLE"),
+              new Condition<>(c -> c.equals("ID"), "pk_column_name should equal ID"),
+              new Condition<>(Objects::isNull, "fk_catalog_name expected to be null"),
+              new Condition<>(c -> c.equals("APP"), "fk_schema_name expected to be APP"),
+              new Condition<>(c -> c.equals("INTTABLE"), "fk_table_name expeced to be INTTABLE"),
+              new Condition<>(
+                  c -> c.equals("FOREIGNID"), "fk_column_name expected to equal FOREIGNID"),
+              new Condition<>(c -> c.equals("1"), "key_sequence expected to equal 1"),
+              new Condition<>(c -> c.contains("SQL"), "fk_key_name expected to contain SQL"),
+              new Condition<>(c -> c.contains("SQL"), "pk_key_name expected to contain SQL"),
+              new Condition<>(c -> c.equals("3"), "update_rule expected to equal 3"),
+              new Condition<>(c -> c.equals("3"), "delete_rule expected to equal 3"));
 
       assertEquals(1, results.size());
       final List<Executable> assertions = new ArrayList<>();
       for (int i = 0; i < matchers.size(); i++) {
         final String actual = results.get(0).get(i);
         final Condition<String> expected = matchers.get(i);
-        assertions.add(() -> Assertions.assertThat(actual).satisfies(expected));
+        assertions.add(() -> assertThat(actual).satisfies(expected));
       }
       assertAll(assertions);
     }
@@ -1508,7 +1502,7 @@ public class TestFlightSql {
   @Test
   public void testCreateStatementSchema() throws Exception {
     final FlightInfo info = sqlClient.execute("SELECT * FROM intTable");
-    Assertions.assertThat(info.getSchemaOptional()).isEqualTo(Optional.of(SCHEMA_INT_TABLE));
+    assertThat(info.getSchemaOptional()).isEqualTo(Optional.of(SCHEMA_INT_TABLE));
 
     // Consume statement to close connection before cache eviction
     try (FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
@@ -1525,11 +1519,10 @@ public class TestFlightSql {
             sqlClient.execute("SELECT * FROM intTable").getEndpoints().get(0).getTicket())) {
       assertAll(
           () -> {
-            Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE);
+            assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE);
           },
           () -> {
-            Assertions.assertThat(getResults(stream))
-                .isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY);
+            assertThat(getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY);
           });
     }
   }
@@ -1542,19 +1535,19 @@ public class TestFlightSql {
               sqlClient.executeUpdate(
                   "INSERT INTO INTTABLE (keyName, value) VALUES "
                       + "('KEYNAME1', 1001), ('KEYNAME2', 1002), ('KEYNAME3', 1003)");
-          Assertions.assertThat(insertedCount).isEqualTo(3L);
+          assertThat(insertedCount).isEqualTo(3L);
         },
         () -> {
           long updatedCount =
               sqlClient.executeUpdate(
                   "UPDATE INTTABLE SET keyName = 'KEYNAME1' "
                       + "WHERE keyName = 'KEYNAME2' OR keyName = 'KEYNAME3'");
-          Assertions.assertThat(updatedCount).isEqualTo(2L);
+          assertThat(updatedCount).isEqualTo(2L);
         },
         () -> {
           long deletedCount =
               sqlClient.executeUpdate("DELETE FROM INTTABLE WHERE keyName = 'KEYNAME1'");
-          Assertions.assertThat(deletedCount).isEqualTo(3L);
+          assertThat(deletedCount).isEqualTo(3L);
         });
   }
 
@@ -1565,10 +1558,10 @@ public class TestFlightSql {
         final FlightStream stream =
             sqlClient.getStream(preparedStatement.execute().getEndpoints().get(0).getTicket())) {
       assertAll(
-          () -> Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
+          () -> assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
           () -> {
             final List<List<String>> result = getResults(stream);
-            Assertions.assertThat(result).isEqualTo(emptyList());
+            assertThat(result).isEqualTo(emptyList());
           });
     }
   }

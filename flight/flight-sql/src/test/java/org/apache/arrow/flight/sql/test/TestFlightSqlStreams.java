@@ -22,6 +22,7 @@ import static java.util.Collections.singletonList;
 import static org.apache.arrow.flight.sql.util.FlightStreamUtils.getResults;
 import static org.apache.arrow.util.AutoCloseables.close;
 import static org.apache.arrow.vector.types.Types.MinorType.INT;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import com.google.common.collect.ImmutableList;
@@ -52,7 +53,6 @@ import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Text;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -244,7 +244,7 @@ public class TestFlightSqlStreams {
             sqlClient.getTables(null, null, null, null, false).getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA),
           () -> {
             final List<List<String>> results = getResults(stream);
@@ -252,7 +252,7 @@ public class TestFlightSqlStreams {
                 ImmutableList.of(
                     // catalog_name | schema_name | table_name | table_type | table_schema
                     asList(null, null, "test_table", "TABLE"));
-            Assertions.assertThat(results).isEqualTo(expectedResults);
+            assertThat(results).isEqualTo(expectedResults);
           });
     }
   }
@@ -263,7 +263,7 @@ public class TestFlightSqlStreams {
         sqlClient.getStream(sqlClient.getTableTypes().getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA),
           () -> {
             final List<List<String>> tableTypes = getResults(stream);
@@ -271,7 +271,7 @@ public class TestFlightSqlStreams {
                 ImmutableList.of(
                     // table_type
                     singletonList("TABLE"));
-            Assertions.assertThat(tableTypes).isEqualTo(expectedTableTypes);
+            assertThat(tableTypes).isEqualTo(expectedTableTypes);
           });
     }
   }
@@ -282,9 +282,9 @@ public class TestFlightSqlStreams {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema())
+              assertThat(stream.getSchema())
                   .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
-          () -> Assertions.assertThat(getResults(stream)).isEqualTo(emptyList()));
+          () -> assertThat(getResults(stream)).isEqualTo(emptyList()));
     }
   }
 
@@ -302,7 +302,7 @@ public class TestFlightSqlStreams {
                   "Integer", "4", "400", null, null, "3", "true", null, "true", null, "true",
                   "Integer", null, null, "4", null, "10", null));
 
-      Assertions.assertThat(results).isEqualTo(matchers);
+      assertThat(results).isEqualTo(matchers);
     }
   }
 
@@ -316,12 +316,8 @@ public class TestFlightSqlStreams {
                 .get(0)
                 .getTicket())) {
       assertAll(
-          () ->
-              Assertions.assertThat(stream.getSchema())
-                  .isEqualTo(FlightSqlTestProducer.FIXED_SCHEMA),
-          () ->
-              Assertions.assertThat(getResults(stream))
-                  .isEqualTo(singletonList(singletonList("1"))));
+          () -> assertThat(stream.getSchema()).isEqualTo(FlightSqlTestProducer.FIXED_SCHEMA),
+          () -> assertThat(getResults(stream)).isEqualTo(singletonList(singletonList("1"))));
     }
   }
 }
