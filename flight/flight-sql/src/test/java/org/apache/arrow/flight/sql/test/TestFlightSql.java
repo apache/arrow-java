@@ -247,15 +247,14 @@ public class TestFlightSql {
   @Test
   public void testGetTablesSchema() {
     final FlightInfo info = sqlClient.getTables(null, null, null, null, true);
-    Assertions.assertThat(
-        info.getSchemaOptional()).isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA));
+    Assertions.assertThat(info.getSchemaOptional())
+        .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA));
   }
 
   @Test
   public void testGetTablesSchemaExcludeSchema() {
     final FlightInfo info = sqlClient.getTables(null, null, null, null, false);
-    Assertions.assertThat(
-        info.getSchemaOptional())
+    Assertions.assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA));
   }
 
@@ -266,8 +265,8 @@ public class TestFlightSql {
             sqlClient.getTables(null, null, null, null, false).getEndpoints().get(0).getTicket())) {
       assertAll(
           () -> {
-            Assertions.assertThat(
-                stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA);
+            Assertions.assertThat(stream.getSchema())
+                .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA);
           },
           () -> {
             final List<List<String>> results = getResults(stream);
@@ -318,8 +317,8 @@ public class TestFlightSql {
 
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA),
           () -> {
             final List<List<String>> results = getResults(stream);
             final List<List<String>> expectedResults =
@@ -343,10 +342,11 @@ public class TestFlightSql {
                 .getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA),
           () -> {
-            Assertions.assertThat(
-                stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA);
+            Assertions.assertThat(stream.getSchema())
+                .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA);
             final List<List<String>> results = getResults(stream);
             final List<List<String>> expectedResults =
                 ImmutableList.of(
@@ -501,7 +501,8 @@ public class TestFlightSql {
           },
           () -> {
             final FlightInfo info = preparedStatement.execute();
-            Assertions.assertThat(info.getSchemaOptional()).isEqualTo(Optional.of(SCHEMA_INT_TABLE));
+            Assertions.assertThat(info.getSchemaOptional())
+                .isEqualTo(Optional.of(SCHEMA_INT_TABLE));
           });
     }
   }
@@ -514,8 +515,8 @@ public class TestFlightSql {
       assertAll(
           () -> Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
           () ->
-              Assertions.assertThat(
-                  getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY));
+              Assertions.assertThat(getResults(stream))
+                  .isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY));
     }
   }
 
@@ -539,8 +540,8 @@ public class TestFlightSql {
         assertAll(
             () -> Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
             () ->
-                Assertions.assertThat(
-                    getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_PARAMETER_BINDING));
+                Assertions.assertThat(getResults(stream))
+                    .isEqualTo(EXPECTED_RESULTS_FOR_PARAMETER_BINDING));
       }
     }
   }
@@ -729,8 +730,8 @@ public class TestFlightSql {
   @Test
   public void testGetCatalogsSchema() {
     final FlightInfo info = sqlClient.getCatalogs();
-    Assertions.assertThat(
-        info.getSchemaOptional()).isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_CATALOGS_SCHEMA));
+    Assertions.assertThat(info.getSchemaOptional())
+        .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_CATALOGS_SCHEMA));
   }
 
   @Test
@@ -739,8 +740,8 @@ public class TestFlightSql {
         sqlClient.getStream(sqlClient.getCatalogs().getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_CATALOGS_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_CATALOGS_SCHEMA),
           () -> {
             List<List<String>> catalogs = getResults(stream);
             Assertions.assertThat(catalogs).isEqualTo(emptyList());
@@ -751,8 +752,7 @@ public class TestFlightSql {
   @Test
   public void testGetTableTypesSchema() {
     final FlightInfo info = sqlClient.getTableTypes();
-    Assertions.assertThat(
-        info.getSchemaOptional())
+    Assertions.assertThat(info.getSchemaOptional())
         .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA));
   }
 
@@ -762,8 +762,8 @@ public class TestFlightSql {
         sqlClient.getStream(sqlClient.getTableTypes().getEndpoints().get(0).getTicket())) {
       assertAll(
           () -> {
-            Assertions.assertThat(
-                stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA);
+            Assertions.assertThat(stream.getSchema())
+                .isEqualTo(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA);
           },
           () -> {
             final List<List<String>> tableTypes = getResults(stream);
@@ -782,8 +782,8 @@ public class TestFlightSql {
   @Test
   public void testGetSchemasSchema() {
     final FlightInfo info = sqlClient.getSchemas(null, null);
-    Assertions.assertThat(
-        info.getSchemaOptional()).isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_SCHEMAS_SCHEMA));
+    Assertions.assertThat(info.getSchemaOptional())
+        .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_SCHEMAS_SCHEMA));
   }
 
   @Test
@@ -792,8 +792,8 @@ public class TestFlightSql {
         sqlClient.getStream(sqlClient.getSchemas(null, null).getEndpoints().get(0).getTicket())) {
       assertAll(
           () -> {
-            Assertions.assertThat(
-                stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_SCHEMAS_SCHEMA);
+            Assertions.assertThat(stream.getSchema())
+                .isEqualTo(FlightSqlProducer.Schemas.GET_SCHEMAS_SCHEMA);
           },
           () -> {
             final List<List<String>> schemas = getResults(stream);
@@ -840,8 +840,8 @@ public class TestFlightSql {
   @Test
   public void testGetSqlInfoSchema() {
     final FlightInfo info = sqlClient.getSqlInfo();
-    Assertions.assertThat(
-        info.getSchemaOptional()).isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA));
+    Assertions.assertThat(info.getSchemaOptional())
+        .isEqualTo(Optional.of(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA));
   }
 
   @Test
@@ -850,11 +850,11 @@ public class TestFlightSql {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
           () ->
-              Assertions.assertThat(
-                  getNonConformingResultsForGetSqlInfo(getResults(stream))).isEqualTo(emptyList()));
+              Assertions.assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream)))
+                  .isEqualTo(emptyList()));
     }
   }
 
@@ -865,11 +865,11 @@ public class TestFlightSql {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
           () ->
-              Assertions.assertThat(
-                  getNonConformingResultsForGetSqlInfo(getResults(stream), arg)).isEqualTo(emptyList()));
+              Assertions.assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream), arg))
+                  .isEqualTo(emptyList()));
     }
   }
 
@@ -894,11 +894,11 @@ public class TestFlightSql {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
           () ->
-              Assertions.assertThat(
-                  getNonConformingResultsForGetSqlInfo(getResults(stream), args)).isEqualTo(emptyList()));
+              Assertions.assertThat(getNonConformingResultsForGetSqlInfo(getResults(stream), args))
+                  .isEqualTo(emptyList()));
     }
   }
 
@@ -1528,8 +1528,8 @@ public class TestFlightSql {
             Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE);
           },
           () -> {
-            Assertions.assertThat(
-                getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY);
+            Assertions.assertThat(getResults(stream))
+                .isEqualTo(EXPECTED_RESULTS_FOR_STAR_SELECT_QUERY);
           });
     }
   }

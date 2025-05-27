@@ -244,8 +244,8 @@ public class TestFlightSqlStreams {
             sqlClient.getTables(null, null, null, null, false).getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_TABLES_SCHEMA_NO_SCHEMA),
           () -> {
             final List<List<String>> results = getResults(stream);
             final List<List<String>> expectedResults =
@@ -263,8 +263,8 @@ public class TestFlightSqlStreams {
         sqlClient.getStream(sqlClient.getTableTypes().getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_TABLE_TYPES_SCHEMA),
           () -> {
             final List<List<String>> tableTypes = getResults(stream);
             final List<List<String>> expectedTableTypes =
@@ -282,8 +282,8 @@ public class TestFlightSqlStreams {
     try (final FlightStream stream = sqlClient.getStream(info.getEndpoints().get(0).getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(
-                  stream.getSchema()).isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlProducer.Schemas.GET_SQL_INFO_SCHEMA),
           () -> Assertions.assertThat(getResults(stream)).isEqualTo(emptyList()));
     }
   }
@@ -317,9 +317,11 @@ public class TestFlightSqlStreams {
                 .getTicket())) {
       assertAll(
           () ->
-              Assertions.assertThat(stream.getSchema()).isEqualTo(FlightSqlTestProducer.FIXED_SCHEMA),
+              Assertions.assertThat(stream.getSchema())
+                  .isEqualTo(FlightSqlTestProducer.FIXED_SCHEMA),
           () ->
-              Assertions.assertThat(getResults(stream)).isEqualTo(singletonList(singletonList("1"))));
+              Assertions.assertThat(getResults(stream))
+                  .isEqualTo(singletonList(singletonList("1"))));
     }
   }
 }

@@ -90,8 +90,8 @@ public class TestFlightSqlStateless extends TestFlightSql {
             assertAll(
                 () -> Assertions.assertThat(stream.getSchema()).isEqualTo(SCHEMA_INT_TABLE),
                 () ->
-                    Assertions.assertThat(
-                        getResults(stream)).isEqualTo(EXPECTED_RESULTS_FOR_PARAMETER_BINDING));
+                    Assertions.assertThat(getResults(stream))
+                        .isEqualTo(EXPECTED_RESULTS_FOR_PARAMETER_BINDING));
           }
         }
       }
