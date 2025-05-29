@@ -110,6 +110,18 @@ public abstract class BaseValueVector implements ValueVector {
     return buffer;
   }
 
+  /**
+   * Compute the size of validity buffer required to manage a given number of elements in a vector.
+   *
+   * @param valueCount number of elements in the vector
+   * @return buffer size
+   * @deprecated -- use {@link BitVectorHelper#getValidityBufferSizeFromCount} instead.
+   */
+  @Deprecated
+  protected static int getValidityBufferSizeFromCount(final int valueCount) {
+    return DataSizeRoundingUtil.divideBy8Ceil(valueCount);
+  }
+
   /* round up bytes for the validity buffer for the given valueCount */
   private static long roundUp8ForValidityBuffer(long valueCount) {
     return ((valueCount + 63) >> 6) << 3;
