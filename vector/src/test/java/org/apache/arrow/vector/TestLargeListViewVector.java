@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector;
 
+import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -1062,7 +1063,7 @@ public class TestLargeListViewVector {
       int[] indices = new int[] {0, 2, 4, 6, 10, 14};
 
       for (int valueCount = 1; valueCount <= 5; valueCount++) {
-        int validityBufferSize = BitVectorHelper.getValidityBufferSize(valueCount);
+        int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
         int offsetBufferSize = valueCount * BaseLargeRepeatedValueViewVector.OFFSET_WIDTH;
         int sizeBufferSize = valueCount * BaseLargeRepeatedValueViewVector.SIZE_WIDTH;
 

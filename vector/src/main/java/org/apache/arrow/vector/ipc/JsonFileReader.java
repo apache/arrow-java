@@ -20,6 +20,7 @@ import static com.fasterxml.jackson.core.JsonToken.END_ARRAY;
 import static com.fasterxml.jackson.core.JsonToken.END_OBJECT;
 import static com.fasterxml.jackson.core.JsonToken.START_ARRAY;
 import static com.fasterxml.jackson.core.JsonToken.START_OBJECT;
+import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 import static org.apache.arrow.vector.BufferLayout.BufferType.DATA;
 import static org.apache.arrow.vector.BufferLayout.BufferType.OFFSET;
 import static org.apache.arrow.vector.BufferLayout.BufferType.SIZE;
@@ -381,7 +382,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
         new BufferReader() {
           @Override
           protected ArrowBuf read(BufferAllocator allocator, int count) throws IOException {
-            final int bufferSize = BitVectorHelper.getValidityBufferSize(count);
+            final int bufferSize = getValidityBufferSizeFromCount(count);
             ArrowBuf buf = allocator.buffer(bufferSize);
 
             // C++ integration test fails without this.

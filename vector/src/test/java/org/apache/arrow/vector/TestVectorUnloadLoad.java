@@ -17,6 +17,7 @@
 package org.apache.arrow.vector;
 
 import static java.util.Arrays.asList;
+import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -215,7 +216,7 @@ public class TestVectorUnloadLoad {
     int count = 10;
     ArrowBuf[] values = new ArrowBuf[4];
     for (int i = 0; i < 4; i += 2) {
-      ArrowBuf buf1 = allocator.buffer(BitVectorHelper.getValidityBufferSize(count));
+      ArrowBuf buf1 = allocator.buffer(getValidityBufferSizeFromCount(count));
       ArrowBuf buf2 = allocator.buffer(count * 4); // integers
       buf1.setZero(0, buf1.capacity());
       buf2.setZero(0, buf2.capacity());

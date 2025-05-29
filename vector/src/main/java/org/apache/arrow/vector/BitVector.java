@@ -17,6 +17,7 @@
 package org.apache.arrow.vector;
 
 import static org.apache.arrow.memory.util.LargeMemoryUtil.capAtMaxInt;
+import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 import static org.apache.arrow.vector.NullCheckingForGet.NULL_CHECKING_ENABLED;
 
 import org.apache.arrow.memory.ArrowBuf;

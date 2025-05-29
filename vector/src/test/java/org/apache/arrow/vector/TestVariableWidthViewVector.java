@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector;
 
+import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 import static org.apache.arrow.vector.TestUtils.newVector;
 import static org.apache.arrow.vector.TestUtils.newViewVarBinaryVector;
 import static org.apache.arrow.vector.TestUtils.newViewVarCharVector;
@@ -2367,7 +2368,7 @@ public class TestVariableWidthViewVector {
     // the allocation only consists in the size needed for the validity buffer
     final long validitySize =
         DefaultRoundingPolicy.DEFAULT_ROUNDING_POLICY.getRoundedSize(
-            BaseValueVector.getValidityBufferSizeFromCount(2));
+            getValidityBufferSizeFromCount(2));
     // we allocate view and data buffers for the target vector
     assertTrue(allocatedMem + validitySize < allocator.getAllocatedMemory());
     // The validity is sliced from the same buffer.See BaseFixedWidthViewVector#allocateBytes.

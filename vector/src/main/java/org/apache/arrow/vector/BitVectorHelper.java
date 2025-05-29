@@ -135,11 +135,11 @@ public class BitVectorHelper {
   public static ArrowBuf setValidityBit(
       ArrowBuf validityBuffer, BufferAllocator allocator, int valueCount, int index, int value) {
     if (validityBuffer == null) {
-      validityBuffer = allocator.buffer(getValidityBufferSize(valueCount));
+      validityBuffer = allocator.buffer(getValidityBufferSizeFromCount(valueCount));
     }
     setValidityBit(validityBuffer, index, value);
     if (index == (valueCount - 1)) {
-      validityBuffer.writerIndex(getValidityBufferSize(valueCount));
+      validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
     }
 
     return validityBuffer;
@@ -165,7 +165,7 @@ public class BitVectorHelper {
    * @param valueCount number of elements in the vector
    * @return buffer size
    */
-  public static int getValidityBufferSize(int valueCount) {
+  public static int getValidityBufferSizeFromCount(int valueCount) {
     return DataSizeRoundingUtil.divideBy8Ceil(valueCount);
   }
 
@@ -182,7 +182,7 @@ public class BitVectorHelper {
       return 0;
     }
     int count = 0;
-    final int sizeInBytes = getValidityBufferSize(valueCount);
+    final int sizeInBytes = getValidityBufferSizeFromCount(valueCount);
     // If value count is not a multiple of 8, then calculate number of used bits in the last byte
     final int remainder = valueCount % 8;
     final int fullBytesCount = remainder == 0 ? sizeInBytes : sizeInBytes - 1;
@@ -233,7 +233,7 @@ public class BitVectorHelper {
     if (valueCount == 0) {
       return true;
     }
-    final int sizeInBytes = getValidityBufferSize(valueCount);
+    final int sizeInBytes = getValidityBufferSizeFromCount(valueCount);
 
     // boundary check
     validityBuffer.checkBytes(0, sizeInBytes);
@@ -325,7 +325,7 @@ public class BitVectorHelper {
         sourceValidityBuffer == null || sourceValidityBuffer.capacity() == 0;
     if (isValidityBufferNull
         && (fieldNode.getNullCount() == 0 || fieldNode.getNullCount() == valueCount)) {
-      newBuffer = allocator.buffer(getValidityBufferSize(valueCount));
+      newBuffer = allocator.buffer(getValidityBufferSizeFromCount(valueCount));
       newBuffer.setZero(0, newBuffer.capacity());
       if (fieldNode.getNullCount() != 0) {
         /* all NULLs */
