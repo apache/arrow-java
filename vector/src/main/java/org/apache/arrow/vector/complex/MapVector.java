@@ -17,6 +17,7 @@
 package org.apache.arrow.vector.complex;
 
 import static org.apache.arrow.util.Preconditions.checkArgument;
+import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;

@@ -18,6 +18,7 @@ package org.apache.arrow.vector.complex;
 
 import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 import static org.apache.arrow.util.Preconditions.checkNotNull;
+import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,7 +90,7 @@ public class StructVector extends NonNullableStructVector
     super(name, checkNotNull(allocator), fieldType, callBack);
     this.validityBuffer = allocator.getEmpty();
     this.validityAllocationSizeInBytes =
-        BitVectorHelper.getValidityBufferSize(BaseValueVector.INITIAL_VALUE_ALLOCATION);
+        getValidityBufferSizeFromCount(BaseValueVector.INITIAL_VALUE_ALLOCATION);
   }
 
   /**
@@ -118,7 +119,7 @@ public class StructVector extends NonNullableStructVector
         allowConflictPolicyChanges);
     this.validityBuffer = allocator.getEmpty();
     this.validityAllocationSizeInBytes =
-        BitVectorHelper.getValidityBufferSize(BaseValueVector.INITIAL_VALUE_ALLOCATION);
+        getValidityBufferSizeFromCount(BaseValueVector.INITIAL_VALUE_ALLOCATION);
   }
 
   /**
@@ -132,7 +133,7 @@ public class StructVector extends NonNullableStructVector
     super(field, checkNotNull(allocator), callBack);
     this.validityBuffer = allocator.getEmpty();
     this.validityAllocationSizeInBytes =
-        BitVectorHelper.getValidityBufferSize(BaseValueVector.INITIAL_VALUE_ALLOCATION);
+        getValidityBufferSizeFromCount(BaseValueVector.INITIAL_VALUE_ALLOCATION);
   }
 
   /**
@@ -153,7 +154,7 @@ public class StructVector extends NonNullableStructVector
     super(field, checkNotNull(allocator), callBack, conflictPolicy, allowConflictPolicyChanges);
     this.validityBuffer = allocator.getEmpty();
     this.validityAllocationSizeInBytes =
-        BitVectorHelper.getValidityBufferSize(BaseValueVector.INITIAL_VALUE_ALLOCATION);
+        getValidityBufferSizeFromCount(BaseValueVector.INITIAL_VALUE_ALLOCATION);
   }
 
   @Override
@@ -182,7 +183,7 @@ public class StructVector extends NonNullableStructVector
 
   private void setReaderAndWriterIndex() {
     validityBuffer.readerIndex(0);
-    validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSize(valueCount));
+    validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
   }
 
   /**
@@ -318,7 +319,7 @@ public class StructVector extends NonNullableStructVector
   private void splitAndTransferValidityBuffer(int startIndex, int length, StructVector target) {
     int firstByteSource = BitVectorHelper.byteIndex(startIndex);
     int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
-    int byteSizeTarget = BitVectorHelper.getValidityBufferSize(length);
+    int byteSizeTarget = getValidityBufferSizeFromCount(length);
     int offset = startIndex % 8;
 
     if (length > 0) {
@@ -464,7 +465,7 @@ public class StructVector extends NonNullableStructVector
     if (valueCount == 0) {
       return 0;
     }
-    return super.getBufferSize() + BitVectorHelper.getValidityBufferSize(valueCount);
+    return super.getBufferSize() + getValidityBufferSizeFromCount(valueCount);
   }
 
   /**
@@ -478,18 +479,18 @@ public class StructVector extends NonNullableStructVector
     if (valueCount == 0) {
       return 0;
     }
-    return super.getBufferSizeFor(valueCount) + BitVectorHelper.getValidityBufferSize(valueCount);
+    return super.getBufferSizeFor(valueCount) + getValidityBufferSizeFromCount(valueCount);
   }
 
   @Override
   public void setInitialCapacity(int numRecords) {
-    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSize(numRecords);
+    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
     super.setInitialCapacity(numRecords);
   }
 
   @Override
   public void setInitialCapacity(int numRecords, double density) {
-    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSize(numRecords);
+    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
     super.setInitialCapacity(numRecords, density);
   }
 
@@ -547,7 +548,7 @@ public class StructVector extends NonNullableStructVector
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
         newAllocationSize =
-            BitVectorHelper.getValidityBufferSize(BaseValueVector.INITIAL_VALUE_ALLOCATION) * 2L;
+            getValidityBufferSizeFromCount(BaseValueVector.INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);

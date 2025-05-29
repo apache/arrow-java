@@ -110,11 +110,6 @@ public abstract class BaseValueVector implements ValueVector {
     return buffer;
   }
 
-  /* number of bytes for the validity buffer for the given valueCount */
-  protected static int getValidityBufferSizeFromCount(final int valueCount) {
-    return DataSizeRoundingUtil.divideBy8Ceil(valueCount);
-  }
-
   /* round up bytes for the validity buffer for the given valueCount */
   private static long roundUp8ForValidityBuffer(long valueCount) {
     return ((valueCount + 63) >> 6) << 3;
