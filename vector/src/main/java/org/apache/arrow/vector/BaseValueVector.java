@@ -48,6 +48,10 @@ public abstract class BaseValueVector implements ValueVector {
 
   protected volatile FieldReader fieldReader;
 
+  protected ArrowBuf validityBuffer;
+
+  protected int valueCount;
+
   protected BaseValueVector(BufferAllocator allocator) {
     this.allocator = Preconditions.checkNotNull(allocator, "allocator cannot be null");
   }
@@ -246,6 +250,116 @@ public abstract class BaseValueVector implements ValueVector {
 
   @Override
   public void copyFromSafe(int fromIndex, int thisIndex, ValueVector from) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Transfer the validity buffer from `validityBuffer` to the target vector's `validityBuffer`.
+   * Start at `startIndex` and copy `length` number of elements. If the starting index is 8 byte
+   * aligned, then the buffer is sliced from that index and ownership is transferred. If not,
+   * individual bytes are copied.
+   *
+   * @param startIndex starting index
+   * @param length number of elements to be copied
+   * @param target target vector
+   */
+  protected void splitAndTransferValidityBuffer(
+      int startIndex, int length, BaseValueVector target) {
+    int offset = startIndex % 8;
+
+    if (length <= 0) {
+      return;
+    }
+    if (offset == 0) {
+      sliceAndTransferValidityBuffer(startIndex, length, target);
+    } else {
+      copyValidityBuffer(startIndex, length, target);
+    }
+  }
+
+  /**
+   * If the start index is 8 byte aligned, slice `validityBuffer` and transfer ownership to
+   * `target`'s `validityBuffer`.
+   *
+   * @param startIndex starting index
+   * @param length number of elements to be copied
+   * @param target target vector
+   */
+  protected void sliceAndTransferValidityBuffer(
+      int startIndex, int length, BaseValueVector target) {
+    final int firstByteSource = BitVectorHelper.byteIndex(startIndex);
+    final int byteSizeTarget = getValidityBufferSizeFromCount(length);
+
+    if (target.validityBuffer != null) {
+      target.validityBuffer.getReferenceManager().release();
+    }
+    target.validityBuffer = validityBuffer.slice(firstByteSource, byteSizeTarget);
+    target.validityBuffer.getReferenceManager().retain(1);
+  }
+
+  /**
+   * Allocate new validity buffer for `target` and copy bytes from `validityBuffer`. Precise details
+   * in the comments below.
+   *
+   * @param startIndex starting index
+   * @param length number of elements to be copied
+   * @param target target vector
+   */
+  protected void copyValidityBuffer(int startIndex, int length, BaseValueVector target) {
+    final int firstByteSource = BitVectorHelper.byteIndex(startIndex);
+    final int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
+    final int byteSizeTarget = getValidityBufferSizeFromCount(length);
+    final int offset = startIndex % 8;
+
+    /* Copy data
+     * When the first bit starts from the middle of a byte (offset != 0),
+     * copy data from src BitVector.
+     * Each byte in the target is composed by a part in i-th byte,
+     * another part in (i+1)-th byte.
+     */
+    target.allocateValidityBuffer(byteSizeTarget);
+
+    for (int i = 0; i < byteSizeTarget - 1; i++) {
+      byte b1 =
+          BitVectorHelper.getBitsFromCurrentByte(this.validityBuffer, firstByteSource + i, offset);
+      byte b2 =
+          BitVectorHelper.getBitsFromNextByte(this.validityBuffer, firstByteSource + i + 1, offset);
+
+      target.validityBuffer.setByte(i, (b1 + b2));
+    }
+
+    /* Copying the last piece is done in the following manner:
+     * if the source vector has 1 or more bytes remaining, we copy
+     * the last piece as a byte formed by shifting data
+     * from the current byte and the next byte.
+     *
+     * if the source vector has no more bytes remaining
+     * (we are at the last byte), we copy the last piece as a byte
+     * by shifting data from the current byte.
+     */
+    if ((firstByteSource + byteSizeTarget - 1) < lastByteSource) {
+      byte b1 =
+          BitVectorHelper.getBitsFromCurrentByte(
+              this.validityBuffer, firstByteSource + byteSizeTarget - 1, offset);
+      byte b2 =
+          BitVectorHelper.getBitsFromNextByte(
+              this.validityBuffer, firstByteSource + byteSizeTarget, offset);
+
+      target.validityBuffer.setByte(byteSizeTarget - 1, b1 + b2);
+    } else {
+      byte b1 =
+          BitVectorHelper.getBitsFromCurrentByte(
+              this.validityBuffer, firstByteSource + byteSizeTarget - 1, offset);
+      target.validityBuffer.setByte(byteSizeTarget - 1, b1);
+    }
+  }
+
+  /**
+   * Allocate new validity buffer for when the bytes need to be copied over
+   *
+   * @param byteSizeTarget desired size of the buffer
+   */
+  protected void allocateValidityBuffer(final long byteSizeTarget) {
     throw new UnsupportedOperationException();
   }
 }

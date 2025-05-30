@@ -52,7 +52,6 @@ public abstract class BaseRepeatedValueViewVector extends BaseValueVector
   protected ArrowBuf sizeBuffer;
   protected FieldVector vector;
   protected final CallBack repeatedCallBack;
-  protected int valueCount;
   protected long offsetAllocationSizeInBytes = INITIAL_VALUE_ALLOCATION * OFFSET_WIDTH;
   protected long sizeAllocationSizeInBytes = INITIAL_VALUE_ALLOCATION * SIZE_WIDTH;
   private final String name;
