@@ -61,8 +61,9 @@ final class ExceptionTest {
       root.setRowCount(4);
       batches.add(unloader.getRecordBatch());
 
-      RuntimeException ex = new RuntimeException("this is an exception test to test TryCopyLastError may works " +
-          "but the test cannot make sure there is no problem with it");
+      final String exceptionMessage = "java.lang.RuntimeException: Error occurred while getting next schema root.\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.next(ArrowVectorIterator.java:205)\n\tat com.oceanbase.external.jdbc.JdbcScanner.loadNextBatch(JdbcScanner.java:73)\n\tat org.apache.arrow.c.ArrayStreamExporter$ExportedArrayStreamPrivateData.getNext(ArrayStreamExporter.java:72)\nCaused by: java.lang.RuntimeException: Error occurred while consuming data.\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.consumeData(ArrowVectorIterator.java:127)\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.load(ArrowVectorIterator.java:178)\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.next(ArrowVectorIterator.java:198)\n\t... 2 more\nCaused by: java.lang.OutOfMemoryError: Java heap space\n";
+
+      RuntimeException ex = new RuntimeException(exceptionMessage);
       batches.add(ex);
 
       ArrowReader source = new ExceptionMemoryArrowReader(allocator, schema, batches);
@@ -79,6 +80,13 @@ final class ExceptionTest {
             try {
               reader.loadNextBatch();
             } catch (Exception e) {
+              Throwable exToCheck = e;
+              while (exToCheck != null && !(exToCheck instanceof RuntimeException)) {
+                exToCheck = exToCheck.getCause();
+              }
+              if (exToCheck != null) {
+                assertThat(exToCheck.getMessage()).isEqualTo(exceptionMessage);
+              }
               continue;
             }
             loader.load((ArrowRecordBatch) batch);
