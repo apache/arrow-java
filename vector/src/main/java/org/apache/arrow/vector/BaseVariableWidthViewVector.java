@@ -17,7 +17,6 @@
 package org.apache.arrow.vector;
 
 import static org.apache.arrow.memory.util.LargeMemoryUtil.capAtMaxInt;
-import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 import static org.apache.arrow.vector.util.DataSizeRoundingUtil.roundUpToMultipleOf16;
 
 import java.nio.ByteBuffer;
@@ -401,7 +400,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       validityBuffer.writerIndex(0);
       viewBuffer.writerIndex(0);
     } else {
-      validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
+      validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
       viewBuffer.writerIndex(valueCount * ELEMENT_SIZE);
     }
   }
@@ -684,7 +683,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       return 0;
     }
 
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
     final int viewBufferSize = valueCount * ELEMENT_SIZE;
     final int dataBufferSize = getDataBufferSize();
     return validityBufferSize + viewBufferSize + dataBufferSize;
@@ -873,7 +872,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
 
     final int firstByteSource = BitVectorHelper.byteIndex(startIndex);
     final int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
-    final int byteSizeTarget = getValidityBufferSizeFromCount(length);
+    final int byteSizeTarget = BitVectorHelper.getValidityBufferSizeFromCount(length);
     final int offset = startIndex % 8;
 
     if (offset == 0) {

@@ -20,7 +20,6 @@ import static java.util.Collections.singletonList;
 import static org.apache.arrow.memory.util.LargeMemoryUtil.capAtMaxInt;
 import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 import static org.apache.arrow.util.Preconditions.checkArgument;
-import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 import static org.apache.arrow.vector.complex.BaseRepeatedValueVector.DATA_VECTOR_NAME;
 
 import java.util.ArrayList;
@@ -111,7 +110,7 @@ public class FixedSizeListVector extends BaseValueVector
     this.listSize = ((ArrowType.FixedSizeList) field.getFieldType().getType()).getListSize();
     Preconditions.checkArgument(listSize >= 0, "list size must be non-negative");
     this.valueCount = 0;
-    this.validityAllocationSizeInBytes = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
   }
 
   @Override
@@ -190,7 +189,7 @@ public class FixedSizeListVector extends BaseValueVector
 
   private void setReaderAndWriterIndex() {
     validityBuffer.readerIndex(0);
-    validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
+    validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
   }
 
   /**
@@ -269,7 +268,7 @@ public class FixedSizeListVector extends BaseValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
 
@@ -312,7 +311,7 @@ public class FixedSizeListVector extends BaseValueVector
 
   @Override
   public void setInitialCapacity(int numRecords) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     vector.setInitialCapacity(numRecords * listSize);
   }
 
@@ -329,7 +328,7 @@ public class FixedSizeListVector extends BaseValueVector
     if (getValueCount() == 0) {
       return 0;
     }
-    return getValidityBufferSizeFromCount(valueCount) + vector.getBufferSize();
+    return BitVectorHelper.getValidityBufferSizeFromCount(valueCount) + vector.getBufferSize();
   }
 
   @Override
@@ -337,7 +336,7 @@ public class FixedSizeListVector extends BaseValueVector
     if (valueCount == 0) {
       return 0;
     }
-    return getValidityBufferSizeFromCount(valueCount)
+    return BitVectorHelper.getValidityBufferSizeFromCount(valueCount)
         + vector.getBufferSizeFor(valueCount * listSize);
   }
 
@@ -655,7 +654,7 @@ public class FixedSizeListVector extends BaseValueVector
         int startIndex, int length, FixedSizeListVector target) {
       int firstByteSource = BitVectorHelper.byteIndex(startIndex);
       int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
-      int byteSizeTarget = getValidityBufferSizeFromCount(length);
+      int byteSizeTarget = BitVectorHelper.getValidityBufferSizeFromCount(length);
       int offset = startIndex % 8;
 
       if (length > 0) {

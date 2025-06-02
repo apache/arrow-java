@@ -20,7 +20,6 @@ import static java.util.Collections.singletonList;
 import static org.apache.arrow.memory.util.LargeMemoryUtil.capAtMaxInt;
 import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 import static org.apache.arrow.util.Preconditions.checkArgument;
-import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,7 +108,7 @@ public class ListVector extends BaseRepeatedValueVector
     this.validityBuffer = allocator.getEmpty();
     this.field = field;
     this.callBack = callBack;
-    this.validityAllocationSizeInBytes = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
     this.lastSet = -1;
   }
 
@@ -131,7 +130,7 @@ public class ListVector extends BaseRepeatedValueVector
 
   @Override
   public void setInitialCapacity(int numRecords) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     super.setInitialCapacity(numRecords);
   }
 
@@ -154,7 +153,7 @@ public class ListVector extends BaseRepeatedValueVector
    */
   @Override
   public void setInitialCapacity(int numRecords, double density) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     super.setInitialCapacity(numRecords, density);
   }
 
@@ -173,7 +172,7 @@ public class ListVector extends BaseRepeatedValueVector
    */
   @Override
   public void setInitialTotalCapacity(int numRecords, int totalNumberOfElements) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     super.setInitialTotalCapacity(numRecords, totalNumberOfElements);
   }
 
@@ -270,7 +269,7 @@ public class ListVector extends BaseRepeatedValueVector
       validityBuffer.writerIndex(0);
       offsetBuffer.writerIndex(0);
     } else {
-      validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
+      validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
       offsetBuffer.writerIndex((valueCount + 1) * OFFSET_WIDTH);
     }
   }
@@ -367,7 +366,7 @@ public class ListVector extends BaseRepeatedValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);
@@ -580,7 +579,7 @@ public class ListVector extends BaseRepeatedValueVector
     private void splitAndTransferValidityBuffer(int startIndex, int length, ListVector target) {
       int firstByteSource = BitVectorHelper.byteIndex(startIndex);
       int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
-      int byteSizeTarget = getValidityBufferSizeFromCount(length);
+      int byteSizeTarget = BitVectorHelper.getValidityBufferSizeFromCount(length);
       int offset = startIndex % 8;
 
       if (length > 0) {
@@ -679,7 +678,7 @@ public class ListVector extends BaseRepeatedValueVector
       return 0;
     }
     final int offsetBufferSize = (valueCount + 1) * OFFSET_WIDTH;
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
     return offsetBufferSize + validityBufferSize + vector.getBufferSize();
   }
 
@@ -688,7 +687,7 @@ public class ListVector extends BaseRepeatedValueVector
     if (valueCount == 0) {
       return 0;
     }
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
 
     return super.getBufferSizeFor(valueCount) + validityBufferSize;
   }

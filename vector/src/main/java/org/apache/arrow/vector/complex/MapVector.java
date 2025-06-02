@@ -17,7 +17,6 @@
 package org.apache.arrow.vector.complex;
 
 import static org.apache.arrow.util.Preconditions.checkArgument;
-import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
@@ -239,7 +238,7 @@ public class MapVector extends ListVector {
     private void splitAndTransferValidityBuffer(int startIndex, int length, MapVector target) {
       int firstByteSource = BitVectorHelper.byteIndex(startIndex);
       int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
-      int byteSizeTarget = getValidityBufferSizeFromCount(length);
+      int byteSizeTarget = BitVectorHelper.getValidityBufferSizeFromCount(length);
       int offset = startIndex % 8;
 
       if (length > 0) {

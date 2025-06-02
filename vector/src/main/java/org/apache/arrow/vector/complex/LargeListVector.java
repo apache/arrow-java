@@ -20,7 +20,6 @@ import static java.util.Collections.singletonList;
 import static org.apache.arrow.memory.util.LargeMemoryUtil.capAtMaxInt;
 import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 import static org.apache.arrow.util.Preconditions.checkArgument;
-import static org.apache.arrow.vector.BitVectorHelper.getValidityBufferSizeFromCount;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,7 +131,7 @@ public class LargeListVector extends BaseValueVector
     this.field = field;
     this.validityBuffer = allocator.getEmpty();
     this.callBack = callBack;
-    this.validityAllocationSizeInBytes = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
     this.lastSet = -1;
     this.offsetBuffer = allocator.getEmpty();
     this.vector = vector == null ? DEFAULT_DATA_VECTOR : vector;
@@ -157,7 +156,7 @@ public class LargeListVector extends BaseValueVector
 
   @Override
   public void setInitialCapacity(int numRecords) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     offsetAllocationSizeInBytes = (long) (numRecords + 1) * OFFSET_WIDTH;
     if (vector instanceof BaseFixedWidthVector || vector instanceof BaseVariableWidthVector) {
       vector.setInitialCapacity(numRecords * RepeatedValueVector.DEFAULT_REPEAT_PER_RECORD);
@@ -185,7 +184,7 @@ public class LargeListVector extends BaseValueVector
    */
   @Override
   public void setInitialCapacity(int numRecords, double density) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     if ((numRecords * density) >= Integer.MAX_VALUE) {
       throw new OversizedAllocationException("Requested amount of memory is more than max allowed");
     }
@@ -312,7 +311,7 @@ public class LargeListVector extends BaseValueVector
       validityBuffer.writerIndex(0);
       offsetBuffer.writerIndex(0);
     } else {
-      validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
+      validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
       offsetBuffer.writerIndex((valueCount + 1) * OFFSET_WIDTH);
     }
   }
@@ -443,7 +442,7 @@ public class LargeListVector extends BaseValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);
@@ -700,7 +699,7 @@ public class LargeListVector extends BaseValueVector
         int startIndex, int length, LargeListVector target) {
       int firstByteSource = BitVectorHelper.byteIndex(startIndex);
       int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
-      int byteSizeTarget = getValidityBufferSizeFromCount(length);
+      int byteSizeTarget = BitVectorHelper.getValidityBufferSizeFromCount(length);
       int offset = startIndex % 8;
 
       if (length > 0) {
@@ -822,7 +821,7 @@ public class LargeListVector extends BaseValueVector
       return 0;
     }
     final int offsetBufferSize = (valueCount + 1) * OFFSET_WIDTH;
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
     return offsetBufferSize + validityBufferSize + vector.getBufferSize();
   }
 
@@ -831,7 +830,7 @@ public class LargeListVector extends BaseValueVector
     if (valueCount == 0) {
       return 0;
     }
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
     long innerVectorValueCount = offsetBuffer.getLong((long) valueCount * OFFSET_WIDTH);
 
     return ((valueCount + 1) * OFFSET_WIDTH)
