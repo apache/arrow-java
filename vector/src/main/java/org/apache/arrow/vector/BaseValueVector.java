@@ -117,7 +117,7 @@ public abstract class BaseValueVector implements ValueVector {
    * @return buffer size
    * @deprecated -- use {@link BitVectorHelper#getValidityBufferSizeFromCount} instead.
    */
-  @Deprecated
+  @Deprecated(forRemoval = true, since = "18.4.0")
   protected static int getValidityBufferSizeFromCount(final int valueCount) {
     return DataSizeRoundingUtil.divideBy8Ceil(valueCount);
   }
