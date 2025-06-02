@@ -66,7 +66,7 @@ final class ExceptionTest {
       root.setRowCount(4);
       batches.add(unloader.getRecordBatch());
 
-      final String exceptionMessage = "Error occurred while getting next schema root.\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.next(ArrowVectorIterator.java:205)\n\tat com.oceanbase.external.jdbc.JdbcScanner.loadNextBatch(JdbcScanner.java:73)\n\tat org.apache.arrow.c.ArrayStreamExporter$ExportedArrayStreamPrivateData.getNext(ArrayStreamExporter.java:72)\nCaused by: java.lang.RuntimeException: Error occurred while consuming data.\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.consumeData(ArrowVectorIterator.java:127)\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.load(ArrowVectorIterator.java:178)\n\tat org.apache.arrow.adapter.jdbc.ArrowVectorIterator.next(ArrowVectorIterator.java:198)\n\t... 2 more\nCaused by: java.lang.OutOfMemoryError: Java heap space\n";
+      final String exceptionMessage = "This is a message for testing exception.";
 
       RuntimeException exToThrow = new RuntimeException(exceptionMessage);
       batches.add(exToThrow);
@@ -93,7 +93,8 @@ final class ExceptionTest {
             } catch (Exception e) {
               assertThat(exceptionThrowed).isEqualTo(null);
               final String eMessage = e.getMessage();
-              assertThat(eMessage.length()).isGreaterThan(expectExceptionMessage.length() + 1); // 1 for '}'
+              // 1 for '}', ref to CDataJniException
+              assertThat(eMessage.length()).isGreaterThan(expectExceptionMessage.length() + 1); 
               assertThat(eMessage.substring(eMessage.length() - expectExceptionMessage.length() - 1, eMessage.length() - 1))
                   .isEqualTo(expectExceptionMessage);
               exceptionThrowed = e;
