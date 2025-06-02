@@ -113,7 +113,8 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     this.validityBuffer = allocator.getEmpty();
     this.field = field;
     this.callBack = callBack;
-    this.validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes =
+        BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
   }
 
   @Override
@@ -323,7 +324,8 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize =
+            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);

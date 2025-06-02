@@ -108,7 +108,8 @@ public class ListVector extends BaseRepeatedValueVector
     this.validityBuffer = allocator.getEmpty();
     this.field = field;
     this.callBack = callBack;
-    this.validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes =
+        BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
     this.lastSet = -1;
   }
 
@@ -366,7 +367,8 @@ public class ListVector extends BaseRepeatedValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize =
+            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);

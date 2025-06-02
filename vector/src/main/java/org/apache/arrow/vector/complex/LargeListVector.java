@@ -131,7 +131,8 @@ public class LargeListVector extends BaseValueVector
     this.field = field;
     this.validityBuffer = allocator.getEmpty();
     this.callBack = callBack;
-    this.validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes =
+        BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
     this.lastSet = -1;
     this.offsetBuffer = allocator.getEmpty();
     this.vector = vector == null ? DEFAULT_DATA_VECTOR : vector;
@@ -442,7 +443,8 @@ public class LargeListVector extends BaseValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize =
+            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);

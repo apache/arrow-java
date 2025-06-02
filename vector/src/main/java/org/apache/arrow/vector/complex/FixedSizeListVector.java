@@ -110,7 +110,8 @@ public class FixedSizeListVector extends BaseValueVector
     this.listSize = ((ArrowType.FixedSizeList) field.getFieldType().getType()).getListSize();
     Preconditions.checkArgument(listSize >= 0, "list size must be non-negative");
     this.valueCount = 0;
-    this.validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes =
+        BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
   }
 
   @Override
@@ -268,7 +269,8 @@ public class FixedSizeListVector extends BaseValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize =
+            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
 
