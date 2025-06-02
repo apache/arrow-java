@@ -17,9 +17,7 @@
 package org.apache.arrow.c;
 
 import static org.apache.arrow.vector.testing.ValueVectorDataPopulator.setVector;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -958,6 +956,50 @@ public class RoundtripTest {
 
   @Test
   public void testSchema() {
+    Schema schema = createSchema();
+    // Consumer allocates empty ArrowSchema
+    try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator)) {
+      // Producer fills the schema with data
+      exportSchema(schema, consumerArrowSchema);
+
+      // Consumer imports schema
+      Schema importedSchema = Data.importSchema(allocator, consumerArrowSchema, null);
+      assertEquals(schema.toJson(), importedSchema.toJson());
+    }
+  }
+
+  @Test
+  public void testSchemaStructReuse() {
+    Schema schema = createSchema();
+    // Consumer allocates empty ArrowSchema
+    try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator)) {
+      // Producer fills the schema with data
+      exportSchema(schema, consumerArrowSchema);
+
+      // Consumer imports schema
+      Schema importedSchema = Data.importSchema(allocator, consumerArrowSchema, null, false);
+      assertEquals(schema.toJson(), importedSchema.toJson());
+
+      // Imported struct should be released but not closed
+      assertEquals(0, consumerArrowSchema.snapshot().release);
+      assertNotEquals(0, consumerArrowSchema.memoryAddress());
+
+      // Export and import again
+      exportSchema(schema, consumerArrowSchema);
+      importedSchema = Data.importSchema(allocator, consumerArrowSchema, null, false);
+      assertEquals(schema.toJson(), importedSchema.toJson());
+      assertEquals(0, consumerArrowSchema.snapshot().release);
+      assertNotEquals(0, consumerArrowSchema.memoryAddress());
+    }
+  }
+
+  private void exportSchema(Schema schema, ArrowSchema targetArrowSchema) {
+    try (ArrowSchema arrowSchema = ArrowSchema.wrap(targetArrowSchema.memoryAddress())) {
+      Data.exportSchema(allocator, schema, null, arrowSchema);
+    }
+  }
+
+  private static Schema createSchema() {
     Field decimalField =
         new Field("inner1", FieldType.nullable(new ArrowType.Decimal(19, 4, 128)), null);
     Field strField = new Field("inner2", FieldType.nullable(new ArrowType.Utf8()), null);
@@ -968,16 +1010,7 @@ public class RoundtripTest {
             Arrays.asList(decimalField, strField));
     Field intField = new Field("col2", FieldType.nullable(new ArrowType.Int(32, true)), null);
     Schema schema = new Schema(Arrays.asList(itemField, intField));
-    // Consumer allocates empty ArrowSchema
-    try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator)) {
-      // Producer fills the schema with data
-      try (ArrowSchema arrowSchema = ArrowSchema.wrap(consumerArrowSchema.memoryAddress())) {
-        Data.exportSchema(allocator, schema, null, arrowSchema);
-      }
-      // Consumer imports schema
-      Schema importedSchema = Data.importSchema(allocator, consumerArrowSchema, null);
-      assertEquals(schema.toJson(), importedSchema.toJson());
-    }
+    return schema;
   }
 
   @Test
@@ -1002,12 +1035,8 @@ public class RoundtripTest {
     try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
         ArrowArray consumerArrowArray = ArrowArray.allocateNew(allocator)) {
       // Producer creates structures from existing memory pointers
-      try (ArrowSchema arrowSchema = ArrowSchema.wrap(consumerArrowSchema.memoryAddress());
-          ArrowArray arrowArray = ArrowArray.wrap(consumerArrowArray.memoryAddress())) {
-        // Producer exports vector into the C Data Interface structures
-        try (final NullVector vector = new NullVector()) {
-          Data.exportVector(allocator, vector, null, arrowArray, arrowSchema);
-        }
+      try (final NullVector vector = new NullVector()) {
+        exportFieldVector(vector, consumerArrowSchema, consumerArrowArray);
       }
 
       // Release array structure
@@ -1022,6 +1051,45 @@ public class RoundtripTest {
               });
 
       assertEquals("Cannot import released ArrowArray", e.getMessage());
+    }
+  }
+
+  @Test
+  public void testArrayStructReuse() {
+    // Consumer allocates empty structures
+    try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
+        ArrowArray consumerArrowArray = ArrowArray.allocateNew(allocator)) {
+      // Producer creates structures from existing memory pointers
+      try (final NullVector vector = new NullVector()) {
+        exportFieldVector(vector, consumerArrowSchema, consumerArrowArray);
+      }
+      Data.importVector(allocator, consumerArrowArray, consumerArrowSchema, null, false);
+
+      // Imported structs should be released but not closed
+      assertEquals(0, consumerArrowSchema.snapshot().release);
+      assertNotEquals(0, consumerArrowSchema.memoryAddress());
+      assertEquals(0, consumerArrowArray.snapshot().release);
+      assertNotEquals(0, consumerArrowArray.memoryAddress());
+
+      try (final NullVector vector = new NullVector()) {
+        exportFieldVector(vector, consumerArrowSchema, consumerArrowArray);
+      }
+      Data.importVector(allocator, consumerArrowArray, consumerArrowSchema, null, false);
+
+      // Imported structs should be released but not closed
+      assertEquals(0, consumerArrowSchema.snapshot().release);
+      assertNotEquals(0, consumerArrowSchema.memoryAddress());
+      assertEquals(0, consumerArrowArray.snapshot().release);
+      assertNotEquals(0, consumerArrowArray.memoryAddress());
+    }
+  }
+
+  private void exportFieldVector(
+      FieldVector vector, ArrowSchema consumerArrowSchema, ArrowArray consumerArrowArray) {
+    try (ArrowSchema arrowSchema = ArrowSchema.wrap(consumerArrowSchema.memoryAddress());
+        ArrowArray arrowArray = ArrowArray.wrap(consumerArrowArray.memoryAddress())) {
+      // Producer exports vector into the C Data Interface structures
+      Data.exportVector(allocator, vector, null, arrowArray, arrowSchema);
     }
   }
 
