@@ -80,5 +80,9 @@ jobs:
         if: '! github.event.pull_request.draft'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        permissions:
+          contents: read
+          issues: write
+          pull-requests: write
         run: |
           ./.github/workflows/dev_pr_milestone.sh "${GITHUB_REPOSITORY}" ${{ github.event.number }}
