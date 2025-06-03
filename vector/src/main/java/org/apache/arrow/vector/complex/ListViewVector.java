@@ -284,11 +284,8 @@ public class ListViewVector extends BaseRepeatedValueViewVector
 
   @Override
   protected void allocateValidityBuffer(final long size) {
-    final int curSize = (int) size;
-    validityBuffer = allocator.buffer(curSize);
-    validityBuffer.readerIndex(0);
-    validityAllocationSizeInBytes = curSize;
-    validityBuffer.setZero(0, validityBuffer.capacity());
+    super.allocateValidityBuffer(size);
+    validityAllocationSizeInBytes = (int) size;
   }
 
   @Override

@@ -342,8 +342,7 @@ public abstract class BaseFixedWidthVector extends BaseValueVector
    */
   @Override
   protected void allocateValidityBuffer(final long validityBufferSize) {
-    validityBuffer = allocator.buffer(validityBufferSize);
-    validityBuffer.readerIndex(0);
+    super.allocateValidityBuffer(validityBufferSize);
     refreshValueCapacity();
   }
 

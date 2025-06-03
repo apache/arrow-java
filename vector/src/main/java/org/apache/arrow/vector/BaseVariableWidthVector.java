@@ -519,10 +519,7 @@ public abstract class BaseVariableWidthVector extends BaseValueVector
   /* allocate validity buffer */
   @Override
   protected void allocateValidityBuffer(final long size) {
-    final int curSize = (int) size;
-    validityBuffer = allocator.buffer(curSize);
-    validityBuffer.readerIndex(0);
-    initValidityBuffer();
+    super.allocateValidityBuffer(size);
   }
 
   /**

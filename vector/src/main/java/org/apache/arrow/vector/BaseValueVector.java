@@ -355,11 +355,13 @@ public abstract class BaseValueVector implements ValueVector {
   }
 
   /**
-   * Allocate new validity buffer for when the bytes need to be copied over
+   * Allocate new validity buffer for when the bytes need to be copied over.
    *
    * @param byteSizeTarget desired size of the buffer
    */
-  protected void allocateValidityBuffer(final long byteSizeTarget) {
-    throw new UnsupportedOperationException();
+  protected void allocateValidityBuffer(long byteSizeTarget) {
+    validityBuffer = allocator.buffer(byteSizeTarget);
+    validityBuffer.readerIndex(0);
+    validityBuffer.setZero(0, validityBuffer.capacity());
   }
 }
