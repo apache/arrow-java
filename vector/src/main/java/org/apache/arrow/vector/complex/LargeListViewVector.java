@@ -112,7 +112,8 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     this.validityBuffer = allocator.getEmpty();
     this.field = field;
     this.callBack = callBack;
-    this.validityAllocationSizeInBytes = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
+    this.validityAllocationSizeInBytes =
+        BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION);
   }
 
   @Override
@@ -133,7 +134,7 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
 
   @Override
   public void setInitialCapacity(int numRecords) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     super.setInitialCapacity(numRecords);
   }
 
@@ -156,7 +157,7 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
    */
   @Override
   public void setInitialCapacity(int numRecords, double density) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     super.setInitialCapacity(numRecords, density);
   }
 
@@ -175,7 +176,7 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
    */
   @Override
   public void setInitialTotalCapacity(int numRecords, int totalNumberOfElements) {
-    validityAllocationSizeInBytes = getValidityBufferSizeFromCount(numRecords);
+    validityAllocationSizeInBytes = BitVectorHelper.getValidityBufferSizeFromCount(numRecords);
     super.setInitialTotalCapacity(numRecords, totalNumberOfElements);
   }
 
@@ -225,7 +226,7 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
       offsetBuffer.writerIndex(0);
       sizeBuffer.writerIndex(0);
     } else {
-      validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
+      validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
       offsetBuffer.writerIndex((long) valueCount * OFFSET_WIDTH);
       sizeBuffer.writerIndex((long) valueCount * SIZE_WIDTH);
     }
@@ -320,7 +321,8 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize =
+            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);
@@ -561,7 +563,7 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     }
     final int offsetBufferSize = valueCount * OFFSET_WIDTH;
     final int sizeBufferSize = valueCount * SIZE_WIDTH;
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
     return offsetBufferSize + sizeBufferSize + validityBufferSize + vector.getBufferSize();
   }
 
@@ -576,7 +578,7 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     if (valueCount == 0) {
       return 0;
     }
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
 
     return super.getBufferSizeFor(valueCount) + validityBufferSize;
   }

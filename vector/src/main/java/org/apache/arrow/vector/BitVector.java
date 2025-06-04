@@ -98,7 +98,7 @@ public final class BitVector extends BaseFixedWidthVector implements ValueIterab
    */
   @Override
   public void setInitialCapacity(int valueCount) {
-    final int size = getValidityBufferSizeFromCount(valueCount);
+    final int size = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
     if (size * 2L > MAX_ALLOCATION_SIZE) {
       throw new OversizedAllocationException("Requested amount of memory is more than max allowed");
     }
@@ -121,7 +121,7 @@ public final class BitVector extends BaseFixedWidthVector implements ValueIterab
     if (count == 0) {
       return 0;
     }
-    return 2 * getValidityBufferSizeFromCount(count);
+    return 2 * BitVectorHelper.getValidityBufferSizeFromCount(count);
   }
 
   /**
@@ -165,7 +165,7 @@ public final class BitVector extends BaseFixedWidthVector implements ValueIterab
       int startIndex, int length, ArrowBuf sourceBuffer, ArrowBuf destBuffer) {
     int firstByteSource = BitVectorHelper.byteIndex(startIndex);
     int lastByteSource = BitVectorHelper.byteIndex(valueCount - 1);
-    int byteSizeTarget = getValidityBufferSizeFromCount(length);
+    int byteSizeTarget = BitVectorHelper.getValidityBufferSizeFromCount(length);
     int offset = startIndex % 8;
 
     if (length > 0) {

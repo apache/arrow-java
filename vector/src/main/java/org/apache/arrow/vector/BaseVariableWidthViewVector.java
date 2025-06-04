@@ -392,7 +392,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       validityBuffer.writerIndex(0);
       viewBuffer.writerIndex(0);
     } else {
-      validityBuffer.writerIndex(getValidityBufferSizeFromCount(valueCount));
+      validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
       viewBuffer.writerIndex(valueCount * ELEMENT_SIZE);
     }
   }
@@ -675,7 +675,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       return 0;
     }
 
-    final int validityBufferSize = getValidityBufferSizeFromCount(valueCount);
+    final int validityBufferSize = BitVectorHelper.getValidityBufferSizeFromCount(valueCount);
     final int viewBufferSize = valueCount * ELEMENT_SIZE;
     final int dataBufferSize = getDataBufferSize();
     return validityBufferSize + viewBufferSize + dataBufferSize;
@@ -855,7 +855,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
   protected void sliceAndTransferValidityBuffer(
       int startIndex, int length, BaseValueVector target) {
     final int firstByteSource = BitVectorHelper.byteIndex(startIndex);
-    final int byteSizeTarget = getValidityBufferSizeFromCount(length);
+    final int byteSizeTarget = BitVectorHelper.getValidityBufferSizeFromCount(length);
 
     if (target.validityBuffer != null) {
       target.validityBuffer.getReferenceManager().release();
