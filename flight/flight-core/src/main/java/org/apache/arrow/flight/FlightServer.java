@@ -572,17 +572,17 @@ public class FlightServer implements AutoCloseable {
     }
 
     private void prepareTlsSettings() throws IOException {
-      if (this.keyFile != null) {
-        closeKey();
-        this.key = new FileInputStream(this.keyFile);
+      if (this.mTlsCACertFile != null) {
+        closeMTlsCACert();
+        this.mTlsCACert = new FileInputStream(this.mTlsCACertFile);
       }
       if (this.certChainFile != null) {
         closeCertChain();
         this.certChain = new FileInputStream(this.certChainFile);
       }
-      if (this.mTlsCACertFile != null) {
-        closeMTlsCACert();
-        this.mTlsCACert = new FileInputStream(this.mTlsCACertFile);
+      if (this.keyFile != null) {
+        closeKey();
+        this.key = new FileInputStream(this.keyFile);
       }
     }
   }
