@@ -36,14 +36,17 @@ public class UuidReaderImpl extends AbstractFieldReader {
     return vector.getMinorType();
   }
 
+  @Override
   public Field getField() {
     return vector.getField();
   }
 
+  @Override
   public boolean isSet() {
     return !vector.isNull(idx());
   }
 
+  @Override
   public void read(ExtensionHolder holder) {
     UuidHolder uuidHolder = (UuidHolder) holder;
     vector.get(idx(), uuidHolder);

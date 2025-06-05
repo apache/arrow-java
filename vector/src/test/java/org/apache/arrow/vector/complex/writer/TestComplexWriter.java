@@ -19,6 +19,7 @@ package org.apache.arrow.vector.complex.writer;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -88,6 +89,7 @@ import org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
 import org.apache.arrow.vector.types.TimeUnit;
+import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ArrowTypeID;
 import org.apache.arrow.vector.types.pojo.ArrowType.Int;
@@ -2522,6 +2524,9 @@ public class TestComplexWriter {
         final ByteBuffer bb = ByteBuffer.wrap(uuidHolder.value);
         UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
         assertEquals(u1, actualUuid);
+        assertTrue(uuidReader.isSet());
+        assertEquals(uuidReader.getMinorType(), MinorType.EXTENSIONTYPE);
+        assertInstanceOf(UuidType.class, uuidReader.getField().getFieldType().getType());
       }
     }
   }
