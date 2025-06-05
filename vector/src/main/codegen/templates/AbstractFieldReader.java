@@ -108,6 +108,23 @@ abstract class AbstractFieldReader extends AbstractBaseReader implements FieldRe
   }
 
   </#list></#list>
+
+  public void read(ExtensionHolder holder) {
+    fail("Extension");
+  }
+
+  public void read(int arrayIndex, ExtensionHolder holder) {
+    fail("RepeatedExtension");
+  }
+
+  public void copyAsValue(AbstractExtensionTypeWriter writer) {
+    fail("CopyAsValueExtension");
+  }
+
+  public void copyAsField(String name, AbstractExtensionTypeWriter writer) {
+    fail("CopyAsFieldExtension");
+  }
+
   public FieldReader reader(String name) {
     fail("reader(String name)");
     return null;
