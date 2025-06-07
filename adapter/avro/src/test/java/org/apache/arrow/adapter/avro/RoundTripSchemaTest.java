@@ -21,27 +21,50 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.dictionary.Dictionary;
+import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.avro.Schema;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class RoundTripSchemaTest {
 
   private void doRoundTripTest(List<Field> fields) {
+    doRoundTripTest(fields, null);
+  }
 
-    AvroToArrowConfig config = new AvroToArrowConfig(null, 1, null, Collections.emptySet(), false);
+  private void doRoundTripTest(List<Field> fields, DictionaryProvider dictionaries) {
 
-    Schema avroSchema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord");
+    DictionaryProvider.MapDictionaryProvider decodeDictionaries =
+        new DictionaryProvider.MapDictionaryProvider();
+    AvroToArrowConfig decodeConfig =
+        new AvroToArrowConfig(null, 1, decodeDictionaries, Collections.emptySet(), false);
+
+    Schema avroSchema = ArrowToAvroUtils.createAvroSchema(fields, "TestRecord", null, dictionaries);
     org.apache.arrow.vector.types.pojo.Schema arrowSchema =
-        AvroToArrowUtils.createArrowSchema(avroSchema, config);
+        AvroToArrowUtils.createArrowSchema(avroSchema, decodeConfig);
 
     // Compare string representations - equality not defined for logical types
     assertEquals(fields, arrowSchema.getFields());
+
+    for (int i = 0; i < fields.size(); i++) {
+      Field field = fields.get(i);
+      Field rtField = arrowSchema.getFields().get(i);
+      if (field.getDictionary() != null) {
+        // Dictionary content is not decoded until the data is consumed
+        Assertions.assertNotNull(rtField.getDictionary());
+      }
+    }
   }
 
   // Schema round trip for primitive types, nullable and non-nullable
@@ -439,5 +462,39 @@ public class RoundTripSchemaTest {
                         null))));
 
     doRoundTripTest(fields);
+  }
+
+  @Test
+  public void testRoundTripEnumType() {
+
+    BufferAllocator allocator = new RootAllocator();
+
+    FieldType dictionaryField = new FieldType(false, new ArrowType.Utf8(), null);
+    VarCharVector dictionaryVector =
+        new VarCharVector(new Field("dictionary", dictionaryField, null), allocator);
+
+    dictionaryVector.allocateNew(3);
+    dictionaryVector.set(0, "apple".getBytes());
+    dictionaryVector.set(1, "banana".getBytes());
+    dictionaryVector.set(2, "cherry".getBytes());
+    dictionaryVector.setValueCount(3);
+
+    // For simplicity, ensure the index type matches what will be decoded during Avro enum decoding
+    Dictionary dictionary =
+        new Dictionary(
+            dictionaryVector, new DictionaryEncoding(0L, false, new ArrowType.Int(8, true)));
+    DictionaryProvider dictionaries = new DictionaryProvider.MapDictionaryProvider(dictionary);
+
+    List<Field> fields =
+        Arrays.asList(
+            new Field(
+                "enumField",
+                new FieldType(
+                    true,
+                    new ArrowType.Int(8, true),
+                    new DictionaryEncoding(0L, false, new ArrowType.Int(8, true))),
+                null));
+
+    doRoundTripTest(fields, dictionaries);
   }
 }

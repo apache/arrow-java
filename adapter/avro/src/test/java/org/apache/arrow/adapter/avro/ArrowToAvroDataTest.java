@@ -76,10 +76,14 @@ import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.dictionary.Dictionary;
+import org.apache.arrow.vector.dictionary.DictionaryEncoder;
+import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.JsonStringArrayList;
@@ -2813,6 +2817,83 @@ public class ArrowToAvroDataTest {
           } else {
             assertNull(record.get("nullableStruct"));
           }
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteDictEnumEncoded() throws Exception {
+
+    BufferAllocator allocator = new RootAllocator();
+
+    // Create a dictionary
+    FieldType dictionaryField = new FieldType(false, new ArrowType.Utf8(), null);
+    VarCharVector dictionaryVector =
+        new VarCharVector(new Field("dictionary", dictionaryField, null), allocator);
+
+    dictionaryVector.allocateNew(3);
+    dictionaryVector.set(0, "apple".getBytes());
+    dictionaryVector.set(1, "banana".getBytes());
+    dictionaryVector.set(2, "cherry".getBytes());
+    dictionaryVector.setValueCount(3);
+
+    Dictionary dictionary =
+        new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+    DictionaryProvider dictionaries = new DictionaryProvider.MapDictionaryProvider(dictionary);
+
+    // Field definition
+    FieldType stringField = new FieldType(false, new ArrowType.Utf8(), null);
+    VarCharVector stringVector =
+        new VarCharVector(new Field("enumField", stringField, null), allocator);
+    stringVector.allocateNew(10);
+    stringVector.setSafe(0, "apple".getBytes());
+    stringVector.setSafe(1, "banana".getBytes());
+    stringVector.setSafe(2, "cherry".getBytes());
+    stringVector.setSafe(3, "cherry".getBytes());
+    stringVector.setSafe(4, "apple".getBytes());
+    stringVector.setSafe(5, "banana".getBytes());
+    stringVector.setSafe(6, "apple".getBytes());
+    stringVector.setSafe(7, "cherry".getBytes());
+    stringVector.setSafe(8, "banana".getBytes());
+    stringVector.setSafe(9, "apple".getBytes());
+    stringVector.setValueCount(10);
+
+    IntVector encodedVector = (IntVector) DictionaryEncoder.encode(stringVector, dictionary);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(encodedVector);
+    int rowCount = 10;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      File dataFile = new File(TMP, "testWriteEnumEncoded.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer =
+            ArrowToAvroUtils.createCompositeProducer(vectors, dictionaries);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields(), dictionaries);
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          // Values read from Avro should be the decoded enum values
+          assertEquals(stringVector.getObject(row).toString(), record.get("enumField").toString());
         }
       }
     }

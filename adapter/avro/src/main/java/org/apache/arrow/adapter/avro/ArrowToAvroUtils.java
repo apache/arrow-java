@@ -17,10 +17,14 @@
 package org.apache.arrow.adapter.avro;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 import org.apache.arrow.adapter.avro.producers.AvroBigIntProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBooleanProducer;
 import org.apache.arrow.adapter.avro.producers.AvroBytesProducer;
+import org.apache.arrow.adapter.avro.producers.AvroEnumProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedSizeBinaryProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFixedSizeListProducer;
 import org.apache.arrow.adapter.avro.producers.AvroFloat2Producer;
@@ -41,6 +45,7 @@ import org.apache.arrow.adapter.avro.producers.AvroUint4Producer;
 import org.apache.arrow.adapter.avro.producers.AvroUint8Producer;
 import org.apache.arrow.adapter.avro.producers.BaseAvroProducer;
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
+import org.apache.arrow.adapter.avro.producers.DictionaryDecodingProducer;
 import org.apache.arrow.adapter.avro.producers.Producer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDateDayProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDateMilliProducer;
@@ -59,6 +64,7 @@ import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampNanoTzProduc
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampSecProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimestampSecTzProducer;
 import org.apache.arrow.util.Preconditions;
+import org.apache.arrow.vector.BaseIntVector;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
@@ -96,11 +102,14 @@ import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
+import org.apache.arrow.vector.dictionary.Dictionary;
+import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.util.Text;
 import org.apache.avro.LogicalType;
 import org.apache.avro.LogicalTypes;
 import org.apache.avro.Schema;
@@ -162,17 +171,29 @@ public class ArrowToAvroUtils {
    * may be nullable. Record types must contain at least one child field and cannot contain multiple
    * fields with the same name
    *
+   * <p>String fields that are dictionary-encoded will be represented as an Avro enum, so long as
+   * all the values meet the restrictions on Avro enums (non-null, valid identifiers). Other data
+   * types that are dictionary encoded, or string fields that do not meet the avro requirements,
+   * will be output as their decoded type.
+   *
    * @param arrowFields The arrow fields used to generate the Avro schema
    * @param typeName Name of the top level Avro record type
    * @param namespace Namespace of the top level Avro record type
+   * @param dictionaries A dictionary provider is required if any fields use dictionary encoding
    * @return An Avro record schema for the given list of fields, with the specified name and
    *     namespace
    */
   public static Schema createAvroSchema(
-      List<Field> arrowFields, String typeName, String namespace) {
+      List<Field> arrowFields, String typeName, String namespace, DictionaryProvider dictionaries) {
     SchemaBuilder.RecordBuilder<Schema> assembler =
         SchemaBuilder.record(typeName).namespace(namespace);
-    return buildRecordSchema(assembler, arrowFields, namespace);
+    return buildRecordSchema(assembler, arrowFields, namespace, dictionaries);
+  }
+
+  /** Overload provided for convenience, sets dictionaries = null. */
+  public static Schema createAvroSchema(
+      List<Field> arrowFields, String typeName, String namespace) {
+    return createAvroSchema(arrowFields, typeName, namespace, null);
   }
 
   /** Overload provided for convenience, sets namespace = null. */
@@ -185,61 +206,83 @@ public class ArrowToAvroUtils {
     return createAvroSchema(arrowFields, GENERIC_RECORD_TYPE_NAME);
   }
 
+  /**
+   * Overload provided for convenience, sets name = GENERIC_RECORD_TYPE_NAME and namespace = null.
+   */
+  public static Schema createAvroSchema(List<Field> arrowFields, DictionaryProvider dictionaries) {
+    return createAvroSchema(arrowFields, GENERIC_RECORD_TYPE_NAME, null, dictionaries);
+  }
+
   private static <T> T buildRecordSchema(
-      SchemaBuilder.RecordBuilder<T> builder, List<Field> fields, String namespace) {
+      SchemaBuilder.RecordBuilder<T> builder,
+      List<Field> fields,
+      String namespace,
+      DictionaryProvider dictionaries) {
     if (fields.isEmpty()) {
       throw new IllegalArgumentException("Record field must have at least one child field");
     }
     SchemaBuilder.FieldAssembler<T> assembler = builder.namespace(namespace).fields();
     for (Field field : fields) {
-      assembler = buildFieldSchema(assembler, field, namespace);
+      assembler = buildFieldSchema(assembler, field, namespace, dictionaries);
     }
     return assembler.endRecord();
   }
 
   private static <T> SchemaBuilder.FieldAssembler<T> buildFieldSchema(
-      SchemaBuilder.FieldAssembler<T> assembler, Field field, String namespace) {
+      SchemaBuilder.FieldAssembler<T> assembler,
+      Field field,
+      String namespace,
+      DictionaryProvider dictionaries) {
 
     return assembler
         .name(field.getName())
-        .type(buildTypeSchema(SchemaBuilder.builder(), field, namespace))
+        .type(buildTypeSchema(SchemaBuilder.builder(), field, namespace, dictionaries))
         .noDefault();
   }
 
   private static <T> T buildTypeSchema(
-      SchemaBuilder.TypeBuilder<T> builder, Field field, String namespace) {
+      SchemaBuilder.TypeBuilder<T> builder,
+      Field field,
+      String namespace,
+      DictionaryProvider dictionaries) {
 
     // Nullable unions need special handling, since union types cannot be directly nested
     if (field.getType().getTypeID() == ArrowType.ArrowTypeID.Union) {
       boolean unionNullable = field.getChildren().stream().anyMatch(Field::isNullable);
       if (unionNullable) {
         SchemaBuilder.UnionAccumulator<T> union = builder.unionOf().nullType();
-        return addTypesToUnion(union, field.getChildren(), namespace);
+        return addTypesToUnion(union, field.getChildren(), namespace, dictionaries);
       } else {
         Field headType = field.getChildren().get(0);
         List<Field> tailTypes = field.getChildren().subList(1, field.getChildren().size());
         SchemaBuilder.UnionAccumulator<T> union =
-            buildBaseTypeSchema(builder.unionOf(), headType, namespace);
-        return addTypesToUnion(union, tailTypes, namespace);
+            buildBaseTypeSchema(builder.unionOf(), headType, namespace, dictionaries);
+        return addTypesToUnion(union, tailTypes, namespace, dictionaries);
       }
     } else if (field.isNullable()) {
-      return buildBaseTypeSchema(builder.nullable(), field, namespace);
+      return buildBaseTypeSchema(builder.nullable(), field, namespace, dictionaries);
     } else {
-      return buildBaseTypeSchema(builder, field, namespace);
+      return buildBaseTypeSchema(builder, field, namespace, dictionaries);
     }
   }
 
   private static <T> T buildArraySchema(
-      SchemaBuilder.ArrayBuilder<T> builder, Field listField, String namespace) {
+      SchemaBuilder.ArrayBuilder<T> builder,
+      Field listField,
+      String namespace,
+      DictionaryProvider dictionaries) {
     if (listField.getChildren().size() != 1) {
       throw new IllegalArgumentException("List field must have exactly one child field");
     }
     Field itemField = listField.getChildren().get(0);
-    return buildTypeSchema(builder.items(), itemField, namespace);
+    return buildTypeSchema(builder.items(), itemField, namespace, dictionaries);
   }
 
   private static <T> T buildMapSchema(
-      SchemaBuilder.MapBuilder<T> builder, Field mapField, String namespace) {
+      SchemaBuilder.MapBuilder<T> builder,
+      Field mapField,
+      String namespace,
+      DictionaryProvider dictionaries) {
     if (mapField.getChildren().size() != 1) {
       throw new IllegalArgumentException("Map field must have exactly one child field");
     }
@@ -253,11 +296,14 @@ public class ArrowToAvroUtils {
       throw new IllegalArgumentException(
           "Map keys must be of type string and cannot be nullable for conversion to Avro");
     }
-    return buildTypeSchema(builder.values(), valueField, namespace);
+    return buildTypeSchema(builder.values(), valueField, namespace, dictionaries);
   }
 
   private static <T> T buildBaseTypeSchema(
-      SchemaBuilder.BaseTypeBuilder<T> builder, Field field, String namespace) {
+      SchemaBuilder.BaseTypeBuilder<T> builder,
+      Field field,
+      String namespace,
+      DictionaryProvider dictionaries) {
 
     ArrowType.ArrowTypeID typeID = field.getType().getTypeID();
 
@@ -269,6 +315,33 @@ public class ArrowToAvroUtils {
         return builder.booleanType();
 
       case Int:
+        if (field.getDictionary() != null) {
+          if (dictionaries == null) {
+            throw new IllegalArgumentException(
+                "Field references a dictionary but no dictionaries were provided: "
+                    + field.getName());
+          }
+          Dictionary dictionary = dictionaries.lookup(field.getDictionary().getId());
+          if (dictionary == null) {
+            throw new IllegalArgumentException(
+                "Field references a dictionary that does not exist: "
+                    + field.getName()
+                    + ", dictionary ID = "
+                    + field.getDictionary().getId());
+          }
+          if (dictionaryIsValidEnum(dictionary)) {
+            String[] symbols = dictionarySymbols(dictionary);
+            return builder.enumeration(field.getName()).symbols(symbols);
+          } else {
+            Field decodedField =
+                new Field(
+                    field.getName(),
+                    dictionary.getVector().getField().getFieldType(),
+                    dictionary.getVector().getField().getChildren());
+            return buildBaseTypeSchema(builder, decodedField, namespace, dictionaries);
+          }
+        }
+
         ArrowType.Int intType = (ArrowType.Int) field.getType();
         if (intType.getBitWidth() > 32 || (intType.getBitWidth() == 32 && !intType.getIsSigned())) {
           return builder.longType();
@@ -328,7 +401,7 @@ public class ArrowToAvroUtils {
         String childNamespace =
             namespace == null ? field.getName() : namespace + "." + field.getName();
         return buildRecordSchema(
-            builder.record(field.getName()), field.getChildren(), childNamespace);
+            builder.record(field.getName()), field.getChildren(), childNamespace, dictionaries);
 
       case List:
       case FixedSizeList:
@@ -339,13 +412,13 @@ public class ArrowToAvroUtils {
               new Field("item", itemField.getFieldType(), itemField.getChildren());
           Field safeListField =
               new Field(field.getName(), field.getFieldType(), List.of(safeItemField));
-          return buildArraySchema(builder.array(), safeListField, namespace);
+          return buildArraySchema(builder.array(), safeListField, namespace, dictionaries);
         } else {
-          return buildArraySchema(builder.array(), field, namespace);
+          return buildArraySchema(builder.array(), field, namespace, dictionaries);
         }
 
       case Map:
-        return buildMapSchema(builder.map(), field, namespace);
+        return buildMapSchema(builder.map(), field, namespace, dictionaries);
 
       default:
         throw new IllegalArgumentException(
@@ -354,9 +427,12 @@ public class ArrowToAvroUtils {
   }
 
   private static <T> T addTypesToUnion(
-      SchemaBuilder.UnionAccumulator<T> accumulator, List<Field> unionFields, String namespace) {
+      SchemaBuilder.UnionAccumulator<T> accumulator,
+      List<Field> unionFields,
+      String namespace,
+      DictionaryProvider dictionaries) {
     for (var field : unionFields) {
-      accumulator = buildBaseTypeSchema(accumulator.and(), field, namespace);
+      accumulator = buildBaseTypeSchema(accumulator.and(), field, namespace, dictionaries);
     }
     return accumulator.endUnion();
   }
@@ -373,30 +449,88 @@ public class ArrowToAvroUtils {
     }
   }
 
+  private static boolean dictionaryIsValidEnum(Dictionary dictionary) {
+
+    if (dictionary.getVectorType().getTypeID() != ArrowType.ArrowTypeID.Utf8) {
+      return false;
+    }
+
+    VarCharVector vector = (VarCharVector) dictionary.getVector();
+    Set<String> symbols = new HashSet<>();
+
+    for (int i = 0; i < vector.getValueCount(); i++) {
+      if (vector.isNull(i)) {
+        return false;
+      }
+      Text text = vector.getObject(i);
+      if (text == null) {
+        return false;
+      }
+      String symbol = text.toString();
+      if (!ENUM_REGEX.matcher(symbol).matches()) {
+        return false;
+      }
+      if (symbols.contains(symbol)) {
+        return false;
+      }
+      symbols.add(symbol);
+    }
+
+    return true;
+  }
+
+  private static String[] dictionarySymbols(Dictionary dictionary) {
+
+    VarCharVector vector = (VarCharVector) dictionary.getVector();
+    String[] symbols = new String[vector.getValueCount()];
+
+    for (int i = 0; i < vector.getValueCount(); i++) {
+      Text text = vector.getObject(i);
+      // This should never happen if dictionaryIsValidEnum() succeeded
+      if (text == null) {
+        throw new IllegalArgumentException("Illegal null value in enum");
+      }
+      symbols[i] = text.toString();
+    }
+
+    return symbols;
+  }
+
+  private static final Pattern ENUM_REGEX = Pattern.compile("^[A-Za-z_][A-Za-z0-9_]*$");
+
   /**
    * Create a composite Avro producer for a set of field vectors (typically the root set of a VSR).
    *
    * @param vectors The vectors that will be used to produce Avro data
    * @return The resulting composite Avro producer
    */
-  public static CompositeAvroProducer createCompositeProducer(List<FieldVector> vectors) {
+  public static CompositeAvroProducer createCompositeProducer(
+      List<FieldVector> vectors, DictionaryProvider dictionaries) {
 
     List<Producer<? extends FieldVector>> producers = new ArrayList<>(vectors.size());
 
     for (FieldVector vector : vectors) {
-      BaseAvroProducer<? extends FieldVector> producer = createProducer(vector);
+      BaseAvroProducer<? extends FieldVector> producer = createProducer(vector, dictionaries);
       producers.add(producer);
     }
 
     return new CompositeAvroProducer(producers);
   }
 
-  private static BaseAvroProducer<?> createProducer(FieldVector vector) {
-    boolean nullable = vector.getField().isNullable();
-    return createProducer(vector, nullable);
+  /** Overload provided for convenience, sets dictionaries = null. */
+  public static CompositeAvroProducer createCompositeProducer(List<FieldVector> vectors) {
+
+    return createCompositeProducer(vectors, null);
   }
 
-  private static BaseAvroProducer<?> createProducer(FieldVector vector, boolean nullable) {
+  private static BaseAvroProducer<?> createProducer(
+      FieldVector vector, DictionaryProvider dictionaries) {
+    boolean nullable = vector.getField().isNullable();
+    return createProducer(vector, nullable, dictionaries);
+  }
+
+  private static BaseAvroProducer<?> createProducer(
+      FieldVector vector, boolean nullable, DictionaryProvider dictionaries) {
 
     Preconditions.checkNotNull(vector, "Arrow vector object can't be null");
 
@@ -405,8 +539,32 @@ public class ArrowToAvroUtils {
     // Avro understands nullable types as a union of type | null
     // Most nullable fields in a VSR will not be unions, so provide a special wrapper
     if (nullable && minorType != Types.MinorType.UNION) {
-      final BaseAvroProducer<?> innerProducer = createProducer(vector, false);
+      final BaseAvroProducer<?> innerProducer = createProducer(vector, false, dictionaries);
       return new AvroNullableProducer<>(innerProducer);
+    }
+
+    if (vector.getField().getDictionary() != null) {
+      if (dictionaries == null) {
+        throw new IllegalArgumentException(
+            "Field references a dictionary but no dictionaries were provided: "
+                + vector.getField().getName());
+      }
+      Dictionary dictionary = dictionaries.lookup(vector.getField().getDictionary().getId());
+      if (dictionary == null) {
+        throw new IllegalArgumentException(
+            "Field references a dictionary that does not exist: "
+                + vector.getField().getName()
+                + ", dictionary ID = "
+                + vector.getField().getDictionary().getId());
+      }
+      // If a field is dictionary-encoded but cannot be represented as an Avro enum,
+      // then decode it before writing
+      if (dictionaryIsValidEnum(dictionary)) {
+        return new AvroEnumProducer((BaseIntVector) vector);
+      } else {
+        BaseAvroProducer<?> dictProducer = createProducer(dictionary.getVector(), false, null);
+        return new DictionaryDecodingProducer<>((BaseIntVector) vector, dictProducer);
+      }
     }
 
     switch (minorType) {
@@ -486,21 +644,23 @@ public class ArrowToAvroUtils {
         Producer<?>[] childProducers = new Producer<?>[childVectors.size()];
         for (int i = 0; i < childVectors.size(); i++) {
           FieldVector childVector = childVectors.get(i);
-          childProducers[i] = createProducer(childVector, childVector.getField().isNullable());
+          childProducers[i] =
+              createProducer(childVector, childVector.getField().isNullable(), dictionaries);
         }
         return new AvroStructProducer(structVector, childProducers);
 
       case LIST:
         ListVector listVector = (ListVector) vector;
         FieldVector itemVector = listVector.getDataVector();
-        Producer<?> itemProducer = createProducer(itemVector, itemVector.getField().isNullable());
+        Producer<?> itemProducer =
+            createProducer(itemVector, itemVector.getField().isNullable(), dictionaries);
         return new AvroListProducer(listVector, itemProducer);
 
       case FIXED_SIZE_LIST:
         FixedSizeListVector fixedListVector = (FixedSizeListVector) vector;
         FieldVector fixedItemVector = fixedListVector.getDataVector();
         Producer<?> fixedItemProducer =
-            createProducer(fixedItemVector, fixedItemVector.getField().isNullable());
+            createProducer(fixedItemVector, fixedItemVector.getField().isNullable(), dictionaries);
         return new AvroFixedSizeListProducer(fixedListVector, fixedItemProducer);
 
       case MAP:
@@ -514,7 +674,7 @@ public class ArrowToAvroUtils {
         FieldVector valueVector = entryVector.getChildrenFromFields().get(1);
         Producer<?> keyProducer = new AvroStringProducer(keyVector);
         Producer<?> valueProducer =
-            createProducer(valueVector, valueVector.getField().isNullable());
+            createProducer(valueVector, valueVector.getField().isNullable(), dictionaries);
         Producer<?> entryProducer =
             new AvroStructProducer(entryVector, new Producer<?>[] {keyProducer, valueProducer});
         return new AvroMapProducer(mapVector, entryProducer);

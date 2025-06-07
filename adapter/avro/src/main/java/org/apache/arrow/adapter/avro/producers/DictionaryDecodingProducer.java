@@ -18,21 +18,30 @@ package org.apache.arrow.adapter.avro.producers;
 
 import java.io.IOException;
 import org.apache.arrow.vector.BaseIntVector;
+import org.apache.arrow.vector.FieldVector;
 import org.apache.avro.io.Encoder;
 
 /**
- * Producer that produces enum values from a dictionary-encoded {@link BaseIntVector}, writes data
- * to an Avro encoder.
+ * Producer that produces decoded values from a dictionary-encoded {@link BaseIntVector}, writes
+ * data to an Avro encoder.
+ *
+ * @param <T> Type of the underlying dictionary vector
  */
-public class AvroEnumProducer extends BaseAvroProducer<BaseIntVector> {
+public class DictionaryDecodingProducer<T extends FieldVector>
+    extends BaseAvroProducer<BaseIntVector> {
 
-  /** Instantiate an AvroEnumProducer. */
-  public AvroEnumProducer(BaseIntVector vector) {
-    super(vector);
+  private final Producer<T> dictProducer;
+
+  /** Instantiate a DictionaryDecodingProducer. */
+  public DictionaryDecodingProducer(BaseIntVector indexVector, Producer<T> dictProducer) {
+    super(indexVector);
+    this.dictProducer = dictProducer;
   }
 
   @Override
   public void produce(Encoder encoder) throws IOException {
-    encoder.writeEnum((int) vector.getValueAsLong(currentIndex++));
+    int dicIndex = (int) vector.getValueAsLong(currentIndex++);
+    dictProducer.setPosition(dicIndex);
+    dictProducer.produce(encoder);
   }
 }

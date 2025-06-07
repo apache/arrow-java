@@ -52,6 +52,7 @@ import org.apache.arrow.vector.TimeStampMilliTZVector;
 import org.apache.arrow.vector.TimeStampMilliVector;
 import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.TimeStampNanoVector;
+import org.apache.arrow.vector.TinyIntVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
@@ -60,10 +61,14 @@ import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.dictionary.Dictionary;
+import org.apache.arrow.vector.dictionary.DictionaryEncoder;
+import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.avro.Schema;
@@ -78,16 +83,21 @@ public class RoundTripDataTest {
 
   @TempDir public static File TMP;
 
-  private static AvroToArrowConfig basicConfig(BufferAllocator allocator) {
-    return new AvroToArrowConfig(allocator, 1000, null, Collections.emptySet(), false);
+  private static AvroToArrowConfig basicConfig(
+      BufferAllocator allocator, DictionaryProvider.MapDictionaryProvider dictionaries) {
+    return new AvroToArrowConfig(allocator, 1000, dictionaries, Collections.emptySet(), false);
   }
 
   private static VectorSchemaRoot readDataFile(
-      Schema schema, File dataFile, BufferAllocator allocator) throws Exception {
+      Schema schema,
+      File dataFile,
+      BufferAllocator allocator,
+      DictionaryProvider.MapDictionaryProvider dictionaries)
+      throws Exception {
 
     try (FileInputStream fis = new FileInputStream(dataFile)) {
       BinaryDecoder decoder = new DecoderFactory().directBinaryDecoder(fis, null);
-      return AvroToArrow.avroToArrow(schema, decoder, basicConfig(allocator));
+      return AvroToArrow.avroToArrow(schema, decoder, basicConfig(allocator, dictionaries));
     }
   }
 
@@ -95,11 +105,22 @@ public class RoundTripDataTest {
       VectorSchemaRoot root, BufferAllocator allocator, File dataFile, int rowCount)
       throws Exception {
 
+    roundTripTest(root, allocator, dataFile, rowCount, null);
+  }
+
+  private static void roundTripTest(
+      VectorSchemaRoot root,
+      BufferAllocator allocator,
+      File dataFile,
+      int rowCount,
+      DictionaryProvider dictionaries)
+      throws Exception {
+
     // Write an AVRO block using the producer classes
     try (FileOutputStream fos = new FileOutputStream(dataFile)) {
       BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
       CompositeAvroProducer producer =
-          ArrowToAvroUtils.createCompositeProducer(root.getFieldVectors());
+          ArrowToAvroUtils.createCompositeProducer(root.getFieldVectors(), dictionaries);
       for (int row = 0; row < rowCount; row++) {
         producer.produce(encoder);
       }
@@ -107,10 +128,14 @@ public class RoundTripDataTest {
     }
 
     // Generate AVRO schema
-    Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+    Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields(), dictionaries);
+
+    DictionaryProvider.MapDictionaryProvider roundTripDictionaries =
+        new DictionaryProvider.MapDictionaryProvider();
 
     // Read back in and compare
-    try (VectorSchemaRoot roundTrip = readDataFile(schema, dataFile, allocator)) {
+    try (VectorSchemaRoot roundTrip =
+        readDataFile(schema, dataFile, allocator, roundTripDictionaries)) {
 
       assertEquals(root.getSchema(), roundTrip.getSchema());
       assertEquals(rowCount, roundTrip.getRowCount());
@@ -118,6 +143,21 @@ public class RoundTripDataTest {
       // Read and check values
       for (int row = 0; row < rowCount; row++) {
         assertEquals(root.getVector(0).getObject(row), roundTrip.getVector(0).getObject(row));
+      }
+
+      if (dictionaries != null) {
+        for (long id : dictionaries.getDictionaryIds()) {
+          Dictionary originalDictionary = dictionaries.lookup(id);
+          Dictionary roundTripDictionary = roundTripDictionaries.lookup(id);
+          assertEquals(
+              originalDictionary.getVector().getValueCount(),
+              roundTripDictionary.getVector().getValueCount());
+          for (int j = 0; j < originalDictionary.getVector().getValueCount(); j++) {
+            assertEquals(
+                originalDictionary.getVector().getObject(j),
+                roundTripDictionary.getVector().getObject(j));
+          }
+        }
       }
     }
   }
@@ -141,7 +181,7 @@ public class RoundTripDataTest {
     Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
 
     // Read back in and compare
-    try (VectorSchemaRoot roundTrip = readDataFile(schema, dataFile, allocator)) {
+    try (VectorSchemaRoot roundTrip = readDataFile(schema, dataFile, allocator, null)) {
 
       assertEquals(root.getSchema(), roundTrip.getSchema());
       assertEquals(rowCount, roundTrip.getRowCount());
@@ -1601,6 +1641,60 @@ public class RoundTripDataTest {
       File dataFile = new File(TMP, "testRoundTripNullableStructs.avro");
 
       roundTripTest(root, allocator, dataFile, rowCount);
+    }
+  }
+
+  @Test
+  public void testRoundTripEnum() throws Exception {
+
+    BufferAllocator allocator = new RootAllocator();
+
+    // Create a dictionary
+    FieldType dictionaryField = new FieldType(false, new ArrowType.Utf8(), null);
+    VarCharVector dictionaryVector =
+        new VarCharVector(new Field("dictionary", dictionaryField, null), allocator);
+
+    dictionaryVector.allocateNew(3);
+    dictionaryVector.set(0, "apple".getBytes());
+    dictionaryVector.set(1, "banana".getBytes());
+    dictionaryVector.set(2, "cherry".getBytes());
+    dictionaryVector.setValueCount(3);
+
+    // For simplicity, ensure the index type matches what will be decoded during Avro enum decoding
+    Dictionary dictionary =
+        new Dictionary(
+            dictionaryVector, new DictionaryEncoding(0L, false, new ArrowType.Int(8, true)));
+    DictionaryProvider dictionaries = new DictionaryProvider.MapDictionaryProvider(dictionary);
+
+    // Field definition
+    FieldType stringField = new FieldType(false, new ArrowType.Utf8(), null);
+    VarCharVector stringVector =
+        new VarCharVector(new Field("enumField", stringField, null), allocator);
+    stringVector.allocateNew(10);
+    stringVector.setSafe(0, "apple".getBytes());
+    stringVector.setSafe(1, "banana".getBytes());
+    stringVector.setSafe(2, "cherry".getBytes());
+    stringVector.setSafe(3, "cherry".getBytes());
+    stringVector.setSafe(4, "apple".getBytes());
+    stringVector.setSafe(5, "banana".getBytes());
+    stringVector.setSafe(6, "apple".getBytes());
+    stringVector.setSafe(7, "cherry".getBytes());
+    stringVector.setSafe(8, "banana".getBytes());
+    stringVector.setSafe(9, "apple".getBytes());
+    stringVector.setValueCount(10);
+
+    TinyIntVector encodedVector =
+        (TinyIntVector) DictionaryEncoder.encode(stringVector, dictionary);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(encodedVector);
+    int rowCount = 10;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      File dataFile = new File(TMP, "testRoundTripEnums.avro");
+
+      roundTripTest(root, allocator, dataFile, rowCount, dictionaries);
     }
   }
 }
