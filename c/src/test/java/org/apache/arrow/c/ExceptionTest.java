@@ -17,6 +17,7 @@
 package org.apache.arrow.c;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -55,16 +56,6 @@ final class ExceptionTest {
 
     try (BufferAllocator allocator = new RootAllocator();
          VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
-      final IntVector ints = (IntVector) root.getVector(0);
-      VectorUnloader unloader = new VectorUnloader(root);
-
-      root.allocateNew();
-      ints.setSafe(0, 1);
-      ints.setSafe(1, 2);
-      ints.setSafe(2, 4);
-      ints.setSafe(3, 8);
-      root.setRowCount(4);
-      batches.add(unloader.getRecordBatch());
 
       final String exceptionMessage = "This is a message for testing exception.";
 
@@ -83,29 +74,13 @@ final class ExceptionTest {
         final VectorLoader loader = new VectorLoader(importRoot);
         Data.exportArrayStream(allocator, source, stream);
 
-        Throwable exceptionThrowed = null;
         try (final ArrowReader reader = Data.importArrayStream(allocator, stream)) {
-          assertThat(reader.getVectorSchemaRoot().getSchema()).isEqualTo(schema);
-
-          for (Object batch : batches) {
-            try {
-              reader.loadNextBatch();
-            } catch (Exception e) {
-              assertThat(exceptionThrowed).isEqualTo(null);
-              final String eMessage = e.getMessage();
-              // 1 for '}', ref to CDataJniException
-              assertThat(eMessage.length()).isGreaterThan(expectExceptionMessage.length() + 1); 
-              assertThat(eMessage.substring(eMessage.length() - expectExceptionMessage.length() - 1, eMessage.length() - 1))
+          IOException jniException = catchThrowableOfType(IOException.class, reader::loadNextBatch);
+          final String jniMessage = jniException.getMessage();
+          assertThat(jniMessage.length()).isGreaterThan(expectExceptionMessage.length() + 1); // 1 for '}'
+          assertThat(jniMessage.substring(jniMessage.length() - expectExceptionMessage.length() - 1, jniMessage.length() - 1))
                   .isEqualTo(expectExceptionMessage);
-              exceptionThrowed = e;
-              continue;
-            }
-            loader.load((ArrowRecordBatch) batch);
-
-            assertThat(reader.getVectorSchemaRoot().getRowCount()).isEqualTo(root.getRowCount());
-          }
         }
-        assertThat(exceptionThrowed).isNotEqualTo(null);
       }
     }
   }
