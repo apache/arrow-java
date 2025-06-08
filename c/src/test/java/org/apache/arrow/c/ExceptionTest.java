@@ -77,9 +77,7 @@ final class ExceptionTest {
         try (final ArrowReader reader = Data.importArrayStream(allocator, stream)) {
           IOException jniException = catchThrowableOfType(IOException.class, reader::loadNextBatch);
           final String jniMessage = jniException.getMessage();
-          assertThat(jniMessage.length()).isGreaterThan(expectExceptionMessage.length() + 1); // 1 for '}'
-          assertThat(jniMessage.substring(jniMessage.length() - expectExceptionMessage.length() - 1, jniMessage.length() - 1))
-                  .isEqualTo(expectExceptionMessage);
+          assertThat(jniMessage.endsWith(expectExceptionMessage + "}"));
         }
       }
     }
