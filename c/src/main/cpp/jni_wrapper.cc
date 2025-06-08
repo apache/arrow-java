@@ -205,8 +205,9 @@ void TryCopyLastError(JNIEnv* env, InnerPrivateData* private_data) {
     return;
   }
 
+  jsize error_bytes_len = env->GetArrayLength(arr);
   char* error_str = reinterpret_cast<char*>(error_bytes);
-  private_data->last_error_ = std::string(error_str, std::strlen(error_str));
+  private_data->last_error_ = std::string(error_str, error_bytes_len);
 
   env->ReleaseByteArrayElements(arr, error_bytes, JNI_ABORT);
 }
