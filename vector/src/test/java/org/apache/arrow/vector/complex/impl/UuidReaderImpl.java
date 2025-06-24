@@ -48,7 +48,17 @@ public class UuidReaderImpl extends AbstractFieldReader {
 
   @Override
   public void read(ExtensionHolder holder) {
-    UuidHolder uuidHolder = (UuidHolder) holder;
-    vector.get(idx(), uuidHolder);
+    vector.get(idx(), (UuidHolder) holder);
+  }
+
+  @Override
+  public void read(int arrayIndex, ExtensionHolder holder) {
+    vector.get(arrayIndex, (UuidHolder) holder);
+  }
+
+  @Override
+  public void copyAsValue(AbstractExtensionTypeWriter writer) {
+    UuidWriterImpl impl = (UuidWriterImpl) writer;
+    impl.vector.copyFromSafe(idx(), impl.idx(), vector);
   }
 }
