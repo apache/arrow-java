@@ -805,4 +805,29 @@ public class TestPromotableWriter {
       assertEquals(u2, uuidVector.getObject(1));
     }
   }
+
+  @Test
+  public void testExtensionTypeForList() throws Exception {
+    try (final ListVector container = ListVector.empty(EMPTY_SCHEMA_PATH, allocator);
+        final UuidVector v =
+            (UuidVector) container.addOrGetVector(FieldType.nullable(new UuidType())).getVector();
+        final PromotableWriter writer = new PromotableWriter(v, container)) {
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      container.allocateNew();
+      container.setValueCount(1);
+      writer.addExtensionTypeWriterFactory(new UuidWriterFactory());
+
+      writer.setPosition(0);
+      writer.writeExtension(u1);
+      writer.setPosition(1);
+      writer.writeExtension(u2);
+
+      container.setValueCount(2);
+
+      UuidVector uuidVector = (UuidVector) container.getDataVector();
+      assertEquals(u1, uuidVector.getObject(0));
+      assertEquals(u2, uuidVector.getObject(1));
+    }
+  }
 }
