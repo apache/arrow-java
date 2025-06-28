@@ -550,6 +550,10 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
     getWriter(MinorType.EXTENSIONTYPE).addExtensionTypeWriterFactory(factory);
   }
 
+  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory factory, ArrowType arrowType) {
+    getWriter(MinorType.EXTENSIONTYPE, arrowType).addExtensionTypeWriterFactory(factory);
+  }
+
   @Override
   public void allocate() {
     getWriter().allocate();

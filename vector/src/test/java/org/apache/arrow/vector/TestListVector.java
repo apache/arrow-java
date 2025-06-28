@@ -23,16 +23,22 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.impl.UnionListReader;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
+import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
+import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
+import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
@@ -41,6 +47,7 @@ import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.UuidType;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -1195,6 +1202,71 @@ public class TestListVector {
       // Field inside a new vector created by reusing a field should be the same in memory as the
       // original field.
       assertSame(toVector.getField(), fromVector.getField());
+    }
+  }
+
+  @Test
+  public void testListVectorWithExtensionType() throws Exception {
+    final FieldType type = FieldType.nullable(new UuidType());
+    try (final ListVector inVector = new ListVector("list", allocator, type, null)) {
+      UnionListWriter writer = inVector.getWriter();
+      writer.allocate();
+      writer.setPosition(0);
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      writer.startList();
+      ExtensionWriter extensionWriter = writer.extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u1);
+      extensionWriter.writeExtension(u2);
+      writer.endList();
+
+      writer.setValueCount(1);
+
+      FieldReader reader = inVector.getReader();
+      assertTrue(reader.isSet(), "shouldn't be null");
+      Object result = inVector.getObject(0);
+      ArrayList<UUID> resultSet = (ArrayList<UUID>) result;
+      assertEquals(2, resultSet.size());
+      assertEquals(u1, resultSet.get(0));
+      assertEquals(u2, resultSet.get(1));
+    }
+  }
+
+  @Test
+  public void testListVectorReaderForExtensionType() throws Exception {
+    final FieldType type = FieldType.nullable(new UuidType());
+    try (final ListVector inVector = new ListVector("list", allocator, type, null)) {
+      UnionListWriter writer = inVector.getWriter();
+      writer.allocate();
+      writer.setPosition(0);
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      writer.startList();
+      ExtensionWriter extensionWriter = writer.extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u1);
+      extensionWriter.writeExtension(u2);
+      writer.endList();
+
+      writer.setValueCount(1);
+
+      UnionListReader reader = inVector.getReader();
+      assertTrue(reader.isSet(), "shouldn't be null");
+      reader.setPosition(0);
+      reader.next();
+      FieldReader uuidReader = reader.reader();
+      UuidHolder holder = new UuidHolder();
+      uuidReader.read(holder);
+      ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u1, actualUuid);
+      reader.next();
+      uuidReader = reader.reader();
+      uuidReader.read(holder);
+      bb = ByteBuffer.wrap(holder.value);
+      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u2, actualUuid);
     }
   }
 
