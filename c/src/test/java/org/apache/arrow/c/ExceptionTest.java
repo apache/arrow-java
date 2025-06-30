@@ -51,7 +51,7 @@ final class ExceptionTest {
     final List<Object> batches = new ArrayList<>();
 
     try (BufferAllocator allocator = new RootAllocator();
-         VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+        VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
 
       final String exceptionMessage = "This is a message for testing exception.";
 
@@ -66,7 +66,7 @@ final class ExceptionTest {
       ArrowReader source = new ExceptionMemoryArrowReader(allocator, schema, batches);
 
       try (final ArrowArrayStream stream = ArrowArrayStream.allocateNew(allocator);
-           final VectorSchemaRoot importRoot = VectorSchemaRoot.create(schema, allocator)) {
+          final VectorSchemaRoot importRoot = VectorSchemaRoot.create(schema, allocator)) {
         final VectorLoader loader = new VectorLoader(importRoot);
         Data.exportArrayStream(allocator, source, stream);
 
@@ -85,10 +85,7 @@ final class ExceptionTest {
     private final DictionaryProvider provider;
     private int nextBatch;
 
-    ExceptionMemoryArrowReader(
-        BufferAllocator allocator,
-        Schema schema,
-        List<Object> batches) {
+    ExceptionMemoryArrowReader(BufferAllocator allocator, Schema schema, List<Object> batches) {
       super(allocator);
       this.schema = schema;
       this.batches = batches;
