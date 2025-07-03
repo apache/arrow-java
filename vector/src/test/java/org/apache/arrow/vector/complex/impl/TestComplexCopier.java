@@ -33,6 +33,8 @@ import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.holders.DecimalHolder;
+import org.apache.arrow.vector.holders.DurationHolder;
+import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -842,6 +844,143 @@ public class TestComplexCopier {
       to.setValueCount(COUNT);
 
       // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyDurationVector() {
+    try (ListVector from = ListVector.empty("v", allocator);
+        ListVector to = ListVector.empty("v", allocator)) {
+
+      UnionListWriter listWriter = from.getWriter();
+      listWriter.allocate();
+
+      DurationHolder durationHolder = new DurationHolder();
+      for (int i = 0; i < COUNT; i++) {
+        listWriter.setPosition(i);
+        listWriter.startList();
+        durationHolder.value = 123456789L;
+        durationHolder.unit = TimeUnit.MILLISECOND;
+        listWriter.duration().write(durationHolder);
+        listWriter.endList();
+      }
+      from.setValueCount(COUNT);
+
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+
+      to.setValueCount(COUNT);
+
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyListVectorWithDuration() {
+    try (ListVector from = ListVector.empty("v", allocator);
+        ListVector to = ListVector.empty("v", allocator)) {
+
+      UnionListWriter listWriter = from.getWriter();
+      listWriter.allocate();
+
+      DurationHolder durationHolder = new DurationHolder();
+      for (int i = 0; i < COUNT; i++) {
+        listWriter.setPosition(i);
+        listWriter.startList();
+        durationHolder.value = 123456789L;
+        durationHolder.unit = TimeUnit.MILLISECOND;
+        listWriter.duration().write(durationHolder);
+        listWriter.endList();
+      }
+      from.setValueCount(COUNT);
+
+      // Copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+
+      to.setValueCount(COUNT);
+
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyMapVectorWithDurationValue() {
+    try (MapVector from = MapVector.empty("v", allocator, false);
+        MapVector to = MapVector.empty("v", allocator, false)) {
+
+      UnionMapWriter mapWriter = from.getWriter();
+      mapWriter.allocate();
+
+      DurationHolder durationHolder = new DurationHolder();
+      for (int i = 0; i < COUNT; i++) {
+        mapWriter.setPosition(i);
+        mapWriter.startMap();
+        mapWriter.startEntry();
+        mapWriter.key().integer().writeInt(i);
+        durationHolder.value = 123456789L;
+        durationHolder.unit = TimeUnit.MILLISECOND;
+        mapWriter.value().duration().write(durationHolder);
+        mapWriter.endEntry();
+        mapWriter.endMap();
+      }
+      from.setValueCount(COUNT);
+
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+
+      to.setValueCount(COUNT);
+
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyStructVectorWithDurationValue() {
+    try (StructVector from = StructVector.empty("v", allocator);
+        StructVector to = StructVector.empty("v", allocator)) {
+
+      from.allocateNew();
+
+      NullableStructWriter structWriter = from.getWriter();
+      DurationHolder durationHolder = new DurationHolder();
+
+      for (int i = 0; i < COUNT; i++) {
+        structWriter.setPosition(i);
+        structWriter.start();
+        durationHolder.value = 123456789L;
+        durationHolder.unit = TimeUnit.MILLISECOND;
+        structWriter.duration("durationField").write(durationHolder);
+        structWriter.end();
+      }
+
+      from.setValueCount(COUNT);
+
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
       assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
     }
   }
