@@ -44,9 +44,24 @@ public class CompositeJdbcConsumer implements JdbcConsumer {
       } catch (Exception e) {
         if (consumers[i] instanceof BaseConsumer) {
           BaseConsumer consumer = (BaseConsumer) consumers[i];
-          JdbcFieldInfo fieldInfo =
-              new JdbcFieldInfo(rs.getMetaData(), consumer.columnIndexInResultSet);
-          ArrowType arrowType = consumer.vector.getMinorType().getType();
+          JdbcFieldInfo fieldInfo = null;
+          ArrowType arrowType = null;
+          try {
+            if (rs != null) {
+              fieldInfo = new JdbcFieldInfo(rs.getMetaData(), consumer.columnIndexInResultSet);
+            }
+          } catch (Exception metaEx) {
+            // doesn't do anything if ResultSet is null
+            // to return the JdbcConsumerException
+          }
+          try {
+            if (consumer.vector.getMinorType() != null){
+              arrowType = consumer.vector.getMinorType().getType();
+            }
+          } catch (Exception typeEx) {
+            // doesn't do anything if there is an error when getting null with getMinorType()
+            // to return the JdbcConsumerException
+          }
           throw new JdbcConsumerException(
               "Exception while consuming JDBC value", e, fieldInfo, arrowType);
         } else {
