@@ -295,7 +295,7 @@ abstract class AbstractPromotableFieldWriter extends AbstractFieldWriter {
 
   @Override
   public ExtensionWriter extension(ArrowType arrowType) {
-    return getWriter(MinorType.EXTENSIONTYPE).extension(arrowType);
+    return getWriter(MinorType.LIST).extension(arrowType);
   }
 
   @Override
@@ -325,7 +325,7 @@ abstract class AbstractPromotableFieldWriter extends AbstractFieldWriter {
 
   @Override
   public ExtensionWriter extension(String name, ArrowType arrowType) {
-    return getWriter(MinorType.EXTENSIONTYPE).extension(name, arrowType);
+    return getWriter(MinorType.STRUCT).extension(name, arrowType);
   }
 
   <#list vv.types as type><#list type.minor as minor>
