@@ -18,22 +18,19 @@
 package org.apache.arrow.adapter.avro;
 
 import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
-import org.apache.arrow.memory.ArrowBuf;
-import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.VectorSchemaRoot;
-import org.apache.arrow.vector.compression.CompressionCodec;
-import org.apache.arrow.vector.compression.CompressionUtil;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.avro.Schema;
+import org.apache.avro.file.Codec;
 import org.apache.avro.file.DataFileConstants;
 import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.Encoder;
 import org.apache.avro.io.EncoderFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.channels.Channels;
-import java.nio.channels.WritableByteChannel;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,15 +41,12 @@ class AvroFileWriter {
 
   // Use magic from Avro's own constants
   private static final byte[] AVRO_MAGIC = DataFileConstants.MAGIC;
-
-  private static final String codecName = "zstandard";
-  private static final CompressionUtil.CodecType codecType = CompressionUtil.CodecType.ZSTD;
+  private static final int SYNC_MARKER_SIZE = 16;
 
   private final OutputStream stream;
   private final Encoder encoder;
 
-  private final BufferAllocator allocator;
-  private final BufferOutputStream batchBuffer;
+  private final BufferOutputStream batchStream;
   private BinaryEncoder batchEncoder;
   private VectorSchemaRoot batch;
 
@@ -60,7 +54,7 @@ class AvroFileWriter {
   private final byte[] syncMarker;
 
   private final CompositeAvroProducer recordProducer;
-  private final CompressionCodec compressionCodec;
+  private final Codec avroCodec;
 
 
   public AvroFileWriter(
@@ -69,13 +63,22 @@ class AvroFileWriter {
       DictionaryProvider dictionaries)
       throws IOException {
 
+    this(stream, firstBatch, dictionaries, null);
+  }
+
+  public AvroFileWriter(
+      OutputStream stream,
+      VectorSchemaRoot firstBatch,
+      DictionaryProvider dictionaries,
+      String codecName)
+      throws IOException {
+
       EncoderFactory encoderFactory = EncoderFactory.get();
 
       this.stream = stream;
       this.encoder = encoderFactory.binaryEncoder(stream, null);
 
-      this.allocator = firstBatch.getVector(0).getAllocator();
-      this.batchBuffer = new BufferOutputStream(allocator);
+      this.batchStream = new BufferOutputStream();
       this.batchEncoder = encoderFactory.binaryEncoder(stream, null);
       this.batch = firstBatch;
 
@@ -89,28 +92,19 @@ class AvroFileWriter {
           firstBatch.getFieldVectors(),
           dictionaries);
 
-      this.compressionCodec = CompressionCodec.Factory.INSTANCE.createCodec(codecType);
-
       // Generate a random sync marker
       var random = new Random();
-      this.syncMarker = new byte[16];
+      this.syncMarker = new byte[SYNC_MARKER_SIZE];
       random.nextBytes(this.syncMarker);
+
+      // Look up the compression codec
+      this.avroCodec = AvroCompression.getAvroCodec(codecName);
     }
     catch (Throwable e) {
         // Do not leak the batch buffer if there are problems during setup
-        batchBuffer.close();
+        batchStream.close();
         throw e;
     }
-  }
-
-  // Sets up a defaulr binary encoder for the channel
-  public AvroFileWriter(
-      WritableByteChannel channel,
-      VectorSchemaRoot firstBatch,
-      DictionaryProvider dictionaries)
-      throws IOException {
-
-    this(Channels.newOutputStream(channel), firstBatch, dictionaries);
   }
 
   // Write the Avro header (throws if already written)
@@ -119,13 +113,13 @@ class AvroFileWriter {
     // Prepare the metadata map
     Map<String, byte[]> metadata = new HashMap<>();
     metadata.put("avro.schema", avroSchema.toString().getBytes(StandardCharsets.UTF_8));
-    metadata.put("avro.codec", codecName.getBytes(StandardCharsets.UTF_8));
+    metadata.put("avro.codec", avroCodec.getName().getBytes(StandardCharsets.UTF_8));
 
     // Avro magic
     encoder.writeFixed(AVRO_MAGIC);
 
     // Write the metadata map
-    encoder.writeMapStart(); // write metadata
+    encoder.writeMapStart();
     encoder.setItemCount(metadata.size());
     for (Map.Entry<String, byte[]> entry : metadata.entrySet()) {
       encoder.startItem();
@@ -144,34 +138,31 @@ class AvroFileWriter {
   // Expects new data to be in the batch (i.e. VSR can be recycled)
   public void writeBatch() throws IOException {
 
-    // Reset batch buffer and encoder
-    batchBuffer.reset();
-    batchEncoder = EncoderFactory.get().directBinaryEncoder(batchBuffer, batchEncoder);
+    // Prepare batch stream and encoder
+    batchStream.reset();
+    batchEncoder = EncoderFactory.get().directBinaryEncoder(batchStream, batchEncoder);
 
     // Reset producers
     recordProducer.getProducers().forEach(producer -> producer.setPosition(0));
 
-    // Produce a batch
+    // Produce a batch, writing to the batch stream (buffer)
     for (int row = 0; row < batch.getRowCount(); row++) {
       recordProducer.produce(batchEncoder);
     }
 
     batchEncoder.flush();
 
-    // Raw buffer is a view onto the stream backing buffer - do not release
-    ArrowBuf rawBuffer = batchBuffer.getBuffer();
+    // Compress the batch buffer using Avro's codecs
+    ByteBuffer batchBuffer = ByteBuffer.wrap(batchStream.internalBuffer());
+    ByteBuffer batchCompressed = avroCodec.compress(batchBuffer);
 
-    // Compressed buffer is newly allocated and needs to be released
-    try (ArrowBuf compressedBuffer = compressionCodec.compress(allocator, rawBuffer)) {
-
-      // Write Avro block to the main encoder
-      encoder.writeLong(batch.getRowCount());
-      encoder.writeBytes(compressedBuffer.nioBuffer());
-      encoder.writeFixed(syncMarker);
-    }
+    // Write Avro block to the main encoder
+    encoder.writeLong(batch.getRowCount());
+    encoder.writeBytes(batchCompressed);
+    encoder.writeFixed(syncMarker);
   }
 
-  // Reset vectors in all the producders
+  // Reset vectors in all the producers
   // Supports a stream of VSRs if source VSR is not recycled
   void resetBatch(VectorSchemaRoot batch) {
     recordProducer.resetProducerVectors(batch);
@@ -187,6 +178,13 @@ class AvroFileWriter {
   public void close() throws IOException {
     encoder.flush();
     stream.close();
-    batchBuffer.close();
+    batchStream.close();
+  }
+
+  private static final class BufferOutputStream extends ByteArrayOutputStream {
+
+    byte[] internalBuffer() {
+      return buf;
+    }
   }
 }
