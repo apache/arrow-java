@@ -14,13 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro;
 
-import org.apache.avro.file.*;
-
 import java.nio.ByteBuffer;
-
+import org.apache.avro.file.*;
 
 public class AvroCompression {
 
@@ -63,8 +60,7 @@ public class AvroCompression {
 
     @Override
     public boolean equals(Object other) {
-      if (this == other)
-        return true;
+      if (this == other) return true;
       return (other != null && other.getClass() == getClass());
     }
 
@@ -73,5 +69,4 @@ public class AvroCompression {
       return 2;
     }
   }
-
 }

@@ -14,18 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro;
-
-import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
-import org.apache.arrow.vector.VectorSchemaRoot;
-import org.apache.arrow.vector.dictionary.DictionaryProvider;
-import org.apache.avro.Schema;
-import org.apache.avro.file.Codec;
-import org.apache.avro.file.DataFileConstants;
-import org.apache.avro.io.BinaryEncoder;
-import org.apache.avro.io.Encoder;
-import org.apache.avro.io.EncoderFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,7 +24,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-
+import org.apache.arrow.adapter.avro.producers.CompositeAvroProducer;
+import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.dictionary.DictionaryProvider;
+import org.apache.avro.Schema;
+import org.apache.avro.file.Codec;
+import org.apache.avro.file.DataFileConstants;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.Encoder;
+import org.apache.avro.io.EncoderFactory;
 
 class AvroFileWriter {
 
@@ -56,11 +53,8 @@ class AvroFileWriter {
   private final CompositeAvroProducer recordProducer;
   private final Codec avroCodec;
 
-
   public AvroFileWriter(
-      OutputStream stream,
-      VectorSchemaRoot firstBatch,
-      DictionaryProvider dictionaries)
+      OutputStream stream, VectorSchemaRoot firstBatch, DictionaryProvider dictionaries)
       throws IOException {
 
     this(stream, firstBatch, dictionaries, null);
@@ -73,24 +67,22 @@ class AvroFileWriter {
       String codecName)
       throws IOException {
 
-      EncoderFactory encoderFactory = EncoderFactory.get();
+    EncoderFactory encoderFactory = EncoderFactory.get();
 
-      this.stream = stream;
-      this.encoder = encoderFactory.binaryEncoder(stream, null);
+    this.stream = stream;
+    this.encoder = encoderFactory.binaryEncoder(stream, null);
 
-      this.batchStream = new BufferOutputStream();
-      this.batchEncoder = encoderFactory.binaryEncoder(stream, null);
-      this.batch = firstBatch;
+    this.batchStream = new BufferOutputStream();
+    this.batchEncoder = encoderFactory.binaryEncoder(stream, null);
+    this.batch = firstBatch;
 
     try {
 
-      this.avroSchema = ArrowToAvroUtils.createAvroSchema(
-          firstBatch.getSchema().getFields(),
-          dictionaries);
+      this.avroSchema =
+          ArrowToAvroUtils.createAvroSchema(firstBatch.getSchema().getFields(), dictionaries);
 
-      this.recordProducer = ArrowToAvroUtils.createCompositeProducer(
-          firstBatch.getFieldVectors(),
-          dictionaries);
+      this.recordProducer =
+          ArrowToAvroUtils.createCompositeProducer(firstBatch.getFieldVectors(), dictionaries);
 
       // Generate a random sync marker
       var random = new Random();
@@ -99,11 +91,10 @@ class AvroFileWriter {
 
       // Look up the compression codec
       this.avroCodec = AvroCompression.getAvroCodec(codecName);
-    }
-    catch (Throwable e) {
-        // Do not leak the batch buffer if there are problems during setup
-        batchStream.close();
-        throw e;
+    } catch (Throwable e) {
+      // Do not leak the batch buffer if there are problems during setup
+      batchStream.close();
+      throw e;
     }
   }
 

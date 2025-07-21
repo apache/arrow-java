@@ -14,9 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.arrow.adapter.avro;
 
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.apache.arrow.adapter.avro.consumers.CompositeAvroConsumer;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
@@ -28,14 +33,6 @@ import org.apache.avro.file.DataFileConstants;
 import org.apache.avro.io.BinaryData;
 import org.apache.avro.io.BinaryDecoder;
 import org.apache.avro.io.DecoderFactory;
-
-import java.io.*;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 
 class AvroFileReader implements DictionaryProvider {
 
@@ -69,12 +66,9 @@ class AvroFileReader implements DictionaryProvider {
 
   // Create a new AvroFileReader for the input stream
   // In order to support non-blocking mode, the stream must support mark / reset
-  public AvroFileReader(
-      InputStream stream,
-      BufferAllocator allocator,
-      boolean blocking) {
+  public AvroFileReader(InputStream stream, BufferAllocator allocator, boolean blocking) {
 
-    this.stream =stream;
+    this.stream = stream;
     this.allocator = allocator;
     this.blocking = blocking;
 
@@ -82,7 +76,8 @@ class AvroFileReader implements DictionaryProvider {
       this.decoder = DecoderFactory.get().binaryDecoder(stream, null);
     } else {
       if (!stream.markSupported()) {
-        throw new IllegalArgumentException("Input stream must support mark/reset for non-blocking mode");
+        throw new IllegalArgumentException(
+            "Input stream must support mark/reset for non-blocking mode");
       }
       this.decoder = DecoderFactory.get().directBinaryDecoder(stream, null);
     }
@@ -107,9 +102,8 @@ class AvroFileReader implements DictionaryProvider {
     headerSize += magic.length;
 
     // Validate Avro magic
-    int validateMagic = BinaryData.compareBytes(
-        AVRO_MAGIC, 0, AVRO_MAGIC.length,
-        magic, 0, AVRO_MAGIC.length);
+    int validateMagic =
+        BinaryData.compareBytes(AVRO_MAGIC, 0, AVRO_MAGIC.length, magic, 0, AVRO_MAGIC.length);
 
     if (validateMagic != 0) {
       throw new RuntimeException("Invalid AVRO data file: The file is not an Avro file");
@@ -126,7 +120,7 @@ class AvroFileReader implements DictionaryProvider {
         ByteBuffer valueBuffer = decoder.readBytes(null);
 
         headerSize += zigzagSize(keyBuffer.remaining()) + keyBuffer.remaining();
-        headerSize += zigzagSize(valueBuffer.remaining()) +  valueBuffer.remaining();
+        headerSize += zigzagSize(valueBuffer.remaining()) + valueBuffer.remaining();
 
         String key = new String(keyBuffer.array(), StandardCharsets.UTF_8);
 
@@ -186,8 +180,7 @@ class AvroFileReader implements DictionaryProvider {
 
     if (buffer != null && buffer.remaining() > 0) {
       return new String(buffer.array(), StandardCharsets.UTF_8);
-    }
-    else {
+    } else {
       return DataFileConstants.NULL_CODEC;
     }
   }
@@ -242,22 +235,24 @@ class AvroFileReader implements DictionaryProvider {
     decoder.readFixed(batchSyncMarker);
 
     long batchSize =
-        zigzagSize(nRows) +
-        zigzagSize(batchBuffer.remaining()) +
-        batchBuffer.remaining() +
-        SYNC_MARKER_SIZE;
+        zigzagSize(nRows)
+            + zigzagSize(batchBuffer.remaining())
+            + batchBuffer.remaining()
+            + SYNC_MARKER_SIZE;
 
     // Validate sync marker - mismatch indicates a corrupt file
-    int validateMarker = BinaryData.compareBytes(
-        syncMarker, 0, SYNC_MARKER_SIZE,
-        batchSyncMarker, 0, SYNC_MARKER_SIZE);
+    int validateMarker =
+        BinaryData.compareBytes(
+            syncMarker, 0, SYNC_MARKER_SIZE, batchSyncMarker, 0, SYNC_MARKER_SIZE);
 
     if (validateMarker != 0) {
       throw new RuntimeException("Invalid AVRO data file: The file is corrupted");
     }
 
     // Reset producers
-    recordConsumer.getConsumers().forEach(consumer -> ensureCapacity(consumer.getVector(), (int) nRows));
+    recordConsumer
+        .getConsumers()
+        .forEach(consumer -> ensureCapacity(consumer.getVector(), (int) nRows));
     recordConsumer.getConsumers().forEach(consumer -> consumer.setPosition(0));
 
     // Decompress the batch buffer using Avro's codecs
@@ -299,7 +294,7 @@ class AvroFileReader implements DictionaryProvider {
     }
 
     if (blocking) {
-      return ! decoder.isEnd();
+      return !decoder.isEnd();
     }
 
     var in = decoder.inputStream();
@@ -311,8 +306,7 @@ class AvroFileReader implements DictionaryProvider {
       in.reset();
 
       return nextByte >= 0;
-    }
-    catch(EOFException e) {
+    } catch (EOFException e) {
       return false;
     }
   }
