@@ -241,13 +241,13 @@ class AvroFileReader implements DictionaryProvider {
     batchBuffer = decoder.readBytes(batchBuffer);
     decoder.readFixed(batchSyncMarker);
 
-    // Validate sync marker - mismatch indicates a corrupt file
     long batchSize =
         zigzagSize(nRows) +
         zigzagSize(batchBuffer.remaining()) +
         batchBuffer.remaining() +
         SYNC_MARKER_SIZE;
 
+    // Validate sync marker - mismatch indicates a corrupt file
     int validateMarker = BinaryData.compareBytes(
         syncMarker, 0, SYNC_MARKER_SIZE,
         batchSyncMarker, 0, SYNC_MARKER_SIZE);
