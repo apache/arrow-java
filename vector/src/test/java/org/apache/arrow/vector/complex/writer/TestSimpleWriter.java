@@ -30,6 +30,7 @@ import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.impl.LargeVarBinaryWriterImpl;
 import org.apache.arrow.vector.complex.impl.LargeVarCharWriterImpl;
+import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.impl.UuidWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarBinaryWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarCharWriterImpl;
@@ -202,6 +203,25 @@ public class TestSimpleWriter {
       writer.write(holder);
       UUID result = vector.getObject(0);
       assertEquals(uuid, result);
+    }
+  }
+
+  @Test
+  public void testReaderCopyAsValueExtensionVector() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator);
+        UuidVector vectorForRead = new UuidVector("test2", allocator);
+        UuidWriterImpl writer = new UuidWriterImpl(vector)) {
+      UUID uuid = UUID.randomUUID();
+      vectorForRead.setValueCount(1);
+      vectorForRead.set(0, uuid);
+      UuidReaderImpl reader = (UuidReaderImpl) vectorForRead.getReader();
+      reader.copyAsValue(writer);
+      UuidReaderImpl reader2 = (UuidReaderImpl) vector.getReader();
+      UuidHolder holder = new UuidHolder();
+      reader2.read(0, holder);
+      final ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(uuid, actualUuid);
     }
   }
 }
