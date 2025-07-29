@@ -100,6 +100,10 @@ services:
         - ${REPO}:${ARCH}-vcpkg-jni-${VCPKG}
       args:
         base: ${ARROW_REPO}:${ARCH}-python-${PYTHON}-wheel-manylinux-2-28-vcpkg-${VCPKG}
+      secrets:
+        - github_repository_owner
+        - github_token
+        - vcpkg_binary_sources
     volumes:
       - .:/arrow-java:delegated
       - ${ARROW_REPO_ROOT}:/arrow:delegated
@@ -111,3 +115,11 @@ services:
     command:
       ["git config --global --add safe.directory /arrow-java && \
         /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build/java /arrow-java/jni"]
+
+secrets:
+  github_repository_owner:
+    environment: GITHUB_REPOSITORY_OWNER
+  github_token:
+    environment: GITHUB_TOKEN
+  vcpkg_binary_sources:
+    environment: VCPKG_BINARY_SOURCES
