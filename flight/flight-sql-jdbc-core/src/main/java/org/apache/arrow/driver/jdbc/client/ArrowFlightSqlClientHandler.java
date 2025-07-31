@@ -549,7 +549,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
   /** Builder for {@link ArrowFlightSqlClientHandler}. */
   public static final class Builder {
-    @VisibleForTesting static final String USER_AGENT_TEMPLATE = "JDBC Flight SQL Driver %s";
+    static final String USER_AGENT_TEMPLATE = "JDBC Flight SQL Driver %s";
     static final String DEFAULT_VERSION = "(unknown or development build)";
 
     private final Set<FlightClientMiddleware.Factory> middlewareFactories = new HashSet<>();
