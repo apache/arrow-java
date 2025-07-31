@@ -66,6 +66,7 @@ import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.util.VisibleForTesting;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.Schema;
+import org.apache.calcite.avatica.DriverVersion;
 import org.apache.calcite.avatica.Meta.StatementType;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -548,6 +549,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
   /** Builder for {@link ArrowFlightSqlClientHandler}. */
   public static final class Builder {
+    @VisibleForTesting static final String USER_AGENT_TEMPLATE = "JDBC Flight SQL Driver %s";
+    static final String DEFAULT_VERSION = "(unknown or development build)";
+
     private final Set<FlightClientMiddleware.Factory> middlewareFactories = new HashSet<>();
     private final Set<CallOption> options = new HashSet<>();
     private String host;
@@ -597,6 +601,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     @VisibleForTesting
     ClientCookieMiddleware.Factory cookieFactory = new ClientCookieMiddleware.Factory();
 
+    DriverVersion driverVersion;
+
     public Builder() {}
 
     /**
@@ -631,6 +637,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       if (original.retainAuth) {
         this.authFactory = original.authFactory;
       }
+
+      this.driverVersion = original.driverVersion;
     }
 
     /**
@@ -879,6 +887,17 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       return this;
     }
 
+    /**
+     * Sets the driver version for this handler.
+     *
+     * @param driverVersion the driver version to set
+     * @return this builder instance
+     */
+    public Builder withDriverVersion(DriverVersion driverVersion) {
+      this.driverVersion = driverVersion;
+      return this;
+    }
+
     public String getCacheKey() {
       return getLocation().toString();
     }
@@ -913,6 +932,12 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         }
         final NettyClientBuilder clientBuilder = new NettyClientBuilder();
         clientBuilder.allocator(allocator);
+
+        String userAgent = String.format(USER_AGENT_TEMPLATE, DEFAULT_VERSION);
+        if (driverVersion != null && driverVersion.versionString != null) {
+          userAgent = String.format(USER_AGENT_TEMPLATE, driverVersion.versionString);
+        }
+        clientBuilder.userAgent(userAgent);
 
         buildTimeMiddlewareFactories.add(new ClientCookieMiddleware.Factory());
         buildTimeMiddlewareFactories.forEach(clientBuilder::intercept);
