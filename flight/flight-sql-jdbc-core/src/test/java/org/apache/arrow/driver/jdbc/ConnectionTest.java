@@ -31,6 +31,7 @@ import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.FlightMethod;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -574,6 +575,51 @@ public class ConnectionTest {
                 "jdbc:arrow-flight-sql://localhost:%s", FLIGHT_SERVER_TEST_EXTENSION.getPort()),
             properties)) {
       assertTrue(connection.isValid(0));
+    }
+  }
+
+  /**
+   * Test that the JDBC driver properly integrates driver version into client handler.
+   *
+   * @throws Exception on error.
+   */
+  @Test
+  public void testJdbcDriverVersionIntegration() throws Exception {
+    final Properties properties = new Properties();
+    properties.put(
+        ArrowFlightConnectionProperty.HOST.camelName(), FLIGHT_SERVER_TEST_EXTENSION.getHost());
+    properties.put(
+        ArrowFlightConnectionProperty.PORT.camelName(), FLIGHT_SERVER_TEST_EXTENSION.getPort());
+    properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+    properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+    properties.put(ArrowFlightConnectionProperty.USE_ENCRYPTION.camelName(), false);
+
+    // Create a driver instance and connect
+    ArrowFlightJdbcDriver driverVersion = new ArrowFlightJdbcDriver();
+
+    try (Connection connection =
+        ArrowFlightConnection.createNewConnection(
+            driverVersion,
+            new ArrowFlightJdbcFactory(),
+            "jdbc:arrow-flight-sql://localhost:" + FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+            properties,
+            allocator)) {
+
+      assertTrue(connection.isValid(0));
+
+      var actualUserAgent =
+          FLIGHT_SERVER_TEST_EXTENSION
+              .getInterceptorFactory()
+              .getHeader(FlightMethod.HANDSHAKE, "user-agent");
+
+      var expectedUserAgent =
+          "JDBC Flight SQL Driver " + driverVersion.getDriverVersion().versionString;
+      // Driver appends version to grpc user-agent header. Assert the header starts with the
+      // expected
+      // value and ignored grpc version.
+      assertTrue(
+          actualUserAgent.startsWith(expectedUserAgent),
+          "Expected: " + expectedUserAgent + " but found: " + actualUserAgent);
     }
   }
 }
