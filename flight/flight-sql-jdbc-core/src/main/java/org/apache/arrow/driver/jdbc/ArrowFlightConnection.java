@@ -32,6 +32,7 @@ import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Preconditions;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaFactory;
+import org.apache.calcite.avatica.DriverVersion;
 
 /** Connection to the Arrow Flight server. */
 public final class ArrowFlightConnection extends AvaticaConnection {
@@ -86,13 +87,16 @@ public final class ArrowFlightConnection extends AvaticaConnection {
       throws SQLException {
     url = replaceSemiColons(url);
     final ArrowFlightConnectionConfigImpl config = new ArrowFlightConnectionConfigImpl(properties);
-    final ArrowFlightSqlClientHandler clientHandler = createNewClientHandler(config, allocator);
+    final ArrowFlightSqlClientHandler clientHandler =
+        createNewClientHandler(config, allocator, driver.getDriverVersion());
     return new ArrowFlightConnection(
         driver, factory, url, properties, config, allocator, clientHandler);
   }
 
   private static ArrowFlightSqlClientHandler createNewClientHandler(
-      final ArrowFlightConnectionConfigImpl config, final BufferAllocator allocator)
+      final ArrowFlightConnectionConfigImpl config,
+      final BufferAllocator allocator,
+      final DriverVersion driverVersion)
       throws SQLException {
     try {
       return new ArrowFlightSqlClientHandler.Builder()
@@ -116,6 +120,7 @@ public final class ArrowFlightConnection extends AvaticaConnection {
           .withCatalog(config.getCatalog())
           .withClientCache(config.useClientCache() ? new FlightClientCache() : null)
           .withConnectTimeout(config.getConnectTimeout())
+          .withDriverVersion(driverVersion)
           .build();
     } catch (final SQLException e) {
       try {

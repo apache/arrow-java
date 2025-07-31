@@ -25,6 +25,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.arrow.driver.jdbc.authentication.Authentication;
 import org.apache.arrow.driver.jdbc.authentication.TokenAuthentication;
@@ -33,6 +35,7 @@ import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl;
 import org.apache.arrow.flight.CallHeaders;
 import org.apache.arrow.flight.CallInfo;
 import org.apache.arrow.flight.CallStatus;
+import org.apache.arrow.flight.FlightMethod;
 import org.apache.arrow.flight.FlightServer;
 import org.apache.arrow.flight.FlightServerMiddleware;
 import org.apache.arrow.flight.Location;
@@ -67,7 +70,8 @@ public class FlightServerTestExtension
   private final CertKeyPair certKeyPair;
   private final File mTlsCACert;
 
-  private final MiddlewareCookie.Factory middlewareCookieFactory = new MiddlewareCookie.Factory();
+  private final InterceptorMiddleware.Factory interceptorFactory =
+      new InterceptorMiddleware.Factory();
 
   private FlightServerTestExtension(
       final Properties properties,
@@ -130,8 +134,8 @@ public class FlightServerTestExtension
     properties.put("useEncryption", useEncryption);
   }
 
-  public MiddlewareCookie.Factory getMiddlewareCookieFactory() {
-    return middlewareCookieFactory;
+  public InterceptorMiddleware.Factory getInterceptorFactory() {
+    return interceptorFactory;
   }
 
   @FunctionalInterface
@@ -143,7 +147,7 @@ public class FlightServerTestExtension
     FlightServer.Builder builder =
         FlightServer.builder(allocator, location, producer)
             .headerAuthenticator(authentication.authenticate())
-            .middleware(FlightServerMiddleware.Key.of("KEY"), middlewareCookieFactory);
+            .middleware(FlightServerMiddleware.Key.of("KEY"), interceptorFactory);
     if (certKeyPair != null) {
       builder.useTls(certKeyPair.cert, certKeyPair.key);
     }
@@ -301,11 +305,11 @@ public class FlightServerTestExtension
    * A middleware to handle with the cookies in the server. It is used to test if cookies are being
    * sent properly.
    */
-  static class MiddlewareCookie implements FlightServerMiddleware {
+  static class InterceptorMiddleware implements FlightServerMiddleware {
 
     private final Factory factory;
 
-    public MiddlewareCookie(Factory factory) {
+    public InterceptorMiddleware(Factory factory) {
       this.factory = factory;
     }
 
@@ -323,21 +327,32 @@ public class FlightServerTestExtension
     public void onCallErrored(Throwable throwable) {}
 
     /** A factory for the MiddlewareCookie. */
-    static class Factory implements FlightServerMiddleware.Factory<MiddlewareCookie> {
+    static class Factory implements FlightServerMiddleware.Factory<InterceptorMiddleware> {
 
+      private final Map<FlightMethod, CallHeaders> receivedCallHeaders = new HashMap<>();
       private boolean receivedCookieHeader = false;
       private String cookie;
 
       @Override
-      public MiddlewareCookie onCallStarted(
+      public InterceptorMiddleware onCallStarted(
           CallInfo callInfo, CallHeaders callHeaders, RequestContext requestContext) {
         cookie = callHeaders.get("Cookie");
         receivedCookieHeader = null != cookie;
-        return new MiddlewareCookie(this);
+
+        receivedCallHeaders.put(callInfo.method(), callHeaders);
+        return new InterceptorMiddleware(this);
       }
 
       public String getCookie() {
         return cookie;
+      }
+
+      public String getHeader(FlightMethod method, String key) {
+        CallHeaders headers = receivedCallHeaders.get(method);
+        if (headers == null) {
+          return null;
+        }
+        return headers.get(key);
       }
     }
   }

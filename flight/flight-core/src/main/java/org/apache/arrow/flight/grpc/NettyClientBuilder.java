@@ -60,6 +60,7 @@ public class NettyClientBuilder {
   protected String overrideHostname = null;
   protected List<FlightClientMiddleware.Factory> middleware = new ArrayList<>();
   protected boolean verifyServer = true;
+  protected String userAgent;
 
   public NettyClientBuilder() {}
 
@@ -127,6 +128,11 @@ public class NettyClientBuilder {
 
   public NettyClientBuilder verifyServer(boolean verifyServer) {
     this.verifyServer = verifyServer;
+    return this;
+  }
+
+  public NettyClientBuilder userAgent(String userAgent) {
+    this.userAgent = userAgent;
     return this;
   }
 
@@ -226,7 +232,8 @@ public class NettyClientBuilder {
     builder
         .maxTraceEvents(MAX_CHANNEL_TRACE_EVENTS)
         .maxInboundMessageSize(maxInboundMessageSize)
-        .maxInboundMetadataSize(maxInboundMessageSize);
+        .maxInboundMetadataSize(maxInboundMessageSize)
+        .userAgent(userAgent);
     return builder;
   }
 }
