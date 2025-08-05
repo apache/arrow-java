@@ -340,12 +340,12 @@ public class Union${listName}Writer extends AbstractFieldWriter {
     writer.writeExtension(value);
     writer.setPosition(writer.idx() + 1);
   }
-  
+
   @Override
   public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory var1) {
     writer.addExtensionTypeWriterFactory(var1, extensionType);
   }
-  
+
   public void write(ExtensionHolder var1) {
     writer.write(var1);
     writer.setPosition(writer.idx() + 1);
