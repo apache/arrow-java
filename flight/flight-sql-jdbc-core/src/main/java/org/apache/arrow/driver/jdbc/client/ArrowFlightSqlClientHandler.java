@@ -937,7 +937,6 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         if (driverVersion != null && driverVersion.versionString != null) {
           userAgent = String.format(USER_AGENT_TEMPLATE, driverVersion.versionString);
         }
-        clientBuilder.userAgent(userAgent);
 
         buildTimeMiddlewareFactories.add(new ClientCookieMiddleware.Factory());
         buildTimeMiddlewareFactories.forEach(clientBuilder::intercept);
@@ -973,6 +972,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         }
 
         NettyChannelBuilder channelBuilder = clientBuilder.build();
+
+        channelBuilder.userAgent(userAgent);
+
         if (connectTimeout != null) {
           channelBuilder.withOption(
               ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis());
