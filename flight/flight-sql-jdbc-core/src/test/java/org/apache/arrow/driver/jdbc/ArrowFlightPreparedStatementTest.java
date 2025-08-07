@@ -20,6 +20,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -80,6 +82,19 @@ public class ArrowFlightPreparedStatementTest {
     try (final PreparedStatement preparedStatement = connection.prepareStatement(query);
         final ResultSet resultSet = preparedStatement.executeQuery()) {
       CoreMockedSqlProducers.assertLegacyRegularSqlResultSet(resultSet);
+    }
+  }
+
+  @Test
+  public void testSimpleQueryNoParameterBindingWithExecute() throws SQLException {
+    final String query = CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD;
+    try (final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+      boolean isResultSet = preparedStatement.execute();
+      assertTrue(isResultSet);
+      final ResultSet resultSet = preparedStatement.getResultSet();
+      CoreMockedSqlProducers.assertLegacyRegularSqlResultSet(resultSet);
+      assertFalse(preparedStatement.getMoreResults());
+      assertEquals(-1, preparedStatement.getUpdateCount());
     }
   }
 
@@ -171,6 +186,20 @@ public class ArrowFlightPreparedStatementTest {
     try (final PreparedStatement stmt = connection.prepareStatement(query)) {
       int updated = stmt.executeUpdate();
       assertEquals(42, updated);
+    }
+  }
+
+  @Test
+  public void testUpdateQueryWithExecute() throws SQLException {
+    String query = "Fake update with execute";
+    PRODUCER.addUpdateQuery(query, /*updatedRows*/ 42);
+    try (final PreparedStatement stmt = connection.prepareStatement(query)) {
+      boolean isResultSet = stmt.execute();
+      assertFalse(isResultSet);
+      int updated = stmt.getUpdateCount();
+      assertEquals(42, updated);
+      assertFalse(stmt.getMoreResults());
+      assertEquals(-1, stmt.getUpdateCount());
     }
   }
 
