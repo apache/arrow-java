@@ -138,6 +138,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Docker image
+        env:
+          VCPKG_BINARY_SOURCES: "clear;nuget,GitHub,readwrite"
+        run: |
+          docker compose build --pull vcpkg-jni
       - name: Cache
         uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
         with:
