@@ -1071,8 +1071,8 @@ public class AvroToArrowUtils {
   }
 
   private static String convertAliases(Set<String> aliases) {
-    JsonStringArrayList jsonList = new JsonStringArrayList();
-    aliases.stream().forEach(a -> jsonList.add(a));
+    JsonStringArrayList jsonList = new JsonStringArrayList(aliases.size());
+    jsonList.addAll(aliases);
     return jsonList.toString();
   }
 }

@@ -17,13 +17,14 @@
 package org.apache.arrow.adapter.avro;
 
 import java.io.EOFException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.arrow.adapter.avro.consumers.CompositeAvroConsumer;
+import org.apache.arrow.adapter.avro.consumers.Consumer;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.util.ValueVectorUtility;
@@ -75,9 +76,10 @@ public class AvroToArrowVectorIterator implements Iterator<VectorSchemaRoot>, Au
   private void initialize() {
     // create consumers
     compositeConsumer = AvroToArrowUtils.createCompositeConsumer(schema, config);
-    List<FieldVector> vectors = new ArrayList<>();
-    compositeConsumer.getConsumers().forEach(c -> vectors.add(c.getVector()));
-    List<Field> fields = vectors.stream().map(t -> t.getField()).collect(Collectors.toList());
+    List<FieldVector> vectors = compositeConsumer.getConsumers().stream()
+            .map(Consumer::getVector)
+            .collect(Collectors.toList());
+    List<Field> fields = vectors.stream().map(ValueVector::getField).collect(Collectors.toList());
     VectorSchemaRoot root = new VectorSchemaRoot(fields, vectors, 0);
     rootSchema = root.getSchema();
 

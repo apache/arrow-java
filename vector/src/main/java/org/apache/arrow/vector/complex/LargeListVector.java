@@ -31,6 +31,7 @@ import org.apache.arrow.memory.OutOfMemoryException;
 import org.apache.arrow.memory.util.ArrowBufPointer;
 import org.apache.arrow.memory.util.ByteFunctionHelpers;
 import org.apache.arrow.memory.util.CommonUtil;
+import org.apache.arrow.memory.util.LargeMemoryUtil;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.AddOrGetResult;
@@ -861,10 +862,10 @@ public class LargeListVector extends BaseValueVector
     if (isSet(index) == 0) {
       return null;
     }
-    final List<Object> vals = new JsonStringArrayList<>();
     final long start = offsetBuffer.getLong((long) index * OFFSET_WIDTH);
     final long end = offsetBuffer.getLong(((long) index + 1L) * OFFSET_WIDTH);
     final ValueVector vv = getDataVector();
+    final List<Object> vals = new JsonStringArrayList<>(LargeMemoryUtil.checkedCastToInt(end - start));
     for (long i = start; i < end; i++) {
       vals.add(vv.getObject(checkedCastToInt(i)));
     }

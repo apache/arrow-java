@@ -719,10 +719,10 @@ public class ListVector extends BaseRepeatedValueVector
     if (isSet(index) == 0) {
       return null;
     }
-    final List<Object> vals = new JsonStringArrayList<>();
     final int start = offsetBuffer.getInt(index * OFFSET_WIDTH);
     final int end = offsetBuffer.getInt((index + 1) * OFFSET_WIDTH);
     final ValueVector vv = getDataVector();
+    final List<Object> vals = new JsonStringArrayList<>(end - start);
     for (int i = start; i < end; i++) {
       vals.add(vv.getObject(i));
     }
