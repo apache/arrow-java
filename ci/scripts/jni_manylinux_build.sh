@@ -54,12 +54,12 @@ fi
 
 github_actions_group_begin "Building Arrow C++ libraries"
 case "$(arch)" in
-  x86_64)
-    vcpkg_arch=x64
-    ;;
-  aarch64)
-    vcpkg_arch=arm64
-    ;;
+x86_64)
+  vcpkg_arch=amd64
+  ;;
+aarch64)
+  vcpkg_arch=arm64
+  ;;
 esac
 gcc_toolset_version="$(rpm -qa "gcc-toolset-*-runtime" --queryformat '%{VERSION}' | grep -o "^[0-9]*")"
 gcc_toolset_include_cpp="/opt/rh/gcc-toolset-${gcc_toolset_version}/root/usr/include/c++/${gcc_toolset_version}"
