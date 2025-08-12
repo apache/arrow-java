@@ -76,7 +76,8 @@ public class AvroToArrowVectorIterator implements Iterator<VectorSchemaRoot>, Au
   private void initialize() {
     // create consumers
     compositeConsumer = AvroToArrowUtils.createCompositeConsumer(schema, config);
-    List<FieldVector> vectors = compositeConsumer.getConsumers().stream()
+    List<FieldVector> vectors =
+        compositeConsumer.getConsumers().stream()
             .map(Consumer::getVector)
             .collect(Collectors.toList());
     List<Field> fields = vectors.stream().map(ValueVector::getField).collect(Collectors.toList());
