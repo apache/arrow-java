@@ -865,7 +865,8 @@ public class LargeListVector extends BaseValueVector
     final long start = offsetBuffer.getLong((long) index * OFFSET_WIDTH);
     final long end = offsetBuffer.getLong(((long) index + 1L) * OFFSET_WIDTH);
     final ValueVector vv = getDataVector();
-    final List<Object> vals = new JsonStringArrayList<>(LargeMemoryUtil.checkedCastToInt(end - start));
+    final List<Object> vals =
+        new JsonStringArrayList<>(LargeMemoryUtil.checkedCastToInt(end - start));
     for (long i = start; i < end; i++) {
       vals.add(vv.getObject(checkedCastToInt(i)));
     }
