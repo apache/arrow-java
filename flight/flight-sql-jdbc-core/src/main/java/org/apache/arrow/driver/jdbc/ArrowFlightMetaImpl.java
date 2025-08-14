@@ -62,14 +62,17 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         parameterSchema == null
             ? new ArrayList<>()
             : ConvertUtils.convertArrowFieldsToAvaticaParameters(parameterSchema.getFields());
-
+    StatementType statementType =
+        resultSetSchema == null || resultSetSchema.getFields().isEmpty()
+            ? StatementType.IS_DML
+            : StatementType.SELECT;
     return new Signature(
         columnMetaData,
         sql,
         parameters,
         Collections.emptyMap(),
         null, // unnecessary, as SQL requests use ArrowFlightJdbcCursor
-        StatementType.SELECT);
+        statementType);
   }
 
   @Override
@@ -105,7 +108,8 @@ public class ArrowFlightMetaImpl extends MetaImpl {
             preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator())
         .bind(typedValues);
 
-    if (statementHandle.signature == null) {
+    if (statementHandle.signature == null
+        || statementHandle.signature.statementType == StatementType.IS_DML) {
       // Update query
       long updatedCount = preparedStatement.executeUpdate();
       return new ExecuteResult(
