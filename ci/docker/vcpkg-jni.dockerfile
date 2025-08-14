@@ -18,9 +18,21 @@
 ARG base
 FROM ${base}
 
-# Install the libraries required by Gandiva to run
-# Use enable llvm[enable-rtti] in the vcpkg.json to avoid link problems in Gandiva
-RUN vcpkg install \
+# For --mount=type=secret: The GITHUB_TOKEN is the only real secret
+# but we use --mount=type=secret for GITHUB_REPOSITORY_OWNER and
+# VCPKG_BINARY_SOURCES too because we don't want to store them into
+# the built image in order to easily reuse the built image cache.
+#
+# Install the libraries required by Gandiva to run. Use enable
+# llvm[enable-rtti] in the vcpkg.json to avoid link problems in
+# Gandiva.
+RUN --mount=type=secret,id=github_repository_owner \
+    --mount=type=secret,id=github_token \
+    --mount=type=secret,id=vcpkg_binary_sources \
+      export GITHUB_REPOSITORY_OWNER=$(cat /run/secrets/github_repository_owner); \
+      export GITHUB_TOKEN=$(cat /run/secrets/github_token); \
+      export VCPKG_BINARY_SOURCES=$(cat /run/secrets/vcpkg_binary_sources); \
+      vcpkg install \
         --clean-after-build \
         --x-install-root=${VCPKG_ROOT}/installed \
         --x-manifest-root=/arrow/ci/vcpkg \
@@ -30,7 +42,8 @@ RUN vcpkg install \
         --x-feature=json \
         --x-feature=parquet \
         --x-feature=gandiva \
-        --x-feature=s3
+        --x-feature=s3 && \
+      rm -rf ~/.config/NuGet/
 
 # Install Java
 # We need Java for JNI headers, but we don't invoke Maven in this build.

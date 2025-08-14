@@ -53,8 +53,16 @@ if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
 fi
 
 github_actions_group_begin "Building Arrow C++ libraries"
-devtoolset_version="$(rpm -qa "devtoolset-*-gcc" --queryformat '%{VERSION}' | grep -o "^[0-9]*")"
-devtoolset_include_cpp="/opt/rh/devtoolset-${devtoolset_version}/root/usr/include/c++/${devtoolset_version}"
+case "$(arch)" in
+x86_64)
+  vcpkg_arch=amd64
+  ;;
+aarch64)
+  vcpkg_arch=arm64
+  ;;
+esac
+gcc_toolset_version="$(rpm -qa "gcc-toolset-*-runtime" --queryformat '%{VERSION}' | grep -o "^[0-9]*")"
+gcc_toolset_include_cpp="/opt/rh/gcc-toolset-${gcc_toolset_version}/root/usr/include/c++/${gcc_toolset_version}"
 : "${ARROW_ACERO:=ON}"
 export ARROW_ACERO
 : "${ARROW_BUILD_TESTS:=OFF}"
@@ -75,8 +83,8 @@ export ARROW_ORC
 : "${CMAKE_UNITY_BUILD:=ON}"
 : "${VCPKG_ROOT:=/opt/vcpkg}"
 : "${VCPKG_FEATURE_FLAGS:=-manifests}"
-: "${VCPKG_TARGET_TRIPLET:=${VCPKG_DEFAULT_TRIPLET:-x64-linux-static-${CMAKE_BUILD_TYPE}}}"
-: "${GANDIVA_CXX_FLAGS:=-isystem;${devtoolset_include_cpp};-isystem;${devtoolset_include_cpp}/x86_64-redhat-linux;-lpthread}"
+: "${VCPKG_TARGET_TRIPLET:=${VCPKG_DEFAULT_TRIPLET:-${vcpkg_arch}-linux-static-${CMAKE_BUILD_TYPE}}}"
+: "${GANDIVA_CXX_FLAGS:=-isystem;${gcc_toolset_include_cpp};-isystem;${gcc_toolset_include_cpp}/$(arch)-redhat-linux;-lpthread}"
 
 export ARROW_TEST_DATA="${arrow_dir}/testing/data"
 export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
@@ -111,12 +119,12 @@ cmake \
   -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD}" \
   -DGTest_SOURCE=BUNDLED \
   -DORC_SOURCE=BUNDLED \
-  -DORC_PROTOBUF_EXECUTABLE="${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/tools/protobuf/protoc" \
   -DPARQUET_BUILD_EXAMPLES=OFF \
   -DPARQUET_BUILD_EXECUTABLES=OFF \
   -DPARQUET_REQUIRE_ENCRYPTION=OFF \
   -DVCPKG_MANIFEST_MODE=OFF \
   -DVCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}" \
+  -Dxsimd_SOURCE=BUNDLED \
   -GNinja
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
