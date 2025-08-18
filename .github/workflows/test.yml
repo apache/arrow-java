@@ -58,7 +58,7 @@ jobs:
       MAVEN: ${{ matrix.maven }}
     steps:
       - name: Checkout Arrow
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.2.1
         with:
           fetch-depth: 0
           submodules: recursive
@@ -100,7 +100,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
       - name: Checkout Arrow
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
@@ -131,7 +131,7 @@ jobs:
           java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
       - name: Checkout Arrow
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
@@ -152,32 +152,32 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout Arrow
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.2.2
         with:
           fetch-depth: 0
           repository: apache/arrow
           submodules: recursive
       - name: Checkout Arrow Rust
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.2.2
         with:
           repository: apache/arrow-rs
           path: rust
       - name: Checkout Arrow nanoarrow
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.2.2
         with:
           repository: apache/arrow-nanoarrow
           path: nanoarrow
       - name: Checkout Arrow Go
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.2.2
         with:
           repository: apache/arrow-go
           path: go
       - name: Checkout Arrow Java
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.2.2
         with:
           path: java
       - name: Checkout Arrow JavaScript
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@ff7abcd0c3c05ccf6adc123a8cd1fd4fb30fb493 # v4.2.2
         with:
           repository: apache/arrow-js
           path: js
