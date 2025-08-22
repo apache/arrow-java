@@ -199,10 +199,12 @@ public class TestSimpleWriter {
       bb.putLong(uuid.getMostSignificantBits());
       bb.putLong(uuid.getLeastSignificantBits());
       UuidHolder holder = new UuidHolder();
-      holder.value = bb.array();
+      holder.buffer = allocator.buffer(16);
+      holder.buffer.setBytes(0, bb.array());
       writer.write(holder);
       UUID result = vector.getObject(0);
       assertEquals(uuid, result);
+      holder.buffer.close();
     }
   }
 
@@ -219,7 +221,7 @@ public class TestSimpleWriter {
       UuidReaderImpl reader2 = (UuidReaderImpl) vector.getReader();
       UuidHolder holder = new UuidHolder();
       reader2.read(0, holder);
-      final ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      final ByteBuffer bb = holder.buffer.nioBuffer();
       UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
       assertEquals(uuid, actualUuid);
     }

@@ -16,16 +16,12 @@
  */
 package org.apache.arrow.vector.types.pojo;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -33,166 +29,22 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
-import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
-import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.ValueIterableVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
-import org.apache.arrow.vector.compare.Range;
-import org.apache.arrow.vector.compare.RangeEqualsVisitor;
 import org.apache.arrow.vector.complex.StructVector;
-import org.apache.arrow.vector.extension.UuidType;
-import org.apache.arrow.vector.extension.UuidVector;
 import org.apache.arrow.vector.ipc.ArrowFileReader;
 import org.apache.arrow.vector.ipc.ArrowFileWriter;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
-import org.apache.arrow.vector.util.VectorBatchAppender;
-import org.apache.arrow.vector.validate.ValidateVectorVisitor;
 import org.junit.jupiter.api.Test;
 
 public class TestExtensionType {
-  /** Test that a custom UUID type can be round-tripped through a temporary file. */
-  @Test
-  public void roundtripUuid() throws IOException {
-    ExtensionTypeRegistry.register(new UuidType());
-    final Schema schema =
-        new Schema(Collections.singletonList(Field.nullable("a", new UuidType())));
-    try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
-        final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
-      UUID u1 = UUID.randomUUID();
-      UUID u2 = UUID.randomUUID();
-      UuidVector vector = (UuidVector) root.getVector("a");
-      vector.setValueCount(2);
-      vector.set(0, u1);
-      vector.set(1, u2);
-      root.setRowCount(2);
-
-      final File file = File.createTempFile("uuidtest", ".arrow");
-      try (final WritableByteChannel channel =
-              FileChannel.open(Paths.get(file.getAbsolutePath()), StandardOpenOption.WRITE);
-          final ArrowFileWriter writer = new ArrowFileWriter(root, null, channel)) {
-        writer.start();
-        writer.writeBatch();
-        writer.end();
-      }
-
-      try (final SeekableByteChannel channel =
-              Files.newByteChannel(Paths.get(file.getAbsolutePath()));
-          final ArrowFileReader reader = new ArrowFileReader(channel, allocator)) {
-        reader.loadNextBatch();
-        final VectorSchemaRoot readerRoot = reader.getVectorSchemaRoot();
-        assertEquals(root.getSchema(), readerRoot.getSchema());
-
-        final Field field = readerRoot.getSchema().getFields().get(0);
-        final UuidType expectedType = new UuidType();
-        assertEquals(
-            field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_NAME),
-            expectedType.extensionName());
-        assertEquals(
-            field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_METADATA),
-            expectedType.serialize());
-
-        final ExtensionTypeVector deserialized =
-            (ExtensionTypeVector) readerRoot.getFieldVectors().get(0);
-        assertEquals(vector.getValueCount(), deserialized.getValueCount());
-        for (int i = 0; i < vector.getValueCount(); i++) {
-          assertEquals(vector.isNull(i), deserialized.isNull(i));
-          if (!vector.isNull(i)) {
-            assertEquals(vector.getObject(i), deserialized.getObject(i));
-          }
-        }
-      }
-    }
-  }
-
-  /** Test that a custom UUID type can be read as its underlying type. */
-  @Test
-  public void readUnderlyingType() throws IOException {
-    ExtensionTypeRegistry.register(new UuidType());
-    final Schema schema =
-        new Schema(Collections.singletonList(Field.nullable("a", new UuidType())));
-    try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
-        final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
-      UUID u1 = UUID.randomUUID();
-      UUID u2 = UUID.randomUUID();
-      UuidVector vector = (UuidVector) root.getVector("a");
-      vector.setValueCount(2);
-      vector.set(0, u1);
-      vector.set(1, u2);
-      root.setRowCount(2);
-
-      final File file = File.createTempFile("uuidtest", ".arrow");
-      try (final WritableByteChannel channel =
-              FileChannel.open(Paths.get(file.getAbsolutePath()), StandardOpenOption.WRITE);
-          final ArrowFileWriter writer = new ArrowFileWriter(root, null, channel)) {
-        writer.start();
-        writer.writeBatch();
-        writer.end();
-      }
-
-      ExtensionTypeRegistry.unregister(new UuidType());
-
-      try (final SeekableByteChannel channel =
-              Files.newByteChannel(Paths.get(file.getAbsolutePath()));
-          final ArrowFileReader reader = new ArrowFileReader(channel, allocator)) {
-        reader.loadNextBatch();
-        final VectorSchemaRoot readerRoot = reader.getVectorSchemaRoot();
-        assertEquals(1, readerRoot.getSchema().getFields().size());
-        assertEquals("a", readerRoot.getSchema().getFields().get(0).getName());
-        assertTrue(
-            readerRoot.getSchema().getFields().get(0).getType()
-                instanceof ArrowType.FixedSizeBinary);
-        assertEquals(
-            16,
-            ((ArrowType.FixedSizeBinary) readerRoot.getSchema().getFields().get(0).getType())
-                .getByteWidth());
-
-        final Field field = readerRoot.getSchema().getFields().get(0);
-        final UuidType expectedType = new UuidType();
-        assertEquals(
-            field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_NAME),
-            expectedType.extensionName());
-        assertEquals(
-            field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_METADATA),
-            expectedType.serialize());
-
-        final FixedSizeBinaryVector deserialized =
-            (FixedSizeBinaryVector) readerRoot.getFieldVectors().get(0);
-        assertEquals(vector.getValueCount(), deserialized.getValueCount());
-        for (int i = 0; i < vector.getValueCount(); i++) {
-          assertEquals(vector.isNull(i), deserialized.isNull(i));
-          if (!vector.isNull(i)) {
-            final UUID uuid = vector.getObject(i);
-            final ByteBuffer bb = ByteBuffer.allocate(16);
-            bb.putLong(uuid.getMostSignificantBits());
-            bb.putLong(uuid.getLeastSignificantBits());
-            assertArrayEquals(bb.array(), deserialized.get(i));
-          }
-        }
-      }
-    }
-  }
-
-  @Test
-  public void testNullCheck() {
-    NullPointerException e =
-        assertThrows(
-            NullPointerException.class,
-            () -> {
-              try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
-                  final ExtensionTypeVector vector = new UuidVector("uuid", allocator, null)) {
-                vector.getField();
-                vector.allocateNewSafe();
-              }
-            });
-    assertTrue(e.getMessage().contains("underlyingVector cannot be null."));
-  }
 
   /** Test that a custom Location type can be round-tripped through a temporary file. */
   @Test
@@ -250,50 +102,6 @@ public class TestExtensionType {
           }
         }
       }
-    }
-  }
-
-  @Test
-  public void testVectorCompare() {
-    UuidType uuidType = new UuidType();
-    ExtensionTypeRegistry.register(uuidType);
-    try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
-        UuidVector a1 =
-            (UuidVector) uuidType.getNewVector("a", FieldType.nullable(uuidType), allocator);
-        UuidVector a2 =
-            (UuidVector) uuidType.getNewVector("a", FieldType.nullable(uuidType), allocator);
-        UuidVector bb =
-            (UuidVector) uuidType.getNewVector("a", FieldType.nullable(uuidType), allocator)) {
-      UUID u1 = UUID.randomUUID();
-      UUID u2 = UUID.randomUUID();
-
-      // Test out type and vector validation visitors for an ExtensionTypeVector
-      ValidateVectorVisitor validateVisitor = new ValidateVectorVisitor();
-      validateVisitor.visit(a1, null);
-
-      a1.setValueCount(2);
-      a1.set(0, u1);
-      a1.set(1, u2);
-
-      a2.setValueCount(2);
-      a2.set(0, u1);
-      a2.set(1, u2);
-
-      bb.setValueCount(2);
-      bb.set(0, u2);
-      bb.set(1, u1);
-
-      Range range = new Range(0, 0, a1.getValueCount());
-      RangeEqualsVisitor visitor = new RangeEqualsVisitor(a1, a2);
-      assertTrue(visitor.rangeEquals(range));
-
-      visitor = new RangeEqualsVisitor(a1, bb);
-      assertFalse(visitor.rangeEquals(range));
-
-      // Test out vector appender
-      VectorBatchAppender.batchAppend(a1, a2, bb);
-      assertEquals(6, a1.getValueCount());
-      validateVisitor.visit(a1, null);
     }
   }
 

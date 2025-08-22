@@ -2521,7 +2521,7 @@ public class TestComplexWriter {
         uuidReader.setPosition(0);
         UuidHolder uuidHolder = new UuidHolder();
         uuidReader.read(uuidHolder);
-        final ByteBuffer bb = ByteBuffer.wrap(uuidHolder.value);
+        final ByteBuffer bb = uuidHolder.buffer.nioBuffer();
         UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
         assertEquals(u1, actualUuid);
         assertTrue(uuidReader.isSet());

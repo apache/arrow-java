@@ -1259,13 +1259,13 @@ public class TestListVector {
       FieldReader uuidReader = reader.reader();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      ByteBuffer bb = holder.buffer.nioBuffer();
       UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
       assertEquals(u1, actualUuid);
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      bb = ByteBuffer.wrap(holder.value);
+      bb = holder.buffer.nioBuffer();
       actualUuid = new UUID(bb.getLong(), bb.getLong());
       assertEquals(u2, actualUuid);
     }

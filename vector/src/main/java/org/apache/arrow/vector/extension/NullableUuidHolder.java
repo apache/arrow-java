@@ -19,16 +19,31 @@ package org.apache.arrow.vector.extension;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 
-/** Holder for UUID extension type values. */
-public class UuidHolder extends ExtensionHolder {
-
-  /** Width of the UUID in bytes. */
-  public static int WIDTH = 16;
-
-  /** Buffer containing the UUID bytes (16 bytes). */
+/** Nullable holder for UUID extension type values. */
+public class NullableUuidHolder extends ExtensionHolder {
+  /** Buffer containing the UUID bytes (16 bytes) when isSet = 1, undefined when isSet = 0. */
   public ArrowBuf buffer;
 
-  public UuidHolder() {
-    this.isSet = 1;
+  /** Default constructor initializes the holder as null (isSet = 0). */
+  public NullableUuidHolder() {
+    this.isSet = 0;
+  }
+
+  /**
+   * Reason for not supporting the operation is that ValueHolders are potential scalar replacements
+   * and hence we don't want any methods to be invoked on them.
+   */
+  @Override
+  public int hashCode() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Reason for not supporting the operation is that ValueHolders are potential scalar replacements
+   * and hence we don't want any methods to be invoked on them.
+   */
+  @Override
+  public String toString() {
+    throw new UnsupportedOperationException();
   }
 }

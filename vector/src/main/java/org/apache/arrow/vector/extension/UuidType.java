@@ -16,14 +16,26 @@
  */
 package org.apache.arrow.vector.extension;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
+import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.FieldType;
 
 public class UuidType extends ExtensionType {
+  private static final AtomicBoolean registered = new AtomicBoolean(false);
+  public static final UuidType INSTANCE = new UuidType();
+
+  /** Register the extension type so it can be used globally. */
+  public static void ensureRegistered() {
+    if (!registered.getAndSet(true)) {
+      // The values don't matter, we just need an instance
+      ExtensionTypeRegistry.register(INSTANCE);
+    }
+  }
 
   @Override
   public ArrowType storageType() {
@@ -46,12 +58,17 @@ public class UuidType extends ExtensionType {
       throw new UnsupportedOperationException(
           "Cannot construct UuidType from underlying type " + storageType);
     }
-    return new UuidType();
+    return INSTANCE;
   }
 
   @Override
   public String serialize() {
     return "";
+  }
+
+  @Override
+  public boolean isComplex() {
+    return false;
   }
 
   @Override

@@ -18,6 +18,7 @@ package org.apache.arrow.vector.extension;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.ExtensionTypeVector;
@@ -41,8 +42,17 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
   }
 
   public UuidVector(String name, BufferAllocator allocator) {
-    super(name, allocator, new FixedSizeBinaryVector(name, allocator, 16));
+    super(name, allocator, new FixedSizeBinaryVector(name, allocator, UuidHolder.WIDTH));
     this.field = new Field(name, FieldType.nullable(new UuidType()), null);
+  }
+
+  /** Constructor with field and allocator. */
+  public UuidVector(Field field, BufferAllocator allocator) {
+    super(
+        field.getName(),
+        allocator,
+        new FixedSizeBinaryVector(field.getName(), allocator, UuidHolder.WIDTH));
+    this.field = field;
   }
 
   @Override
@@ -59,6 +69,10 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
   @Override
   public int hashCode(int index, ArrowBufHasher hasher) {
     return getUnderlyingVector().hashCode(index, hasher);
+  }
+
+  public int isSet(int index) {
+    return getUnderlyingVector().isSet(index);
   }
 
   /**
@@ -95,14 +109,66 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     return new UuidReaderImpl(this);
   }
 
-  public void setSafe(int index, byte[] value) {
-    getUnderlyingVector().setIndexDefined(index);
+  public void setSafe(int index, ArrowBuf value) {
     getUnderlyingVector().setSafe(index, value);
   }
 
+  public void setSafe(int index, byte[] value) {
+    getUnderlyingVector().setSafe(index, value);
+  }
+
+  /** Set value at index using UUID. */
+  public void setSafe(int index, UUID uuid) {
+    ByteBuffer bb = ByteBuffer.allocate(16);
+    bb.putLong(uuid.getMostSignificantBits());
+    bb.putLong(uuid.getLeastSignificantBits());
+    getUnderlyingVector().setSafe(index, bb.array());
+  }
+
+  /** Set value at index using NullableUuidHolder. */
+  public void setSafe(int index, NullableUuidHolder holder) {
+    if (holder != null) {
+      getUnderlyingVector().setSafe(index, holder.isSet, holder.buffer);
+    } else {
+      getUnderlyingVector().setNull(index);
+    }
+  }
+
+  /** Set value at index using UuidHolder. */
+  public void setSafe(int index, UuidHolder holder) {
+    if (holder != null) {
+      getUnderlyingVector().setSafe(index, holder.isSet, holder.buffer);
+    } else {
+      getUnderlyingVector().setNull(index);
+    }
+  }
+
+  /** Get value at index into UuidHolder. */
   public void get(int index, UuidHolder holder) {
-    holder.value = getUnderlyingVector().get(index);
+    holder.buffer =
+        getUnderlyingVector()
+            .getDataBuffer()
+            .slice((long) index * UuidHolder.WIDTH, UuidHolder.WIDTH);
     holder.isSet = 1;
+  }
+
+  /**
+   * Get the slice at the given index, if present, and assign it to the buffer of the provided
+   * NullableUuidHolder.
+   *
+   * @param index position in the vector
+   * @param holder the holder to store the value in
+   */
+  public void get(int index, NullableUuidHolder holder) {
+    if (isNull(index)) {
+      holder.isSet = 0;
+    } else {
+      holder.buffer =
+          getUnderlyingVector()
+              .getDataBuffer()
+              .slice((long) index * UuidHolder.WIDTH, UuidHolder.WIDTH);
+      holder.isSet = 1;
+    }
   }
 
   public class TransferImpl implements TransferPair {

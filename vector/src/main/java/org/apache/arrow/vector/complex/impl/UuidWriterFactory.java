@@ -17,12 +17,13 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ExtensionTypeVector;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidVector;
 
 public class UuidWriterFactory implements ExtensionTypeWriterFactory {
 
   @Override
-  public AbstractFieldWriter getWriterImpl(ExtensionTypeVector extensionTypeVector) {
+  public FieldWriter getWriterImpl(ExtensionTypeVector extensionTypeVector) {
     if (extensionTypeVector instanceof UuidVector) {
       return new UuidWriterImpl((UuidVector) extensionTypeVector);
     }
