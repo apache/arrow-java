@@ -14,18 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector;
+package org.apache.arrow.vector.extension;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.vector.ExtensionTypeVector;
+import org.apache.arrow.vector.FixedSizeBinaryVector;
+import org.apache.arrow.vector.ValueIterableVector;
+import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
-import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
-import org.apache.arrow.vector.types.pojo.UuidType;
 import org.apache.arrow.vector.util.TransferPair;
 
 public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
@@ -59,6 +61,12 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     return getUnderlyingVector().hashCode(index, hasher);
   }
 
+  /**
+   * Set the value at the index of the vector to the given value.
+   *
+   * @param index position in the vector
+   * @param uuid given value
+   */
   public void set(int index, UUID uuid) {
     ByteBuffer bb = ByteBuffer.allocate(16);
     bb.putLong(uuid.getMostSignificantBits());
@@ -102,6 +110,11 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     ValueVector targetUnderlyingVector;
     TransferPair tp;
 
+    /**
+     * Constructor for TransferImpl.
+     *
+     * @param to the target vector
+     */
     public TransferImpl(UuidVector to) {
       this.to = to;
       targetUnderlyingVector = this.to.getUnderlyingVector();
