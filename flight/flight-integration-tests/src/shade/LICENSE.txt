@@ -203,7 +203,7 @@
 
 --------------------------------------------------------------------------------
 
-This binary artifact contains Jackson 2.18.3.
+This binary artifact contains Jackson 2.19.0.
 
 Home page: https://github.com/FasterXML/jackson
 License: https://www.apache.org/licenses/LICENSE-2.0
