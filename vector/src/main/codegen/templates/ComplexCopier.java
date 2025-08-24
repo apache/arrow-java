@@ -162,6 +162,8 @@ public class ComplexCopier {
       return (FieldWriter) writer.map(name);
     case LISTVIEW:
       return (FieldWriter) writer.listView(name);
+    case DURATION:
+      return (FieldWriter) writer.duration(name);
     default:
       throw new UnsupportedOperationException(reader.getMinorType().toString());
     }
@@ -186,6 +188,8 @@ public class ComplexCopier {
       return (FieldWriter) writer.list();
     case LISTVIEW:
       return (FieldWriter) writer.listView();
+    case DURATION:
+      return (FieldWriter) writer.duration();
     default:
       throw new UnsupportedOperationException(reader.getMinorType().toString());
     }
@@ -211,6 +215,8 @@ public class ComplexCopier {
         return (FieldWriter) writer.listView();
       case MAP:
         return (FieldWriter) writer.map(false);
+      case DURATION:
+        return (FieldWriter) writer.duration();
       default:
         throw new UnsupportedOperationException(reader.getMinorType().toString());
     }
