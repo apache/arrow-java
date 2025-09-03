@@ -61,4 +61,9 @@ public class UuidReaderImpl extends AbstractFieldReader {
     UuidWriterImpl impl = (UuidWriterImpl) writer;
     impl.vector.copyFromSafe(idx(), impl.idx(), vector);
   }
+
+  @Override
+  public Object readObject() {
+    return vector.getObject(idx());
+  }
 }
