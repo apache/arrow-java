@@ -109,6 +109,10 @@ abstract class AbstractFieldReader extends AbstractBaseReader implements FieldRe
 
   </#list></#list>
 
+  public void copyAsValue(StructWriter writer, ExtensionTypeWriterFactory writerFactory) {
+    fail("CopyAsValue StructWriter");
+  }
+
   public void read(ExtensionHolder holder) {
     fail("Extension");
   }

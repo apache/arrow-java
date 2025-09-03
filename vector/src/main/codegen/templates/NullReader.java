@@ -86,6 +86,8 @@ public class NullReader extends AbstractBaseReader implements FieldReader{
   }
   </#list></#list>
 
+  public void copyAsValue(StructWriter writer, ExtensionTypeWriterFactory writerFactory){}
+  
   public void read(ExtensionHolder holder) {
     holder.isSet = 0;
   }
