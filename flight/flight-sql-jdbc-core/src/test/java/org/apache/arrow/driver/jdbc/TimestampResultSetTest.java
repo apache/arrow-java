@@ -34,8 +34,7 @@ import java.util.TimeZone;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
-import org.apache.arrow.vector.TimeStampMilliTZVector;
-import org.apache.arrow.vector.TimeStampMilliVector;
+import org.apache.arrow.vector.TimeStampVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -82,14 +81,7 @@ public class TimestampResultSetTest {
                   final VectorSchemaRoot root = VectorSchemaRoot.create(QUERY_SCHEMA, allocator)) {
                 listener.start(root);
                 root.getFieldVectors()
-                    .forEach(
-                        v -> {
-                          if (v instanceof TimeStampMilliVector) {
-                            ((TimeStampMilliVector) v).setSafe(0, firstDay2025.toEpochMilli());
-                          } else if (v instanceof TimeStampMilliTZVector) {
-                            ((TimeStampMilliTZVector) v).setSafe(0, firstDay2025.toEpochMilli());
-                          }
-                        });
+                    .forEach(v -> ((TimeStampVector) v).setSafe(0, firstDay2025.toEpochMilli()));
                 root.setRowCount(1);
                 listener.putNext();
               } catch (final Throwable throwable) {
