@@ -19,6 +19,7 @@ package org.apache.arrow.driver.jdbc;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -28,14 +29,17 @@ import org.apache.arrow.driver.jdbc.utils.ConvertUtils;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.Schema;
+import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaResultSet;
 import org.apache.calcite.avatica.AvaticaResultSetMetaData;
+import org.apache.calcite.avatica.AvaticaSite;
 import org.apache.calcite.avatica.AvaticaStatement;
 import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.Meta;
 import org.apache.calcite.avatica.Meta.Frame;
 import org.apache.calcite.avatica.Meta.Signature;
 import org.apache.calcite.avatica.QueryState;
+import org.apache.calcite.avatica.util.Cursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +104,33 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
 
     this.vectorSchemaRoot = vectorSchemaRoot;
     execute2(new ArrowFlightJdbcCursor(vectorSchemaRoot), this.signature.columns);
+  }
+
+  /**
+   * The default method in AvaticaResultSet does not properly handle TIMESTASMP_WITH_TIMEZONE, so we
+   * override here to add support.
+   *
+   * @param columnIndex the first column is 1, the second is 2, ...
+   * @return
+   * @throws SQLException
+   */
+  @Override
+  public Object getObject(int columnIndex) throws SQLException {
+    this.checkOpen();
+
+    Cursor.Accessor accessor;
+    try {
+      accessor = accessorList.get(columnIndex - 1);
+    } catch (IndexOutOfBoundsException var3) {
+      throw AvaticaConnection.HELPER.createException("invalid column ordinal: " + columnIndex);
+    }
+
+    ColumnMetaData metaData = columnMetaDataList.get(columnIndex - 1);
+    if (metaData.type.id == Types.TIMESTAMP_WITH_TIMEZONE) {
+      return accessor.getTimestamp(localCalendar);
+    } else {
+      return AvaticaSite.get(accessor, metaData.type.id, localCalendar);
+    }
   }
 
   @Override
