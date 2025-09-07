@@ -130,6 +130,12 @@ public class FlightServerTestExtension
     return this.createDataSource().getConnection();
   }
 
+  public Connection getConnection(String timezone) throws SQLException {
+    setUseEncryption(false);
+    properties.put("timezone", timezone);
+    return this.createDataSource().getConnection();
+  }
+
   private void setUseEncryption(boolean useEncryption) {
     properties.put("useEncryption", useEncryption);
   }
