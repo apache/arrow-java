@@ -87,10 +87,7 @@ public class TimestampResultSetTest {
                           if (v instanceof TimeStampMilliVector) {
                             ((TimeStampMilliVector) v).setSafe(0, firstDay2025.toEpochMilli());
                           } else if (v instanceof TimeStampMilliTZVector) {
-                            String vecTz =
-                                ((ArrowType.Timestamp) v.getField().getType()).getTimezone();
-                            long millis = firstDay2025.toEpochMilli();
-                            ((TimeStampMilliTZVector) v).setSafe(0, millis);
+                            ((TimeStampMilliTZVector) v).setSafe(0, firstDay2025.toEpochMilli());
                           }
                         });
                 root.setRowCount(1);
