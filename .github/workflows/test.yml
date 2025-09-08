@@ -58,12 +58,12 @@ jobs:
       MAVEN: ${{ matrix.maven }}
     steps:
       - name: Checkout Arrow
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
       - name: Cache Docker Volumes
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@v4
         with:
           path: .docker
           key: maven-${{ matrix.jdk }}-${{ matrix.maven }}-${{ hashFiles('compose.yaml', '**/pom.xml', '**/*.java') }}
@@ -95,12 +95,12 @@ jobs:
             macos: latest
     steps:
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
       - name: Checkout Arrow
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
@@ -126,12 +126,12 @@ jobs:
         jdk: [11]
     steps:
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
       - name: Checkout Arrow
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           submodules: recursive
@@ -152,32 +152,37 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout Arrow
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           repository: apache/arrow
           submodules: recursive
       - name: Checkout Arrow Rust
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v5
         with:
           repository: apache/arrow-rs
           path: rust
       - name: Checkout Arrow nanoarrow
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v5
         with:
           repository: apache/arrow-nanoarrow
           path: nanoarrow
+      - name: Checkout Arrow .NET
+        uses: actions/checkout@v5
+        with:
+          repository: apache/arrow-dotnet
+          path: dotnet
       - name: Checkout Arrow Go
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v5
         with:
           repository: apache/arrow-go
           path: go
       - name: Checkout Arrow Java
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v5
         with:
           path: java
       - name: Checkout Arrow JavaScript
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v5
         with:
           repository: apache/arrow-js
           path: js
@@ -185,13 +190,13 @@ jobs:
         run: |
           ci/scripts/util_free_space.sh
       - name: Cache Docker Volumes
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@v4
         with:
           path: .docker
           key: integration-conda-${{ hashFiles('cpp/**') }}
           restore-keys: integration-conda-
       - name: Setup Python
-        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       - name: Setup Archery
@@ -202,6 +207,7 @@ jobs:
           archery docker run \
             -e ARCHERY_DEFAULT_BRANCH=main \
             -e ARCHERY_INTEGRATION_TARGET_IMPLEMENTATIONS=java \
+            -e ARCHERY_INTEGRATION_WITH_DOTNET=1 \
             -e ARCHERY_INTEGRATION_WITH_GO=1 \
             -e ARCHERY_INTEGRATION_WITH_JAVA=1 \
             -e ARCHERY_INTEGRATION_WITH_JS=1 \
