@@ -116,8 +116,7 @@ public class ComplexCopier {
         break;
       case EXTENSIONTYPE:
         if (extensionTypeWriterFactory == null) {
-          throw new UnsupportedOperationException(
-              "EXTENSIONTYPE are not supported yet. Please provide an ExtensionTypeWriterFactory." );
+          throw new IllegalArgumentException("Must provide ExtensionTypeWriterFactory");
         }
         if (reader.isSet()) {
           Object value = reader.readObject();
