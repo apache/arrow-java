@@ -35,22 +35,7 @@ import java.util.Set;
 import org.apache.arrow.driver.jdbc.client.utils.ClientAuthenticationUtils;
 import org.apache.arrow.driver.jdbc.client.utils.FlightClientCache;
 import org.apache.arrow.driver.jdbc.client.utils.FlightLocationQueue;
-import org.apache.arrow.flight.CallOption;
-import org.apache.arrow.flight.CallStatus;
-import org.apache.arrow.flight.CloseSessionRequest;
-import org.apache.arrow.flight.FlightClient;
-import org.apache.arrow.flight.FlightClientMiddleware;
-import org.apache.arrow.flight.FlightEndpoint;
-import org.apache.arrow.flight.FlightGrpcUtils;
-import org.apache.arrow.flight.FlightInfo;
-import org.apache.arrow.flight.FlightRuntimeException;
-import org.apache.arrow.flight.FlightStatusCode;
-import org.apache.arrow.flight.Location;
-import org.apache.arrow.flight.LocationSchemes;
-import org.apache.arrow.flight.SessionOptionValue;
-import org.apache.arrow.flight.SessionOptionValueFactory;
-import org.apache.arrow.flight.SetSessionOptionsRequest;
-import org.apache.arrow.flight.SetSessionOptionsResult;
+import org.apache.arrow.flight.*;
 import org.apache.arrow.flight.auth2.BearerCredentialWriter;
 import org.apache.arrow.flight.auth2.ClientBearerHeaderHandler;
 import org.apache.arrow.flight.auth2.ClientIncomingAuthHeaderMiddleware;
@@ -488,6 +473,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     return sqlClient.getTables(
         catalog, schemaPattern, tableNamePattern, types, includeSchema, getOptions());
+  }
+
+  /**
+   * Cancel execution of a distributed query.
+   *
+   * @return The server response.
+   */
+  public CancelFlightInfoResult cancelFlightInfo(FlightInfo info) {
+    return sqlClient.cancelFlightInfo(new CancelFlightInfoRequest(info), getOptions());
   }
 
   /**
