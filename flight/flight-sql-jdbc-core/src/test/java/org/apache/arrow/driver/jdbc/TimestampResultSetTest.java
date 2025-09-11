@@ -65,8 +65,8 @@ public class TimestampResultSetTest {
           ImmutableList.of(
               Field.nullable("no_tz", new ArrowType.Timestamp(TimeUnit.MILLISECOND, null)),
               Field.nullable("utc", new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC")),
-              Field.nullable("utc+1", new ArrowType.Timestamp(TimeUnit.MILLISECOND, "GMT+1:00")),
-              Field.nullable("utc-1", new ArrowType.Timestamp(TimeUnit.MILLISECOND, "GMT-1:00"))));
+              Field.nullable("utc+1", new ArrowType.Timestamp(TimeUnit.MILLISECOND, "GMT+1")),
+              Field.nullable("utc-1", new ArrowType.Timestamp(TimeUnit.MILLISECOND, "GMT-1"))));
 
   @BeforeAll
   public static void setup() throws SQLException {
