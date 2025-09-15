@@ -44,6 +44,7 @@ import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.calcite.avatica.remote.TypedValue;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Convert Avatica PreparedStatement parameters from a list of TypedValue to Arrow and bind them to
@@ -108,9 +109,9 @@ public class AvaticaParameterBinder {
    * @param typedValue TypedValue to bind to the vector.
    * @param index Vector index to bind the value at.
    */
-  private void bind(FieldVector vector, TypedValue typedValue, int index) {
+  private void bind(FieldVector vector, @Nullable TypedValue typedValue, int index) {
     try {
-      if (typedValue.value == null) {
+      if (typedValue == null || typedValue.value == null) {
         if (vector.getField().isNullable()) {
           vector.setNull(index);
         } else {
@@ -127,7 +128,7 @@ public class AvaticaParameterBinder {
       throw new UnsupportedOperationException(
           String.format(
               "Binding value of type %s is not yet supported for expected Arrow type %s",
-              typedValue.type, vector.getField().getType()));
+              typedValue == null ? "null" : typedValue.type, vector.getField().getType()));
     }
   }
 
