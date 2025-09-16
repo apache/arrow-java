@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.converter.impl;
 
+import java.time.LocalDate;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.FieldVector;
@@ -31,12 +32,19 @@ public class DateAvaticaParameterConverter extends BaseAvaticaParameterConverter
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    int value = (int) typedValue.toLocal();
+    Object value = typedValue.value;
+    int days;
+    if (value instanceof String) {
+      LocalDate localDate = LocalDate.parse((String) value);
+      days = (int) localDate.toEpochDay();
+    } else {
+      days = (int) typedValue.toLocal();
+    }
     if (vector instanceof DateMilliVector) {
-      ((DateMilliVector) vector).setSafe(index, value);
+      ((DateMilliVector) vector).setSafe(index, days);
       return true;
     } else if (vector instanceof DateDayVector) {
-      ((DateDayVector) vector).setSafe(index, value);
+      ((DateDayVector) vector).setSafe(index, days);
       return true;
     }
     return false;

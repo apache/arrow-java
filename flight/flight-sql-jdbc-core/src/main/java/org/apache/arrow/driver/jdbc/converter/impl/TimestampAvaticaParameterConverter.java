@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.converter.impl;
 
+import java.time.Instant;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
 import org.apache.arrow.vector.TimeStampMicroVector;
@@ -37,7 +38,30 @@ public class TimestampAvaticaParameterConverter extends BaseAvaticaParameterConv
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    long value = (long) typedValue.toLocal();
+    Object valueObj = typedValue.toLocal();
+    long value;
+    if (valueObj instanceof String) {
+      // Parse ISO 8601 string to epoch millis
+      Instant instant = Instant.parse((String) valueObj);
+      if (vector instanceof TimeStampSecVector || vector instanceof TimeStampSecTZVector) {
+        value = instant.getEpochSecond();
+      } else if (vector instanceof TimeStampMilliVector
+          || vector instanceof TimeStampMilliTZVector) {
+        value = instant.toEpochMilli();
+      } else if (vector instanceof TimeStampMicroVector
+          || vector instanceof TimeStampMicroTZVector) {
+        value = instant.toEpochMilli() * 1000;
+      } else if (vector instanceof TimeStampNanoVector || vector instanceof TimeStampNanoTZVector) {
+        value = instant.toEpochMilli() * 1000000;
+      } else {
+        return false;
+      }
+    } else if (valueObj instanceof Long) {
+      value = (Long) valueObj;
+    } else {
+      return false;
+    }
+
     if (vector instanceof TimeStampSecVector) {
       ((TimeStampSecVector) vector).setSafe(index, value);
       return true;
