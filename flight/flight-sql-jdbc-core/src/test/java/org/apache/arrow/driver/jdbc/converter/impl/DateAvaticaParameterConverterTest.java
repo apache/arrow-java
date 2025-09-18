@@ -53,7 +53,8 @@ public class DateAvaticaParameterConverterTest {
       TypedValue typedValue = TypedValue.create(ColumnMetaData.Rep.STRING.toString(), dateStr);
       boolean result = converter.bindParameter(vector, typedValue, 0);
       assertTrue(result);
-      assertEquals((int) LocalDate.parse(dateStr).toEpochDay(), vector.get(0));
+      assertEquals(
+          (int) (LocalDate.parse(dateStr).toEpochDay() * 24 * 60 * 60 * 1000), vector.get(0));
     }
   }
 

@@ -37,11 +37,14 @@ public class DateAvaticaParameterConverter extends BaseAvaticaParameterConverter
     if (value instanceof String) {
       LocalDate localDate = LocalDate.parse((String) value);
       days = (int) localDate.toEpochDay();
+    } else if (value instanceof Integer) {
+      days = (Integer) value;
     } else {
-      days = (int) typedValue.toLocal();
+      return false;
     }
+
     if (vector instanceof DateMilliVector) {
-      ((DateMilliVector) vector).setSafe(index, days);
+      ((DateMilliVector) vector).setSafe(index, days * 24 * 60 * 60 * 1000);
       return true;
     } else if (vector instanceof DateDayVector) {
       ((DateDayVector) vector).setSafe(index, days);

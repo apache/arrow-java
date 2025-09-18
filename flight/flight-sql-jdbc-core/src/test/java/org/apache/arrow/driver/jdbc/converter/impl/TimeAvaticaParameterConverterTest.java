@@ -28,13 +28,25 @@ import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.remote.TypedValue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TimeAvaticaParameterConverterTest {
+  private BufferAllocator allocator;
+
+  @BeforeEach
+  void setUp() {
+    allocator = new RootAllocator(Long.MAX_VALUE);
+  }
+
+  @AfterEach
+  void tearDown() {
+    allocator.close();
+  }
 
   @Test
   void testBindParameterWithIsoStringMilli() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeMilliVector vector = new TimeMilliVector("t", allocator);
     vector.allocateNew(1);
     TimeAvaticaParameterConverter converter =
@@ -44,11 +56,11 @@ public class TimeAvaticaParameterConverterTest {
             vector, TypedValue.create(ColumnMetaData.Rep.STRING.toString(), "21:39:50"), 0);
     assertTrue(result);
     assertEquals(77990000, vector.get(0));
+    vector.close();
   }
 
   @Test
   void testBindParameterWithIsoStringMicro() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeMicroVector vector = new TimeMicroVector("t", allocator);
     vector.allocateNew(1);
     TimeAvaticaParameterConverter converter =
@@ -58,11 +70,11 @@ public class TimeAvaticaParameterConverterTest {
             vector, TypedValue.create(ColumnMetaData.Rep.STRING.toString(), "21:39:50.123456"), 0);
     assertTrue(result);
     assertEquals(77990123456L, (long) vector.get(0));
+    vector.close();
   }
 
   @Test
   void testBindParameterWithIsoStringNano() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeNanoVector vector = new TimeNanoVector("t", allocator);
     vector.allocateNew(1);
     TimeAvaticaParameterConverter converter =
@@ -74,11 +86,11 @@ public class TimeAvaticaParameterConverterTest {
             0);
     assertTrue(result);
     assertEquals(77990123456789L, (long) vector.get(0));
+    vector.close();
   }
 
   @Test
   void testBindParameterWithIsoStringSec() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeSecVector vector = new TimeSecVector("t", allocator);
     vector.allocateNew(1);
     TimeAvaticaParameterConverter converter =
@@ -88,11 +100,11 @@ public class TimeAvaticaParameterConverterTest {
             vector, TypedValue.create(ColumnMetaData.Rep.STRING.toString(), "21:39:50"), 0);
     assertTrue(result);
     assertEquals(77990, vector.get(0));
+    vector.close();
   }
 
   @Test
   void testBindParameterWithIntValueMilli() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeMilliVector vector = new TimeMilliVector("t", allocator);
     vector.allocateNew(1);
     TimeAvaticaParameterConverter converter =
@@ -102,11 +114,11 @@ public class TimeAvaticaParameterConverterTest {
             vector, TypedValue.create(ColumnMetaData.Rep.INTEGER.toString(), 123456), 0);
     assertTrue(result);
     assertEquals(123456, vector.get(0));
+    vector.close();
   }
 
   @Test
   void testBindParameterWithIntValueSec() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeSecVector vector = new TimeSecVector("t", allocator);
     vector.allocateNew(1);
     TimeAvaticaParameterConverter converter =
@@ -116,5 +128,6 @@ public class TimeAvaticaParameterConverterTest {
             vector, TypedValue.create(ColumnMetaData.Rep.INTEGER.toString(), 42), 0);
     assertTrue(result);
     assertEquals(42, vector.get(0));
+    vector.close();
   }
 }

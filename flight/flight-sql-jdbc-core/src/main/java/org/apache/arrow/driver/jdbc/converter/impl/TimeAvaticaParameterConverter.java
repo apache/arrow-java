@@ -33,10 +33,13 @@ public class TimeAvaticaParameterConverter extends BaseAvaticaParameterConverter
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    if (typedValue.value instanceof String) {
-      return bindTimeAsString(vector, (String) typedValue.value, index);
+    Object value = typedValue.value;
+    if (value instanceof String) {
+      return bindTimeAsString(vector, (String) value, index);
+    } else if (value instanceof Integer) {
+      return bindTimeAsInt(vector, (int) value, index);
     } else {
-      return bindTimeAsInt(vector, (int) typedValue.toLocal(), index);
+      return false;
     }
   }
 

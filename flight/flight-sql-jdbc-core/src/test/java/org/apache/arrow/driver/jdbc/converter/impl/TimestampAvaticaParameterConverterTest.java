@@ -26,13 +26,25 @@ import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.remote.TypedValue;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TimestampAvaticaParameterConverterTest {
+  private BufferAllocator allocator;
+
+  @BeforeEach
+  void setUp() {
+    allocator = new RootAllocator(Long.MAX_VALUE);
+  }
+
+  @AfterEach
+  void tearDown() {
+    allocator.close();
+  }
 
   @Test
   void testBindIsoStringToMilliVector() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeStampMilliVector vector = new TimeStampMilliVector("ts", allocator);
     vector.allocateNew();
     TimestampAvaticaParameterConverter converter =
@@ -41,11 +53,11 @@ public class TimestampAvaticaParameterConverterTest {
     TypedValue typedValue = TypedValue.create(ColumnMetaData.Rep.STRING.toString(), isoString);
     assertTrue(converter.bindParameter(vector, typedValue, 0));
     assertEquals(Instant.parse(isoString).toEpochMilli(), vector.get(0));
+    vector.close();
   }
 
   @Test
   void testBindLongToMilliVector() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeStampMilliVector vector = new TimeStampMilliVector("ts", allocator);
     vector.allocateNew();
     TimestampAvaticaParameterConverter converter =
@@ -54,16 +66,17 @@ public class TimestampAvaticaParameterConverterTest {
     TypedValue typedValue = TypedValue.create(ColumnMetaData.Rep.LONG.toString(), millis);
     assertTrue(converter.bindParameter(vector, typedValue, 0));
     assertEquals(millis, vector.get(0));
+    vector.close();
   }
 
   @Test
   void testUnsupportedValueType() {
-    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
     TimeStampMilliVector vector = new TimeStampMilliVector("ts", allocator);
     vector.allocateNew();
     TimestampAvaticaParameterConverter converter =
         new TimestampAvaticaParameterConverter(new ArrowType.Timestamp(TimeUnit.MILLISECOND, null));
     TypedValue typedValue = TypedValue.create(ColumnMetaData.Rep.DOUBLE.toString(), 3.14);
     assertFalse(converter.bindParameter(vector, typedValue, 0));
+    vector.close();
   }
 }
