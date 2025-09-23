@@ -262,12 +262,79 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   @Override
   public void close() throws SQLException {
     if (catalog.isPresent()) {
-      sqlClient.closeSession(new CloseSessionRequest(), getOptions());
+      try {
+        sqlClient.closeSession(new CloseSessionRequest(), getOptions());
+      } catch (FlightRuntimeException fre) {
+        handleBenignCloseException(fre, "Failed to close Flight SQL session.", "closing Flight SQL session");
+      }
     }
     try {
       AutoCloseables.close(sqlClient);
+    } catch (FlightRuntimeException fre) {
+      handleBenignCloseException(fre, "Failed to clean up client resources.", "closing Flight SQL client");
     } catch (final Exception e) {
       throw new SQLException("Failed to clean up client resources.", e);
+    }
+  }
+
+  /**
+   * Handles FlightRuntimeException during close operations, suppressing benign gRPC shutdown errors
+   * while re-throwing genuine failures.
+   *
+   * @param fre the FlightRuntimeException to handle
+   * @param sqlErrorMessage the SQLException message to use for genuine failures
+   * @param operationDescription description of the operation for logging
+   * @throws SQLException if the exception represents a genuine failure
+   */
+  private void handleBenignCloseException(FlightRuntimeException fre, String sqlErrorMessage, String operationDescription) throws SQLException {
+    if (isBenignCloseException(fre)) {
+      logSuppressedCloseException(fre, operationDescription);
+    } else {
+      throw new SQLException(sqlErrorMessage, fre);
+    }
+  }
+
+  /**
+   * Handles FlightRuntimeException during close operations, suppressing benign gRPC shutdown errors
+   * while re-throwing genuine failures as FlightRuntimeException.
+   *
+   * @param fre the FlightRuntimeException to handle
+   * @param operationDescription description of the operation for logging
+   * @throws FlightRuntimeException if the exception represents a genuine failure
+   */
+  private void handleBenignCloseException(FlightRuntimeException fre, String operationDescription) throws FlightRuntimeException {
+    if (isBenignCloseException(fre)) {
+      logSuppressedCloseException(fre, operationDescription);
+    } else {
+      throw fre;
+    }
+  }
+
+  /**
+   * Determines if a FlightRuntimeException represents a benign close operation error
+   * that should be suppressed.
+   *
+   * @param fre the FlightRuntimeException to check
+   * @return true if the exception should be suppressed, false otherwise
+   */
+  private boolean isBenignCloseException(FlightRuntimeException fre) {
+    return fre.status().code().equals(FlightStatusCode.UNAVAILABLE)
+        || (fre.status().code().equals(FlightStatusCode.INTERNAL)
+            && fre.getMessage().contains("Connection closed after GOAWAY"));
+  }
+
+  /**
+   * Logs a suppressed close exception with appropriate level based on debug settings.
+   *
+   * @param fre the FlightRuntimeException being suppressed
+   * @param operationDescription description of the operation for logging
+   */
+  private void logSuppressedCloseException(FlightRuntimeException fre, String operationDescription) {
+    // ARROW-17785: suppress exceptions caused by flaky gRPC layer during shutdown
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Suppressed error {}", operationDescription, fre);
+    } else {
+      LOGGER.info("Suppressed benign error {}: {}", operationDescription, fre.getMessage());
     }
   }
 
@@ -386,14 +453,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         try {
           preparedStatement.close(getOptions());
         } catch (FlightRuntimeException fre) {
-          // ARROW-17785: suppress exceptions caused by flaky gRPC layer
-          if (fre.status().code().equals(FlightStatusCode.UNAVAILABLE)
-              || (fre.status().code().equals(FlightStatusCode.INTERNAL)
-                  && fre.getMessage().contains("Connection closed after GOAWAY"))) {
-            LOGGER.warn("Supressed error closing PreparedStatement", fre);
-            return;
-          }
-          throw fre;
+          handleBenignCloseException(fre, "closing PreparedStatement");
         }
       }
     };
