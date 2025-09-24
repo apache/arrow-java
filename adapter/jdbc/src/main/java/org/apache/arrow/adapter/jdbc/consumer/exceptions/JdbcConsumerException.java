@@ -17,7 +17,7 @@
 package org.apache.arrow.adapter.jdbc.consumer.exceptions;
 
 import org.apache.arrow.adapter.jdbc.JdbcFieldInfo;
-import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.Types;
 
 /**
  * Exception while consuming JDBC data. This exception stores the JdbcFieldInfo for the column and
@@ -25,7 +25,7 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
  */
 public class JdbcConsumerException extends RuntimeException {
   final JdbcFieldInfo fieldInfo;
-  final ArrowType arrowType;
+  final Types.MinorType minorType;
 
   /**
    * Construct JdbcConsumerException with all fields.
@@ -33,17 +33,17 @@ public class JdbcConsumerException extends RuntimeException {
    * @param message error message
    * @param cause original exception
    * @param fieldInfo JdbcFieldInfo for the column
-   * @param arrowType ArrowType for the corresponding vector
+   * @param minorType ArrowType for the corresponding vector
    */
   public JdbcConsumerException(
-      String message, Throwable cause, JdbcFieldInfo fieldInfo, ArrowType arrowType) {
+      String message, Throwable cause, JdbcFieldInfo fieldInfo, Types.MinorType minorType) {
     super(message, cause);
     this.fieldInfo = fieldInfo;
-    this.arrowType = arrowType;
+    this.minorType = minorType;
   }
 
-  public ArrowType getArrowType() {
-    return this.arrowType;
+  public Types.MinorType getMinorType() {
+    return this.minorType;
   }
 
   public JdbcFieldInfo getFieldInfo() {
