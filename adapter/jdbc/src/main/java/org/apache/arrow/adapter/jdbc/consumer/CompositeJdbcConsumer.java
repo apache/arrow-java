@@ -47,7 +47,7 @@ public class CompositeJdbcConsumer implements JdbcConsumer {
               new JdbcFieldInfo(rs.getMetaData(), consumer.columnIndexInResultSet);
 
           throw new JdbcConsumerException(
-              "Exception while consuming JDBC value", e, fieldInfo, consumer.vector.getMinorType());
+              "Exception while consuming JDBC value", e, fieldInfo, consumer.vector.getField());
         } else {
           throw e;
         }
