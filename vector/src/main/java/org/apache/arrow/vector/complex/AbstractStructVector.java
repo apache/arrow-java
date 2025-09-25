@@ -64,11 +64,11 @@ public abstract class AbstractStructVector extends AbstractContainerVector {
 
   /** Policy to determine how to react when duplicate columns are encountered. */
   public enum ConflictPolicy {
-    // Ignore the conflict and append the field. This is the default behaviour
+    // Ignore the conflict and append the field.
     CONFLICT_APPEND,
     // Keep the existing field and ignore the newer one.
     CONFLICT_IGNORE,
-    // Replace the existing field with the newer one.
+    // Replace the existing field with the newer one. This is the default behaviour
     CONFLICT_REPLACE,
     // Refuse the new field and error out.
     CONFLICT_ERROR
