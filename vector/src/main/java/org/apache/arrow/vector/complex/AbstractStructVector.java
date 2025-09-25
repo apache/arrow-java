@@ -46,10 +46,12 @@ public abstract class AbstractStructVector extends AbstractContainerVector {
   private ConflictPolicy conflictPolicy;
 
   static {
-    String conflictPolicyStr =
-        System.getProperty(STRUCT_CONFLICT_POLICY_JVM, ConflictPolicy.CONFLICT_REPLACE.toString());
+    String conflictPolicyStr = System.getProperty(STRUCT_CONFLICT_POLICY_JVM);
     if (conflictPolicyStr == null) {
       conflictPolicyStr = System.getenv(STRUCT_CONFLICT_POLICY_ENV);
+    }
+    if (conflictPolicyStr == null) {
+      conflictPolicyStr = ConflictPolicy.CONFLICT_REPLACE.toString();
     }
     ConflictPolicy conflictPolicy;
     try {
