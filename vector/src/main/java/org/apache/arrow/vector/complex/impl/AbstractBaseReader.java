@@ -115,4 +115,14 @@ abstract class AbstractBaseReader implements FieldReader {
   public void copyAsValue(MapWriter writer) {
     ComplexCopier.copy(this, (FieldWriter) writer);
   }
+
+  @Override
+  public void copyAsValue(ListWriter writer, ExtensionTypeWriterFactory writerFactory) {
+    ComplexCopier.copy(this, (FieldWriter) writer, writerFactory);
+  }
+
+  @Override
+  public void copyAsValue(MapWriter writer, ExtensionTypeWriterFactory writerFactory) {
+    ComplexCopier.copy(this, (FieldWriter) writer, writerFactory);
+  }
 }

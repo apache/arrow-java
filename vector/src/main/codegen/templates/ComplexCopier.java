@@ -42,10 +42,14 @@ public class ComplexCopier {
    * @param output field to write to
    */
   public static void copy(FieldReader input, FieldWriter output) {
-    writeValue(input, output);
+    writeValue(input, output, null);
   }
 
-  private static void writeValue(FieldReader reader, FieldWriter writer) {
+  public static void copy(FieldReader input, FieldWriter output, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
+    writeValue(input, output, extensionTypeWriterFactory);
+  }
+
+  private static void writeValue(FieldReader reader, FieldWriter writer, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
     final MinorType mt = reader.getMinorType();
 
       switch (mt) {
@@ -61,7 +65,7 @@ public class ComplexCopier {
             FieldReader childReader = reader.reader();
             FieldWriter childWriter = getListWriterForReader(childReader, writer);
             if (childReader.isSet()) {
-              writeValue(childReader, childWriter);
+              writeValue(childReader, childWriter, extensionTypeWriterFactory);
             } else {
               childWriter.writeNull();
             }
@@ -79,8 +83,8 @@ public class ComplexCopier {
             FieldReader structReader = reader.reader();
             if (structReader.isSet()) {
               writer.startEntry();
-              writeValue(mapReader.key(), getMapWriterForReader(mapReader.key(), writer.key()));
-              writeValue(mapReader.value(), getMapWriterForReader(mapReader.value(), writer.value()));
+              writeValue(mapReader.key(), getMapWriterForReader(mapReader.key(), writer.key()), extensionTypeWriterFactory);
+              writeValue(mapReader.value(), getMapWriterForReader(mapReader.value(), writer.value()), extensionTypeWriterFactory);
               writer.endEntry();
             } else {
               writer.writeNull();
@@ -99,13 +103,27 @@ public class ComplexCopier {
             if (childReader.getMinorType() != Types.MinorType.NULL) {
               FieldWriter childWriter = getStructWriterForReader(childReader, writer, name);
               if (childReader.isSet()) {
-                writeValue(childReader, childWriter);
+                writeValue(childReader, childWriter, extensionTypeWriterFactory);
               } else {
                 childWriter.writeNull();
               }
             }
           }
           writer.end();
+        } else {
+          writer.writeNull();
+        }
+        break;
+      case EXTENSIONTYPE:
+        if (extensionTypeWriterFactory == null) {
+          throw new IllegalArgumentException("Must provide ExtensionTypeWriterFactory");
+        }
+        if (reader.isSet()) {
+          Object value = reader.readObject();
+          if (value != null) {
+            writer.addExtensionTypeWriterFactory(extensionTypeWriterFactory);
+            writer.writeExtension(value);
+          }
         } else {
           writer.writeNull();
         }
@@ -162,6 +180,9 @@ public class ComplexCopier {
       return (FieldWriter) writer.map(name);
     case LISTVIEW:
       return (FieldWriter) writer.listView(name);
+    case EXTENSIONTYPE:
+      ExtensionWriter extensionWriter = writer.extension(name, reader.getField().getType());
+      return (FieldWriter) extensionWriter;
     default:
       throw new UnsupportedOperationException(reader.getMinorType().toString());
     }
@@ -186,6 +207,9 @@ public class ComplexCopier {
       return (FieldWriter) writer.list();
     case LISTVIEW:
       return (FieldWriter) writer.listView();
+    case EXTENSIONTYPE:
+      ExtensionWriter extensionWriter = writer.extension(reader.getField().getType());
+      return (FieldWriter) extensionWriter;
     default:
       throw new UnsupportedOperationException(reader.getMinorType().toString());
     }
@@ -211,6 +235,9 @@ public class ComplexCopier {
         return (FieldWriter) writer.listView();
       case MAP:
         return (FieldWriter) writer.map(false);
+      case EXTENSIONTYPE:
+        ExtensionWriter extensionWriter = writer.extension(reader.getField().getType());
+        return (FieldWriter) extensionWriter;
       default:
         throw new UnsupportedOperationException(reader.getMinorType().toString());
     }

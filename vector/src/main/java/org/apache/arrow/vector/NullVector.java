@@ -27,6 +27,7 @@ import org.apache.arrow.memory.OutOfMemoryException;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.compare.VectorVisitor;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.NullReader;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
@@ -326,6 +327,18 @@ public class NullVector implements FieldVector, ValueIterableVector<Object> {
 
   @Override
   public void copyFromSafe(int fromIndex, int thisIndex, ValueVector from) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void copyFrom(
+      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void copyFromSafe(
+      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
     throw new UnsupportedOperationException();
   }
 
