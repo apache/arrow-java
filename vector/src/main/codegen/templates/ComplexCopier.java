@@ -206,7 +206,7 @@ public class ComplexCopier {
     case NULL:
       return (FieldWriter) writer.list();
     case LISTVIEW:
-      return (FieldWriter) writer.listView(); 
+      return (FieldWriter) writer.listView();
     case EXTENSIONTYPE:
       ExtensionWriter extensionWriter = writer.extension(reader.getField().getType());
       return (FieldWriter) extensionWriter;
