@@ -121,7 +121,7 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
     Cursor.Accessor accessor;
     try {
       accessor = accessorList.get(columnIndex - 1);
-    } catch (IndexOutOfBoundsException var3) {
+    } catch (IndexOutOfBoundsException e) {
       throw AvaticaConnection.HELPER.createException("invalid column ordinal: " + columnIndex);
     }
 
