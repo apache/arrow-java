@@ -28,6 +28,7 @@ import org.apache.arrow.driver.jdbc.client.CloseableEndpointStreamPair;
 import org.apache.arrow.driver.jdbc.utils.FlightEndpointDataQueue;
 import org.apache.arrow.driver.jdbc.utils.VectorSchemaRootTransformer;
 import org.apache.arrow.flight.FlightInfo;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.VectorSchemaRoot;
@@ -218,6 +219,12 @@ public final class ArrowFlightJdbcFlightStreamResultSet
   @Override
   protected void cancel() {
     super.cancel();
+    try {
+      connection.getClientHandler().cancelFlightInfo(flightInfo);
+    } catch (final FlightRuntimeException e) {
+
+    }
+
     final CloseableEndpointStreamPair currentEndpoint = this.currentEndpointData;
     if (currentEndpoint != null) {
       currentEndpoint.getStream().cancel("Cancel", null);
