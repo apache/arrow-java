@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -63,8 +64,8 @@ public class ArrowFlightSqlClientHandlerTest {
     logger.addAppender(logAppender);
     logger.setLevel(Level.DEBUG);
 
-    // Create a minimal client handler for testing
-    // We'll use reflection to test the private methods
+    // Create a minimal client handler for testing private methods via reflection
+    // We don't need a real connection since we're testing private methods
     clientHandler = createTestClientHandler();
   }
 
@@ -73,16 +74,27 @@ public class ArrowFlightSqlClientHandlerTest {
     if (logAppender != null) {
       logger.detachAppender(logAppender);
     }
+    if (clientHandler != null) {
+      try {
+        clientHandler.close();
+      } catch (Exception e) {
+        // Ignore cleanup errors
+      }
+    }
   }
 
   private ArrowFlightSqlClientHandler createTestClientHandler() throws Exception {
-    // Create a real client handler for testing private methods via reflection
+    // Create a minimal client handler using mocks
+    // We only need an instance to invoke private methods via reflection
+    BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+
+    // Create a handler with minimal setup - no actual connection needed
     ArrowFlightSqlClientHandler.Builder builder = new ArrowFlightSqlClientHandler.Builder()
         .withHost("localhost")
         .withPort(12345)
-        .withBufferAllocator(new RootAllocator(Long.MAX_VALUE))
-        .withEncryption(false)
-        .withCatalog("test-catalog");
+        .withBufferAllocator(allocator)
+        .withEncryption(false);
+    // Don't set catalog to avoid triggering setSessionOptions
 
     return builder.build();
   }
@@ -252,10 +264,10 @@ public class ArrowFlightSqlClientHandlerTest {
   }
 
   private FlightRuntimeException createFlightRuntimeException(FlightStatusCode statusCode, String message) {
-    CallStatus status = mock(CallStatus.class);
+    CallStatus status = mock(CallStatus.class, withSettings().lenient());
     when(status.code()).thenReturn(statusCode);
 
-    FlightRuntimeException exception = mock(FlightRuntimeException.class);
+    FlightRuntimeException exception = mock(FlightRuntimeException.class, withSettings().lenient());
     when(exception.status()).thenReturn(status);
     when(exception.getMessage()).thenReturn(message);
 
