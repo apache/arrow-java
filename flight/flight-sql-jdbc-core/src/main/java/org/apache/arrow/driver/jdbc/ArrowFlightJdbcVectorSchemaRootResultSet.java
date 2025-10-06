@@ -111,8 +111,8 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
    * override here to add support.
    *
    * @param columnIndex the first column is 1, the second is 2, ...
-   * @return
-   * @throws SQLException
+   * @return Object
+   * @throws SQLException if there is an underlying exception
    */
   @Override
   public Object getObject(int columnIndex) throws SQLException {
