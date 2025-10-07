@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.accessor;
 
+import java.util.Calendar;
 import java.util.function.IntSupplier;
 import org.apache.arrow.driver.jdbc.accessor.impl.ArrowFlightJdbcNullVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.binary.ArrowFlightJdbcBinaryVectorAccessor;
@@ -87,7 +88,10 @@ public class ArrowFlightJdbcAccessorFactory {
    * @return an instance of one of the accessors.
    */
   public static ArrowFlightJdbcAccessor createAccessor(
-      ValueVector vector, IntSupplier getCurrentRow, WasNullConsumer setCursorWasNull) {
+      ValueVector vector,
+      IntSupplier getCurrentRow,
+      WasNullConsumer setCursorWasNull,
+      Calendar localCalendar) {
     if (vector instanceof UInt1Vector) {
       return new ArrowFlightJdbcBaseIntVectorAccessor(
           (UInt1Vector) vector, getCurrentRow, setCursorWasNull);
@@ -138,7 +142,7 @@ public class ArrowFlightJdbcAccessorFactory {
           (FixedSizeBinaryVector) vector, getCurrentRow, setCursorWasNull);
     } else if (vector instanceof TimeStampVector) {
       return new ArrowFlightJdbcTimeStampVectorAccessor(
-          (TimeStampVector) vector, getCurrentRow, setCursorWasNull);
+          (TimeStampVector) vector, getCurrentRow, setCursorWasNull, localCalendar);
     } else if (vector instanceof TimeNanoVector) {
       return new ArrowFlightJdbcTimeVectorAccessor(
           (TimeNanoVector) vector, getCurrentRow, setCursorWasNull);
@@ -180,22 +184,22 @@ public class ArrowFlightJdbcAccessorFactory {
           (StructVector) vector, getCurrentRow, setCursorWasNull);
     } else if (vector instanceof MapVector) {
       return new ArrowFlightJdbcMapVectorAccessor(
-          (MapVector) vector, getCurrentRow, setCursorWasNull);
+          (MapVector) vector, getCurrentRow, setCursorWasNull, localCalendar);
     } else if (vector instanceof ListVector) {
       return new ArrowFlightJdbcListVectorAccessor(
-          (ListVector) vector, getCurrentRow, setCursorWasNull);
+          (ListVector) vector, getCurrentRow, setCursorWasNull, localCalendar);
     } else if (vector instanceof LargeListVector) {
       return new ArrowFlightJdbcLargeListVectorAccessor(
-          (LargeListVector) vector, getCurrentRow, setCursorWasNull);
+          (LargeListVector) vector, getCurrentRow, setCursorWasNull, localCalendar);
     } else if (vector instanceof FixedSizeListVector) {
       return new ArrowFlightJdbcFixedSizeListVectorAccessor(
-          (FixedSizeListVector) vector, getCurrentRow, setCursorWasNull);
+          (FixedSizeListVector) vector, getCurrentRow, setCursorWasNull, localCalendar);
     } else if (vector instanceof UnionVector) {
       return new ArrowFlightJdbcUnionVectorAccessor(
-          (UnionVector) vector, getCurrentRow, setCursorWasNull);
+          (UnionVector) vector, getCurrentRow, setCursorWasNull, localCalendar);
     } else if (vector instanceof DenseUnionVector) {
       return new ArrowFlightJdbcDenseUnionVectorAccessor(
-          (DenseUnionVector) vector, getCurrentRow, setCursorWasNull);
+          (DenseUnionVector) vector, getCurrentRow, setCursorWasNull, localCalendar);
     } else if (vector instanceof NullVector || vector == null) {
       return new ArrowFlightJdbcNullVectorAccessor(setCursorWasNull);
     }

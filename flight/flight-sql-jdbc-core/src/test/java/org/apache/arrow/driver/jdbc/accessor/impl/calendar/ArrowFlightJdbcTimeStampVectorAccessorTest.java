@@ -71,7 +71,10 @@ public class ArrowFlightJdbcTimeStampVectorAccessorTest {
       accessorSupplier =
           (vector, getCurrentRow) ->
               new ArrowFlightJdbcTimeStampVectorAccessor(
-                  (TimeStampVector) vector, getCurrentRow, (boolean wasNull) -> {});
+                  (TimeStampVector) vector,
+                  getCurrentRow,
+                  (boolean wasNull) -> {},
+                  Calendar.getInstance());
 
   private final AccessorTestUtils.AccessorIterator<ArrowFlightJdbcTimeStampVectorAccessor>
       accessorIterator = new AccessorTestUtils.AccessorIterator<>(accessorSupplier);
