@@ -16,8 +16,11 @@
  */
 package org.apache.arrow.driver.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.google.common.collect.ImmutableList;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +29,7 @@ import java.sql.Types;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -51,6 +55,8 @@ import org.junit.jupiter.api.extension.RegisterExtension;
  */
 public class TimestampResultSetTest {
   private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER = new MockFlightSqlProducer();
+  private static Instant firstDay2025 =
+      OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
 
   @RegisterExtension public static FlightServerTestExtension FLIGHT_SERVER_TEST_EXTENSION;
 
@@ -70,8 +76,6 @@ public class TimestampResultSetTest {
 
   @BeforeAll
   public static void setup() throws SQLException {
-    Instant firstDay2025 = OffsetDateTime.of(2025, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant();
-
     FLIGHT_SQL_PRODUCER.addSelectQuery(
         QUERY_STRING,
         QUERY_SCHEMA,
@@ -152,6 +156,58 @@ public class TimestampResultSetTest {
               System.out.println();
             }
             System.out.println();
+          } catch (SQLException e) {
+            throw new RuntimeException(e);
+          }
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
+  public void testTzConnectionOptionIsRespected() {
+    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    try (Connection connection = FLIGHT_SERVER_TEST_EXTENSION.getConnection("GTM+1")) {
+      try (PreparedStatement s = connection.prepareStatement(QUERY_STRING)) {
+        try (ResultSet rs = s.executeQuery()) {
+          int numCols = rs.getMetaData().getColumnCount();
+          try {
+            rs.next();
+            for (int i = 1; i <= numCols; i++) {
+              int type = rs.getMetaData().getColumnType(i);
+              String name = rs.getMetaData().getColumnName(i);
+              Date date = rs.getDate(i);
+              Timestamp timestamp = rs.getTimestamp(i);
+              String string = rs.getString(i);
+              Timestamp object = (Timestamp) rs.getObject(i);
+              Timestamp objectWithClass = rs.getObject(i, Timestamp.class);
+              Timestamp timestampWithDefaultCalendar = rs.getTimestamp(i, Calendar.getInstance());
+              Timestamp timestampWithUTCCalendar =
+                  rs.getTimestamp(i, Calendar.getInstance(TimeZone.getTimeZone("UTC")));
+              LocalDateTime objectLocalDateTime = rs.getObject(i, LocalDateTime.class);
+
+              assertEquals(timestamp, object, "Mismatch for column " + name);
+              assertEquals(timestamp, objectWithClass, "Mismatch for column " + name);
+              assertEquals(timestamp.toString(), string, "Mismatch for column " + name);
+              assertEquals(timestamp.toString(), object.toString(), "Mismatch for column " + name);
+              assertEquals(
+                  objectLocalDateTime,
+                  LocalDateTime.ofInstant(firstDay2025, ZoneId.of("UTC")),
+                  "Mismatch for column " + name);
+
+              if (type == Types.TIMESTAMP_WITH_TIMEZONE) {
+                Instant instant = rs.getObject(i, Instant.class);
+                OffsetDateTime offsetDateTime = rs.getObject(i, OffsetDateTime.class);
+                ZonedDateTime zonedDateTime = rs.getObject(i, ZonedDateTime.class);
+                assertEquals(firstDay2025, instant, "Mismatch for column " + name);
+                assertEquals(
+                    firstDay2025, offsetDateTime.toInstant(), "Mismatch for column " + name);
+                assertEquals(
+                    firstDay2025, zonedDateTime.toInstant(), "Mismatch for column " + name);
+              }
+            }
           } catch (SQLException e) {
             throw new RuntimeException(e);
           }
