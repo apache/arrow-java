@@ -22,6 +22,11 @@ import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 
+/**
+ * A factory interface that allows configuring writer implementations for specific {@link
+ * ExtensionTypeVector}, get the vector class for a given {@link ExtensionType}, and get the reader
+ * implementation for a given {@link ExtensionTypeVector}.
+ */
 public interface ExtensionTypeFactory {
 
   /**
@@ -33,9 +38,29 @@ public interface ExtensionTypeFactory {
    */
   FieldWriter getWriterImpl(ExtensionTypeVector vector);
 
+  /**
+   * Returns the vector class for the given {@link ExtensionType}.
+   *
+   * @param extensionType the {@link ExtensionType} for which the vector class is to be returned.
+   * @return the vector class for the given {@link ExtensionType}.
+   */
   Class<? extends ExtensionTypeVector> getVectorClass(ExtensionType extensionType);
 
+  /**
+   * Returns an instance of the reader implementation for the given {@link ExtensionTypeVector}.
+   *
+   * @param vector the {@link ExtensionTypeVector} for which the reader implementation is to be
+   *     returned.
+   * @return an instance of the reader implementation for the given {@link ExtensionTypeVector}.
+   */
   FieldReader getReaderImpl(ExtensionTypeVector vector);
 
+  /**
+   * Returns the {@link ExtensionType} for the given {@link ExtensionHolder}.
+   *
+   * @param holder the {@link ExtensionHolder} for which the {@link ExtensionType} is to be
+   *     returned.
+   * @return the {@link ExtensionType} for the given {@link ExtensionHolder}.
+   */
   ExtensionType getExtensionTypeByHolder(ExtensionHolder holder);
 }
