@@ -24,6 +24,7 @@ import org.apache.arrow.memory.OutOfMemoryException;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.reader.FieldReader;
+import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -287,4 +288,6 @@ public abstract class ExtensionTypeVector<T extends ValueVector & FieldVector>
   public <OUT, IN> OUT accept(VectorVisitor<OUT, IN> visitor, IN value) {
     return visitor.visit(this, value);
   }
+
+  public abstract void setSafe(int index, ExtensionHolder holder);
 }

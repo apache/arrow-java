@@ -34,7 +34,7 @@ import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.impl.UnionMapReader;
 import org.apache.arrow.vector.complex.impl.UnionMapWriter;
-import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
+import org.apache.arrow.vector.complex.impl.UuidFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
@@ -1272,6 +1272,7 @@ public class TestMapVector {
 
   @Test
   public void testMapVectorWithExtensionType() throws Exception {
+    UuidType uuidType = new UuidType();
     try (final MapVector inVector = MapVector.empty("map", allocator, false)) {
       inVector.allocateNew();
       UnionMapWriter writer = inVector.getWriter();
@@ -1281,15 +1282,15 @@ public class TestMapVector {
       writer.startMap();
       writer.startEntry();
       writer.key().bigInt().writeBigInt(0);
-      ExtensionWriter extensionWriter = writer.value().extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u1);
+      ExtensionWriter extensionWriter = writer.value().extension(uuidType);
+      extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+      extensionWriter.writeExtension(u1, uuidType);
       writer.endEntry();
       writer.startEntry();
       writer.key().bigInt().writeBigInt(1);
       extensionWriter = writer.value().extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u2);
+      extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), new UuidType());
+      extensionWriter.writeExtension(u2, uuidType);
       writer.endEntry();
       writer.endMap();
 
@@ -1315,6 +1316,8 @@ public class TestMapVector {
 
   @Test
   public void testCopyFromForExtensionType() throws Exception {
+    UuidType uuidType = new UuidType();
+
     try (final MapVector inVector = MapVector.empty("in", allocator, false);
         final MapVector outVector = MapVector.empty("out", allocator, false)) {
       inVector.allocateNew();
@@ -1325,21 +1328,21 @@ public class TestMapVector {
       writer.startMap();
       writer.startEntry();
       writer.key().bigInt().writeBigInt(0);
-      ExtensionWriter extensionWriter = writer.value().extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u1);
+      ExtensionWriter extensionWriter = writer.value().extension(uuidType);
+      extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+      extensionWriter.writeExtension(u1, uuidType);
       writer.endEntry();
       writer.startEntry();
       writer.key().bigInt().writeBigInt(1);
       extensionWriter = writer.value().extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u2);
+      extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), new UuidType());
+      extensionWriter.writeExtension(u2, uuidType);
       writer.endEntry();
       writer.endMap();
 
       writer.setValueCount(1);
       outVector.allocateNew();
-      outVector.copyFrom(0, 0, inVector, new UuidWriterFactory());
+      outVector.copyFrom(0, 0, inVector, new UuidFactory());
       outVector.setValueCount(1);
 
       UnionMapReader mapReader = outVector.getReader();

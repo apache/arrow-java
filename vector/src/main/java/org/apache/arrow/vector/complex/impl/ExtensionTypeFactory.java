@@ -17,15 +17,12 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ExtensionTypeVector;
+import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 
-/**
- * A factory interface for creating instances of {@link ExtensionTypeWriter}. This factory allows
- * configuring writer implementations for specific {@link ExtensionTypeVector}.
- *
- * @param <T> the type of writer implementation for a specific {@link ExtensionTypeVector}.
- */
-public interface ExtensionTypeWriterFactory<T extends FieldWriter> {
+public interface ExtensionTypeFactory {
 
   /**
    * Returns an instance of the writer implementation for the given {@link ExtensionTypeVector}.
@@ -34,5 +31,11 @@ public interface ExtensionTypeWriterFactory<T extends FieldWriter> {
    *     returned.
    * @return an instance of the writer implementation for the given {@link ExtensionTypeVector}.
    */
-  T getWriterImpl(ExtensionTypeVector vector);
+  FieldWriter getWriterImpl(ExtensionTypeVector vector);
+
+  Class<? extends ExtensionTypeVector> getVectorClass(ExtensionType extensionType);
+
+  FieldReader getReaderImpl(ExtensionTypeVector vector);
+
+  ExtensionType getExtensionTypeByHolder(ExtensionHolder holder);
 }

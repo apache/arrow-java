@@ -347,6 +347,7 @@ public abstract class BaseLargeRepeatedValueViewVector extends BaseValueVector
    * Initialize the data vector (and execute callback) if it hasn't already been done, returns the
    * data vector.
    */
+  @SuppressWarnings("unchecked")
   public <T extends ValueVector> AddOrGetResult<T> addOrGetVector(FieldType fieldType) {
     boolean created = false;
     if (vector instanceof NullVector) {

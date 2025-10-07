@@ -782,21 +782,22 @@ public class TestPromotableWriter {
 
   @Test
   public void testExtensionType() throws Exception {
+    UuidType uuidType = new UuidType();
     try (final NonNullableStructVector container =
             NonNullableStructVector.empty(EMPTY_SCHEMA_PATH, allocator);
         final UuidVector v =
-            container.addOrGet("uuid", FieldType.nullable(new UuidType()), UuidVector.class);
+            container.addOrGet("uuid", FieldType.nullable(uuidType), UuidVector.class);
         final PromotableWriter writer = new PromotableWriter(v, container)) {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       container.allocateNew();
       container.setValueCount(1);
-      writer.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      writer.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
 
       writer.setPosition(0);
-      writer.writeExtension(u1);
+      writer.writeExtension(u1, uuidType);
       writer.setPosition(1);
-      writer.writeExtension(u2);
+      writer.writeExtension(u2, uuidType);
 
       container.setValueCount(2);
 
@@ -808,20 +809,21 @@ public class TestPromotableWriter {
 
   @Test
   public void testExtensionTypeForList() throws Exception {
+    UuidType uuidType = new UuidType();
     try (final ListVector container = ListVector.empty(EMPTY_SCHEMA_PATH, allocator);
         final UuidVector v =
-            (UuidVector) container.addOrGetVector(FieldType.nullable(new UuidType())).getVector();
+            (UuidVector) container.addOrGetVector(FieldType.nullable(uuidType)).getVector();
         final PromotableWriter writer = new PromotableWriter(v, container)) {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       container.allocateNew();
       container.setValueCount(1);
-      writer.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      writer.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
 
       writer.setPosition(0);
-      writer.writeExtension(u1);
+      writer.writeExtension(u1, uuidType);
       writer.setPosition(1);
-      writer.writeExtension(u2);
+      writer.writeExtension(u2, uuidType);
 
       container.setValueCount(2);
 

@@ -19,6 +19,7 @@ import org.apache.arrow.vector.complex.impl.UnionMapReader;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.Types;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 
 <@pp.dropOutputFile />
 <@pp.changeOutputFile name="/org/apache/arrow/vector/complex/impl/ComplexCopier.java" />
@@ -45,11 +46,11 @@ public class ComplexCopier {
     writeValue(input, output, null);
   }
 
-  public static void copy(FieldReader input, FieldWriter output, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
+  public static void copy(FieldReader input, FieldWriter output, ExtensionTypeFactory extensionTypeWriterFactory) {
     writeValue(input, output, extensionTypeWriterFactory);
   }
 
-  private static void writeValue(FieldReader reader, FieldWriter writer, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
+  private static void writeValue(FieldReader reader, FieldWriter writer, ExtensionTypeFactory extensionTypeWriterFactory) {
     final MinorType mt = reader.getMinorType();
 
       switch (mt) {
@@ -120,9 +121,10 @@ public class ComplexCopier {
         }
         if (reader.isSet()) {
           Object value = reader.readObject();
+          ExtensionType extensionType = (ExtensionType) reader.getField().getType();
           if (value != null) {
-            writer.addExtensionTypeWriterFactory(extensionTypeWriterFactory);
-            writer.writeExtension(value);
+            writer.addExtensionTypeWriterFactory(extensionTypeWriterFactory, extensionType);
+            writer.writeExtension(value, extensionType);
           }
         } else {
           writer.writeNull();

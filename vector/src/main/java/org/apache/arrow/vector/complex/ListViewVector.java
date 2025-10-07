@@ -42,7 +42,7 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.impl.ComplexCopier;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeFactory;
 import org.apache.arrow.vector.complex.impl.UnionListViewReader;
 import org.apache.arrow.vector.complex.impl.UnionListViewWriter;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -341,7 +341,7 @@ public class ListViewVector extends BaseRepeatedValueViewVector
 
   @Override
   public void copyFromSafe(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+      int inIndex, int outIndex, ValueVector from, ExtensionTypeFactory writerFactory) {
     copyFrom(inIndex, outIndex, from, writerFactory);
   }
 
@@ -357,7 +357,7 @@ public class ListViewVector extends BaseRepeatedValueViewVector
 
   @Override
   public void copyFrom(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+      int inIndex, int outIndex, ValueVector from, ExtensionTypeFactory writerFactory) {
     Preconditions.checkArgument(this.getMinorType() == from.getMinorType());
     FieldReader in = from.getReader();
     in.setPosition(inIndex);

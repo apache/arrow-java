@@ -66,7 +66,7 @@ import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.impl.UnionMapReader;
 import org.apache.arrow.vector.complex.impl.UnionReader;
 import org.apache.arrow.vector.complex.impl.UnionWriter;
-import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
+import org.apache.arrow.vector.complex.impl.UuidFactory;
 import org.apache.arrow.vector.complex.reader.BaseReader.StructReader;
 import org.apache.arrow.vector.complex.reader.BigIntReader;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -1101,25 +1101,27 @@ public class TestComplexWriter {
   @Test
   public void simpleUnion() throws Exception {
     List<ArrowBuf> bufs = new ArrayList<ArrowBuf>();
+    UUID uuid = UUID.randomUUID();
     UnionVector vector =
         new UnionVector("union", allocator, /* field type */ null, /* call-back */ null);
+    vector.setExtensionTypeFactory(new UuidFactory());
     UnionWriter unionWriter = new UnionWriter(vector);
     unionWriter.allocate();
     for (int i = 0; i < COUNT; i++) {
       unionWriter.setPosition(i);
-      if (i % 5 == 0) {
+      if (i % 6 == 0) {
         unionWriter.writeInt(i);
-      } else if (i % 5 == 1) {
+      } else if (i % 6 == 1) {
         TimeStampMilliTZHolder holder = new TimeStampMilliTZHolder();
         holder.value = (long) i;
         holder.timezone = "AsdfTimeZone";
         unionWriter.write(holder);
-      } else if (i % 5 == 2) {
+      } else if (i % 6 == 2) {
         DurationHolder holder = new DurationHolder();
         holder.value = (long) i;
         holder.unit = TimeUnit.NANOSECOND;
         unionWriter.write(holder);
-      } else if (i % 5 == 3) {
+      } else if (i % 6 == 3) {
         FixedSizeBinaryHolder holder = new FixedSizeBinaryHolder();
         ArrowBuf buf = allocator.buffer(4);
         buf.setInt(0, i);
@@ -1127,6 +1129,13 @@ public class TestComplexWriter {
         holder.buffer = buf;
         unionWriter.write(holder);
         bufs.add(buf);
+      } else if (i % 6 == 4) {
+        UuidHolder holder = new UuidHolder();
+        ByteBuffer bb = ByteBuffer.allocate(16);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        holder.value = bb.array();
+        unionWriter.asExtension(new UuidType()).writeExtension(uuid, new UuidType());
       } else {
         unionWriter.writeFloat4((float) i);
       }
@@ -1135,23 +1144,29 @@ public class TestComplexWriter {
     UnionReader unionReader = new UnionReader(vector);
     for (int i = 0; i < COUNT; i++) {
       unionReader.setPosition(i);
-      if (i % 5 == 0) {
+      if (i % 6 == 0) {
         assertEquals(i, unionReader.readInteger().intValue());
-      } else if (i % 5 == 1) {
+      } else if (i % 6 == 1) {
         NullableTimeStampMilliTZHolder holder = new NullableTimeStampMilliTZHolder();
         unionReader.read(holder);
         assertEquals(i, holder.value);
         assertEquals("AsdfTimeZone", holder.timezone);
-      } else if (i % 5 == 2) {
+      } else if (i % 6 == 2) {
         NullableDurationHolder holder = new NullableDurationHolder();
         unionReader.read(holder);
         assertEquals(i, holder.value);
         assertEquals(TimeUnit.NANOSECOND, holder.unit);
-      } else if (i % 5 == 3) {
+      } else if (i % 6 == 3) {
         NullableFixedSizeBinaryHolder holder = new NullableFixedSizeBinaryHolder();
         unionReader.read(holder);
         assertEquals(i, holder.buffer.getInt(0));
         assertEquals(4, holder.byteWidth);
+      } else if (i % 6 == 4) {
+        UuidHolder holder = new UuidHolder();
+        unionReader.read(holder);
+        ByteBuffer bb = ByteBuffer.wrap(holder.value);
+        UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+        assertEquals(uuid, actualUuid);
       } else {
         assertEquals((float) i, unionReader.readFloat(), 1e-12);
       }
@@ -2511,8 +2526,8 @@ public class TestComplexWriter {
       {
         ExtensionWriter extensionWriter = rootWriter.extension("uuid1", new UuidType());
         extensionWriter.setPosition(0);
-        extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-        extensionWriter.writeExtension(u1);
+        extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), new UuidType());
+        extensionWriter.writeExtension(u1, new UuidType());
       }
       // read
       StructReader rootReader = new SingleStructReaderImpl(parent).reader("root");

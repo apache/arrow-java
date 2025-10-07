@@ -22,7 +22,7 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.ReferenceManager;
 import org.apache.arrow.util.Preconditions;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.util.DataSizeRoundingUtil;
 import org.apache.arrow.vector.util.TransferPair;
@@ -263,13 +263,13 @@ public abstract class BaseValueVector implements ValueVector {
 
   @Override
   public void copyFrom(
-      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeFactory writerFactory) {
     throw new UnsupportedOperationException();
   }
 
   @Override
   public void copyFromSafe(
-      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeFactory writerFactory) {
     throw new UnsupportedOperationException();
   }
 

@@ -43,6 +43,8 @@ import org.apache.arrow.vector.util.JsonStringArrayList;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import java.io.Closeable;
 import java.io.InputStream;

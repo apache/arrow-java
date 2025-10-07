@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-<@pp.dropOutputFile />
+import org.apache.arrow.vector.complex.impl.ExtensionTypeFactory;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;<@pp.dropOutputFile />
 <@pp.changeOutputFile name="/org/apache/arrow/vector/complex/impl/PromotableWriter.java" />
 
 <#include "/@includes/license.ftl" />
@@ -541,17 +542,13 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
   }
 
   @Override
-  public void writeExtension(Object value) {
-    getWriter(MinorType.EXTENSIONTYPE).writeExtension(value);
+  public void writeExtension(Object value, ExtensionType extensionType) {
+    getWriter(MinorType.EXTENSIONTYPE, extensionType).writeExtension(value, extensionType);
   }
 
   @Override
-  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory factory) {
-    getWriter(MinorType.EXTENSIONTYPE).addExtensionTypeWriterFactory(factory);
-  }
-
-  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory factory, ArrowType arrowType) {
-    getWriter(MinorType.EXTENSIONTYPE, arrowType).addExtensionTypeWriterFactory(factory);
+  public void addExtensionTypeWriterFactory(ExtensionTypeFactory var1, ExtensionType var2) {
+    getWriter(MinorType.EXTENSIONTYPE, var2).addExtensionTypeWriterFactory(var1, var2);
   }
 
   @Override

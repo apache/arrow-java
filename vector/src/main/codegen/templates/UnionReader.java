@@ -16,6 +16,8 @@
  */
 
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.Field;
 
@@ -43,9 +45,12 @@ public class UnionReader extends AbstractFieldReader {
 
   private BaseReader[] readers = new BaseReader[NUM_SUPPORTED_TYPES];
   public UnionVector data;
-
+  private ExtensionTypeFactory extensionTypeFactory;
+  private Map<ExtensionType, ExtensionReader> extensionTypeReaders = new HashMap<>();
+  
   public UnionReader(UnionVector data) {
     this.data = data;
+    this.extensionTypeFactory = data.getExtensionTypeFactory();
   }
 
   public MinorType getMinorType() {
@@ -79,6 +84,10 @@ public class UnionReader extends AbstractFieldReader {
   }
 
   private FieldReader getReaderForIndex(int index) {
+    return getReaderForIndex(index, null);
+  }
+  
+    private FieldReader getReaderForIndex(int index, ExtensionType extensionType) {
     int typeValue = data.getTypeValue(index);
     FieldReader reader = (FieldReader) readers[typeValue];
     if (reader != null) {
@@ -95,6 +104,11 @@ public class UnionReader extends AbstractFieldReader {
       return (FieldReader) getListView();
     case MAP:
       return (FieldReader) getMap();
+    case EXTENSIONTYPE:
+      if(extensionType == null) {
+        throw new IllegalStateException("Cannot read extension type without extensionType");
+      }
+      return (FieldReader) getExtension(extensionType);
     <#list vv.types as type>
       <#list type.minor as minor>
         <#assign name = minor.class?cap_first />
@@ -213,6 +227,20 @@ public class UnionReader extends AbstractFieldReader {
       </#if>
     </#list>
   </#list>
+
+  public void read(ExtensionHolder holder){
+    getReaderForIndex(idx(), extensionTypeFactory.getExtensionTypeByHolder(holder)).read(holder);
+  }
+
+  private ExtensionReader getExtension(ExtensionType arrowType) {
+    ExtensionReader extensionReader = extensionTypeReaders.get(arrowType);
+    if (extensionReader == null) {
+      extensionReader = extensionTypeFactory.getReaderImpl(data.getExtensionTypeVector(arrowType));
+      extensionReader.setPosition(idx());
+      extensionTypeReaders.put(arrowType, extensionReader);
+    }
+    return extensionReader;
+  }
 
   @Override
   public void copyAsValue(ListWriter writer) {

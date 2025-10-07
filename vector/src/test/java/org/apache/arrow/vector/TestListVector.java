@@ -36,7 +36,7 @@ import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.impl.UnionListReader;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
-import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
+import org.apache.arrow.vector.complex.impl.UuidFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.holder.UuidHolder;
@@ -1208,7 +1208,8 @@ public class TestListVector {
 
   @Test
   public void testListVectorWithExtensionType() throws Exception {
-    final FieldType type = FieldType.nullable(new UuidType());
+    UuidType uuidType = new UuidType();
+    final FieldType type = FieldType.nullable(uuidType);
     try (final ListVector inVector = new ListVector("list", allocator, type, null)) {
       UnionListWriter writer = inVector.getWriter();
       writer.allocate();
@@ -1216,10 +1217,10 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u1);
-      extensionWriter.writeExtension(u2);
+      ExtensionWriter extensionWriter = writer.extension(uuidType);
+      extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+      extensionWriter.writeExtension(u1, uuidType);
+      extensionWriter.writeExtension(u2, uuidType);
       writer.endList();
 
       writer.setValueCount(1);
@@ -1236,7 +1237,8 @@ public class TestListVector {
 
   @Test
   public void testListVectorReaderForExtensionType() throws Exception {
-    final FieldType type = FieldType.nullable(new UuidType());
+    UuidType uuidType = new UuidType();
+    final FieldType type = FieldType.nullable(uuidType);
     try (final ListVector inVector = new ListVector("list", allocator, type, null)) {
       UnionListWriter writer = inVector.getWriter();
       writer.allocate();
@@ -1244,10 +1246,10 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u1);
-      extensionWriter.writeExtension(u2);
+      ExtensionWriter extensionWriter = writer.extension(uuidType);
+      extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+      extensionWriter.writeExtension(u1, uuidType);
+      extensionWriter.writeExtension(u2, uuidType);
       writer.endList();
 
       writer.setValueCount(1);
@@ -1273,6 +1275,7 @@ public class TestListVector {
 
   @Test
   public void testCopyFromForExtensionType() throws Exception {
+    UuidType uuidType = new UuidType();
     try (ListVector inVector = ListVector.empty("input", allocator);
         ListVector outVector = ListVector.empty("output", allocator)) {
       UnionListWriter writer = inVector.getWriter();
@@ -1281,10 +1284,10 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u1);
-      extensionWriter.writeExtension(u2);
+      ExtensionWriter extensionWriter = writer.extension(uuidType);
+      extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+      extensionWriter.writeExtension(u1, uuidType);
+      extensionWriter.writeExtension(u2, uuidType);
       extensionWriter.writeNull();
       writer.endList();
 
@@ -1292,7 +1295,7 @@ public class TestListVector {
 
       // copy values from input to output
       outVector.allocateNew();
-      outVector.copyFrom(0, 0, inVector, new UuidWriterFactory());
+      outVector.copyFrom(0, 0, inVector, new UuidFactory());
       outVector.setValueCount(1);
 
       UnionListReader reader = outVector.getReader();

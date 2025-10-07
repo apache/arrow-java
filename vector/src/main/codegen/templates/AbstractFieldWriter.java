@@ -110,10 +110,10 @@ abstract class AbstractFieldWriter extends AbstractBaseWriter implements FieldWr
   public void write(ExtensionHolder var1)  {
     this.fail("ExtensionType");
   }
-  public void writeExtension(Object var1)  {
+  public void writeExtension(Object var1, ExtensionType var2)  {
     this.fail("ExtensionType");
   }
-  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory var1) {
+  public void addExtensionTypeWriterFactory(ExtensionTypeFactory var1, ExtensionType var2) {
     this.fail("ExtensionType");
   }
 
