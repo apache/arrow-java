@@ -97,8 +97,10 @@ find ~/.m2/repository/org/apache/arrow \
   -exec echo "{}" ";" \
   -exec cp "{}" "${dist_dir}" ";"
 
-for artifact in "${dist_dir}"/*; do
+pushd "${dist_dir}"
+for artifact in *; do
   sha256sum "${artifact}" >"${artifact}.sha256"
   sha512sum "${artifact}" >"${artifact}.sha512"
 done
+popd
 github_actions_group_end
