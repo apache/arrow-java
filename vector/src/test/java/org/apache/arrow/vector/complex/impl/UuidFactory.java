@@ -18,13 +18,41 @@ package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.UuidVector;
+import org.apache.arrow.vector.holder.UuidHolder;
+import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
+import org.apache.arrow.vector.types.pojo.UuidType;
 
-public class UuidWriterFactory implements ExtensionTypeWriterFactory {
+public class UuidFactory implements ExtensionTypeFactory {
 
   @Override
   public AbstractFieldWriter getWriterImpl(ExtensionTypeVector extensionTypeVector) {
     if (extensionTypeVector instanceof UuidVector) {
       return new UuidWriterImpl((UuidVector) extensionTypeVector);
+    }
+    return null;
+  }
+
+  @Override
+  public Class<? extends ExtensionTypeVector> getVectorClass(ExtensionType extensionType) {
+    if (extensionType instanceof UuidType) {
+      return UuidVector.class;
+    }
+    throw new UnsupportedOperationException("Unsupported extension type " + extensionType);
+  }
+
+  @Override
+  public ExtensionType getExtensionTypeByHolder(ExtensionHolder holder) {
+    if (holder instanceof UuidHolder) {
+      return new UuidType();
+    }
+    return null;
+  }
+
+  @Override
+  public AbstractFieldReader getReaderImpl(ExtensionTypeVector extensionTypeVector) {
+    if (extensionTypeVector instanceof UuidVector) {
+      return new UuidReaderImpl((UuidVector) extensionTypeVector);
     }
     return null;
   }

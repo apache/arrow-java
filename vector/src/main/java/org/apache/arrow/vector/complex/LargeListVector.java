@@ -49,7 +49,7 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.impl.ComplexCopier;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeFactory;
 import org.apache.arrow.vector.complex.impl.UnionLargeListReader;
 import org.apache.arrow.vector.complex.impl.UnionLargeListWriter;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -497,7 +497,7 @@ public class LargeListVector extends BaseValueVector
    */
   @Override
   public void copyFrom(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+      int inIndex, int outIndex, ValueVector from, ExtensionTypeFactory writerFactory) {
     Preconditions.checkArgument(this.getMinorType() == from.getMinorType());
     FieldReader in = from.getReader();
     in.setPosition(inIndex);
@@ -517,7 +517,7 @@ public class LargeListVector extends BaseValueVector
    */
   @Override
   public void copyFromSafe(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+      int inIndex, int outIndex, ValueVector from, ExtensionTypeFactory writerFactory) {
     copyFrom(inIndex, outIndex, from, writerFactory);
   }
 

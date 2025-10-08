@@ -21,6 +21,7 @@ import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.ValueIterableVector;
+import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.types.pojo.Field;
 
 /**
@@ -44,6 +45,11 @@ public class OpaqueVector extends ExtensionTypeVector<FieldVector>
   @Override
   public Object getObject(int index) {
     return getUnderlyingVector().getObject(index);
+  }
+
+  @Override
+  public void setSafe(int index, ExtensionHolder holder) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

@@ -22,7 +22,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.OutOfMemoryException;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.compare.VectorVisitor;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -319,8 +319,7 @@ public interface ValueVector extends Closeable, Iterable<ValueVector> {
    * @param from source vector
    * @param writerFactory the extension type writer factory to use for copying extension type values
    */
-  void copyFrom(
-      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory);
+  void copyFrom(int fromIndex, int thisIndex, ValueVector from, ExtensionTypeFactory writerFactory);
 
   /**
    * Same as {@link #copyFrom(int, int, ValueVector)} except that it handles the case when the
@@ -332,7 +331,7 @@ public interface ValueVector extends Closeable, Iterable<ValueVector> {
    * @param writerFactory the extension type writer factory to use for copying extension type values
    */
   void copyFromSafe(
-      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory);
+      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeFactory writerFactory);
 
   /**
    * Accept a generic {@link VectorVisitor} and return the result.
