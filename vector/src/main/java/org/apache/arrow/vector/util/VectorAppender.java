@@ -32,7 +32,6 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.BitVectorHelper;
 import org.apache.arrow.vector.ExtensionTypeVector;
-import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.NullVector;
 import org.apache.arrow.vector.SmallIntVector;
@@ -743,33 +742,27 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
   }
 
   private void shiftRunEndsVector(
-      ValueVector toRunEndVector,
-      ArrowBuf fromRunEndBuffer,
-      int offset,
-      int physicalLength) {
+      ValueVector toRunEndVector, ArrowBuf fromRunEndBuffer, int offset, int physicalLength) {
     ArrowBuf toRunEndBuffer = toRunEndVector.getDataBuffer();
     if (toRunEndVector instanceof SmallIntVector) {
       byte typeWidth = SmallIntVector.TYPE_WIDTH;
       for (int i = 0; i < physicalLength; i++) {
         toRunEndBuffer.setShort(
-            (long) i * typeWidth,
-            fromRunEndBuffer.getShort((long) (i) * typeWidth) + offset);
+            (long) i * typeWidth, fromRunEndBuffer.getShort((long) (i) * typeWidth) + offset);
       }
 
     } else if (toRunEndVector instanceof IntVector) {
       byte typeWidth = IntVector.TYPE_WIDTH;
       for (int i = 0; i < physicalLength; i++) {
         toRunEndBuffer.setInt(
-            (long) i * typeWidth,
-            fromRunEndBuffer.getInt((long) (i) * typeWidth) + offset);
+            (long) i * typeWidth, fromRunEndBuffer.getInt((long) (i) * typeWidth) + offset);
       }
 
     } else if (toRunEndVector instanceof BigIntVector) {
       byte typeWidth = BigIntVector.TYPE_WIDTH;
       for (int i = 0; i < physicalLength; i++) {
         toRunEndBuffer.setLong(
-            (long) i * typeWidth,
-            fromRunEndBuffer.getLong((long) (i) * typeWidth) + offset);
+            (long) i * typeWidth, fromRunEndBuffer.getLong((long) (i) * typeWidth) + offset);
       }
     } else {
       throw new IllegalArgumentException(
