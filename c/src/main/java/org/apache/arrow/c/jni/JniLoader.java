@@ -75,8 +75,23 @@ public class JniLoader {
   }
 
   private void load(String name) {
-    final String libraryToLoad =
-        name + "/" + getNormalizedArch() + "/" + System.mapLibraryName(name);
+    String libraryName = System.mapLibraryName(name);
+
+    // If 'arrow.cdata.library.path' is defined, try to load the native library from there
+    String libraryPath = System.getProperty("arrow.cdata.library.path");
+    if (libraryPath != null) {
+      try {
+        File libraryFile = new File(libraryPath, libraryName);
+        if (libraryFile.isFile()) {
+          System.load(libraryFile.getAbsolutePath());
+          return;
+        }
+      } catch (UnsatisfiedLinkError e) {
+        // Ignore this error and fall back to extracting from the JAR file
+      }
+    }
+
+    final String libraryToLoad = name + "/" + getNormalizedArch() + "/" + libraryName;
     try {
       File temp =
           File.createTempFile("jnilib-", ".tmp", new File(System.getProperty("java.io.tmpdir")));
