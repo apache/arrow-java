@@ -168,7 +168,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { runs_on: macos-13, arch: "x86_64"}
+          - { runs_on: macos-15-intel, arch: "x86_64"}
           - { runs_on: macos-14, arch: "aarch_64" }
     env:
       MACOSX_DEPLOYMENT_TARGET: "14.0"
@@ -222,7 +222,7 @@ jobs:
           brew uninstall llvm || :
 
           # We can remove this when we drop support for
-          # macos-13. because macos-14 or later uses /opt/homebrew/
+          # macos-15-initel. because macos-14 or later with arm64 uses /opt/homebrew/
           # not /usr/local/.
           #
           # Ensure updating python@XXX with the "--overwrite" option.
