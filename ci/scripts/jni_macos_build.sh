@@ -142,6 +142,7 @@ github_actions_group_begin "Checking shared dependencies for libraries"
 pushd "${dist_dir}"
 archery linking check-dependencies \
   --allow CoreFoundation \
+  --allow Network \
   --allow Security \
   --allow libSystem \
   --allow libarrow_cdata_jni \
