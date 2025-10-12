@@ -243,4 +243,16 @@ public class UnionMapWriter extends UnionListWriter {
         return super.extension(type);
     }
   }
+
+  @Override
+  public FixedSizeBinaryWriter fixedSizeBinary() {
+    switch (mode) {
+      case KEY:
+        return entryWriter.fixedSizeBinary(MapVector.KEY_NAME);
+      case VALUE:
+        return entryWriter.fixedSizeBinary(MapVector.VALUE_NAME);
+      default:
+        return this;
+    }
+  }
 }
