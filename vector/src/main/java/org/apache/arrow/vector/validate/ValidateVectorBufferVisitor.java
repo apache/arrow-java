@@ -158,7 +158,15 @@ public class ValidateVectorBufferVisitor implements VectorVisitor<Void, Void> {
 
   @Override
   public Void visit(BaseVariableWidthViewVector vector, Void value) {
-    throw new UnsupportedOperationException("View vectors are not supported.");
+    final int valueCount = vector.getValueCount();
+    validateOrThrow(
+        vector.getValueCount() >= 0,
+        "Vector valueCount %s is negative.",
+        vector.getValueCapacity());
+    validateOrThrow(vector.getFieldBuffers().size() >= 2, "Expected at least 2 buffers.");
+    validateValidityBuffer(vector, valueCount);
+    validateDataBuffer(vector, (long) valueCount * BaseVariableWidthViewVector.ELEMENT_SIZE);
+    return null;
   }
 
   @Override

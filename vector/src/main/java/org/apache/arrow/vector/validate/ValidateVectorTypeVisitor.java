@@ -61,6 +61,8 @@ import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.ViewVarBinaryVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
@@ -380,7 +382,12 @@ public class ValidateVectorTypeVisitor implements VectorVisitor<Void, Void> {
 
   @Override
   public Void visit(BaseVariableWidthViewVector vector, Void value) {
-    throw new UnsupportedOperationException("View vectors are not supported.");
+    if (vector instanceof ViewVarCharVector) {
+      validateVectorCommon(vector, ArrowType.Utf8View.class);
+    } else if (vector instanceof ViewVarBinaryVector) {
+      validateVectorCommon(vector, ArrowType.BinaryView.class);
+    }
+    return null;
   }
 
   @Override
