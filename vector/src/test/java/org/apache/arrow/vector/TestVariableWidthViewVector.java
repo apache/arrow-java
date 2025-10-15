@@ -61,6 +61,7 @@ import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.ReusableByteArray;
 import org.apache.arrow.vector.util.Text;
 import org.apache.arrow.vector.util.TransferPair;
+import org.apache.arrow.vector.validate.ValidateUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -2445,7 +2446,7 @@ public class TestVariableWidthViewVector {
         final ViewVarBinaryVector sourceVector =
             newViewVarBinaryVector(EMPTY_SCHEMA_PATH, allocator)) {
       testSplitAndTransferOnValiditySplitHelper(
-          targetVector, sourceVector, startIndex, length, data);
+          targetVector, sourceVector, startIndex, length, binaryData);
     }
   }
 
@@ -2850,6 +2851,20 @@ public class TestVariableWidthViewVector {
         assertArrayEquals(STR5, vector4.get(4));
         assertArrayEquals(STR6, vector4.get(5));
       }
+    }
+  }
+
+  @Test
+  public void testValidate() {
+    try (final ViewVarCharVector vector = new ViewVarCharVector("v", allocator)) {
+      vector.validateFull();
+      setVector(vector, STR1, STR2, STR3);
+      vector.validateFull();
+
+      vector.getDataBuffer().capacity(0);
+      ValidateUtil.ValidateException e =
+          assertThrows(ValidateUtil.ValidateException.class, () -> vector.validate());
+      assertTrue(e.getMessage().contains("Not enough capacity for data buffer"));
     }
   }
 }
