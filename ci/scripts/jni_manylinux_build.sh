@@ -53,8 +53,8 @@ if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
 fi
 
 github_actions_group_begin "Building Arrow C++ libraries"
-devtoolset_version="$(rpm -qa "devtoolset-*-gcc" --queryformat '%{VERSION}' | grep -o "^[0-9]*")"
-devtoolset_include_cpp="/opt/rh/devtoolset-${devtoolset_version}/root/usr/include/c++/${devtoolset_version}"
+gcc_toolset_version="$(rpm -qa "gcc-toolset-*-gcc" --queryformat '%{VERSION}' | grep -o "^[0-9]*")"
+gcc_toolset_include_cpp="/opt/rh/gcc-toolset-${gcc_toolset_version}/root/usr/include/c++/${gcc_toolset_version}"
 : "${ARROW_ACERO:=ON}"
 export ARROW_ACERO
 : "${ARROW_BUILD_TESTS:=OFF}"
@@ -76,7 +76,7 @@ export ARROW_ORC
 : "${VCPKG_ROOT:=/opt/vcpkg}"
 : "${VCPKG_FEATURE_FLAGS:=-manifests}"
 : "${VCPKG_TARGET_TRIPLET:=${VCPKG_DEFAULT_TRIPLET:-x64-linux-static-${CMAKE_BUILD_TYPE}}}"
-: "${GANDIVA_CXX_FLAGS:=-isystem;${devtoolset_include_cpp};-isystem;${devtoolset_include_cpp}/x86_64-redhat-linux;-lpthread}"
+: "${GANDIVA_CXX_FLAGS:=-isystem;${gcc_toolset_include_cpp};-isystem;${gcc_toolset_include_cpp}/x86_64-redhat-linux;-lpthread}"
 
 export ARROW_TEST_DATA="${arrow_dir}/testing/data"
 export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
