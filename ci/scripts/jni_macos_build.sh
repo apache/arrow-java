@@ -59,7 +59,6 @@ fi
 
 github_actions_group_begin "Building Arrow C++ libraries"
 install_dir="${build_dir}/cpp-install"
-: "${CMAKE_UNITY_BUILD:=ON}"
 
 export ARROW_TEST_DATA="${arrow_dir}/testing/data"
 export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
