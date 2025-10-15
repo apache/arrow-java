@@ -73,7 +73,8 @@ cmake \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-linux \
   -DARROW_TESTING=ON \
-  -DCMAKE_INSTALL_PREFIX="${install_dir}"
+  -DCMAKE_INSTALL_PREFIX="${install_dir}" \
+  -DCMAKE_UNITY_BUILD=ON
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
 github_actions_group_end
