@@ -72,6 +72,7 @@ cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-linux \
+  -DARROW_TESTING=ON \
   -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
