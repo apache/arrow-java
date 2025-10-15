@@ -222,7 +222,7 @@ jobs:
           brew uninstall llvm || :
 
           # We can remove this when we drop support for
-          # macos-15-initel. because macos-14 or later with arm64 uses /opt/homebrew/
+          # macos-15-intel. because macos-14 or later with arm64 uses /opt/homebrew/
           # not /usr/local/.
           #
           # Ensure updating python@XXX with the "--overwrite" option.
