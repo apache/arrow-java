@@ -53,13 +53,17 @@ if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
 fi
 
 github_actions_group_begin "Building Arrow C++ libraries"
+
 : "${VCPKG_ROOT:=/opt/vcpkg}"
 : "${VCPKG_FEATURE_FLAGS:=-manifests}"
 : "${VCPKG_TARGET_TRIPLET:=${VCPKG_DEFAULT_TRIPLET:-x64-linux-static-release}}"
 export VCPKG_TARGET_TRIPLET
 
-export ARROW_TEST_DATA="${arrow_dir}/testing/data"
-export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
+export ARROW_DATASET=ON
+export ARROW_GANDIVA=ON
+export ARROW_ORC=ON
+export ARROW_PARQUET=ON
+
 export AWS_EC2_METADATA_DISABLED=TRUE
 
 install_dir="${build_dir}/cpp-install"

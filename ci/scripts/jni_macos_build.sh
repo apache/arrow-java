@@ -60,8 +60,11 @@ fi
 github_actions_group_begin "Building Arrow C++ libraries"
 install_dir="${build_dir}/cpp-install"
 
-export ARROW_TEST_DATA="${arrow_dir}/testing/data"
-export PARQUET_TEST_DATA="${arrow_dir}/cpp/submodules/parquet-testing/data"
+export ARROW_DATASET=ON
+export ARROW_GANDIVA=ON
+export ARROW_ORC=ON
+export ARROW_PARQUET=ON
+
 export AWS_EC2_METADATA_DISABLED=TRUE
 
 cmake \
