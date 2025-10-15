@@ -59,19 +59,6 @@ fi
 
 github_actions_group_begin "Building Arrow C++ libraries"
 install_dir="${build_dir}/cpp-install"
-: "${ARROW_ACERO:=ON}"
-export ARROW_ACERO
-: "${ARROW_BUILD_TESTS:=OFF}"
-export ARROW_BUILD_TESTS
-: "${ARROW_DATASET:=ON}"
-export ARROW_DATASET
-: "${ARROW_GANDIVA:=ON}"
-export ARROW_GANDIVA
-: "${ARROW_ORC:=ON}"
-export ARROW_ORC
-: "${ARROW_PARQUET:=ON}"
-: "${ARROW_S3:=ON}"
-: "${CMAKE_BUILD_TYPE:=Release}"
 : "${CMAKE_UNITY_BUILD:=ON}"
 
 export ARROW_TEST_DATA="${arrow_dir}/testing/data"
@@ -81,49 +68,10 @@ export AWS_EC2_METADATA_DISABLED=TRUE
 cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
-  -DARROW_ACERO="${ARROW_ACERO}" \
-  -DARROW_BUILD_SHARED=OFF \
-  -DARROW_BUILD_TESTS="${ARROW_BUILD_TESTS}" \
-  -DARROW_CSV="${ARROW_DATASET}" \
-  -DARROW_DATASET="${ARROW_DATASET}" \
-  -DARROW_SUBSTRAIT="${ARROW_DATASET}" \
-  -DARROW_DEPENDENCY_USE_SHARED=OFF \
-  -DARROW_GANDIVA="${ARROW_GANDIVA}" \
-  -DARROW_GANDIVA_STATIC_LIBSTDCPP=ON \
-  -DARROW_JSON="${ARROW_DATASET}" \
-  -DARROW_ORC="${ARROW_ORC}" \
-  -DARROW_PARQUET="${ARROW_PARQUET}" \
-  -DARROW_S3="${ARROW_S3}" \
-  -DARROW_USE_CCACHE="${ARROW_USE_CCACHE}" \
-  -DAWSSDK_SOURCE=BUNDLED \
-  -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
-  -DCMAKE_INSTALL_PREFIX="${install_dir}" \
-  -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD}" \
-  -DGTest_SOURCE=BUNDLED \
-  -DPARQUET_BUILD_EXAMPLES=OFF \
-  -DPARQUET_BUILD_EXECUTABLES=OFF \
-  -DPARQUET_REQUIRE_ENCRYPTION=OFF \
-  -Dre2_SOURCE=BUNDLED \
-  -GNinja
+  --preset=ninja-release-jni-macos \
+  -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp" --target install
 github_actions_group_end
-
-if [ "${ARROW_RUN_TESTS:-}" == "ON" ]; then
-  github_actions_group_begin "Running Arrow C++ libraries tests"
-  # MinIO is required
-  exclude_tests="arrow-s3fs-test"
-  # unstable
-  exclude_tests="${exclude_tests}|arrow-acero-asof-join-node-test"
-  exclude_tests="${exclude_tests}|arrow-acero-hash-join-node-test"
-  ctest \
-    --exclude-regex "${exclude_tests}" \
-    --label-regex unittest \
-    --output-on-failure \
-    --parallel "$(sysctl -n hw.ncpu)" \
-    --test-dir "${build_dir}/cpp" \
-    --timeout 300
-  github_actions_group_end
-fi
 
 export JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/protobuf_ep-install"
 "${source_dir}/ci/scripts/jni_build.sh" \

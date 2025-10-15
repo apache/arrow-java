@@ -53,24 +53,6 @@ if [ "${ARROW_USE_CCACHE}" == "ON" ]; then
 fi
 
 github_actions_group_begin "Building Arrow C++ libraries"
-: "${ARROW_ACERO:=ON}"
-export ARROW_ACERO
-: "${ARROW_BUILD_TESTS:=OFF}"
-export ARROW_BUILD_TESTS
-: "${ARROW_DATASET:=ON}"
-export ARROW_DATASET
-: "${ARROW_GANDIVA:=ON}"
-export ARROW_GANDIVA
-: "${ARROW_GCS:=ON}"
-: "${ARROW_JEMALLOC:=OFF}"
-: "${ARROW_MIMALLOC:=ON}"
-: "${ARROW_RPATH_ORIGIN:=ON}"
-: "${ARROW_ORC:=ON}"
-export ARROW_ORC
-: "${ARROW_PARQUET:=ON}"
-: "${ARROW_S3:=ON}"
-: "${CMAKE_BUILD_TYPE:=release}"
-: "${CMAKE_UNITY_BUILD:=ON}"
 : "${VCPKG_ROOT:=/opt/vcpkg}"
 : "${VCPKG_FEATURE_FLAGS:=-manifests}"
 : "${VCPKG_TARGET_TRIPLET:=${VCPKG_DEFAULT_TRIPLET:-x64-linux-static-${CMAKE_BUILD_TYPE}}}"
@@ -83,69 +65,11 @@ install_dir="${build_dir}/cpp-install"
 cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
-  -DARROW_ACERO="${ARROW_ACERO}" \
-  -DARROW_BUILD_SHARED=OFF \
-  -DARROW_BUILD_TESTS="${ARROW_BUILD_TESTS}" \
-  -DARROW_CSV="${ARROW_DATASET}" \
-  -DARROW_DATASET="${ARROW_DATASET}" \
-  -DARROW_SUBSTRAIT="${ARROW_DATASET}" \
-  -DARROW_DEPENDENCY_SOURCE="VCPKG" \
-  -DARROW_DEPENDENCY_USE_SHARED=OFF \
-  -DARROW_GANDIVA="${ARROW_GANDIVA}" \
-  -DARROW_GCS="${ARROW_GCS}" \
-  -DARROW_JEMALLOC="${ARROW_JEMALLOC}" \
-  -DARROW_JSON="${ARROW_DATASET}" \
-  -DARROW_MIMALLOC="${ARROW_MIMALLOC}" \
-  -DARROW_ORC="${ARROW_ORC}" \
-  -DARROW_PARQUET="${ARROW_PARQUET}" \
-  -DARROW_RPATH_ORIGIN="${ARROW_RPATH_ORIGIN}" \
-  -DARROW_S3="${ARROW_S3}" \
-  -DARROW_USE_CCACHE="${ARROW_USE_CCACHE}" \
-  -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
-  -DCMAKE_INSTALL_PREFIX="${install_dir}" \
-  -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD}" \
-  -DGTest_SOURCE=BUNDLED \
-  -DORC_SOURCE=BUNDLED \
-  -DORC_PROTOBUF_EXECUTABLE="${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/tools/protobuf/protoc" \
-  -DPARQUET_BUILD_EXAMPLES=OFF \
-  -DPARQUET_BUILD_EXECUTABLES=OFF \
-  -DPARQUET_REQUIRE_ENCRYPTION=OFF \
-  -DVCPKG_MANIFEST_MODE=OFF \
-  -DVCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}" \
-  -GNinja
+  --preset=ninja-release-jni-linux \
+  -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
 github_actions_group_end
-
-if [ "${ARROW_RUN_TESTS:-OFF}" = "ON" ]; then
-  github_actions_group_begin "Running Arrow C++ libraries tests"
-  # MinIO is required
-  exclude_tests="arrow-s3fs-test"
-  case $(arch) in
-  aarch64)
-    # GCS testbench is crashed on aarch64:
-    # ImportError: ../grpc/_cython/cygrpc.cpython-38-aarch64-linux-gnu.so:
-    # undefined symbol: vtable for std::__cxx11::basic_ostringstream<
-    #   char, std::char_traits<char>, std::allocator<char> >
-    exclude_tests="${exclude_tests}|arrow-gcsfs-test"
-    ;;
-  esac
-  # unstable
-  exclude_tests="${exclude_tests}|arrow-acero-asof-join-node-test"
-  exclude_tests="${exclude_tests}|arrow-acero-hash-join-node-test"
-  # external dependency
-  exclude_tests="${exclude_tests}|arrow-gcsfs-test"
-  # strptime
-  exclude_tests="${exclude_tests}|arrow-utility-test"
-  ctest \
-    --exclude-regex "${exclude_tests}" \
-    --label-regex unittest \
-    --output-on-failure \
-    --parallel "$(nproc)" \
-    --test-dir "${build_dir}/cpp" \
-    --timeout 300
-  github_actions_group_end
-fi
 
 JAVA_JNI_CMAKE_ARGS="-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
 JAVA_JNI_CMAKE_ARGS="${JAVA_JNI_CMAKE_ARGS} -DVCPKG_TARGET_TRIPLET=${VCPKG_TARGET_TRIPLET}"
