@@ -60,6 +60,8 @@ fi
 github_actions_group_begin "Building Arrow C++ libraries"
 install_dir="${build_dir}/cpp-install"
 
+export ARROW_BUILD_TESTS=OFF
+
 export ARROW_DATASET=ON
 export ARROW_GANDIVA=ON
 export ARROW_ORC=ON
@@ -71,9 +73,7 @@ cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-macos \
-  -DARROW_TESTING=ON \
-  -DCMAKE_INSTALL_PREFIX="${install_dir}" \
-  -DCMAKE_UNITY_BUILD=ON
+  -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp" --target install
 github_actions_group_end
 
