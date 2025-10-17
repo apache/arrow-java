@@ -99,7 +99,7 @@ services:
       cache_from:
         - ${REPO}:${ARCH}-vcpkg-jni-${VCPKG}
       args:
-        base: ${ARROW_REPO}:${ARCH}-python-${PYTHON}-wheel-manylinux-2014-vcpkg-${VCPKG}
+        base: ${ARROW_REPO}:${ARCH}-cpp-jni-${VCPKG}
     volumes:
       - .:/arrow-java:delegated
       - ${ARROW_REPO_ROOT}:/arrow:delegated

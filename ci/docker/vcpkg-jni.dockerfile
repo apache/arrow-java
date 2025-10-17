@@ -18,24 +18,10 @@
 ARG base
 FROM ${base}
 
-# Install the libraries required by Gandiva to run
-# Use enable llvm[enable-rtti] in the vcpkg.json to avoid link problems in Gandiva
-RUN vcpkg install \
-        --clean-after-build \
-        --x-install-root=${VCPKG_ROOT}/installed \
-        --x-manifest-root=/arrow/ci/vcpkg \
-        --x-feature=dev \
-        --x-feature=flight \
-        --x-feature=gcs \
-        --x-feature=json \
-        --x-feature=parquet \
-        --x-feature=gandiva \
-        --x-feature=s3
-
 # Install Java
 # We need Java for JNI headers, but we don't invoke Maven in this build.
 ARG java=11
-RUN yum install -y java-$java-openjdk-devel && yum clean all
+RUN dnf install -y java-$java-openjdk-devel && dnf clean all
 
 # For ci/scripts/{cpp,java}_*.sh
 ENV ARROW_HOME=/tmp/local \
