@@ -56,6 +56,7 @@ import org.apache.arrow.vector.util.CallBack;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.OversizedAllocationException;
 import org.apache.arrow.vector.util.TransferPair;
+import org.apache.arrow.vector.util.TransferPairWithExtendedType;
 
 /**
  * A list vector contains lists of a specific type of elements. Its structure contains 3 elements.
@@ -528,7 +529,7 @@ public class ListVector extends BaseRepeatedValueVector
     return visitor.visit(this, value);
   }
 
-  private class TransferImpl implements TransferPair {
+  private class TransferImpl implements TransferPairWithExtendedType {
 
     ListVector to;
     TransferPair dataTransferPair;
@@ -611,6 +612,12 @@ public class ListVector extends BaseRepeatedValueVector
     @Override
     public void copyValueSafe(int from, int to) {
       this.to.copyFrom(from, to, ListVector.this);
+    }
+
+    @Override
+    public void copyValueSafe(
+        int from, int to, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
+      this.to.copyFrom(from, to, ListVector.this, extensionTypeWriterFactory);
     }
   }
 

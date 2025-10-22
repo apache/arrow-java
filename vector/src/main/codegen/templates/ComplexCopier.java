@@ -63,7 +63,7 @@ public class ComplexCopier {
           writer.startList();
           while (reader.next()) {
             FieldReader childReader = reader.reader();
-            FieldWriter childWriter = getListWriterForReader(childReader, writer);
+            FieldWriter childWriter = getListWriterForReader(childReader, writer, extensionTypeWriterFactory);
             if (childReader.isSet()) {
               writeValue(childReader, childWriter, extensionTypeWriterFactory);
             } else {
@@ -189,6 +189,10 @@ public class ComplexCopier {
   }
 
   private static FieldWriter getListWriterForReader(FieldReader reader, ListWriter writer) {
+    return getListWriterForReader(reader, writer, null);
+  }
+
+  private static FieldWriter getListWriterForReader(FieldReader reader, ListWriter writer, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
     switch (reader.getMinorType()) {
     <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
     <#assign fields = minor.fields!type.fields />
@@ -209,6 +213,9 @@ public class ComplexCopier {
       return (FieldWriter) writer.listView();
     case EXTENSIONTYPE:
       ExtensionWriter extensionWriter = writer.extension(reader.getField().getType());
+      if (extensionTypeWriterFactory != null) {
+        extensionWriter.addExtensionTypeWriterFactory(extensionTypeWriterFactory);
+      }
       return (FieldWriter) extensionWriter;
     default:
       throw new UnsupportedOperationException(reader.getMinorType().toString());

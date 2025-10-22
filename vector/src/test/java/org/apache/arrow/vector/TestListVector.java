@@ -1310,6 +1310,84 @@ public class TestListVector {
     }
   }
 
+  @Test
+  public void testCopyValueSafeForExtensionType() throws Exception {
+    try (ListVector inVector = ListVector.empty("input", allocator);
+        ListVector outVector = ListVector.empty("output", allocator)) {
+      UnionListWriter writer = inVector.getWriter();
+      writer.allocate();
+
+      // Create first list with UUIDs
+      writer.setPosition(0);
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      writer.startList();
+      ExtensionWriter extensionWriter = writer.extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u1);
+      extensionWriter.writeExtension(u2);
+      writer.endList();
+
+      // Create second list with UUIDs
+      writer.setPosition(1);
+      UUID u3 = UUID.randomUUID();
+      UUID u4 = UUID.randomUUID();
+      writer.startList();
+      extensionWriter = writer.extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u3);
+      extensionWriter.writeExtension(u4);
+      extensionWriter.writeNull();
+
+      writer.endList();
+      writer.setValueCount(2);
+
+      // Use copyFromSafe with ExtensionTypeWriterFactory
+      // This internally calls TransferImpl.copyValueSafe with ExtensionTypeWriterFactory
+      outVector.allocateNew();
+      outVector.copyFromSafe(0, 0, inVector, new UuidWriterFactory());
+      outVector.copyFromSafe(1, 1, inVector, new UuidWriterFactory());
+      outVector.setValueCount(2);
+
+      // Verify first list
+      UnionListReader reader = outVector.getReader();
+      reader.setPosition(0);
+      assertTrue(reader.isSet(), "first list shouldn't be null");
+      reader.next();
+      FieldReader uuidReader = reader.reader();
+      UuidHolder holder = new UuidHolder();
+      uuidReader.read(holder);
+      ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u1, actualUuid);
+      reader.next();
+      uuidReader = reader.reader();
+      uuidReader.read(holder);
+      bb = ByteBuffer.wrap(holder.value);
+      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u2, actualUuid);
+
+      // Verify second list
+      reader.setPosition(1);
+      assertTrue(reader.isSet(), "second list shouldn't be null");
+      reader.next();
+      uuidReader = reader.reader();
+      uuidReader.read(holder);
+      bb = ByteBuffer.wrap(holder.value);
+      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u3, actualUuid);
+      reader.next();
+      uuidReader = reader.reader();
+      uuidReader.read(holder);
+      bb = ByteBuffer.wrap(holder.value);
+      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u4, actualUuid);
+      reader.next();
+      uuidReader = reader.reader();
+      assertFalse(uuidReader.isSet(), "third element should be null");
+    }
+  }
+
   private void writeIntValues(UnionListWriter writer, int[] values) {
     writer.startList();
     for (int v : values) {
