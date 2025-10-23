@@ -70,6 +70,23 @@ export AWS_EC2_METADATA_DISABLED=TRUE
 
 install_dir="${build_dir}/cpp-install"
 
+pushd "${arrow_dir}"
+cat <<EOF | patch -p1
+diff --git a/cpp/src/arrow/CMakeLists.txt b/cpp/src/arrow/CMakeLists.txt
+index fcdfaa21c7..9f30cc13e3 100644
+--- a/cpp/src/arrow/CMakeLists.txt
++++ b/cpp/src/arrow/CMakeLists.txt
+@@ -80,7 +80,7 @@ if(ARROW_WITH_ZSTD)
+ endif()
+ 
+ if(ARROW_ORC)
+-  if(ORC_SOURCE STREQUAL "SYSTEM")
++  if(orc_SOURCE STREQUAL "SYSTEM")
+     list(APPEND ARROW_STATIC_INSTALL_INTERFACE_LIBS orc::orc)
+   endif()
+ endif()
+EOF
+popd
 cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
