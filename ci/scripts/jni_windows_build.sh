@@ -87,12 +87,6 @@ cmake \
   -GNinja
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
-echo "--- ${install_dir}/lib/cmake/Arrow/ArrowConfig.cmake ---"
-cat "${install_dir}/lib/cmake/Arrow/ArrowConfig.cmake"
-echo "--- ${install_dir}/lib/cmake/Arrow/ArrowTargets.cmake ---"
-cat "${install_dir}/lib/cmake/Arrow/ArrowTargets.cmake"
-echo "--- ${install_dir}/lib/cmake/Arrow/ArrowTargets-release.cmake ---"
-cat "${install_dir}/lib/cmake/Arrow/ArrowTargets-release.cmake"
 github_actions_group_end
 
 if [ "${ARROW_RUN_TESTS:-OFF}" = "ON" ]; then
