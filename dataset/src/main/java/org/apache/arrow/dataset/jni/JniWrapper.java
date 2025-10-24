@@ -124,4 +124,7 @@ public class JniWrapper {
    * uninitialized, then this is a noop.
    */
   public native void ensureS3Finalized();
+
+  /** Initialize Arrow Compute. */
+  public native void initialize();
 }
