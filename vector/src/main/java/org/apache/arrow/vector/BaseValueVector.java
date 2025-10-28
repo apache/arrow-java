@@ -384,4 +384,10 @@ public abstract class BaseValueVector implements ValueVector {
     validityBuffer.readerIndex(0);
     validityBuffer.setZero(0, validityBuffer.capacity());
   }
+
+  @Override
+  public TransferPair makeTransferPair(
+      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
+    throw new UnsupportedOperationException();
+  }
 }

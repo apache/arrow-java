@@ -56,7 +56,6 @@ import org.apache.arrow.vector.util.CallBack;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.OversizedAllocationException;
 import org.apache.arrow.vector.util.TransferPair;
-import org.apache.arrow.vector.util.TransferPairWithExtendedType;
 
 /**
  * A list vector contains lists of a specific type of elements. Its structure contains 3 elements.
@@ -366,8 +365,7 @@ public class ListVector extends BaseRepeatedValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize =
-            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);
@@ -475,6 +473,11 @@ public class ListVector extends BaseRepeatedValueVector
     return new TransferImpl((ListVector) target);
   }
 
+  public TransferPair makeTransferPair(
+      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
+    return new TransferImpl((ListVector) target, writerFactory);
+  }
+
   @Override
   public long getValidityBufferAddress() {
     return validityBuffer.memoryAddress();
@@ -529,10 +532,11 @@ public class ListVector extends BaseRepeatedValueVector
     return visitor.visit(this, value);
   }
 
-  private class TransferImpl implements TransferPairWithExtendedType {
+  private class TransferImpl implements TransferPair {
 
     ListVector to;
     TransferPair dataTransferPair;
+    ExtensionTypeWriterFactory writerFactory;
 
     public TransferImpl(String name, BufferAllocator allocator, CallBack callBack) {
       this(new ListVector(name, allocator, field.getFieldType(), callBack));
@@ -540,6 +544,11 @@ public class ListVector extends BaseRepeatedValueVector
 
     public TransferImpl(Field field, BufferAllocator allocator, CallBack callBack) {
       this(new ListVector(field, allocator, callBack));
+    }
+
+    public TransferImpl(ListVector to, ExtensionTypeWriterFactory writerFactory) {
+      this(to);
+      this.writerFactory = writerFactory;
     }
 
     public TransferImpl(ListVector to) {
@@ -611,13 +620,7 @@ public class ListVector extends BaseRepeatedValueVector
 
     @Override
     public void copyValueSafe(int from, int to) {
-      this.to.copyFrom(from, to, ListVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(
-        int from, int to, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
-      this.to.copyFrom(from, to, ListVector.this, extensionTypeWriterFactory);
+      this.to.copyFrom(from, to, ListVector.this, writerFactory);
     }
   }
 
