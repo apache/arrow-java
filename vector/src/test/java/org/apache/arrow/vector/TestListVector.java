@@ -1342,11 +1342,12 @@ public class TestListVector {
       writer.endList();
       writer.setValueCount(2);
 
-      // Use copyFromSafe with ExtensionTypeWriterFactory
-      // This internally calls TransferImpl.copyValueSafe with ExtensionTypeWriterFactory
+      // Use TransferPair with ExtensionTypeWriterFactory
+      // This tests the new makeTransferPair API with writerFactory parameter
       outVector.allocateNew();
-      outVector.copyFromSafe(0, 0, inVector, new UuidWriterFactory());
-      outVector.copyFromSafe(1, 1, inVector, new UuidWriterFactory());
+      TransferPair transferPair = inVector.makeTransferPair(outVector, new UuidWriterFactory());
+      transferPair.copyValueSafe(0, 0);
+      transferPair.copyValueSafe(1, 1);
       outVector.setValueCount(2);
 
       // Verify first list

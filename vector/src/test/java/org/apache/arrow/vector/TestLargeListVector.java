@@ -1063,8 +1063,9 @@ public class TestLargeListVector {
       // Use copyFromSafe with ExtensionTypeWriterFactory
       // This internally calls TransferImpl.copyValueSafe with ExtensionTypeWriterFactory
       outVector.allocateNew();
-      outVector.copyFromSafe(0, 0, inVector, new UuidWriterFactory());
-      outVector.copyFromSafe(1, 1, inVector, new UuidWriterFactory());
+      TransferPair tp = inVector.makeTransferPair(outVector, new UuidWriterFactory());
+      tp.copyValueSafe(0, 0);
+      tp.copyValueSafe(1, 1);
       outVector.setValueCount(2);
 
       // Verify first list
