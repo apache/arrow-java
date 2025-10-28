@@ -79,6 +79,11 @@ public class UnionExtensionWriter extends AbstractFieldWriter {
 
   @Override
   public void writeNull() {
-    this.writer.writeNull();
+    if (this.writer != null) {
+      this.writer.writeNull();
+    } else {
+      this.vector.setNull(getPosition());
+      this.vector.setValueCount(getPosition() + 1);
+    }
   }
 }

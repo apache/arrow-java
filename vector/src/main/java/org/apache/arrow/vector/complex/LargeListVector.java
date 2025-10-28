@@ -63,7 +63,6 @@ import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.OversizedAllocationException;
 import org.apache.arrow.vector.util.SchemaChangeRuntimeException;
 import org.apache.arrow.vector.util.TransferPair;
-import org.apache.arrow.vector.util.TransferPairWithExtendedType;
 
 /**
  * A list vector contains lists of a specific type of elements. Its structure contains 3 elements.
@@ -442,8 +441,7 @@ public class LargeListVector extends BaseValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize =
-            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);
@@ -571,6 +569,12 @@ public class LargeListVector extends BaseValueVector
   }
 
   @Override
+  public TransferPair makeTransferPair(
+      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
+    return new TransferImpl((LargeListVector) target, writerFactory);
+  }
+
+  @Override
   public long getValidityBufferAddress() {
     return validityBuffer.memoryAddress();
   }
@@ -649,10 +653,11 @@ public class LargeListVector extends BaseValueVector
     return vector;
   }
 
-  private class TransferImpl implements TransferPairWithExtendedType {
+  private class TransferImpl implements TransferPair {
 
     LargeListVector to;
     TransferPair dataTransferPair;
+    ExtensionTypeWriterFactory writerFactory;
 
     public TransferImpl(String name, BufferAllocator allocator, CallBack callBack) {
       this(new LargeListVector(name, allocator, field.getFieldType(), callBack));
@@ -660,6 +665,11 @@ public class LargeListVector extends BaseValueVector
 
     public TransferImpl(Field field, BufferAllocator allocator, CallBack callBack) {
       this(new LargeListVector(field, allocator, callBack));
+    }
+
+    public TransferImpl(LargeListVector to, ExtensionTypeWriterFactory writerFactory) {
+      this(to);
+      this.writerFactory = writerFactory;
     }
 
     public TransferImpl(LargeListVector to) {
@@ -730,13 +740,7 @@ public class LargeListVector extends BaseValueVector
 
     @Override
     public void copyValueSafe(int from, int to) {
-      this.to.copyFrom(from, to, LargeListVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(
-        int from, int to, ExtensionTypeWriterFactory extensionTypeWriterFactory) {
-      this.to.copyFrom(from, to, LargeListVector.this, extensionTypeWriterFactory);
+      this.to.copyFrom(from, to, LargeListVector.this, writerFactory);
     }
   }
 
