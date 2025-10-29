@@ -53,17 +53,17 @@ public class ValidateVectorBufferVisitor implements VectorVisitor<Void, Void> {
     if (vector instanceof FieldVector) {
       FieldVector fieldVector = (FieldVector) vector;
       int typeBufferCount = TypeLayout.getTypeBufferCount(arrowType);
-      if (TypeLayout.isVariableBuffer(arrowType)) {
+      if (TypeLayout.getTypeLayout(arrowType).isFixedBufferCount()) {
         validateOrThrow(
-            fieldVector.getFieldBuffers().size() >= typeBufferCount,
-            "Expected at least %s buffers in vector of type %s, got %s.",
+            fieldVector.getFieldBuffers().size() == typeBufferCount,
+            "Expected %s buffers in vector of type %s, got %s.",
             typeBufferCount,
             vector.getField().getType().toString(),
             fieldVector.getFieldBuffers().size());
       } else {
         validateOrThrow(
-            fieldVector.getFieldBuffers().size() == typeBufferCount,
-            "Expected %s buffers in vector of type %s, got %s.",
+            fieldVector.getFieldBuffers().size() >= typeBufferCount,
+            "Expected at least %s buffers in vector of type %s, got %s.",
             typeBufferCount,
             vector.getField().getType().toString(),
             fieldVector.getFieldBuffers().size());
