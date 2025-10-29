@@ -725,44 +725,72 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     // Then append the run-ends vector.
     BaseIntVector targetRunEndsVector = (BaseIntVector) targetEncodedVector.getRunEndsVector();
     BaseIntVector deltaRunEndsVector = (BaseIntVector) deltaVector.getRunEndsVector();
+    appendRunEndsVector(targetRunEndsVector, deltaRunEndsVector, targetLogicalValueCount);
 
-    // Shift the delta run-ends vector in-place before appending.
-    shiftRunEndsVector(
-        deltaRunEndsVector,
+    targetEncodedVector.setValueCount(targetLogicalValueCount + deltaVector.getValueCount());
+    return targetVector;
+  }
+
+  private void appendRunEndsVector(
+      BaseIntVector targetRunEndsVector,
+      BaseIntVector deltaRunEndsVector,
+      int targetLogicalValueCount) {
+    int targetPhysicalValueCount = targetRunEndsVector.getValueCount();
+    int newPhysicalValueCount = targetPhysicalValueCount + deltaRunEndsVector.getValueCount();
+
+    // make sure there is enough capacity
+    while (targetVector.getValueCapacity() < newPhysicalValueCount) {
+      targetVector.reAlloc();
+    }
+
+    // append validity buffer
+    BitVectorHelper.concatBits(
+        targetRunEndsVector.getValidityBuffer(),
+        targetRunEndsVector.getValueCount(),
+        deltaRunEndsVector.getValidityBuffer(),
+        deltaRunEndsVector.getValueCount(),
+        targetRunEndsVector.getValidityBuffer());
+
+    // shift and append data buffer
+    shiftAndAppendRunEndsDataBuffer(
+        targetRunEndsVector,
+        targetPhysicalValueCount,
         deltaRunEndsVector.getDataBuffer(),
         targetLogicalValueCount,
         deltaRunEndsVector.getValueCount());
 
-    // Append the now-shifted delta run-ends vector to the target.
-    new VectorAppender(targetRunEndsVector).visit((BaseFixedWidthVector) deltaRunEndsVector, null);
-
-    targetEncodedVector.setValueCount(targetLogicalValueCount + deltaVector.getValueCount());
-
-    return targetVector;
+    targetRunEndsVector.setValueCount(newPhysicalValueCount);
   }
 
-  private void shiftRunEndsVector(
-      ValueVector toRunEndVector, ArrowBuf fromRunEndBuffer, int offset, int physicalLength) {
+  private void shiftAndAppendRunEndsDataBuffer(
+      BaseIntVector toRunEndVector,
+      int toIndex,
+      ArrowBuf fromRunEndBuffer,
+      int offset,
+      int physicalLength) {
     ArrowBuf toRunEndBuffer = toRunEndVector.getDataBuffer();
     if (toRunEndVector instanceof SmallIntVector) {
       byte typeWidth = SmallIntVector.TYPE_WIDTH;
       for (int i = 0; i < physicalLength; i++) {
         toRunEndBuffer.setShort(
-            (long) i * typeWidth, fromRunEndBuffer.getShort((long) (i) * typeWidth) + offset);
+            (long) (i + toIndex) * typeWidth,
+            fromRunEndBuffer.getShort((long) (i) * typeWidth) + offset);
       }
 
     } else if (toRunEndVector instanceof IntVector) {
       byte typeWidth = IntVector.TYPE_WIDTH;
       for (int i = 0; i < physicalLength; i++) {
         toRunEndBuffer.setInt(
-            (long) i * typeWidth, fromRunEndBuffer.getInt((long) (i) * typeWidth) + offset);
+            (long) (i + toIndex) * typeWidth,
+            fromRunEndBuffer.getInt((long) (i) * typeWidth) + offset);
       }
 
     } else if (toRunEndVector instanceof BigIntVector) {
       byte typeWidth = BigIntVector.TYPE_WIDTH;
       for (int i = 0; i < physicalLength; i++) {
         toRunEndBuffer.setLong(
-            (long) i * typeWidth, fromRunEndBuffer.getLong((long) (i) * typeWidth) + offset);
+            (long) (i + toIndex) * typeWidth,
+            fromRunEndBuffer.getLong((long) (i) * typeWidth) + offset);
       }
     } else {
       throw new IllegalArgumentException(
