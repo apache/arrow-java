@@ -25,6 +25,7 @@ import org.apache.arrow.memory.util.ArrowBufPointer;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.complex.impl.BitReaderImpl;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.BitHolder;
 import org.apache.arrow.vector.holders.NullableBitHolder;
@@ -591,6 +592,12 @@ public final class BitVector extends BaseFixedWidthVector implements ValueIterab
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, BitVector.this);
+    }
+
+    @Override
+    public void copyValueSafe(
+        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
+      copyValueSafe(fromIndex, toIndex);
     }
   }
 }

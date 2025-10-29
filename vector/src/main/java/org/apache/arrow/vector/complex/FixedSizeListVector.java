@@ -45,6 +45,7 @@ import org.apache.arrow.vector.ValueIterableVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.UnionFixedSizeListReader;
 import org.apache.arrow.vector.complex.impl.UnionFixedSizeListWriter;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -652,14 +653,28 @@ public class FixedSizeListVector extends BaseValueVector
 
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
-      while (toIndex >= to.getValueCapacity()) {
-        to.reAlloc();
+      allocateAndCopyValueSafe(fromIndex, toIndex, null);
+    }
+
+    @Override
+    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
+      allocateAndCopyValueSafe(from, to, writerFactory);
+    }
+
+    private void allocateAndCopyValueSafe(
+        int from, int to, ExtensionTypeWriterFactory writerFactory) {
+      while (to >= this.to.getValueCapacity()) {
+        this.to.reAlloc();
       }
-      BitVectorHelper.setValidityBit(to.validityBuffer, toIndex, isSet(fromIndex));
-      int fromOffset = fromIndex * listSize;
-      int toOffset = toIndex * listSize;
+      BitVectorHelper.setValidityBit(this.to.validityBuffer, to, isSet(from));
+      int fromOffset = from * listSize;
+      int toOffset = to * listSize;
       for (int i = 0; i < listSize; i++) {
-        dataPair.copyValueSafe(fromOffset + i, toOffset + i);
+        if (writerFactory == null) {
+          dataPair.copyValueSafe(fromOffset + i, toOffset + i);
+        } else {
+          dataPair.copyValueSafe(fromOffset + i, toOffset + i, writerFactory);
+        }
       }
     }
   }

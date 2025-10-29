@@ -25,6 +25,7 @@ import org.apache.arrow.vector.AddOrGetResult;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.UnionMapReader;
 import org.apache.arrow.vector.complex.impl.UnionMapWriter;
 import org.apache.arrow.vector.types.Types;
@@ -239,6 +240,11 @@ public class MapVector extends ListVector {
     @Override
     public void copyValueSafe(int from, int to) {
       this.to.copyFrom(from, to, MapVector.this);
+    }
+
+    @Override
+    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
+      this.to.copyFrom(from, to, MapVector.this, writerFactory);
     }
   }
 }

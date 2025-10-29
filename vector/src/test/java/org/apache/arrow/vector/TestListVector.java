@@ -1345,9 +1345,9 @@ public class TestListVector {
       // Use TransferPair with ExtensionTypeWriterFactory
       // This tests the new makeTransferPair API with writerFactory parameter
       outVector.allocateNew();
-      TransferPair transferPair = inVector.makeTransferPair(outVector, new UuidWriterFactory());
-      transferPair.copyValueSafe(0, 0);
-      transferPair.copyValueSafe(1, 1);
+      TransferPair transferPair = inVector.makeTransferPair(outVector);
+      transferPair.copyValueSafe(0, 0, new UuidWriterFactory());
+      transferPair.copyValueSafe(1, 1, new UuidWriterFactory());
       outVector.setValueCount(2);
 
       // Verify first list
