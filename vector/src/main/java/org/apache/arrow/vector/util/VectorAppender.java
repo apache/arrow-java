@@ -708,7 +708,7 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
   public ValueVector visit(RunEndEncodedVector deltaVector, Void value) {
     Preconditions.checkArgument(
         typeVisitor.equals(deltaVector),
-        "The vector to append must have the same type as the targetVector being appended");
+        "The deltaVector to append must have the same type as the targetVector");
 
     if (deltaVector.getValueCount() == 0) {
       return targetVector; // optimization, nothing to append, return
