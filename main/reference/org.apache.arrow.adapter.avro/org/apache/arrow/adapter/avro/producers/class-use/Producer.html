@@ -90,8 +90,8 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>class&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../AvroEnumProducer.html" class="type-name-link" title="class in org.apache.arrow.adapter.avro.producers">AvroEnumProducer</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">Producer that produces enum values from a dictionary-encoded <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector"><code>IntVector</code></a>, writes data to an
- Avro encoder.</div>
+<div class="block">Producer that produces enum values from a dictionary-encoded <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector"><code>BaseIntVector</code></a>, writes data
+ to an Avro encoder.</div>
 </div>
 <div class="col-first even-row-color"><code>class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../AvroFixedSizeBinaryProducer.html" class="type-name-link" title="class in org.apache.arrow.adapter.avro.producers">AvroFixedSizeBinaryProducer</a></code></div>
@@ -191,6 +191,12 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Base class for avro producers.</div>
 </div>
+<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../DictionaryDecodingProducer.html" class="type-name-link" title="class in org.apache.arrow.adapter.avro.producers">DictionaryDecodingProducer</a>&lt;T extends <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Producer that decodes values from a dictionary-encoded <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector"><code>FieldVector</code></a>, writes the resulting
+ values to an Avro encoder.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../package-summary.html">org.apache.arrow.adapter.avro.producers</a> that return types with arguments of type <a href="../Producer.html" title="interface in org.apache.arrow.adapter.avro.producers">Producer</a></span></div>
 <div class="summary-table three-column-summary">
@@ -234,6 +240,12 @@ loadScripts(document, 'script');</script>
  <a href="../Producer.html" title="interface in org.apache.arrow.adapter.avro.producers">Producer</a>&lt;? extends <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;[]&nbsp;delegates)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Instantiate a AvroStructProducer.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../DictionaryDecodingProducer.html#%3Cinit%3E(org.apache.arrow.vector.BaseIntVector,org.apache.arrow.adapter.avro.producers.Producer)" class="member-name-link">DictionaryDecodingProducer</a><wbr>(<a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&nbsp;indexVector,
+ <a href="../Producer.html" title="interface in org.apache.arrow.adapter.avro.producers">Producer</a>&lt;<a href="../DictionaryDecodingProducer.html" title="type parameter in DictionaryDecodingProducer">T</a>&gt;&nbsp;dictProducer)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Instantiate a DictionaryDecodingProducer.</div>
 </div>
 </div>
 <div class="caption"><span>Constructor parameters in <a href="../package-summary.html">org.apache.arrow.adapter.avro.producers</a> with type arguments of type <a href="../Producer.html" title="interface in org.apache.arrow.adapter.avro.producers">Producer</a></span></div>
@@ -358,7 +370,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

@@ -56,27 +56,60 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Package</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.adapter.orc">org.apache.arrow.adapter.orc</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.adapter.avro">org.apache.arrow.adapter.avro</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.c">org.apache.arrow.c</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.adapter.orc">org.apache.arrow.adapter.orc</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.dataset.jni">org.apache.arrow.dataset.jni</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.c">org.apache.arrow.c</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.dataset.scanner">org.apache.arrow.dataset.scanner</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.dataset.jni">org.apache.arrow.dataset.jni</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.flight">org.apache.arrow.flight</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.dataset.scanner">org.apache.arrow.dataset.scanner</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.flight">org.apache.arrow.flight</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
+<li>
+<section class="detail" id="org.apache.arrow.adapter.avro">
+<h2>Uses of <a href="../DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a> in <a href="../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/package-summary.html">org.apache.arrow.adapter.avro</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/package-summary.html">org.apache.arrow.adapter.avro</a> with parameters of type <a href="../DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static org.apache.avro.Schema</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ArrowToAvroUtils.</span><code><a href="../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/ArrowToAvroUtils.html#createAvroSchema(java.util.List,java.lang.String,java.lang.String,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">createAvroSchema</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;arrowFields,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;namespace,
+ <a href="../DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;dictionaries)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Create an Avro record schema for a given list of Arrow fields.</div>
+</div>
+<div class="col-first odd-row-color"><code>static org.apache.avro.Schema</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ArrowToAvroUtils.</span><code><a href="../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/ArrowToAvroUtils.html#createAvroSchema(java.util.List,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">createAvroSchema</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;arrowFields,
+ <a href="../DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;dictionaries)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Overload provided for convenience, sets name = GENERIC_RECORD_TYPE_NAME and namespace = null.</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/CompositeAvroProducer.html" title="class in org.apache.arrow.adapter.avro.producers">CompositeAvroProducer</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ArrowToAvroUtils.</span><code><a href="../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/ArrowToAvroUtils.html#createCompositeProducer(java.util.List,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">createCompositeProducer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;vectors,
+ <a href="../DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;dictionaries)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Create a composite Avro producer for a set of field vectors (typically the root set of a VSR).</div>
+</div>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="org.apache.arrow.adapter.orc">
 <h2>Uses of <a href="../DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a> in <a href="../../../../../../../org.apache.arrow.adapter.orc/org/apache/arrow/adapter/orc/package-summary.html">org.apache.arrow.adapter.orc</a></h2>
@@ -584,7 +617,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

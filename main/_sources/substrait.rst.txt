@@ -19,7 +19,7 @@
 Substrait
 =========
 
-The ``arrow-dataset`` module can execute Substrait_ plans via the :external+arrow:doc:`Acero <cpp/streaming_execution>`
+The ``arrow-dataset`` module can execute Substrait_ plans via the :external+arrow:doc:`Acero <cpp/acero>`
 query engine.
 
 Executing Queries Using Substrait Plans

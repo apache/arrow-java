@@ -58,32 +58,34 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="#org.apache.arrow.adapter.avro">org.apache.arrow.adapter.avro</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.c">org.apache.arrow.c</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.adapter.jdbc.consumer.exceptions">org.apache.arrow.adapter.jdbc.consumer.exceptions</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.gandiva.expression">org.apache.arrow.gandiva.expression</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.c">org.apache.arrow.c</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.gandiva.expression">org.apache.arrow.gandiva.expression</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.reader">org.apache.arrow.vector.complex.reader</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.reader">org.apache.arrow.vector.complex.reader</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.validate">org.apache.arrow.vector.validate</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.validate">org.apache.arrow.vector.validate</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -111,7 +113,49 @@ loadScripts(document, 'script');</script>
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;namespace)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Overload provided for convenience, sets dictionaries = null.</div>
+</div>
+<div class="col-first odd-row-color"><code>static org.apache.avro.Schema</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ArrowToAvroUtils.</span><code><a href="../../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/ArrowToAvroUtils.html#createAvroSchema(java.util.List,java.lang.String,java.lang.String,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">createAvroSchema</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;arrowFields,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;namespace,
+ <a href="../../../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;dictionaries)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Create an Avro record schema for a given list of Arrow fields.</div>
+</div>
+<div class="col-first even-row-color"><code>static org.apache.avro.Schema</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ArrowToAvroUtils.</span><code><a href="../../../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/ArrowToAvroUtils.html#createAvroSchema(java.util.List,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">createAvroSchema</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;arrowFields,
+ <a href="../../../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;dictionaries)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Overload provided for convenience, sets name = GENERIC_RECORD_TYPE_NAME and namespace = null.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.adapter.jdbc.consumer.exceptions">
+<h2>Uses of <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a> in <a href="../../../../../../../../org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/exceptions/package-summary.html">org.apache.arrow.adapter.jdbc.consumer.exceptions</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../../../../org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/exceptions/package-summary.html">org.apache.arrow.adapter.jdbc.consumer.exceptions</a> that return <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">JdbcConsumerException.</span><code><a href="../../../../../../../../org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/exceptions/JdbcConsumerException.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+<div class="caption"><span>Constructors in <a href="../../../../../../../../org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/exceptions/package-summary.html">org.apache.arrow.adapter.jdbc.consumer.exceptions</a> with parameters of type <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier</div>
+<div class="table-header col-second">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../../../../../../org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/exceptions/JdbcConsumerException.html#%3Cinit%3E(java.lang.String,java.lang.Throwable,org.apache.arrow.adapter.jdbc.JdbcFieldInfo,org.apache.arrow.vector.types.pojo.Field)" class="member-name-link">JdbcConsumerException</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;cause,
+ <a href="../../../../../../../../org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcFieldInfo.html" title="class in org.apache.arrow.adapter.jdbc">JdbcFieldInfo</a>&nbsp;fieldInfo,
+ <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct JdbcConsumerException with all fields.</div>
 </div>
 </div>
 </section>
@@ -1847,7 +1891,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

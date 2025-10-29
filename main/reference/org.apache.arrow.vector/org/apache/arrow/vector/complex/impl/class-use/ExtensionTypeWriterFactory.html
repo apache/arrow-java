@@ -56,13 +56,155 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Package</div>
 <div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.reader">org.apache.arrow.vector.complex.reader</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
+<li>
+<section class="detail" id="org.apache.arrow.vector">
+<h2>Uses of <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a> in <a href="../../../package-summary.html">org.apache.arrow.vector</a></h2>
+<div class="caption"><span>Methods in <a href="../../../package-summary.html">org.apache.arrow.vector</a> with parameters of type <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../../../BaseValueVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NullVector.</span><code><a href="../../../NullVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../../ValueVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Copy a cell value from a particular index in source vector to a particular position in this
+ vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../../../BaseValueVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NullVector.</span><code><a href="../../../NullVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../../ValueVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Same as <a href="../../../ValueVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>ValueVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
+ capacity of the vector needs to be expanded before copy.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.vector.complex">
+<h2>Uses of <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a> in <a href="../../package-summary.html">org.apache.arrow.vector.complex</a></h2>
+<div class="caption"><span>Methods in <a href="../../package-summary.html">org.apache.arrow.vector.complex</a> with parameters of type <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">AbstractContainerVector.</span><code><a href="../../AbstractContainerVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">LargeListVector.</span><code><a href="../../LargeListVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Copy a cell value from a particular index in source vector to a particular position in this
+ vector.</div>
+</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">LargeListViewVector.</span><code><a href="../../LargeListViewVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ListVector.</span><code><a href="../../ListVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Copy a cell value from a particular index in source vector to a particular position in this
+ vector.</div>
+</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ListViewVector.</span><code><a href="../../ListViewVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractContainerVector.</span><code><a href="../../AbstractContainerVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">LargeListVector.</span><code><a href="../../LargeListVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Same as <a href="../../LargeListVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>LargeListVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
+ capacity of the vector needs to be expanded before copy.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">LargeListViewVector.</span><code><a href="../../LargeListViewVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ListVector.</span><code><a href="../../ListVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Same as <a href="../../ListVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>ListVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
+ capacity of the vector needs to be expanded before copy.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ListViewVector.</span><code><a href="../../ListViewVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;inIndex,
+ int&nbsp;outIndex,
+ <a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="org.apache.arrow.vector.complex.impl">
 <h2>Uses of <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a> in <a href="../package-summary.html">org.apache.arrow.vector.complex.impl</a></h2>
@@ -75,20 +217,60 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../PromotableWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionExtensionWriter.</span><code><a href="../UnionExtensionWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../PromotableWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory,
+ <a href="../../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../UnionLargeListViewWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionExtensionWriter.</span><code><a href="../UnionExtensionWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../UnionLargeListWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../UnionLargeListViewWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../UnionListViewWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../UnionLargeListWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../UnionListWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../UnionListViewWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../UnionListWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;var1)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ComplexCopier.</span><code><a href="../ComplexCopier.html#copy(org.apache.arrow.vector.complex.reader.FieldReader,org.apache.arrow.vector.complex.writer.FieldWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copy</a><wbr>(<a href="../../reader/FieldReader.html" title="interface in org.apache.arrow.vector.complex.reader">FieldReader</a>&nbsp;input,
+ <a href="../../writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;output,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;extensionTypeWriterFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NullReader.</span><code><a href="../NullReader.html#copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyAsValue</a><wbr>(<a href="../../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a>&nbsp;writer,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListReader.</span><code><a href="../UnionLargeListReader.html#copyAsValue(org.apache.arrow.vector.complex.impl.UnionLargeListWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyAsValue</a><wbr>(<a href="../UnionLargeListWriter.html" title="class in org.apache.arrow.vector.complex.impl">UnionLargeListWriter</a>&nbsp;writer,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.vector.complex.reader">
+<h2>Uses of <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a> in <a href="../../reader/package-summary.html">org.apache.arrow.vector.complex.reader</a></h2>
+<div class="caption"><span>Methods in <a href="../../reader/package-summary.html">org.apache.arrow.vector.complex.reader</a> with parameters of type <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseReader.RepeatedListReader.</span><code><a href="../../reader/BaseReader.RepeatedListReader.html#copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyAsValue</a><wbr>(<a href="../../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a>&nbsp;writer,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseReader.RepeatedMapReader.</span><code><a href="../../reader/BaseReader.RepeatedMapReader.html#copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyAsValue</a><wbr>(<a href="../../writer/BaseWriter.MapWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.MapWriter</a>&nbsp;writer,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseReader.RepeatedStructReader.</span><code><a href="../../reader/BaseReader.RepeatedStructReader.html#copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyAsValue</a><wbr>(<a href="../../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a>&nbsp;writer,
+ <a href="../ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -113,7 +295,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

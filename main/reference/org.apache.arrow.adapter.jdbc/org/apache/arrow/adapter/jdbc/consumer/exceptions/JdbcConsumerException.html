@@ -112,10 +112,10 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.lang.Throwable,org.apache.arrow.adapter.jdbc.JdbcFieldInfo,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">JdbcConsumerException</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,java.lang.Throwable,org.apache.arrow.adapter.jdbc.JdbcFieldInfo,org.apache.arrow.vector.types.pojo.Field)" class="member-name-link">JdbcConsumerException</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message,
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;cause,
  <a href="../../JdbcFieldInfo.html" title="class in org.apache.arrow.adapter.jdbc">JdbcFieldInfo</a>&nbsp;fieldInfo,
- <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+ <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct JdbcConsumerException with all fields.</div>
 </div>
@@ -133,8 +133,8 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getArrowType()" class="member-name-link">getArrowType</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../JdbcFieldInfo.html" title="class in org.apache.arrow.adapter.jdbc">JdbcFieldInfo</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFieldInfo()" class="member-name-link">getFieldInfo</a>()</code></div>
@@ -160,19 +160,19 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(java.lang.String,java.lang.Throwable,org.apache.arrow.adapter.jdbc.JdbcFieldInfo,org.apache.arrow.vector.types.pojo.ArrowType)">
+<section class="detail" id="&lt;init&gt;(java.lang.String,java.lang.Throwable,org.apache.arrow.adapter.jdbc.JdbcFieldInfo,org.apache.arrow.vector.types.pojo.Field)">
 <h3>JdbcConsumerException</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JdbcConsumerException</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;message,
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;cause,
  <a href="../../JdbcFieldInfo.html" title="class in org.apache.arrow.adapter.jdbc">JdbcFieldInfo</a>&nbsp;fieldInfo,
- <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
+ <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field)</span></div>
 <div class="block">Construct JdbcConsumerException with all fields.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>message</code> - error message</dd>
 <dd><code>cause</code> - original exception</dd>
 <dd><code>fieldInfo</code> - JdbcFieldInfo for the column</dd>
-<dd><code>arrowType</code> - ArrowType for the corresponding vector</dd>
+<dd><code>field</code> - ArrowType for the corresponding vector</dd>
 </dl>
 </section>
 </li>
@@ -185,9 +185,9 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getArrowType()">
-<h3>getArrowType</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></span>&nbsp;<span class="element-name">getArrowType</span>()</div>
+<section class="detail" id="getField()">
+<h3>getField</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span>&nbsp;<span class="element-name">getField</span>()</div>
 </section>
 </li>
 <li>
@@ -205,7 +205,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

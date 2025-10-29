@@ -90,8 +90,8 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>class&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../AvroEnumProducer.html" class="type-name-link" title="class in org.apache.arrow.adapter.avro.producers">AvroEnumProducer</a></code></div>
 <div class="col-last odd-row-color">
-<div class="block">Producer that produces enum values from a dictionary-encoded <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector"><code>IntVector</code></a>, writes data to an
- Avro encoder.</div>
+<div class="block">Producer that produces enum values from a dictionary-encoded <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector"><code>BaseIntVector</code></a>, writes data
+ to an Avro encoder.</div>
 </div>
 <div class="col-first even-row-color"><code>class&nbsp;</code></div>
 <div class="col-second even-row-color"><code><a href="../AvroFixedSizeBinaryProducer.html" class="type-name-link" title="class in org.apache.arrow.adapter.avro.producers">AvroFixedSizeBinaryProducer</a></code></div>
@@ -185,6 +185,12 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><code><a href="../AvroUint8Producer.html" class="type-name-link" title="class in org.apache.arrow.adapter.avro.producers">AvroUint8Producer</a></code></div>
 <div class="col-last odd-row-color">
 <div class="block">Producer that produces long values from a <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt8Vector.html" title="class in org.apache.arrow.vector"><code>UInt8Vector</code></a>, writes data to an avro encoder.</div>
+</div>
+<div class="col-first even-row-color"><code>class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../DictionaryDecodingProducer.html" class="type-name-link" title="class in org.apache.arrow.adapter.avro.producers">DictionaryDecodingProducer</a>&lt;T extends <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</code></div>
+<div class="col-last even-row-color">
+<div class="block">Producer that decodes values from a dictionary-encoded <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector"><code>FieldVector</code></a>, writes the resulting
+ values to an Avro encoder.</div>
 </div>
 </div>
 </section>
@@ -300,7 +306,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

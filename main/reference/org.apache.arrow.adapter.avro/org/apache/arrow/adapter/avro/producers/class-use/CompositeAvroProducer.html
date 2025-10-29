@@ -72,6 +72,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code>static <a href="../CompositeAvroProducer.html" title="class in org.apache.arrow.adapter.avro.producers">CompositeAvroProducer</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ArrowToAvroUtils.</span><code><a href="../../ArrowToAvroUtils.html#createCompositeProducer(java.util.List)" class="member-name-link">createCompositeProducer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;vectors)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Overload provided for convenience, sets dictionaries = null.</div>
+</div>
+<div class="col-first odd-row-color"><code>static <a href="../CompositeAvroProducer.html" title="class in org.apache.arrow.adapter.avro.producers">CompositeAvroProducer</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ArrowToAvroUtils.</span><code><a href="../../ArrowToAvroUtils.html#createCompositeProducer(java.util.List,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">createCompositeProducer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;vectors,
+ <a href="../../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;dictionaries)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Create a composite Avro producer for a set of field vectors (typically the root set of a VSR).</div>
 </div>
 </div>
@@ -82,7 +88,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

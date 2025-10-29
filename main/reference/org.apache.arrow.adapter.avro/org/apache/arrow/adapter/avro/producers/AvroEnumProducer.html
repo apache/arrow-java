@@ -75,20 +75,20 @@ loadScripts(document, 'script');</script>
 <h1 title="Class AvroEnumProducer" class="title">Class AvroEnumProducer</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance"><a href="BaseAvroProducer.html" title="class in org.apache.arrow.adapter.avro.producers">org.apache.arrow.adapter.avro.producers.BaseAvroProducer</a>&lt;<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector">IntVector</a>&gt;
+<div class="inheritance"><a href="BaseAvroProducer.html" title="class in org.apache.arrow.adapter.avro.producers">org.apache.arrow.adapter.avro.producers.BaseAvroProducer</a>&lt;<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&gt;
 <div class="inheritance">org.apache.arrow.adapter.avro.producers.AvroEnumProducer</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="Producer.html" title="interface in org.apache.arrow.adapter.avro.producers">Producer</a>&lt;<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector">IntVector</a>&gt;</code></dd>
+<dd><code><a href="Producer.html" title="interface in org.apache.arrow.adapter.avro.producers">Producer</a>&lt;<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&gt;</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">AvroEnumProducer</span>
-<span class="extends-implements">extends <a href="BaseAvroProducer.html" title="class in org.apache.arrow.adapter.avro.producers">BaseAvroProducer</a>&lt;<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector">IntVector</a>&gt;</span></div>
-<div class="block">Producer that produces enum values from a dictionary-encoded <a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector"><code>IntVector</code></a>, writes data to an
- Avro encoder.</div>
+<span class="extends-implements">extends <a href="BaseAvroProducer.html" title="class in org.apache.arrow.adapter.avro.producers">BaseAvroProducer</a>&lt;<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&gt;</span></div>
+<div class="block">Producer that produces enum values from a dictionary-encoded <a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector"><code>BaseIntVector</code></a>, writes data
+ to an Avro encoder.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">
@@ -109,7 +109,7 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.IntVector)" class="member-name-link">AvroEnumProducer</a><wbr>(<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector">IntVector</a>&nbsp;vector)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.BaseIntVector)" class="member-name-link">AvroEnumProducer</a><wbr>(<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&nbsp;vector)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Instantiate an AvroEnumProducer.</div>
 </div>
@@ -153,9 +153,9 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(org.apache.arrow.vector.IntVector)">
+<section class="detail" id="&lt;init&gt;(org.apache.arrow.vector.BaseIntVector)">
 <h3>AvroEnumProducer</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AvroEnumProducer</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector">IntVector</a>&nbsp;vector)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">AvroEnumProducer</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&nbsp;vector)</span></div>
 <div class="block">Instantiate an AvroEnumProducer.</div>
 </section>
 </li>
@@ -191,7 +191,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

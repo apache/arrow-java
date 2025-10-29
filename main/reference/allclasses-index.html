@@ -465,8 +465,8 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/AvroEnumProducer.html" title="class in org.apache.arrow.adapter.avro.producers">AvroEnumProducer</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
-<div class="block">Producer that produces enum values from a dictionary-encoded <a href="org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html" title="class in org.apache.arrow.vector"><code>IntVector</code></a>, writes data to an
- Avro encoder.</div>
+<div class="block">Producer that produces enum values from a dictionary-encoded <a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector"><code>BaseIntVector</code></a>, writes data
+ to an Avro encoder.</div>
 </div>
 <div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/consumers/AvroFixedConsumer.html" title="class in org.apache.arrow.adapter.avro.consumers">AvroFixedConsumer</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">
@@ -1569,126 +1569,135 @@ loadScripts(document, 'script');</script>
 <div class="block">A dictionary builder is intended for the scenario frequently encountered in practice: the
  dictionary is not known a priori, so it is generated dynamically.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.algorithm/org/apache/arrow/algorithm/dictionary/DictionaryEncoder.html" title="interface in org.apache.arrow.algorithm.dictionary">DictionaryEncoder</a>&lt;<a href="org.apache.arrow.algorithm/org/apache/arrow/algorithm/dictionary/DictionaryEncoder.html" title="type parameter in DictionaryEncoder">E</a> extends <a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>,<wbr><a href="org.apache.arrow.algorithm/org/apache/arrow/algorithm/dictionary/DictionaryEncoder.html" title="type parameter in DictionaryEncoder">D</a> extends <a href="org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/DictionaryDecodingProducer.html" title="class in org.apache.arrow.adapter.avro.producers">DictionaryDecodingProducer</a>&lt;<a href="org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/DictionaryDecodingProducer.html" title="type parameter in DictionaryDecodingProducer">T</a> extends <a href="org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Producer that decodes values from a dictionary-encoded <a href="org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector"><code>FieldVector</code></a>, writes the resulting
+ values to an Avro encoder.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.algorithm/org/apache/arrow/algorithm/dictionary/DictionaryEncoder.html" title="interface in org.apache.arrow.algorithm.dictionary">DictionaryEncoder</a>&lt;<a href="org.apache.arrow.algorithm/org/apache/arrow/algorithm/dictionary/DictionaryEncoder.html" title="type parameter in DictionaryEncoder">E</a> extends <a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>,<wbr><a href="org.apache.arrow.algorithm/org/apache/arrow/algorithm/dictionary/DictionaryEncoder.html" title="type parameter in DictionaryEncoder">D</a> extends <a href="org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A dictionary encoder translates one vector into another one based on a dictionary vector.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryEncoder.html" title="class in org.apache.arrow.vector.dictionary">DictionaryEncoder</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryEncoder.html" title="class in org.apache.arrow.vector.dictionary">DictionaryEncoder</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Encoder/decoder for Dictionary encoded <a href="org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html" title="interface in org.apache.arrow.vector"><code>ValueVector</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/DictionaryEncoding.html" title="class in org.apache.arrow.flatbuf">DictionaryEncoding</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/DictionaryEncoding.html" title="class in org.apache.arrow.vector.types.pojo">DictionaryEncoding</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/DictionaryEncoding.html" title="class in org.apache.arrow.flatbuf">DictionaryEncoding</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/DictionaryEncoding.html" title="class in org.apache.arrow.vector.types.pojo">DictionaryEncoding</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A POJO representation of Arrow Dictionary metadata.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/DictionaryEncoding.Vector.html" title="class in org.apache.arrow.flatbuf">DictionaryEncoding.Vector</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryHashTable.html" title="class in org.apache.arrow.vector.dictionary">DictionaryHashTable</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/DictionaryEncoding.Vector.html" title="class in org.apache.arrow.flatbuf">DictionaryEncoding.Vector</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryHashTable.html" title="class in org.apache.arrow.vector.dictionary">DictionaryHashTable</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">HashTable used for Dictionary encoding.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/DictionaryKind.html" title="class in org.apache.arrow.flatbuf">DictionaryKind</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/DictionaryKind.html" title="class in org.apache.arrow.flatbuf">DictionaryKind</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">----------------------------------------------------------------------
  Dictionary encoding metadata
  Maintained for forwards compatibility, in the future
  Dictionaries might be explicit maps between integers and values
  allowing for non-contiguous index values</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">A manager for association of dictionary IDs to their corresponding <a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/Dictionary.html" title="class in org.apache.arrow.vector.dictionary"><code>Dictionary</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryProvider.MapDictionaryProvider.html" title="class in org.apache.arrow.vector.dictionary">DictionaryProvider.MapDictionaryProvider</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryProvider.MapDictionaryProvider.html" title="class in org.apache.arrow.vector.dictionary">DictionaryProvider.MapDictionaryProvider</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Implementation of <a href="org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary"><code>DictionaryProvider</code></a> that is backed by a hash-map.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/util/DictionaryUtility.html" title="class in org.apache.arrow.vector.util">DictionaryUtility</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/util/DictionaryUtility.html" title="class in org.apache.arrow.vector.util">DictionaryUtility</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Utility methods for working with Dictionaries used in Dictionary encodings.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.dataset/org/apache/arrow/dataset/jni/DirectReservationListener.html" title="class in org.apache.arrow.dataset.jni">DirectReservationListener</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.dataset/org/apache/arrow/dataset/jni/DirectReservationListener.html" title="class in org.apache.arrow.dataset.jni">DirectReservationListener</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Reserving Java direct memory bytes from java.nio.Bits.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/DoubleConsumer.html" title="class in org.apache.arrow.adapter.jdbc.consumer">DoubleConsumer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/DoubleConsumer.html" title="class in org.apache.arrow.adapter.jdbc.consumer">DoubleConsumer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Consumer which consume double type values from <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link"><code>ResultSet</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/Duration.html" title="class in org.apache.arrow.flatbuf">Duration</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/Duration.Vector.html" title="class in org.apache.arrow.flatbuf">Duration.Vector</a></div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/Duration.html" title="class in org.apache.arrow.flatbuf">Duration</a></div>
 <div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/holders/DurationHolder.html" title="class in org.apache.arrow.vector.holders">DurationHolder</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/Duration.Vector.html" title="class in org.apache.arrow.flatbuf">Duration.Vector</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/holders/DurationHolder.html" title="class in org.apache.arrow.vector.holders">DurationHolder</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Source code generated using FreeMarker template ValueHolders.java</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/impl/DurationHolderReaderImpl.html" title="class in org.apache.arrow.vector.complex.impl">DurationHolderReaderImpl</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/reader/DurationReader.html" title="interface in org.apache.arrow.vector.complex.reader">DurationReader</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/impl/DurationHolderReaderImpl.html" title="class in org.apache.arrow.vector.complex.impl">DurationHolderReaderImpl</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/reader/DurationReader.html" title="interface in org.apache.arrow.vector.complex.reader">DurationReader</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Source code generated using FreeMarker template ComplexReaders.java</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/impl/DurationReaderImpl.html" title="class in org.apache.arrow.vector.complex.impl">DurationReaderImpl</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
-<div class="block">Source code generated using FreeMarker template ComplexReaders.java</div>
-</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html" title="class in org.apache.arrow.vector">DurationVector</a></div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/impl/DurationReaderImpl.html" title="class in org.apache.arrow.vector.complex.impl">DurationReaderImpl</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="block">Source code generated using FreeMarker template ComplexReaders.java</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html" title="class in org.apache.arrow.vector">DurationVector</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">DurationVector implements a fixed width vector (8 bytes) of a configurable TimeUnit granularity
  duration values which could be null.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/impl/DurationWriterImpl.html" title="class in org.apache.arrow.vector.complex.impl">DurationWriterImpl</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.tools/org/apache/arrow/tools/EchoServer.html" title="class in org.apache.arrow.tools">EchoServer</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">&nbsp;</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/impl/DurationWriterImpl.html" title="class in org.apache.arrow.vector.complex.impl">DurationWriterImpl</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">&nbsp;</div>
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.tools/org/apache/arrow/tools/EchoServer.html" title="class in org.apache.arrow.tools">EchoServer</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Simple server that echoes back data received.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.tools/org/apache/arrow/tools/EchoServer.ClientConnection.html" title="class in org.apache.arrow.tools">EchoServer.ClientConnection</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.tools/org/apache/arrow/tools/EchoServer.ClientConnection.html" title="class in org.apache.arrow.tools">EchoServer.ClientConnection</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Handler for each client connection to the server.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/ElementAddressableVector.html" title="interface in org.apache.arrow.vector">ElementAddressableVector</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/ElementAddressableVector.html" title="interface in org.apache.arrow.vector">ElementAddressableVector</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab1">
 <div class="block">Vector for which each data element resides in a continuous memory region, so it can be pointed to
  by an <a href="org.apache.arrow.memory.core/org/apache/arrow/memory/util/ArrowBufPointer.html" title="class in org.apache.arrow.memory.util"><code>ArrowBufPointer</code></a>.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/util/ElementAddressableVectorIterator.html" title="class in org.apache.arrow.vector.util">ElementAddressableVectorIterator</a>&lt;<a href="org.apache.arrow.vector/org/apache/arrow/vector/util/ElementAddressableVectorIterator.html" title="type parameter in ElementAddressableVectorIterator">T</a> extends <a href="org.apache.arrow.vector/org/apache/arrow/vector/ElementAddressableVector.html" title="interface in org.apache.arrow.vector">ElementAddressableVector</a>&gt;</div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/util/ElementAddressableVectorIterator.html" title="class in org.apache.arrow.vector.util">ElementAddressableVectorIterator</a>&lt;<a href="org.apache.arrow.vector/org/apache/arrow/vector/util/ElementAddressableVectorIterator.html" title="type parameter in ElementAddressableVectorIterator">T</a> extends <a href="org.apache.arrow.vector/org/apache/arrow/vector/ElementAddressableVector.html" title="interface in org.apache.arrow.vector">ElementAddressableVector</a>&gt;</div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Iterator for traversing elements of a <a href="org.apache.arrow.vector/org/apache/arrow/vector/ElementAddressableVector.html" title="interface in org.apache.arrow.vector"><code>ElementAddressableVector</code></a>.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/EmptyValuePopulator.html" title="class in org.apache.arrow.vector.complex">EmptyValuePopulator</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/EmptyValuePopulator.html" title="class in org.apache.arrow.vector.complex">EmptyValuePopulator</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">A helper class that is used to track and populate empty values in repeated value vectors.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/Endianness.html" title="class in org.apache.arrow.flatbuf">Endianness</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.format/org/apache/arrow/flatbuf/Endianness.html" title="class in org.apache.arrow.flatbuf">Endianness</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">----------------------------------------------------------------------
  Endianness of the platform producing the data</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.flight.core/org/apache/arrow/flight/ErrorFlightMetadata.html" title="class in org.apache.arrow.flight">ErrorFlightMetadata</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.flight.core/org/apache/arrow/flight/ErrorFlightMetadata.html" title="class in org.apache.arrow.flight">ErrorFlightMetadata</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">metadata container specific to the binary metadata held in the grpc trailer.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab5"><a href="org.apache.arrow.gandiva/org/apache/arrow/gandiva/exceptions/EvaluatorClosedException.html" title="class in org.apache.arrow.gandiva.exceptions">EvaluatorClosedException</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab5">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab5"><a href="org.apache.arrow.gandiva/org/apache/arrow/gandiva/exceptions/EvaluatorClosedException.html" title="class in org.apache.arrow.gandiva.exceptions">EvaluatorClosedException</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab5">
 <div class="block">Indicates an attempted call to methods on a closed evaluator.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.gandiva/org/apache/arrow/gandiva/evaluator/ExpressionRegistry.html" title="class in org.apache.arrow.gandiva.evaluator">ExpressionRegistry</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.gandiva/org/apache/arrow/gandiva/evaluator/ExpressionRegistry.html" title="class in org.apache.arrow.gandiva.evaluator">ExpressionRegistry</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Used to get the functions and data types supported by Gandiva.</div>
 </div>
-<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.gandiva/org/apache/arrow/gandiva/expression/ExpressionTree.html" title="class in org.apache.arrow.gandiva.expression">ExpressionTree</a></div>
-<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.gandiva/org/apache/arrow/gandiva/expression/ExpressionTree.html" title="class in org.apache.arrow.gandiva.expression">ExpressionTree</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Opaque class representing an expression.</div>
 </div>
-<div class="col-first even-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a></div>
-<div class="col-last even-row-color all-classes-table all-classes-table-tab2">
+<div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a></div>
+<div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
 <div class="block">Base <a href="org.apache.arrow.vector/org/apache/arrow/vector/holders/ValueHolder.html" title="interface in org.apache.arrow.vector.holders"><code>ValueHolder</code></a> class for a <a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector"><code>ExtensionTypeVector</code></a>.</div>
+</div>
+<div class="col-first even-row-color all-classes-table all-classes-table-tab1"><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/reader/ExtensionReader.html" title="interface in org.apache.arrow.vector.complex.reader">ExtensionReader</a></div>
+<div class="col-last even-row-color all-classes-table all-classes-table-tab1">
+<div class="block">Interface for reading extension types.</div>
 </div>
 <div class="col-first odd-row-color all-classes-table all-classes-table-tab2"><a href="org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ExtensionTypeRegistry.html" title="class in org.apache.arrow.vector.types.pojo">ExtensionTypeRegistry</a></div>
 <div class="col-last odd-row-color all-classes-table all-classes-table-tab2">
@@ -5735,7 +5744,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

@@ -58,12 +58,14 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="#org.apache.arrow.adapter.avro.consumers">org.apache.arrow.adapter.avro.consumers</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.algorithm.dictionary">org.apache.arrow.algorithm.dictionary</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.adapter.avro.producers">org.apache.arrow.adapter.avro.producers</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.algorithm.misc">org.apache.arrow.algorithm.misc</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.algorithm.dictionary">org.apache.arrow.algorithm.dictionary</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.algorithm.misc">org.apache.arrow.algorithm.misc</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -79,6 +81,28 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><code><a href="../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/consumers/AvroEnumConsumer.html#%3Cinit%3E(org.apache.arrow.vector.BaseIntVector)" class="member-name-link">AvroEnumConsumer</a><wbr>(<a href="../BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&nbsp;vector)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Instantiate a AvroEnumConsumer.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.adapter.avro.producers">
+<h2>Uses of <a href="../BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a> in <a href="../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/package-summary.html">org.apache.arrow.adapter.avro.producers</a></h2>
+<div class="caption"><span>Constructors in <a href="../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/package-summary.html">org.apache.arrow.adapter.avro.producers</a> with parameters of type <a href="../BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier</div>
+<div class="table-header col-second">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/AvroEnumProducer.html#%3Cinit%3E(org.apache.arrow.vector.BaseIntVector)" class="member-name-link">AvroEnumProducer</a><wbr>(<a href="../BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&nbsp;vector)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Instantiate an AvroEnumProducer.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/DictionaryDecodingProducer.html#%3Cinit%3E(org.apache.arrow.vector.BaseIntVector,org.apache.arrow.adapter.avro.producers.Producer)" class="member-name-link">DictionaryDecodingProducer</a><wbr>(<a href="../BaseIntVector.html" title="interface in org.apache.arrow.vector">BaseIntVector</a>&nbsp;indexVector,
+ <a href="../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/Producer.html" title="interface in org.apache.arrow.adapter.avro.producers">Producer</a>&lt;<a href="../../../../../../org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/producers/DictionaryDecodingProducer.html" title="type parameter in DictionaryDecodingProducer">T</a>&gt;&nbsp;dictProducer)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Instantiate a DictionaryDecodingProducer.</div>
 </div>
 </div>
 </section>
@@ -200,7 +224,7 @@ loadScripts(document, 'script');</script>
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>

@@ -120,12 +120,16 @@ extends <a href="BaseReader.StructReader.html" title="interface in org.apache.ar
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter)" class="member-name-link">copyAsValue</a><wbr>(<a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a>&nbsp;writer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyAsValue</a><wbr>(<a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a>&nbsp;writer,
+ <a href="../impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -170,6 +174,13 @@ extends <a href="BaseReader.StructReader.html" title="interface in org.apache.ar
 <div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">copyAsValue</span><wbr><span class="parameters">(<a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a>&nbsp;writer)</span></div>
 </section>
 </li>
+<li>
+<section class="detail" id="copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)">
+<h3>copyAsValue</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">copyAsValue</span><wbr><span class="parameters">(<a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a>&nbsp;writer,
+ <a href="../impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</span></div>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -179,7 +190,7 @@ extends <a href="BaseReader.StructReader.html" title="interface in org.apache.ar
 </main>
 <footer role="contentinfo">
 <hr>
-<p class="legal-copy"><small>Copyright &#169; 2025 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
+<p class="legal-copy"><small>Copyright &#169; 2023 <a href="https://www.apache.org/">The Apache Software Foundation</a>. All rights reserved.</small></p>
 </footer>
 </div>
 </div>
