@@ -52,14 +52,22 @@ public class ValidateVectorBufferVisitor implements VectorVisitor<Void, Void> {
 
     if (vector instanceof FieldVector) {
       FieldVector fieldVector = (FieldVector) vector;
-      // TODO: https://github.com/apache/arrow/issues/41734
       int typeBufferCount = TypeLayout.getTypeBufferCount(arrowType);
-      validateOrThrow(
-          fieldVector.getFieldBuffers().size() == typeBufferCount,
-          "Expected %s buffers in vector of type %s, got %s.",
-          typeBufferCount,
-          vector.getField().getType().toString(),
-          fieldVector.getFieldBuffers().size());
+      if (TypeLayout.isVariableBuffer(arrowType)) {
+        validateOrThrow(
+            fieldVector.getFieldBuffers().size() >= typeBufferCount,
+            "Expected at least %s buffers in vector of type %s, got %s.",
+            typeBufferCount,
+            vector.getField().getType().toString(),
+            fieldVector.getFieldBuffers().size());
+      } else {
+        validateOrThrow(
+            fieldVector.getFieldBuffers().size() == typeBufferCount,
+            "Expected %s buffers in vector of type %s, got %s.",
+            typeBufferCount,
+            vector.getField().getType().toString(),
+            fieldVector.getFieldBuffers().size());
+      }
     }
   }
 
@@ -159,10 +167,7 @@ public class ValidateVectorBufferVisitor implements VectorVisitor<Void, Void> {
   @Override
   public Void visit(BaseVariableWidthViewVector vector, Void value) {
     final int valueCount = vector.getValueCount();
-    validateOrThrow(
-        vector.getValueCount() >= 0,
-        "Vector valueCount %s is negative.",
-        vector.getValueCapacity());
+    validateVectorCommon(vector);
     validateOrThrow(vector.getFieldBuffers().size() >= 2, "Expected at least 2 buffers.");
     validateValidityBuffer(vector, valueCount);
     validateDataBuffer(vector, (long) valueCount * BaseVariableWidthViewVector.ELEMENT_SIZE);
