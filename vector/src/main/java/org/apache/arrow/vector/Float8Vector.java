@@ -20,6 +20,7 @@ import static org.apache.arrow.vector.NullCheckingForGet.NULL_CHECKING_ENABLED;
 
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.Float8ReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.Float8Holder;
@@ -349,6 +350,12 @@ public final class Float8Vector extends BaseFixedWidthVector
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, Float8Vector.this);
+    }
+
+    @Override
+    public void copyValueSafe(
+        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
+      copyValueSafe(fromIndex, toIndex);
     }
   }
 }

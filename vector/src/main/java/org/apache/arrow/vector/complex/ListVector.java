@@ -365,7 +365,8 @@ public class ListVector extends BaseRepeatedValueVector
       if (validityAllocationSizeInBytes > 0) {
         newAllocationSize = validityAllocationSizeInBytes;
       } else {
-        newAllocationSize = getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
+        newAllocationSize =
+            BitVectorHelper.getValidityBufferSizeFromCount(INITIAL_VALUE_ALLOCATION) * 2L;
       }
     }
     newAllocationSize = CommonUtil.nextPowerOfTwo(newAllocationSize);
@@ -473,11 +474,6 @@ public class ListVector extends BaseRepeatedValueVector
     return new TransferImpl((ListVector) target);
   }
 
-  public TransferPair makeTransferPair(
-      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
-    return new TransferImpl((ListVector) target, writerFactory);
-  }
-
   @Override
   public long getValidityBufferAddress() {
     return validityBuffer.memoryAddress();
@@ -536,7 +532,6 @@ public class ListVector extends BaseRepeatedValueVector
 
     ListVector to;
     TransferPair dataTransferPair;
-    ExtensionTypeWriterFactory writerFactory;
 
     public TransferImpl(String name, BufferAllocator allocator, CallBack callBack) {
       this(new ListVector(name, allocator, field.getFieldType(), callBack));
@@ -544,11 +539,6 @@ public class ListVector extends BaseRepeatedValueVector
 
     public TransferImpl(Field field, BufferAllocator allocator, CallBack callBack) {
       this(new ListVector(field, allocator, callBack));
-    }
-
-    public TransferImpl(ListVector to, ExtensionTypeWriterFactory writerFactory) {
-      this(to);
-      this.writerFactory = writerFactory;
     }
 
     public TransferImpl(ListVector to) {
@@ -620,6 +610,11 @@ public class ListVector extends BaseRepeatedValueVector
 
     @Override
     public void copyValueSafe(int from, int to) {
+      this.to.copyFrom(from, to, ListVector.this);
+    }
+
+    @Override
+    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
       this.to.copyFrom(from, to, ListVector.this, writerFactory);
     }
   }

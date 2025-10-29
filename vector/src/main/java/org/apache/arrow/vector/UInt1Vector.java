@@ -20,6 +20,7 @@ import static org.apache.arrow.vector.NullCheckingForGet.NULL_CHECKING_ENABLED;
 
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.UInt1ReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.NullableUInt1Holder;
@@ -365,6 +366,12 @@ public final class UInt1Vector extends BaseFixedWidthVector
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, UInt1Vector.this);
+    }
+
+    @Override
+    public void copyValueSafe(
+        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
+      copyValueSafe(fromIndex, toIndex);
     }
   }
 }

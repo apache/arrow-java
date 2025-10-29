@@ -190,8 +190,6 @@ public interface ValueVector extends Closeable, Iterable<ValueVector> {
    */
   TransferPair makeTransferPair(ValueVector target);
 
-  TransferPair makeTransferPair(ValueVector target, ExtensionTypeWriterFactory writerFactory);
-
   /**
    * Get a reader for this vector.
    *

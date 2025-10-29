@@ -30,7 +30,6 @@ import org.apache.arrow.vector.types.pojo.ArrowType.ListView;
 import org.apache.arrow.vector.types.pojo.ArrowType.Struct;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.CallBack;
-import org.apache.arrow.vector.util.TransferPair;
 import org.apache.arrow.vector.util.ValueVectorUtility;
 
 /**
@@ -168,11 +167,5 @@ public abstract class AbstractContainerVector implements ValueVector, DensityAwa
   @Override
   public String getName() {
     return name;
-  }
-
-  @Override
-  public TransferPair makeTransferPair(
-      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
-    throw new UnsupportedOperationException();
   }
 }

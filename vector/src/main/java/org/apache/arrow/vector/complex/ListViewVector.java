@@ -557,6 +557,11 @@ public class ListViewVector extends BaseRepeatedValueViewVector
     public void copyValueSafe(int from, int to) {
       this.to.copyFrom(from, to, ListViewVector.this);
     }
+
+    @Override
+    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
+      this.to.copyFrom(from, to, ListViewVector.this, writerFactory);
+    }
   }
 
   @Override

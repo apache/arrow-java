@@ -30,7 +30,6 @@ import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.compare.VectorVisitor;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.util.CallBack;
@@ -902,11 +901,5 @@ public abstract class BaseFixedWidthVector extends BaseValueVector
   @Override
   public <OUT, IN> OUT accept(VectorVisitor<OUT, IN> visitor, IN value) {
     return visitor.visit(this, value);
-  }
-
-  @Override
-  public TransferPair makeTransferPair(
-      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
-    throw new UnsupportedOperationException();
   }
 }

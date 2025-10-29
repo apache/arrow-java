@@ -31,7 +31,6 @@ import org.apache.arrow.memory.util.CommonUtil;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.compare.VectorVisitor;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.util.CallBack;
@@ -1443,11 +1442,5 @@ public abstract class BaseVariableWidthVector extends BaseValueVector
   /** Gets the ending offset of a record, given its index. */
   public final int getEndOffset(int index) {
     return offsetBuffer.getInt((long) (index + 1) * OFFSET_WIDTH);
-  }
-
-  @Override
-  public TransferPair makeTransferPair(
-      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
-    throw new UnsupportedOperationException();
   }
 }

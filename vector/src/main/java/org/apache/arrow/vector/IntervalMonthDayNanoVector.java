@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.time.Period;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.IntervalMonthDayNanoReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.IntervalMonthDayNanoHolder;
@@ -429,6 +430,12 @@ public final class IntervalMonthDayNanoVector extends BaseFixedWidthVector
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, IntervalMonthDayNanoVector.this);
+    }
+
+    @Override
+    public void copyValueSafe(
+        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
+      copyValueSafe(fromIndex, toIndex);
     }
   }
 }

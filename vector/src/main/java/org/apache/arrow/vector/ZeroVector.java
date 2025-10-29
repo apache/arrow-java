@@ -19,6 +19,7 @@ package org.apache.arrow.vector;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.ArrowBufPointer;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.CallBack;
@@ -127,5 +128,8 @@ public final class ZeroVector extends NullVector {
 
         @Override
         public void copyValueSafe(int from, int to) {}
+
+        @Override
+        public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {}
       };
 }

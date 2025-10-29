@@ -707,6 +707,11 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
     public void copyValueSafe(int from, int to) {
       this.to.copyFrom(from, to, DenseUnionVector.this);
     }
+
+    @Override
+    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
+      this.to.copyFrom(from, to, DenseUnionVector.this, writerFactory);
+    }
   }
 
   @Override
