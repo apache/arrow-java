@@ -20,6 +20,7 @@ import java.nio.ByteBuffer;
 import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holder.UuidHolder;
@@ -122,6 +123,12 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
 
     public void copyValueSafe(int fromIndex, int toIndex) {
       tp.copyValueSafe(fromIndex, toIndex);
+    }
+
+    @Override
+    public void copyValueSafe(
+        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
+      tp.copyValueSafe(fromIndex, toIndex, writerFactory);
     }
   }
 }

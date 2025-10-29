@@ -202,12 +202,6 @@ public class NullVector implements FieldVector, ValueIterableVector<Object> {
   }
 
   @Override
-  public TransferPair makeTransferPair(
-      ValueVector target, ExtensionTypeWriterFactory writerFactory) {
-    return makeTransferPair(target);
-  }
-
-  @Override
   public FieldReader getReader() {
     return NullReader.INSTANCE;
   }
@@ -389,6 +383,11 @@ public class NullVector implements FieldVector, ValueIterableVector<Object> {
       if (toIndex > to.valueCount) {
         to.valueCount = toIndex;
       }
+    }
+
+    @Override
+    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
+      copyValueSafe(from, to);
     }
   }
 }
