@@ -43,5 +43,14 @@ public interface ExtensionReader extends BaseReader {
    */
   boolean isSet();
 
+  /**
+   * Gets the extension type writer factory associated with this reader.
+   *
+   * <p>The writer factory is used to create appropriate writers when copying extension type values
+   * to another vector. This allows the copy operation to preserve the extension type semantics.
+   *
+   * @return the extension type writer factory
+   * @throws IllegalStateException if the reader doesn't support extension types
+   */
   ExtensionTypeWriterFactory getExtensionTypeWriterFactory();
 }
