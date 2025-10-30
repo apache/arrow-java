@@ -1290,7 +1290,7 @@ public class TestListVector {
 
       // copy values from input to output
       outVector.allocateNew();
-      outVector.copyFrom(0, 0, inVector, new UuidWriterFactory());
+      outVector.copyFrom(0, 0, inVector);
       outVector.setValueCount(1);
 
       UnionListReader reader = outVector.getReader();
@@ -1346,8 +1346,8 @@ public class TestListVector {
       // This tests the new makeTransferPair API with writerFactory parameter
       outVector.allocateNew();
       TransferPair transferPair = inVector.makeTransferPair(outVector);
-      transferPair.copyValueSafe(0, 0, new UuidWriterFactory());
-      transferPair.copyValueSafe(1, 1, new UuidWriterFactory());
+      transferPair.copyValueSafe(0, 0);
+      transferPair.copyValueSafe(1, 1);
       outVector.setValueCount(2);
 
       // Verify first list
