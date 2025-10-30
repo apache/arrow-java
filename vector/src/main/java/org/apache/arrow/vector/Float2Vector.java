@@ -21,7 +21,6 @@ import static org.apache.arrow.vector.NullCheckingForGet.NULL_CHECKING_ENABLED;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.Float16;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.Float2ReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.Float2Holder;
@@ -413,12 +412,6 @@ public final class Float2Vector extends BaseFixedWidthVector
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, Float2Vector.this);
-    }
-
-    @Override
-    public void copyValueSafe(
-        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
-      copyValueSafe(fromIndex, toIndex);
     }
   }
 }
