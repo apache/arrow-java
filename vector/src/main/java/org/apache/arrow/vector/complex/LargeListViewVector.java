@@ -41,7 +41,6 @@ import org.apache.arrow.vector.ValueIterableVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.UnionLargeListViewReader;
 import org.apache.arrow.vector.complex.impl.UnionLargeListViewWriter;
 import org.apache.arrow.vector.complex.impl.UnionListReader;
@@ -348,20 +347,6 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
   }
 
   @Override
-  public void copyFromSafe(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
-    throw new UnsupportedOperationException(
-        "LargeListViewVector does not support copyFromSafe operation yet.");
-  }
-
-  @Override
-  public void copyFrom(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
-    throw new UnsupportedOperationException(
-        "LargeListViewVector does not support copyFrom operation yet.");
-  }
-
-  @Override
   public FieldVector getDataVector() {
     return vector;
   }
@@ -551,11 +536,6 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     @Override
     public void copyValueSafe(int from, int to) {
       this.to.copyFrom(from, to, LargeListViewVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
-      this.to.copyFrom(from, to, LargeListViewVector.this, writerFactory);
     }
   }
 

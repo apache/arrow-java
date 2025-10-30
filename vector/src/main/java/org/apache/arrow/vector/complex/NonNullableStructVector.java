@@ -31,7 +31,6 @@ import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.ValueIterableVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.SingleStructReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.ComplexHolder;
@@ -159,24 +158,8 @@ public class NonNullableStructVector extends AbstractStructVector
   }
 
   @Override
-  public void copyFrom(
-      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
-    Preconditions.checkArgument(this.getMinorType() == from.getMinorType());
-    if (ephPair == null || ephPair.from != from) {
-      ephPair = (StructTransferPair) from.makeTransferPair(this);
-    }
-    ephPair.copyValueSafe(fromIndex, thisIndex, writerFactory);
-  }
-
-  @Override
   public void copyFromSafe(int fromIndex, int thisIndex, ValueVector from) {
     copyFrom(fromIndex, thisIndex, from);
-  }
-
-  @Override
-  public void copyFromSafe(
-      int fromIndex, int thisIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
-    copyFrom(fromIndex, thisIndex, from, writerFactory);
   }
 
   @Override
@@ -372,13 +355,6 @@ public class NonNullableStructVector extends AbstractStructVector
     public void copyValueSafe(int from, int to) {
       for (TransferPair p : pairs) {
         p.copyValueSafe(from, to);
-      }
-    }
-
-    @Override
-    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
-      for (TransferPair p : pairs) {
-        p.copyValueSafe(from, to, writerFactory);
       }
     }
 

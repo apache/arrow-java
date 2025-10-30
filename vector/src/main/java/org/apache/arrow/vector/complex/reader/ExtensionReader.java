@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector.complex.reader;
 
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 
 /** Interface for reading extension types. Extends the functionality of {@link BaseReader}. */
@@ -41,4 +42,6 @@ public interface ExtensionReader extends BaseReader {
    * @return true if the value is set, false otherwise
    */
   boolean isSet();
+
+  ExtensionTypeWriterFactory getExtensionTypeWriterFactory();
 }

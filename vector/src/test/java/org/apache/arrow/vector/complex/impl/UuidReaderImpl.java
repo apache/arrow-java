@@ -66,4 +66,9 @@ public class UuidReaderImpl extends AbstractFieldReader {
   public Object readObject() {
     return vector.getObject(idx());
   }
+
+  @Override
+  public ExtensionTypeWriterFactory getExtensionTypeWriterFactory() {
+    return new UuidWriterFactory();
+  }
 }
