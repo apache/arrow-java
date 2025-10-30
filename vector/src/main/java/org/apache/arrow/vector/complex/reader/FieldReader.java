@@ -16,7 +16,6 @@
  */
 package org.apache.arrow.vector.complex.reader;
 
-// import org.apache.arrow.vector.complex.reader.BaseReader.ExtensionReader;
 import org.apache.arrow.vector.complex.reader.BaseReader.ListReader;
 import org.apache.arrow.vector.complex.reader.BaseReader.MapReader;
 import org.apache.arrow.vector.complex.reader.BaseReader.RepeatedListReader;
