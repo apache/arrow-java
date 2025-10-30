@@ -41,11 +41,8 @@ public class ComplexCopier {
    * @param input field to read from
    * @param output field to write to
    */
-  public static void copy(FieldReader input, FieldWriter output) {
-    writeValue(input, output);
-  }
+  public static void copy(FieldReader reader, FieldWriter writer) {
 
-  private static void writeValue(FieldReader reader, FieldWriter writer) {
     final MinorType mt = reader.getMinorType();
 
       switch (mt) {
@@ -61,7 +58,7 @@ public class ComplexCopier {
             FieldReader childReader = reader.reader();
             FieldWriter childWriter = getListWriterForReader(childReader, writer);
             if (childReader.isSet()) {
-              writeValue(childReader, childWriter);
+              copy(childReader, childWriter);
             } else {
               childWriter.writeNull();
             }
@@ -79,8 +76,8 @@ public class ComplexCopier {
             FieldReader structReader = reader.reader();
             if (structReader.isSet()) {
               writer.startEntry();
-              writeValue(mapReader.key(), getMapWriterForReader(mapReader.key(), writer.key()));
-              writeValue(mapReader.value(), getMapWriterForReader(mapReader.value(), writer.value()));
+              copy(mapReader.key(), getMapWriterForReader(mapReader.key(), writer.key()));
+              copy(mapReader.value(), getMapWriterForReader(mapReader.value(), writer.value()));
               writer.endEntry();
             } else {
               writer.writeNull();
@@ -99,7 +96,7 @@ public class ComplexCopier {
             if (childReader.getMinorType() != Types.MinorType.NULL) {
               FieldWriter childWriter = getStructWriterForReader(childReader, writer, name);
               if (childReader.isSet()) {
-                writeValue(childReader, childWriter);
+                copy(childReader, childWriter);
               } else {
                 childWriter.writeNull();
               }
