@@ -652,10 +652,10 @@ public class FixedSizeListVector extends BaseValueVector
 
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
-      while (toIndex >= this.to.getValueCapacity()) {
-        this.to.reAlloc();
+      while (toIndex >= to.getValueCapacity()) {
+        to.reAlloc();
       }
-      BitVectorHelper.setValidityBit(this.to.validityBuffer, toIndex, isSet(fromIndex));
+      BitVectorHelper.setValidityBit(to.validityBuffer, toIndex, isSet(fromIndex));
       int fromOffset = fromIndex * listSize;
       int toOffset = toIndex * listSize;
       for (int i = 0; i < listSize; i++) {
