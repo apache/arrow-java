@@ -20,7 +20,6 @@ import static org.apache.arrow.vector.NullCheckingForGet.NULL_CHECKING_ENABLED;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.ReusableBuffer;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.LargeVarCharReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.LargeVarCharHolder;
@@ -350,12 +349,6 @@ public final class LargeVarCharVector extends BaseLargeVariableWidthVector
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, LargeVarCharVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(
-        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
-      copyValueSafe(fromIndex, toIndex);
     }
   }
 }

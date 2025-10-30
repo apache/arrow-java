@@ -21,7 +21,6 @@ import static org.apache.arrow.vector.NullCheckingForGet.NULL_CHECKING_ENABLED;
 import java.time.Period;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.IntervalYearReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.IntervalYearHolder;
@@ -366,12 +365,6 @@ public final class IntervalYearVector extends BaseFixedWidthVector
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, IntervalYearVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(
-        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
-      copyValueSafe(fromIndex, toIndex);
     }
   }
 }

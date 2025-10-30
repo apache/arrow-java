@@ -39,7 +39,6 @@ import org.apache.arrow.vector.SmallIntVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
@@ -453,11 +452,6 @@ public class RunEndEncodedVector extends BaseValueVector implements FieldVector 
     @Override
     public void copyValueSafe(int from, int to) {
       this.to.copyFrom(from, to, RunEndEncodedVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
-      this.to.copyFrom(from, to, RunEndEncodedVector.this, writerFactory);
     }
   }
 

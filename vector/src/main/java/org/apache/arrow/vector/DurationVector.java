@@ -23,7 +23,6 @@ import java.time.Duration;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.complex.impl.DurationReaderImpl;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.NullableDurationHolder;
@@ -409,12 +408,6 @@ public final class DurationVector extends BaseFixedWidthVector
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
       to.copyFromSafe(fromIndex, toIndex, DurationVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(
-        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
-      copyValueSafe(fromIndex, toIndex);
     }
   }
 }

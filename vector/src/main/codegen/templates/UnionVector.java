@@ -621,10 +621,6 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
       this.to.copyFrom(from, to, UnionVector.this);
     }
 
-    @Override
-    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
-      this.to.copyFrom(from, to, UnionVector.this, writerFactory);
-    }
   }
 
   @Override

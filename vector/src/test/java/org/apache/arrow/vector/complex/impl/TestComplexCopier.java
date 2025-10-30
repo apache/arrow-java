@@ -874,7 +874,7 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         in.setPosition(i);
         out.setPosition(i);
-        ComplexCopier.copy(in, out, new UuidWriterFactory());
+        ComplexCopier.copy(in, out);
       }
 
       to.setValueCount(COUNT);
@@ -914,7 +914,7 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         in.setPosition(i);
         out.setPosition(i);
-        ComplexCopier.copy(in, out, new UuidWriterFactory());
+        ComplexCopier.copy(in, out);
       }
       to.setValueCount(COUNT);
 
@@ -951,7 +951,7 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         in.setPosition(i);
         out.setPosition(i);
-        ComplexCopier.copy(in, out, new UuidWriterFactory());
+        ComplexCopier.copy(in, out);
       }
       to.setValueCount(COUNT);
 

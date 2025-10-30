@@ -42,7 +42,6 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.impl.ComplexCopier;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.UnionListReader;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -401,42 +400,12 @@ public class ListVector extends BaseRepeatedValueVector
    */
   @Override
   public void copyFrom(int inIndex, int outIndex, ValueVector from) {
-    copyFrom(inIndex, outIndex, from, null);
-  }
-
-  /**
-   * Same as {@link #copyFrom(int, int, ValueVector)} except that it handles the case when the
-   * capacity of the vector needs to be expanded before copy.
-   *
-   * @param inIndex position to copy from in source vector
-   * @param outIndex position to copy to in this vector
-   * @param from source vector
-   * @param writerFactory the extension type writer factory to use for copying extension type values
-   */
-  @Override
-  public void copyFromSafe(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
-    copyFrom(inIndex, outIndex, from, writerFactory);
-  }
-
-  /**
-   * Copy a cell value from a particular index in source vector to a particular position in this
-   * vector.
-   *
-   * @param inIndex position to copy from in source vector
-   * @param outIndex position to copy to in this vector
-   * @param from source vector
-   * @param writerFactory the extension type writer factory to use for copying extension type values
-   */
-  @Override
-  public void copyFrom(
-      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
     Preconditions.checkArgument(this.getMinorType() == from.getMinorType());
     FieldReader in = from.getReader();
     in.setPosition(inIndex);
     FieldWriter out = getWriter();
     out.setPosition(outIndex);
-    ComplexCopier.copy(in, out, writerFactory);
+    ComplexCopier.copy(in, out);
   }
 
   /**
@@ -611,11 +580,6 @@ public class ListVector extends BaseRepeatedValueVector
     @Override
     public void copyValueSafe(int from, int to) {
       this.to.copyFrom(from, to, ListVector.this);
-    }
-
-    @Override
-    public void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory) {
-      this.to.copyFrom(from, to, ListVector.this, writerFactory);
     }
   }
 

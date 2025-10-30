@@ -17,7 +17,6 @@
 package org.apache.arrow.vector.util;
 
 import org.apache.arrow.vector.ValueVector;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 
 /** Interface for copying values between a pair of two vectors of the same type. */
 public interface TransferPair {
@@ -28,6 +27,4 @@ public interface TransferPair {
   ValueVector getTo();
 
   void copyValueSafe(int from, int to);
-
-  void copyValueSafe(int from, int to, ExtensionTypeWriterFactory writerFactory);
 }

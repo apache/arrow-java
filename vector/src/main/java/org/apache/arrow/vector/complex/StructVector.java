@@ -36,7 +36,6 @@ import org.apache.arrow.vector.BufferBacked;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.ValueIterableVector;
 import org.apache.arrow.vector.ValueVector;
-import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.NullableStructReaderImpl;
 import org.apache.arrow.vector.complex.impl.NullableStructWriter;
 import org.apache.arrow.vector.holders.ComplexHolder;
@@ -295,13 +294,6 @@ public class StructVector extends NonNullableStructVector
     public void copyValueSafe(int fromIndex, int toIndex) {
       reallocateTargetValidityBuffer(fromIndex, toIndex);
       super.copyValueSafe(fromIndex, toIndex);
-    }
-
-    @Override
-    public void copyValueSafe(
-        int fromIndex, int toIndex, ExtensionTypeWriterFactory writerFactory) {
-      reallocateTargetValidityBuffer(fromIndex, toIndex);
-      super.copyValueSafe(fromIndex, toIndex, writerFactory);
     }
 
     @Override
