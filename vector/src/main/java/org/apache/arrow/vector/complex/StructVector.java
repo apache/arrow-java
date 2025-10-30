@@ -292,7 +292,7 @@ public class StructVector extends NonNullableStructVector
 
     @Override
     public void copyValueSafe(int fromIndex, int toIndex) {
-      while (toIndex >= this.target.getValidityBufferValueCapacity()) {
+      while (toIndex >= target.getValidityBufferValueCapacity()) {
         target.reallocValidityBuffer();
       }
       BitVectorHelper.setValidityBit(target.validityBuffer, toIndex, isSet(fromIndex));
