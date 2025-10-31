@@ -1082,8 +1082,10 @@ public class TestVectorAppender {
       try (RunEndEncodedVector expectedDelta =
           new RunEndEncodedVector(expectedDeltaField, allocator, null)) {
         expectedDelta.allocateNew();
-        ValueVectorDataPopulator.setVector((IntVector) expectedDelta.getValuesVector(), 3, 4, 5, null);
-        ValueVectorDataPopulator.setVector((IntVector) expectedDelta.getRunEndsVector(), 1, 3, 4, 6);
+        ValueVectorDataPopulator.setVector(
+            (IntVector) expectedDelta.getValuesVector(), 3, 4, 5, null);
+        ValueVectorDataPopulator.setVector(
+            (IntVector) expectedDelta.getRunEndsVector(), 1, 3, 4, 6);
         expectedDelta.setValueCount(6);
         assertVectorsEqual(expectedDelta, delta);
       }
