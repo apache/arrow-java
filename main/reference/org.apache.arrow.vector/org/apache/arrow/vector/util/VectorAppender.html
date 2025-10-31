@@ -153,17 +153,21 @@ implements <a href="../compare/VectorVisitor.html" title="interface in org.apach
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.UnionVector,java.lang.Void)" class="member-name-link">visit</a><wbr>(<a href="../complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a>&nbsp;deltaVector,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,java.lang.Void)" class="member-name-link">visit</a><wbr>(<a href="../complex/RunEndEncodedVector.html" title="class in org.apache.arrow.vector.complex">RunEndEncodedVector</a>&nbsp;deltaVector,
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.ExtensionTypeVector,java.lang.Void)" class="member-name-link">visit</a><wbr>(<a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a>&lt;?&gt;&nbsp;deltaVector,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.UnionVector,java.lang.Void)" class="member-name-link">visit</a><wbr>(<a href="../complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a>&nbsp;deltaVector,
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.NullVector,java.lang.Void)" class="member-name-link">visit</a><wbr>(<a href="../NullVector.html" title="class in org.apache.arrow.vector">NullVector</a>&nbsp;deltaVector,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.ExtensionTypeVector,java.lang.Void)" class="member-name-link">visit</a><wbr>(<a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a>&lt;?&gt;&nbsp;deltaVector,
  <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.NullVector,java.lang.Void)" class="member-name-link">visit</a><wbr>(<a href="../NullVector.html" title="class in org.apache.arrow.vector">NullVector</a>&nbsp;deltaVector,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -172,7 +176,7 @@ implements <a href="../compare/VectorVisitor.html" title="interface in org.apach
 <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-org.apache.arrow.vector.compare.VectorVisitor">Methods inherited from interface&nbsp;org.apache.arrow.vector.compare.<a href="../compare/VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a></h3>
-<code><a href="../compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,IN)">visit</a>, <a href="../compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,IN)">visit</a>, <a href="../compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,IN)">visit</a></code></div>
+<code><a href="../compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,IN)">visit</a>, <a href="../compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,IN)">visit</a></code></div>
 </section>
 </li>
 </ul>
@@ -332,6 +336,17 @@ implements <a href="../compare/VectorVisitor.html" title="interface in org.apach
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../compare/VectorVisitor.html#visit(org.apache.arrow.vector.ExtensionTypeVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="../compare/VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="visit(org.apache.arrow.vector.complex.RunEndEncodedVector,java.lang.Void)">
+<h3>visit</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/RunEndEncodedVector.html" title="class in org.apache.arrow.vector.complex">RunEndEncodedVector</a>&nbsp;deltaVector,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="../compare/VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Void.html" title="class or interface in java.lang" class="external-link">Void</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
