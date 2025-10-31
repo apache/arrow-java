@@ -1339,7 +1339,7 @@ public class TestMapVector {
 
       writer.setValueCount(1);
       outVector.allocateNew();
-      outVector.copyFrom(0, 0, inVector, new UuidWriterFactory());
+      outVector.copyFrom(0, 0, inVector);
       outVector.setValueCount(1);
 
       UnionMapReader mapReader = outVector.getReader();

@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector.complex.reader;
 
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 
 /** Interface for reading extension types. Extends the functionality of {@link BaseReader}. */
@@ -41,4 +42,15 @@ public interface ExtensionReader extends BaseReader {
    * @return true if the value is set, false otherwise
    */
   boolean isSet();
+
+  /**
+   * Gets the extension type writer factory associated with this reader.
+   *
+   * <p>The writer factory is used to create appropriate writers when copying extension type values
+   * to another vector. This allows the copy operation to preserve the extension type semantics.
+   *
+   * @return the extension type writer factory
+   * @throws IllegalStateException if the reader doesn't support extension types
+   */
+  ExtensionTypeWriterFactory getExtensionTypeWriterFactory();
 }
