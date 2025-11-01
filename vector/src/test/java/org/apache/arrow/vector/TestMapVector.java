@@ -168,6 +168,7 @@ public class TestMapVector {
       // {1 -> 11, 2 -> 22, 3 -> 33}
       // null
       // {2 -> null}
+      // {3 -> null}
       writer.setPosition(0); // optional
       writer.startMap();
       writer.startEntry();
@@ -191,14 +192,22 @@ public class TestMapVector {
       writer.endEntry();
       writer.endMap();
 
-      writer.setValueCount(3);
+      writer.setPosition(3);
+      writer.startMap();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(3);
+      writer.value().fixedSizeBinary().writeNull();
+      writer.endEntry();
+      writer.endMap();
+
+      writer.setValueCount(4);
 
       // copy values from input to output
       outVector.allocateNew();
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < 4; i++) {
         outVector.copyFrom(i, i, inVector);
       }
-      outVector.setValueCount(3);
+      outVector.setValueCount(4);
 
       // assert the output vector is correct
       FieldReader reader = outVector.getReader();
@@ -206,6 +215,8 @@ public class TestMapVector {
       reader.setPosition(1);
       assertFalse(reader.isSet(), "should be null");
       reader.setPosition(2);
+      assertTrue(reader.isSet(), "shouldn't be null");
+      reader.setPosition(3);
       assertTrue(reader.isSet(), "shouldn't be null");
 
       /* index 0 */
@@ -232,6 +243,14 @@ public class TestMapVector {
       assertEquals(1, resultSet.size());
       resultStruct = (Map<?, ?>) resultSet.get(0);
       assertEquals(2L, getResultKey(resultStruct));
+      assertFalse(resultStruct.containsKey(MapVector.VALUE_NAME));
+
+      /* index 3 */
+      result = outVector.getObject(3);
+      resultSet = (ArrayList<?>) result;
+      assertEquals(1, resultSet.size());
+      resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertEquals(3L, getResultKey(resultStruct));
       assertFalse(resultStruct.containsKey(MapVector.VALUE_NAME));
     }
   }
