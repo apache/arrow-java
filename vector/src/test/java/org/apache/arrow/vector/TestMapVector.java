@@ -16,10 +16,12 @@
  */
 package org.apache.arrow.vector;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.ByteBuffer;
@@ -41,6 +43,7 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.holder.UuidHolder;
+import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -168,7 +171,6 @@ public class TestMapVector {
       // {1 -> 11, 2 -> 22, 3 -> 33}
       // null
       // {2 -> null}
-      // {3 -> null}
       writer.setPosition(0); // optional
       writer.startMap();
       writer.startEntry();
@@ -192,22 +194,14 @@ public class TestMapVector {
       writer.endEntry();
       writer.endMap();
 
-      writer.setPosition(3);
-      writer.startMap();
-      writer.startEntry();
-      writer.key().bigInt().writeBigInt(3);
-      writer.value().fixedSizeBinary().writeNull();
-      writer.endEntry();
-      writer.endMap();
-
-      writer.setValueCount(4);
+      writer.setValueCount(3);
 
       // copy values from input to output
       outVector.allocateNew();
-      for (int i = 0; i < 4; i++) {
+      for (int i = 0; i < 3; i++) {
         outVector.copyFrom(i, i, inVector);
       }
-      outVector.setValueCount(4);
+      outVector.setValueCount(3);
 
       // assert the output vector is correct
       FieldReader reader = outVector.getReader();
@@ -215,8 +209,6 @@ public class TestMapVector {
       reader.setPosition(1);
       assertFalse(reader.isSet(), "should be null");
       reader.setPosition(2);
-      assertTrue(reader.isSet(), "shouldn't be null");
-      reader.setPosition(3);
       assertTrue(reader.isSet(), "shouldn't be null");
 
       /* index 0 */
@@ -243,14 +235,6 @@ public class TestMapVector {
       assertEquals(1, resultSet.size());
       resultStruct = (Map<?, ?>) resultSet.get(0);
       assertEquals(2L, getResultKey(resultStruct));
-      assertFalse(resultStruct.containsKey(MapVector.VALUE_NAME));
-
-      /* index 3 */
-      result = outVector.getObject(3);
-      resultSet = (ArrayList<?>) result;
-      assertEquals(1, resultSet.size());
-      resultStruct = (Map<?, ?>) resultSet.get(0);
-      assertEquals(3L, getResultKey(resultStruct));
       assertFalse(resultStruct.containsKey(MapVector.VALUE_NAME));
     }
   }
@@ -1376,6 +1360,218 @@ public class TestMapVector {
       bb = ByteBuffer.wrap(holder.value);
       actualUuid = new UUID(bb.getLong(), bb.getLong());
       assertEquals(u2, actualUuid);
+    }
+  }
+
+  private FixedSizeBinaryHolder getFixedSizeBinaryHolder(byte[] array) {
+    // {1 -> [11, 22], 2 -> [32, 21]}
+    FixedSizeBinaryHolder holder = new FixedSizeBinaryHolder();
+    holder.byteWidth = array.length;
+    holder.buffer = allocator.buffer(array.length);
+    for (int i = 0; i < array.length; i++) {
+      holder.buffer.setByte(i, array[i]);
+    }
+
+    return holder;
+  }
+
+  /**
+   * Regression test for GH-586: UnionMapWriter.fixedSizeBinary() should properly delegate to the
+   * entry writer for both key and value paths.
+   */
+  @Test
+  public void testFixedSizeBinaryWriter() {
+    try (MapVector mapVector = MapVector.empty("map_vector", allocator, false)) {
+      UnionMapWriter writer = mapVector.getWriter();
+      writer.allocate();
+
+      // populate input vector with the following records
+      // {1 -> 2, 2 -> 3} - is used to initialize `key` and `value` writers - todo: this needs to be
+      // removed (test should work without it)
+      // {1 -> [11, 22], 2 -> [32, 21]}
+      // null
+      // {[11, 22] -> 1, [32, 21] -> 2}
+      // {[11, 22] -> null}
+      // {null -> [32, 21]} - wrong "for a given entry, the "key" is non-nullable" - todo: it
+      // shouldn't work. Should it?
+      writer.setPosition(0); // optional
+      writer.startMap();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(1);
+      writer.value().bigInt().writeBigInt(2);
+      writer.endEntry();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(2);
+      writer.value().bigInt().writeBigInt(3);
+      writer.endEntry();
+      writer.endMap();
+
+      // {1 -> [11, 22], 2 -> [32, 21]}
+      FixedSizeBinaryHolder holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
+      FixedSizeBinaryHolder holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      writer.setPosition(1);
+      writer.startMap();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(1);
+      writer.value().fixedSizeBinary().write(holder1);
+      writer.endEntry();
+      holder1.buffer.close();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(2);
+      writer.value().fixedSizeBinary().write(holder2);
+      writer.endEntry();
+      writer.endMap();
+      holder2.buffer.close();
+
+      // {[11, 22] -> 1, [32, 21] -> 2}
+      holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
+      holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      writer.setPosition(3);
+      writer.startMap();
+      writer.startEntry();
+      writer.key().fixedSizeBinary().write(holder1);
+      writer.value().bigInt().writeBigInt(1);
+      writer.endEntry();
+      holder1.buffer.close();
+      writer.startEntry();
+      writer.key().fixedSizeBinary().write(holder2);
+      writer.value().bigInt().writeBigInt(2);
+      writer.endEntry();
+      writer.endMap();
+      holder2.buffer.close();
+
+      // {[11, 22] -> null}
+      holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
+      writer.setPosition(4);
+      writer.startMap();
+      writer.startEntry();
+      writer.key().fixedSizeBinary().write(holder1);
+      writer.endEntry();
+      writer.endMap();
+      holder1.buffer.close();
+
+      // {null -> [32, 21]}
+      holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      writer.setPosition(5);
+      writer.startMap();
+      writer.startEntry();
+      writer.value().fixedSizeBinary().write(holder2);
+      writer.endEntry();
+      writer.endMap();
+      holder2.buffer.close();
+
+      writer.setValueCount(6);
+
+      // assert the output vector is correct
+      FieldReader reader = mapVector.getReader();
+      assertTrue(reader.isSet(), "shouldn't be null");
+      reader.setPosition(1);
+      assertTrue(reader.isSet(), "shouldn't be null");
+      reader.setPosition(2);
+      assertFalse(reader.isSet(), "should be null");
+      reader.setPosition(3);
+      assertTrue(reader.isSet(), "shouldn't be null");
+      reader.setPosition(4);
+      assertTrue(reader.isSet(), "shouldn't be null");
+      reader.setPosition(5);
+      assertTrue(reader.isSet(), "shouldn't be null");
+
+      /* index 0 */
+      Object result = mapVector.getObject(0);
+      ArrayList<?> resultSet = (ArrayList<?>) result;
+      assertEquals(2, resultSet.size());
+      Map<?, ?> resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertEquals(1L, getResultKey(resultStruct));
+      assertEquals(2L, getResultValue(resultStruct));
+      resultStruct = (Map<?, ?>) resultSet.get(1);
+      assertEquals(2L, getResultKey(resultStruct));
+      assertEquals(3L, getResultValue(resultStruct));
+
+      /* index 1 */
+      result = mapVector.getObject(1);
+      resultSet = (ArrayList<?>) result;
+      assertEquals(2, resultSet.size());
+      resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertEquals(1L, getResultKey(resultStruct));
+      assertTrue(resultStruct.containsKey(MapVector.VALUE_NAME));
+      assertArrayEquals(new byte[] {11, 22}, (byte[]) resultStruct.get(MapVector.VALUE_NAME));
+      resultStruct = (Map<?, ?>) resultSet.get(1);
+      assertEquals(2L, getResultKey(resultStruct));
+      assertTrue(resultStruct.containsKey(MapVector.VALUE_NAME));
+      assertArrayEquals(new byte[] {32, 21}, (byte[]) resultStruct.get(MapVector.VALUE_NAME));
+
+      /* index 2 */
+      result = mapVector.getObject(2);
+      assertNull(result);
+
+      /* index 3 */
+      result = mapVector.getObject(3);
+      resultSet = (ArrayList<?>) result;
+      assertEquals(2, resultSet.size());
+      resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertTrue(resultStruct.containsKey(MapVector.KEY_NAME));
+      assertArrayEquals(new byte[] {11, 22}, (byte[]) resultStruct.get(MapVector.KEY_NAME));
+      assertEquals(1L, getResultValue(resultStruct));
+      resultStruct = (Map<?, ?>) resultSet.get(1);
+      assertTrue(resultStruct.containsKey(MapVector.KEY_NAME));
+      assertArrayEquals(new byte[] {32, 21}, (byte[]) resultStruct.get(MapVector.KEY_NAME));
+      assertEquals(2L, getResultValue(resultStruct));
+
+      /* index 4 */
+      result = mapVector.getObject(4);
+      resultSet = (ArrayList<?>) result;
+      assertEquals(1, resultSet.size());
+      resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertTrue(resultStruct.containsKey(MapVector.KEY_NAME));
+      assertArrayEquals(new byte[] {11, 22}, (byte[]) resultStruct.get(MapVector.KEY_NAME));
+      assertFalse(resultStruct.containsKey(MapVector.VALUE_NAME));
+
+      /* index 5 */
+      result = mapVector.getObject(5);
+      resultSet = (ArrayList<?>) result;
+      assertEquals(1, resultSet.size());
+      resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertFalse(resultStruct.containsKey(MapVector.KEY_NAME));
+      assertTrue(resultStruct.containsKey(MapVector.VALUE_NAME));
+      assertArrayEquals(new byte[] {32, 21}, (byte[]) resultStruct.get(MapVector.VALUE_NAME));
+    }
+  }
+
+  @Test
+  public void testFixedSizeBinaryWriterInitializationError() {
+    try (MapVector mapVector = MapVector.empty("map_vector", allocator, false)) {
+      UnionMapWriter writer = mapVector.getWriter();
+      writer.allocate();
+
+      // populate input vector with the following records
+      // {[11, 22] -> [32, 21]} - todo: it shouldn't throw. Should it?
+      FixedSizeBinaryHolder holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
+      FixedSizeBinaryHolder holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+
+      writer.setPosition(0); // optional
+      writer.startMap();
+      writer.startEntry();
+      assertThrows(NullPointerException.class, () -> writer.key().fixedSizeBinary().write(holder1));
+      assertThrows(
+          NullPointerException.class, () -> writer.value().fixedSizeBinary().write(holder2));
+      writer.endEntry();
+      holder1.buffer.close();
+      holder2.buffer.close();
+      writer.endMap();
+
+      writer.setValueCount(1);
+
+      // assert the output vector is correct
+      FieldReader reader = mapVector.getReader();
+      assertTrue(reader.isSet(), "shouldn't be null");
+
+      /* index 0 */
+      Object result = mapVector.getObject(0);
+      ArrayList<?> resultSet = (ArrayList<?>) result;
+      assertEquals(1, resultSet.size());
+      Map<?, ?> resultStruct = (Map<?, ?>) resultSet.get(0);
+      assertFalse(resultStruct.containsKey(MapVector.KEY_NAME));
+      assertFalse(resultStruct.containsKey(MapVector.VALUE_NAME));
     }
   }
 }
