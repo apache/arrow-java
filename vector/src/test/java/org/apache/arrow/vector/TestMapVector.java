@@ -1364,7 +1364,6 @@ public class TestMapVector {
   }
 
   private FixedSizeBinaryHolder getFixedSizeBinaryHolder(byte[] array) {
-    // {1 -> [11, 22], 2 -> [32, 21]}
     FixedSizeBinaryHolder holder = new FixedSizeBinaryHolder();
     holder.byteWidth = array.length;
     holder.buffer = allocator.buffer(array.length);
