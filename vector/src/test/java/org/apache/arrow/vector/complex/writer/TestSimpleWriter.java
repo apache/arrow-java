@@ -34,7 +34,7 @@ import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.impl.UuidWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarBinaryWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarCharWriterImpl;
-import org.apache.arrow.vector.holder.UuidHolder;
+import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
