@@ -14,13 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.types.pojo;
+package org.apache.arrow.vector.extension;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.UuidVector;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
+import org.apache.arrow.vector.types.pojo.FieldType;
 
 public class UuidType extends ExtensionType {
 

@@ -19,8 +19,8 @@ package org.apache.arrow.vector.complex.impl;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 import org.apache.arrow.vector.UuidVector;
-import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.holders.UuidHolder;
 
 public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
 

@@ -20,7 +20,7 @@ import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 
 /**
- * A factory interface for creating instances of {@link ExtensionTypeWriter}. This factory allows
+ * A factory interface for creating instances of {@link AbstractExtensionTypeWriter}. This factory allows
  * configuring writer implementations for specific {@link ExtensionTypeVector}.
  *
  * @param <T> the type of writer implementation for a specific {@link ExtensionTypeVector}.

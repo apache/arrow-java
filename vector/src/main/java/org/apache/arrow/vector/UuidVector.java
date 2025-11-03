@@ -22,10 +22,10 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
-import org.apache.arrow.vector.holder.UuidHolder;
+import org.apache.arrow.vector.extension.UuidType;
+import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
-import org.apache.arrow.vector.types.pojo.UuidType;
 import org.apache.arrow.vector.util.TransferPair;
 
 public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
