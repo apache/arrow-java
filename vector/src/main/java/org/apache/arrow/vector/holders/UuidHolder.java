@@ -14,9 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.holder;
-
-import org.apache.arrow.vector.holders.ExtensionHolder;
+package org.apache.arrow.vector.holders;
 
 public class UuidHolder extends ExtensionHolder {
   public byte[] value;

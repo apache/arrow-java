@@ -17,8 +17,8 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.UuidVector;
-import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.Field;
 
