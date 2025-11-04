@@ -22,18 +22,29 @@ import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
+import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.FieldType;
 
 public class UuidType extends ExtensionType {
+  public static final UuidType INSTANCE = new UuidType();
+
+  public static final String EXTENSION_NAME = "arrow.uuid";
+  public static final int UUID_BYTE_WIDTH = 16;
+  public static final int UUID_STRING_WIDTH = 36;
+  public static final ArrowType STORAGE_TYPE = new ArrowType.FixedSizeBinary(UUID_BYTE_WIDTH);
+
+  static {
+    ExtensionTypeRegistry.register(INSTANCE);
+  }
 
   @Override
   public ArrowType storageType() {
-    return new ArrowType.FixedSizeBinary(16);
+    return STORAGE_TYPE;
   }
 
   @Override
   public String extensionName() {
-    return "uuid";
+    return EXTENSION_NAME;
   }
 
   @Override
@@ -47,7 +58,7 @@ public class UuidType extends ExtensionType {
       throw new UnsupportedOperationException(
           "Cannot construct UuidType from underlying type " + storageType);
     }
-    return new UuidType();
+    return INSTANCE;
   }
 
   @Override
@@ -56,7 +67,13 @@ public class UuidType extends ExtensionType {
   }
 
   @Override
+  public boolean isComplex() {
+    return false;
+  }
+
+  @Override
   public FieldVector getNewVector(String name, FieldType fieldType, BufferAllocator allocator) {
-    return new UuidVector(name, allocator, new FixedSizeBinaryVector(name, allocator, 16));
+    return new UuidVector(
+        name, fieldType, allocator, new FixedSizeBinaryVector(name, allocator, UUID_BYTE_WIDTH));
   }
 }
