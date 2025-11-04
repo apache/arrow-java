@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.ByteBuffer;
 import java.util.UUID;
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.LargeVarBinaryVector;
@@ -36,6 +37,7 @@ import org.apache.arrow.vector.complex.impl.VarBinaryWriterImpl;
 import org.apache.arrow.vector.complex.impl.VarCharWriterImpl;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.util.Text;
+import org.apache.arrow.vector.util.UuidUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -198,11 +200,18 @@ public class TestSimpleWriter {
       ByteBuffer bb = ByteBuffer.allocate(16);
       bb.putLong(uuid.getMostSignificantBits());
       bb.putLong(uuid.getLeastSignificantBits());
-      UuidHolder holder = new UuidHolder();
-      holder.value = bb.array();
-      writer.write(holder);
-      UUID result = vector.getObject(0);
-      assertEquals(uuid, result);
+
+      // Allocate ArrowBuf for the holder
+      try (ArrowBuf buf = allocator.buffer(16)) {
+        buf.setBytes(0, bb.array());
+
+        UuidHolder holder = new UuidHolder();
+        holder.buffer = buf;
+
+        writer.write(holder);
+        UUID result = vector.getObject(0);
+        assertEquals(uuid, result);
+      }
     }
   }
 
@@ -219,8 +228,7 @@ public class TestSimpleWriter {
       UuidReaderImpl reader2 = (UuidReaderImpl) vector.getReader();
       UuidHolder holder = new UuidHolder();
       reader2.read(0, holder);
-      final ByteBuffer bb = ByteBuffer.wrap(holder.value);
-      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
       assertEquals(uuid, actualUuid);
     }
   }

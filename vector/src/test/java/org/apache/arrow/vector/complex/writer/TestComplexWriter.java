@@ -106,6 +106,7 @@ import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.JsonStringHashMap;
 import org.apache.arrow.vector.util.Text;
 import org.apache.arrow.vector.util.TransferPair;
+import org.apache.arrow.vector.util.UuidUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -2521,8 +2522,7 @@ public class TestComplexWriter {
         uuidReader.setPosition(0);
         UuidHolder uuidHolder = new UuidHolder();
         uuidReader.read(uuidHolder);
-        final ByteBuffer bb = ByteBuffer.wrap(uuidHolder.value);
-        UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+        UUID actualUuid = UuidUtility.uuidFromArrowBuf(uuidHolder.buffer, 0);
         assertEquals(u1, actualUuid);
         assertTrue(uuidReader.isSet());
         assertEquals(uuidReader.getMinorType(), MinorType.EXTENSIONTYPE);
