@@ -16,6 +16,7 @@
 # under the License.
 
 find_package(Arrow REQUIRED)
+find_package(Protobuf REQUIRED)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
                     ${JNI_INCLUDE_DIRS} ${JNI_HEADERS_DIR})
@@ -35,7 +36,8 @@ add_jar(arrow_java_jni_orc_jar
 add_library(arrow_java_jni_orc SHARED src/main/cpp/jni_wrapper.cpp)
 set_property(TARGET arrow_java_jni_orc PROPERTY OUTPUT_NAME "arrow_orc_jni")
 target_link_libraries(arrow_java_jni_orc arrow_java_jni_orc_headers jni
-                      Arrow::arrow_static)
+                      Arrow::arrow_static
+                      ${Protobuf_LIBRARIES})
 
 set(ARROW_JAVA_JNI_ORC_LIBDIR
     "${CMAKE_INSTALL_PREFIX}/lib/arrow_orc_jni/${ARROW_JAVA_JNI_ARCH_DIR}")

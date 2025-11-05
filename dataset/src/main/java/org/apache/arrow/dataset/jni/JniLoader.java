@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,14 +77,13 @@ public final class JniLoader {
   }
 
   private void load(String name) {
-    final String libraryToLoad =
+    final String libraryToLoad = "/Users/yuxia/Projects/cpp-projects/arrow/java-dist/lib/" +
         name + "/" + getNormalizedArch() + "/" + System.mapLibraryName(name);
     try {
       File temp =
           File.createTempFile("jnilib-", ".tmp", new File(System.getProperty("java.io.tmpdir")));
       temp.deleteOnExit();
-      try (final InputStream is =
-          JniWrapper.class.getClassLoader().getResourceAsStream(libraryToLoad)) {
+      try (final InputStream is = Files.newInputStream(Path.of(libraryToLoad))) {
         if (is == null) {
           throw new FileNotFoundException(libraryToLoad);
         }

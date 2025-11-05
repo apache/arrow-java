@@ -17,6 +17,7 @@
 
 find_package(ArrowDataset REQUIRED)
 find_package(ArrowSubstrait REQUIRED)
+find_package(Protobuf REQUIRED)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
                     ${JNI_INCLUDE_DIRS} ${JNI_HEADERS_DIR})
@@ -25,6 +26,7 @@ add_jar(arrow_java_jni_dataset_jar
         src/main/java/org/apache/arrow/dataset/jni/JniLoader.java
         src/main/java/org/apache/arrow/dataset/jni/JniWrapper.java
         src/main/java/org/apache/arrow/dataset/file/JniWrapper.java
+        src/main/java/org/apache/arrow/dataset/file/ParquetWriterProperties.java
         src/main/java/org/apache/arrow/dataset/jni/NativeMemoryPool.java
         src/main/java/org/apache/arrow/dataset/jni/ReservationListener.java
         src/main/java/org/apache/arrow/dataset/substrait/JniWrapper.java
@@ -38,7 +40,8 @@ target_link_libraries(arrow_java_jni_dataset
                       arrow_java_jni_dataset_headers
                       jni
                       ArrowDataset::arrow_dataset_static
-                      ArrowSubstrait::arrow_substrait_static)
+                      ArrowSubstrait::arrow_substrait_static
+                      ${Protobuf_LIBRARIES})
 
 if(BUILD_TESTING)
   add_executable(arrow-java-jni-dataset-test src/main/cpp/jni_util_test.cc
