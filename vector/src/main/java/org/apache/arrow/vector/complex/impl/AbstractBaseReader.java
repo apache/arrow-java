@@ -115,9 +115,4 @@ abstract class AbstractBaseReader implements FieldReader {
   public void copyAsValue(MapWriter writer) {
     ComplexCopier.copy(this, (FieldWriter) writer);
   }
-
-  @Override
-  public ExtensionTypeWriterFactory getExtensionTypeWriterFactory() {
-    throw new IllegalStateException("The current reader doesn't support reading extension type");
-  }
 }

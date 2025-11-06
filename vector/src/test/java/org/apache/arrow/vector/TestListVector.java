@@ -36,7 +36,6 @@ import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.impl.UnionListReader;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
-import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.holder.UuidHolder;
@@ -1216,8 +1215,7 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      ExtensionWriter extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.writeExtension(u1);
       extensionWriter.writeExtension(u2);
       writer.endList();
@@ -1244,8 +1242,7 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      ExtensionWriter extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.writeExtension(u1);
       extensionWriter.writeExtension(u2);
       writer.endList();
@@ -1281,19 +1278,18 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-      extensionWriter.writeExtension(u1);
-      extensionWriter.writeExtension(u2);
-      extensionWriter.writeNull();
+
+      writer.extension(UuidType.INSTANCE).writeExtension(u1);
+      writer.writeExtension(u2);
+      writer.writeNull();
       writer.endList();
 
-      writer.setValueCount(1);
+      writer.setValueCount(3);
 
       // copy values from input to output
       outVector.allocateNew();
       outVector.copyFrom(0, 0, inVector);
-      outVector.setValueCount(1);
+      outVector.setValueCount(3);
 
       UnionListReader reader = outVector.getReader();
       assertTrue(reader.isSet(), "shouldn't be null");
@@ -1326,8 +1322,7 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      ExtensionWriter extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.writeExtension(u1);
       extensionWriter.writeExtension(u2);
       writer.endList();
@@ -1337,8 +1332,7 @@ public class TestListVector {
       UUID u3 = UUID.randomUUID();
       UUID u4 = UUID.randomUUID();
       writer.startList();
-      extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.writeExtension(u3);
       extensionWriter.writeExtension(u4);
       extensionWriter.writeNull();
