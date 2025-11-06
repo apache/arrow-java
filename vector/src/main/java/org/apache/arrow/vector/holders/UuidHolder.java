@@ -17,6 +17,8 @@
 package org.apache.arrow.vector.holders;
 
 import org.apache.arrow.memory.ArrowBuf;
+import org.apache.arrow.vector.extension.UuidType;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 
 /**
  * Value holder for non-nullable UUID values.
@@ -34,5 +36,10 @@ public class UuidHolder extends ExtensionHolder {
   /** Constructs a UuidHolder with isSet = 1. */
   public UuidHolder() {
     this.isSet = 1;
+  }
+
+  @Override
+  public ArrowType type() {
+    return UuidType.INSTANCE;
   }
 }

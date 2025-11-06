@@ -107,13 +107,12 @@ abstract class AbstractFieldWriter extends AbstractBaseWriter implements FieldWr
     throw new IllegalStateException(String.format("You tried to end a map entry when you are using a ValueWriter of type %s.", this.getClass().getSimpleName()));
   }
 
+  @Override
   public void write(ExtensionHolder var1)  {
     this.fail("ExtensionType");
   }
+  @Override
   public void writeExtension(Object var1)  {
-    this.fail("ExtensionType");
-  }
-  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory var1) {
     this.fail("ExtensionType");
   }
 

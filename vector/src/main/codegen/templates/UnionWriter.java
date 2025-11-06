@@ -28,6 +28,8 @@ import org.apache.arrow.vector.types.Types;
 package org.apache.arrow.vector.complex.impl;
 
 <#include "/@includes/vv_imports.ftl" />
+import java.util.HashMap;
+
 import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.types.Types.MinorType;
 
@@ -213,8 +215,31 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
     return getMapWriter(arrowType);
   }
 
+  private java.util.Map<ArrowType, ExtensionWriter> extensionWriters = new HashMap<>();
+
   private ExtensionWriter getExtensionWriter(ArrowType arrowType) {
-    throw new UnsupportedOperationException("ExtensionTypes are not supported yet.");
+    ExtensionWriter w = extensionWriters.get(arrowType);
+    if (w == null) {
+      w = ((ExtensionType) arrowType).getNewFieldWriter(data.getExtension(arrowType));
+      w.setPosition(idx());
+      extensionWriters.put(arrowType, w);
+    }
+    return w;
+  }
+
+  public void writeExtension(Object value, ArrowType type)  {
+    data.setType(idx(), MinorType.EXTENSIONTYPE);
+    ExtensionWriter w = getExtensionWriter(type);
+    w.setPosition(idx());
+    w.writeExtension(value);
+  }
+
+  @Override
+  public void write(ExtensionHolder holder)  {
+    data.setType(idx(), MinorType.EXTENSIONTYPE);
+    ExtensionWriter w = getExtensionWriter(holder.type());
+    w.setPosition(idx());
+    w.write(holder);
   }
 
   BaseWriter getWriter(MinorType minorType) {

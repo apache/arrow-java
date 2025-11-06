@@ -31,6 +31,7 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DirtyRootAllocator;
+import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.LargeVarBinaryVector;
 import org.apache.arrow.vector.LargeVarCharVector;
 import org.apache.arrow.vector.UuidVector;
@@ -42,6 +43,7 @@ import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.extension.UuidType;
+import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.NullableDecimalHolder;
@@ -100,7 +102,6 @@ public class TestPromotableWriter {
       writer.integer("A").writeInt(10);
 
       // we don't write anything in 3
-
       writer.setPosition(4);
       writer.integer("A").writeInt(100);
 
@@ -130,9 +131,23 @@ public class TestPromotableWriter {
       binHolder.buffer = buf;
       writer.fixedSizeBinary("A", 4).write(binHolder);
 
+      writer.setPosition(9);
+      UUID uuid = UUID.randomUUID();
+      writer.extension("A", UuidType.INSTANCE).writeExtension(uuid);
       writer.end();
 
-      container.setValueCount(9);
+      writer.setPosition(10);
+      UUID uuid2 = UUID.randomUUID();
+      UuidHolder uuidHolder = new UuidHolder();
+      uuidHolder.value =
+          ByteBuffer.allocate(16)
+              .putLong(uuid2.getMostSignificantBits())
+              .putLong(uuid2.getLeastSignificantBits())
+              .array();
+      writer.extension("A", UuidType.INSTANCE).write(uuidHolder);
+      writer.end();
+
+      container.setValueCount(11);
 
       final UnionVector uv = v.getChild("A", UnionVector.class);
 
@@ -168,6 +183,12 @@ public class TestPromotableWriter {
           ByteBuffer.wrap(uv.getFixedSizeBinaryVector().get(8))
               .order(ByteOrder.nativeOrder())
               .getInt());
+
+      assertFalse(uv.isNull(9), "9 shouldn't be null");
+      assertEquals(uuid, uv.getObject(9));
+
+      assertFalse(uv.isNull(10), "10 shouldn't be null");
+      assertEquals(uuid2, uv.getObject(10));
 
       container.clear();
       container.allocateNew();
@@ -791,7 +812,6 @@ public class TestPromotableWriter {
       UUID u2 = UUID.randomUUID();
       container.allocateNew();
       container.setValueCount(1);
-      writer.addExtensionTypeWriterFactory(new UuidWriterFactory());
 
       writer.setPosition(0);
       writer.writeExtension(u1);
@@ -817,7 +837,6 @@ public class TestPromotableWriter {
       UUID u2 = UUID.randomUUID();
       container.allocateNew();
       container.setValueCount(1);
-      writer.addExtensionTypeWriterFactory(new UuidWriterFactory());
 
       writer.setPosition(0);
       writer.writeExtension(u1);
@@ -826,7 +845,7 @@ public class TestPromotableWriter {
 
       container.setValueCount(2);
 
-      UuidVector uuidVector = (UuidVector) container.getDataVector();
+      FieldVector uuidVector = container.getDataVector();
       assertEquals(u1, uuidVector.getObject(0));
       assertEquals(u2, uuidVector.getObject(1));
     }

@@ -27,8 +27,10 @@ import java.util.Objects;
 
 import org.apache.arrow.flatbuf.Type;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.*;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.ValueVector;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -331,6 +333,8 @@ public abstract class ArrowType {
     public <T> T accept(ArrowTypeVisitor<T> visitor) {
       return visitor.visit(this);
     }
+
+    public abstract FieldWriter getNewFieldWriter(ValueVector vector);
   }
 
   private static final int defaultDecimalBitWidth = 128;

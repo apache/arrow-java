@@ -286,7 +286,7 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
         writer = new UnionWriter((UnionVector) vector, nullableStructWriterFactory);
         break;
       case EXTENSIONTYPE:
-        writer = new UnionExtensionWriter((ExtensionTypeVector) vector);
+        writer = ((ExtensionType) vector.getField().getType()).getNewFieldWriter(vector);
         break;
       default:
         writer = type.getNewFieldWriter(vector);
@@ -325,6 +325,9 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
 
   @Override
   protected FieldWriter getWriter(MinorType type, ArrowType arrowType) {
+    if(type == MinorType.EXTENSIONTYPE) {
+      lastExtensionType = arrowType;
+    }
     if (state == State.UNION) {
       if (requiresArrowType(type)) {
         ((UnionWriter) writer).getWriter(type, arrowType);
@@ -540,18 +543,25 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
     getWriter(MinorType.LARGEVARCHAR).writeLargeVarChar(value);
   }
 
+  protected ArrowType lastExtensionType;
+
   @Override
   public void writeExtension(Object value) {
-    getWriter(MinorType.EXTENSIONTYPE).writeExtension(value);
+    FieldWriter writer = getWriter(MinorType.EXTENSIONTYPE, lastExtensionType);
+    if(writer instanceof UnionWriter) {
+      ((UnionWriter) writer).writeExtension(value, lastExtensionType);
+    } else {
+      writer.writeExtension(value);
+    }
+  }
+
+  public void writeExtension(Object value, ArrowType arrowType) {
+    getWriter(MinorType.EXTENSIONTYPE, arrowType).writeExtension(value);
   }
 
   @Override
-  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory factory) {
-    getWriter(MinorType.EXTENSIONTYPE).addExtensionTypeWriterFactory(factory);
-  }
-
-  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory factory, ArrowType arrowType) {
-    getWriter(MinorType.EXTENSIONTYPE, arrowType).addExtensionTypeWriterFactory(factory);
+  public void write(ExtensionHolder holder) {
+    getWriter(MinorType.EXTENSIONTYPE, lastExtensionType).write(holder);
   }
 
   @Override
