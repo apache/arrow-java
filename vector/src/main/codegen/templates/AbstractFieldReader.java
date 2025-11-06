@@ -140,11 +140,6 @@ abstract class AbstractFieldReader extends AbstractBaseReader implements FieldRe
     return -1;
   }
 
-  @Override
-  public ExtensionTypeWriterFactory getExtensionTypeWriterFactory() {
-    throw new IllegalStateException("The current reader doesn't support reading extension type");
-  }
-
   private void fail(String name) {
     throw new IllegalArgumentException(String.format("You tried to read a [%s] type when you are using a field reader of type [%s].", name, this.getClass().getSimpleName()));
   }

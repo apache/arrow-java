@@ -379,6 +379,22 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
     return mapVector;
   }
 
+  private ExtensionTypeVector extensionVector;
+
+  public ExtensionTypeVector getExtension(ArrowType arrowType) {
+    if (extensionVector == null) {
+      int vectorCount = internalStruct.size();
+      extensionVector = addOrGet(null, MinorType.EXTENSIONTYPE, arrowType, ExtensionTypeVector.class);
+      if (internalStruct.size() > vectorCount) {
+        extensionVector.allocateNew();
+        if (callBack != null) {
+          callBack.doWork();
+        }
+      }
+    }
+    return extensionVector;
+  }
+
   public int getTypeValue(int index) {
     return typeBuffer.getByte(index * TYPE_WIDTH);
   }
@@ -725,6 +741,8 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
           return getListView();
         case MAP:
           return getMap(name, arrowType);
+        case EXTENSIONTYPE:
+          return getExtension(arrowType);
         default:
           throw new UnsupportedOperationException("Cannot support type: " + MinorType.values()[typeId]);
       }

@@ -17,7 +17,14 @@
 package org.apache.arrow.vector.holder;
 
 import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.UuidType;
 
 public class UuidHolder extends ExtensionHolder {
   public byte[] value;
+
+  @Override
+  public ArrowType type() {
+    return UuidType.INSTANCE;
+  }
 }

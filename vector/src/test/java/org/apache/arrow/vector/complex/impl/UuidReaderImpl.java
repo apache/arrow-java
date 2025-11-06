@@ -17,6 +17,7 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.UuidVector;
+import org.apache.arrow.vector.holder.NullableUuidHolder;
 import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
@@ -46,9 +47,18 @@ public class UuidReaderImpl extends AbstractFieldReader {
     return !vector.isNull(idx());
   }
 
-  @Override
   public void read(ExtensionHolder holder) {
-    vector.get(idx(), (UuidHolder) holder);
+    if (holder instanceof NullableUuidHolder) {
+      vector.get(idx(), (NullableUuidHolder) holder);
+    } else if (holder instanceof UuidHolder) {
+      vector.get(idx(), (UuidHolder) holder);
+    } else {
+      throw new IllegalArgumentException("Holder type not supported");
+    }
+  }
+
+  public void read(NullableUuidHolder holder) {
+    vector.get(idx(), holder);
   }
 
   @Override
@@ -65,10 +75,5 @@ public class UuidReaderImpl extends AbstractFieldReader {
   @Override
   public Object readObject() {
     return vector.getObject(idx());
-  }
-
-  @Override
-  public ExtensionTypeWriterFactory getExtensionTypeWriterFactory() {
-    return new UuidWriterFactory();
   }
 }

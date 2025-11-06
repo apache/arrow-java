@@ -66,7 +66,6 @@ import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.impl.UnionMapReader;
 import org.apache.arrow.vector.complex.impl.UnionReader;
 import org.apache.arrow.vector.complex.impl.UnionWriter;
-import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
 import org.apache.arrow.vector.complex.reader.BaseReader.StructReader;
 import org.apache.arrow.vector.complex.reader.BigIntReader;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -78,6 +77,7 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
+import org.apache.arrow.vector.holder.NullableUuidHolder;
 import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.DecimalHolder;
 import org.apache.arrow.vector.holders.DurationHolder;
@@ -1105,6 +1105,13 @@ public class TestComplexWriter {
         new UnionVector("union", allocator, /* field type */ null, /* call-back */ null);
     UnionWriter unionWriter = new UnionWriter(vector);
     unionWriter.allocate();
+
+    UUID uuid = UUID.randomUUID();
+    ByteBuffer bb = ByteBuffer.allocate(16);
+    bb.putLong(uuid.getMostSignificantBits());
+    bb.putLong(uuid.getLeastSignificantBits());
+    byte[] uuidByte = bb.array();
+
     for (int i = 0; i < COUNT; i++) {
       unionWriter.setPosition(i);
       if (i % 5 == 0) {
@@ -1127,6 +1134,11 @@ public class TestComplexWriter {
         holder.buffer = buf;
         unionWriter.write(holder);
         bufs.add(buf);
+      } else if (i % 5 == 4) {
+        UuidHolder holder = new UuidHolder();
+
+        holder.value = uuidByte;
+        unionWriter.write(holder);
       } else {
         unionWriter.writeFloat4((float) i);
       }
@@ -1152,6 +1164,13 @@ public class TestComplexWriter {
         unionReader.read(holder);
         assertEquals(i, holder.buffer.getInt(0));
         assertEquals(4, holder.byteWidth);
+      } else if (i % 5 == 4) {
+        NullableUuidHolder holder = new NullableUuidHolder();
+        unionReader.read(holder);
+        ByteBuffer b = ByteBuffer.wrap(holder.value);
+        long high = b.getLong();
+        long low = b.getLong();
+        assertEquals(new UUID(high, low), uuid);
       } else {
         assertEquals((float) i, unionReader.readFloat(), 1e-12);
       }
@@ -2509,9 +2528,8 @@ public class TestComplexWriter {
       StructWriter rootWriter = writer.rootAsStruct();
 
       {
-        ExtensionWriter extensionWriter = rootWriter.extension("uuid1", new UuidType());
+        ExtensionWriter extensionWriter = rootWriter.extension("uuid1", UuidType.INSTANCE);
         extensionWriter.setPosition(0);
-        extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
         extensionWriter.writeExtension(u1);
       }
       // read

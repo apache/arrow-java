@@ -204,13 +204,13 @@ public class Union${listName}Writer extends AbstractFieldWriter {
 
   @Override
   public ExtensionWriter extension(ArrowType arrowType) {
-    this.extensionType = arrowType;
+    extensionType = arrowType;
     return this;
   }
+
   @Override
   public ExtensionWriter extension(String name, ArrowType arrowType) {
-    ExtensionWriter extensionWriter = writer.extension(name, arrowType);
-    return extensionWriter;
+    return writer.extension(name, arrowType);
   }
 
   <#if listName == "LargeList">
@@ -337,13 +337,8 @@ public class Union${listName}Writer extends AbstractFieldWriter {
 
   @Override
   public void writeExtension(Object value) {
-    writer.writeExtension(value);
+    writer.writeExtension(value, extensionType);
     writer.setPosition(writer.idx() + 1);
-  }
-
-  @Override
-  public void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory var1) {
-    writer.addExtensionTypeWriterFactory(var1, extensionType);
   }
 
   public void write(ExtensionHolder var1) {
