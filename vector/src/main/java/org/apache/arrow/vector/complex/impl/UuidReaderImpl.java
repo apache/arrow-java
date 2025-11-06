@@ -61,7 +61,6 @@ public class UuidReaderImpl extends AbstractFieldReader {
     return !vector.isNull(idx());
   }
 
-  @Override
   public void read(ExtensionHolder holder) {
     if (holder instanceof UuidHolder) {
       vector.get(idx(), (UuidHolder) holder);
@@ -94,10 +93,5 @@ public class UuidReaderImpl extends AbstractFieldReader {
   @Override
   public Object readObject() {
     return vector.getObject(idx());
-  }
-
-  @Override
-  public ExtensionTypeWriterFactory getExtensionTypeWriterFactory() {
-    return new UuidWriterFactory();
   }
 }

@@ -35,7 +35,6 @@ import org.apache.arrow.vector.complex.LargeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.impl.UnionLargeListReader;
 import org.apache.arrow.vector.complex.impl.UnionLargeListWriter;
-import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.holder.UuidHolder;
@@ -1040,8 +1039,7 @@ public class TestLargeListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      ExtensionWriter extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.writeExtension(u1);
       extensionWriter.writeExtension(u2);
       writer.endList();
@@ -1051,8 +1049,7 @@ public class TestLargeListVector {
       UUID u3 = UUID.randomUUID();
       UUID u4 = UUID.randomUUID();
       writer.startList();
-      extensionWriter = writer.extension(new UuidType());
-      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.writeExtension(u3);
       extensionWriter.writeExtension(u4);
       extensionWriter.writeNull();

@@ -16,7 +16,11 @@
  */
 package org.apache.arrow.vector.holders;
 
+import org.apache.arrow.vector.types.pojo.ArrowType;
+
 /** Base {@link ValueHolder} class for a {@link org.apache.arrow.vector.ExtensionTypeVector}. */
 public abstract class ExtensionHolder implements ValueHolder {
   public int isSet;
+
+  public abstract ArrowType type();
 }
