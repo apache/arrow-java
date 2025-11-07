@@ -244,6 +244,17 @@ public class UnionMapWriter extends UnionListWriter {
     }
   }
 
+  public FixedSizeBinaryWriter fixedSizeBinary(int byteWidth) {
+    switch (mode) {
+      case KEY:
+        return entryWriter.fixedSizeBinary(MapVector.KEY_NAME, byteWidth);
+      case VALUE:
+        return entryWriter.fixedSizeBinary(MapVector.VALUE_NAME, byteWidth);
+      default:
+        return this;
+    }
+  }
+
   @Override
   public FixedSizeBinaryWriter fixedSizeBinary() {
     switch (mode) {

@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.ByteBuffer;
@@ -1537,22 +1536,21 @@ public class TestMapVector {
   }
 
   @Test
-  public void testFixedSizeBinaryWriterInitializationError() {
+  public void testFixedSizeBinaryFirstInitialization() {
     try (MapVector mapVector = MapVector.empty("map_vector", allocator, false)) {
       UnionMapWriter writer = mapVector.getWriter();
       writer.allocate();
 
       // populate input vector with the following records
-      // {[11, 22] -> [32, 21]} - todo: it shouldn't throw. Should it?
+      // {[11, 22] -> [32, 21]}
       FixedSizeBinaryHolder holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
       FixedSizeBinaryHolder holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
 
       writer.setPosition(0); // optional
       writer.startMap();
       writer.startEntry();
-      assertThrows(NullPointerException.class, () -> writer.key().fixedSizeBinary().write(holder1));
-      assertThrows(
-          NullPointerException.class, () -> writer.value().fixedSizeBinary().write(holder2));
+      writer.key().fixedSizeBinary(holder1.byteWidth).write(holder1);
+      writer.value().fixedSizeBinary(holder2.byteWidth).write(holder2);
       writer.endEntry();
       holder1.buffer.close();
       holder2.buffer.close();
@@ -1569,8 +1567,10 @@ public class TestMapVector {
       ArrayList<?> resultSet = (ArrayList<?>) result;
       assertEquals(1, resultSet.size());
       Map<?, ?> resultStruct = (Map<?, ?>) resultSet.get(0);
-      assertFalse(resultStruct.containsKey(MapVector.KEY_NAME));
-      assertFalse(resultStruct.containsKey(MapVector.VALUE_NAME));
+      assertTrue(resultStruct.containsKey(MapVector.KEY_NAME));
+      assertTrue(resultStruct.containsKey(MapVector.VALUE_NAME));
+      assertArrayEquals(new byte[] {11, 22}, (byte[]) resultStruct.get(MapVector.KEY_NAME));
+      assertArrayEquals(new byte[] {32, 21}, (byte[]) resultStruct.get(MapVector.VALUE_NAME));
     }
   }
 }
