@@ -1397,7 +1397,10 @@ public class TestMapVector {
       writer.setPosition(0); // optional
       writer.startMap();
       writer.startEntry();
-      writer.key().fixedSizeBinary(holder1.byteWidth).write(holder1); // need to initialize with byteWidth - NPE otherwise
+      writer
+          .key()
+          .fixedSizeBinary(holder1.byteWidth)
+          .write(holder1); // need to initialize with byteWidth - NPE otherwise
       writer.value().fixedSizeBinary(holder2.byteWidth).write(holder2);
       writer.endEntry();
       holder1.buffer.close();
