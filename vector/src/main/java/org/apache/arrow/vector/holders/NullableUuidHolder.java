@@ -25,9 +25,9 @@ import org.apache.arrow.memory.ArrowBuf;
  * valid UUID in {@code buffer}; when {@code isSet = 0}, the holder represents a null value and
  * {@code buffer} should not be accessed.
  *
- * @see {@link UuidHolder}
- * @see {@link org.apache.arrow.vector.UuidVector}
- * @see {@link org.apache.arrow.vector.extension.UuidType}
+ * @see UuidHolder
+ * @see org.apache.arrow.vector.UuidVector
+ * @see org.apache.arrow.vector.extension.UuidType
  */
 public class NullableUuidHolder extends ExtensionHolder {
   /** Buffer containing 16-byte UUID data. */
