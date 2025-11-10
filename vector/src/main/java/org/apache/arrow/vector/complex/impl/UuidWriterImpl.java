@@ -22,8 +22,22 @@ import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 
+/**
+ * Writer implementation for {@link UuidVector}.
+ *
+ * <p>Supports writing UUID values in multiple formats: {@link java.util.UUID}, byte arrays, and
+ * {@link ArrowBuf}. Also handles {@link UuidHolder} and {@link NullableUuidHolder}.
+ *
+ * @see UuidVector
+ * @see org.apache.arrow.vector.extension.UuidType
+ */
 public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
 
+  /**
+   * Constructs a writer for the given UUID vector.
+   *
+   * @param vector the UUID vector to write to
+   */
   public UuidWriterImpl(UuidVector vector) {
     super(vector);
   }
@@ -45,9 +59,9 @@ public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
   @Override
   public void write(ExtensionHolder holder) {
     if (holder instanceof UuidHolder) {
-      vector.setSafe(getPosition(), ((UuidHolder) holder).buffer);
+      vector.setSafe(getPosition(), (UuidHolder) holder);
     } else if (holder instanceof NullableUuidHolder) {
-      vector.setSafe(getPosition(), ((NullableUuidHolder) holder).buffer);
+      vector.setSafe(getPosition(), (NullableUuidHolder) holder);
     }
     vector.setValueCount(getPosition() + 1);
   }

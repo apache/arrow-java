@@ -23,9 +23,9 @@ import org.apache.arrow.memory.ArrowBuf;
  *
  * <p>Contains a 16-byte UUID in {@code buffer} with {@code isSet} always 1.
  *
- * @see {@link NullableUuidHolder}
- * @see {@link org.apache.arrow.vector.UuidVector}
- * @see {@link org.apache.arrow.vector.extension.UuidType}
+ * @see NullableUuidHolder
+ * @see org.apache.arrow.vector.UuidVector
+ * @see org.apache.arrow.vector.extension.UuidType
  */
 public class UuidHolder extends ExtensionHolder {
   /** Buffer containing 16-byte UUID data. */

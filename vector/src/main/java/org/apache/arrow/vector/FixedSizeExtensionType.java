@@ -16,6 +16,19 @@
  */
 package org.apache.arrow.vector;
 
+/**
+ * Interface for extension types with fixed-width storage.
+ *
+ * <p>Extension types that implement this interface have a known, constant byte width per value.
+ * This allows for optimizations in memory allocation and data access patterns.
+ *
+ * @see org.apache.arrow.vector.extension.UuidType
+ */
 public interface FixedSizeExtensionType {
-  public int getTypeWidth();
+  /**
+   * Returns the fixed byte width of each value in this extension type.
+   *
+   * @return the number of bytes per value
+   */
+  int getTypeWidth();
 }
