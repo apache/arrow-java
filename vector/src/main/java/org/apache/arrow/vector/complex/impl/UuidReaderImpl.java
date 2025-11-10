@@ -18,14 +18,29 @@ package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.Field;
 
+/**
+ * Reader implementation for {@link UuidVector}.
+ *
+ * <p>Provides methods to read UUID values from a vector, including support for reading into {@link
+ * UuidHolder} and retrieving values as {@link java.util.UUID} objects.
+ *
+ * @see UuidVector
+ * @see org.apache.arrow.vector.extension.UuidType
+ */
 public class UuidReaderImpl extends AbstractFieldReader {
 
   private final UuidVector vector;
 
+  /**
+   * Constructs a reader for the given UUID vector.
+   *
+   * @param vector the UUID vector to read from
+   */
   public UuidReaderImpl(UuidVector vector) {
     super();
     this.vector = vector;
@@ -48,12 +63,26 @@ public class UuidReaderImpl extends AbstractFieldReader {
 
   @Override
   public void read(ExtensionHolder holder) {
-    vector.get(idx(), (UuidHolder) holder);
+    if (holder instanceof UuidHolder) {
+      vector.get(idx(), (UuidHolder) holder);
+    } else if (holder instanceof NullableUuidHolder) {
+      vector.get(idx(), (NullableUuidHolder) holder);
+    } else {
+      throw new IllegalArgumentException(
+          "Unsupported holder type for UuidReader: " + holder.getClass());
+    }
   }
 
   @Override
   public void read(int arrayIndex, ExtensionHolder holder) {
-    vector.get(arrayIndex, (UuidHolder) holder);
+    if (holder instanceof UuidHolder) {
+      vector.get(arrayIndex, (UuidHolder) holder);
+    } else if (holder instanceof NullableUuidHolder) {
+      vector.get(arrayIndex, (NullableUuidHolder) holder);
+    } else {
+      throw new IllegalArgumentException(
+          "Unsupported holder type for UuidReader: " + holder.getClass());
+    }
   }
 
   @Override

@@ -23,12 +23,23 @@ import java.nio.ByteOrder;
 import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 
+/**
+ * Utility class for UUID conversions and operations.
+ *
+ * <p>Provides methods to convert between {@link UUID} objects and byte representations used in
+ * Arrow vectors.
+ *
+ * @see org.apache.arrow.vector.UuidVector
+ * @see org.apache.arrow.vector.extension.UuidType
+ */
 public class UuidUtility {
   /**
-   * Converts UUID to byte array
+   * Converts a UUID to a 16-byte array.
    *
-   * @param uuid UUID object
-   * @return uuid as byte array
+   * <p>The UUID is stored in big-endian byte order, with the most significant bits first.
+   *
+   * @param uuid the UUID to convert
+   * @return a 16-byte array representing the UUID
    */
   public static byte[] getBytesFromUUID(UUID uuid) {
     byte[] result = new byte[16];
@@ -45,6 +56,16 @@ public class UuidUtility {
     return result;
   }
 
+  /**
+   * Constructs a UUID from bytes stored in an ArrowBuf at the specified index.
+   *
+   * <p>Reads 16 bytes from the buffer starting at the given index and interprets them as a UUID in
+   * big-endian byte order.
+   *
+   * @param buffer the buffer containing UUID data
+   * @param index the byte offset in the buffer where the UUID starts
+   * @return the UUID constructed from the buffer data
+   */
   public static UUID uuidFromArrowBuf(ArrowBuf buffer, long index) {
     ByteBuffer buf = buffer.nioBuffer(index, UUID_BYTE_WIDTH);
 
