@@ -334,7 +334,9 @@ public abstract class ArrowType {
       return visitor.visit(this);
     }
 
-    public abstract FieldWriter getNewFieldWriter(ValueVector vector);
+    public FieldWriter getNewFieldWriter(ValueVector vector) {
+      throw new UnsupportedOperationException("WriterImpl not yet implemented.");
+    }
   }
 
   private static final int defaultDecimalBitWidth = 128;
