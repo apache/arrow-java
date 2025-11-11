@@ -561,7 +561,7 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
 
   @Override
   public void write(ExtensionHolder holder) {
-    getWriter(MinorType.EXTENSIONTYPE, lastExtensionType).write(holder);
+    getWriter(MinorType.EXTENSIONTYPE, holder.type()).write(holder);
   }
 
   @Override
