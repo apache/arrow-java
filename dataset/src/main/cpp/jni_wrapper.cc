@@ -30,6 +30,12 @@
 #ifdef ARROW_CSV
 #include "arrow/dataset/file_csv.h"
 #endif
+#ifdef ARROW_ORC
+#include "arrow/dataset/file_orc.h"
+#endif
+#ifdef ARROW_JSON
+#include "arrow/dataset/file_json.h"
+#endif
 #include "arrow/filesystem/api.h"
 #include "arrow/filesystem/path_util.h"
 #include "arrow/engine/substrait/util.h"
@@ -141,20 +147,25 @@ arrow::Result<std::shared_ptr<arrow::dataset::FileFormat>> GetFileFormat(
     jint file_format_id) {
   switch (file_format_id) {
     case 0:
-      return std::make_shared<arrow::dataset::ParquetFileFormat>();
+      return std::static_pointer_cast<arrow::dataset::FileFormat>(
+          std::make_shared<arrow::dataset::ParquetFileFormat>());
     case 1:
-      return std::make_shared<arrow::dataset::IpcFileFormat>();
+      return std::static_pointer_cast<arrow::dataset::FileFormat>(
+          std::make_shared<arrow::dataset::IpcFileFormat>());
 #ifdef ARROW_ORC
     case 2:
-      return std::make_shared<arrow::dataset::OrcFileFormat>();
+      return std::static_pointer_cast<arrow::dataset::FileFormat>(
+          std::make_shared<arrow::dataset::OrcFileFormat>());
 #endif
 #ifdef ARROW_CSV
     case 3:
-      return std::make_shared<arrow::dataset::CsvFileFormat>();
+      return std::static_pointer_cast<arrow::dataset::FileFormat>(
+          std::make_shared<arrow::dataset::CsvFileFormat>());
 #endif
 #ifdef ARROW_JSON
     case 4:
-      return std::make_shared<arrow::dataset::JsonFileFormat>();
+      return std::static_pointer_cast<arrow::dataset::FileFormat>(
+          std::make_shared<arrow::dataset::JsonFileFormat>());
 #endif
     default:
       std::string error_message =
