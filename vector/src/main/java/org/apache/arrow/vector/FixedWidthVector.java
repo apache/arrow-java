@@ -31,4 +31,7 @@ public interface FixedWidthVector extends ElementAddressableVector {
 
   /** Zero out the underlying buffer backing this vector. */
   void zeroVector();
+
+  /** Get the width of the type in bytes. */
+  int getTypeWidth();
 }
