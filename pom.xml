@@ -76,8 +76,6 @@ under the License.
     <module>algorithm</module>
     <module>adapter/avro</module>
     <module>compression</module>
-    <module>adapter/orc</module>
-    <module>dataset</module>
   </modules>
 
   <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
