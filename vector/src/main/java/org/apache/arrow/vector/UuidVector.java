@@ -53,7 +53,7 @@ import org.apache.arrow.vector.util.UuidUtility;
  * @see NullableUuidHolder
  */
 public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
-    implements ValueIterableVector<UUID>, FixedWidthVector, FixedSizeExtensionType {
+    implements ValueIterableVector<UUID>, FixedWidthVector {
   private final Field field;
 
   /** The fixed byte width of UUID values (16 bytes). */
