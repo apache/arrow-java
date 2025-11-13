@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.DecimalVector;
@@ -30,12 +31,14 @@ import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
+import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.holders.DecimalHolder;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.UuidType;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -838,6 +841,117 @@ public class TestComplexCopier {
         in.setPosition(i);
         out.setPosition(i);
         ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
+      // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyListVectorWithExtensionType() {
+    try (ListVector from = ListVector.empty("v", allocator);
+        ListVector to = ListVector.empty("v", allocator)) {
+
+      UnionListWriter listWriter = from.getWriter();
+      listWriter.allocate();
+
+      for (int i = 0; i < COUNT; i++) {
+        listWriter.setPosition(i);
+        listWriter.startList();
+        ExtensionWriter extensionWriter = listWriter.extension(new UuidType());
+        extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+        extensionWriter.writeExtension(UUID.randomUUID());
+        extensionWriter.writeExtension(UUID.randomUUID());
+        listWriter.endList();
+      }
+      from.setValueCount(COUNT);
+
+      // copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out, new UuidWriterFactory());
+      }
+
+      to.setValueCount(COUNT);
+
+      // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyMapVectorWithExtensionType() {
+    try (final MapVector from = MapVector.empty("v", allocator, false);
+        final MapVector to = MapVector.empty("v", allocator, false)) {
+
+      from.allocateNew();
+
+      UnionMapWriter mapWriter = from.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        mapWriter.setPosition(i);
+        mapWriter.startMap();
+        mapWriter.startEntry();
+        ExtensionWriter extensionKeyWriter = mapWriter.key().extension(new UuidType());
+        extensionKeyWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+        extensionKeyWriter.writeExtension(UUID.randomUUID());
+        ExtensionWriter extensionValueWriter = mapWriter.value().extension(new UuidType());
+        extensionValueWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+        extensionValueWriter.writeExtension(UUID.randomUUID());
+        mapWriter.endEntry();
+        mapWriter.endMap();
+      }
+
+      from.setValueCount(COUNT);
+
+      // copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out, new UuidWriterFactory());
+      }
+      to.setValueCount(COUNT);
+
+      // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyStructVectorWithExtensionType() {
+    try (final StructVector from = StructVector.empty("v", allocator);
+        final StructVector to = StructVector.empty("v", allocator)) {
+
+      from.allocateNewSafe();
+
+      NullableStructWriter structWriter = from.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        structWriter.setPosition(i);
+        structWriter.start();
+        ExtensionWriter extensionWriter1 = structWriter.extension("timestamp1", new UuidType());
+        extensionWriter1.addExtensionTypeWriterFactory(new UuidWriterFactory());
+        extensionWriter1.writeExtension(UUID.randomUUID());
+        ExtensionWriter extensionWriter2 = structWriter.extension("timestamp2", new UuidType());
+        extensionWriter2.addExtensionTypeWriterFactory(new UuidWriterFactory());
+        extensionWriter2.writeExtension(UUID.randomUUID());
+        structWriter.end();
+      }
+
+      from.setValueCount(COUNT);
+
+      // copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out, new UuidWriterFactory());
       }
       to.setValueCount(COUNT);
 

@@ -66,7 +66,7 @@ cmake \
   -DProtobuf_USE_STATIC_LIBS=ON \
   -GNinja \
   "${EXTRA_CMAKE_OPTIONS[@]}"
-cmake --build "${build_dir}"
+cmake --build "${build_dir}" --verbose
 if [ "${ARROW_JAVA_BUILD_TESTS}" = "ON" ]; then
   ctest \
     --output-on-failure \

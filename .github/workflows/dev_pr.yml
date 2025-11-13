@@ -35,6 +35,7 @@ concurrency:
 
 permissions:
   contents: read
+  issues: write
   pull-requests: write
 
 jobs:
@@ -49,28 +50,28 @@ jobs:
 
       - name: Ensure PR title format
         id: title-format
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        uses: actions/github-script@v8
         with:
           script: |
             const scripts = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/dev_pr.js`);
             return scripts.check_title_format({core, github, context});
 
       - name: Label PR
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        uses: actions/github-script@v8
         with:
           script: |
             const scripts = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/dev_pr.js`);
             await scripts.apply_labels({core, github, context});
 
       - name: Ensure PR is labeled
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        uses: actions/github-script@v8
         with:
           script: |
             const scripts = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/dev_pr.js`);
             await scripts.check_labels({core, github, context});
 
       - name: Ensure PR is linked to an issue
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        uses: actions/github-script@v8
         with:
           script: |
             const scripts = require(`${process.env.GITHUB_WORKSPACE}/.github/workflows/dev_pr.js`);
@@ -80,9 +81,5 @@ jobs:
         if: '! github.event.pull_request.draft'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        permissions:
-          contents: read
-          issues: write
-          pull-requests: write
         run: |
           ./.github/workflows/dev_pr_milestone.sh "${GITHUB_REPOSITORY}" ${{ github.event.number }}

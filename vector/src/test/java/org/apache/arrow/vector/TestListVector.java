@@ -1271,6 +1271,49 @@ public class TestListVector {
     }
   }
 
+  @Test
+  public void testCopyFromForExtensionType() throws Exception {
+    try (ListVector inVector = ListVector.empty("input", allocator);
+        ListVector outVector = ListVector.empty("output", allocator)) {
+      UnionListWriter writer = inVector.getWriter();
+      writer.allocate();
+      writer.setPosition(0);
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      writer.startList();
+      ExtensionWriter extensionWriter = writer.extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u1);
+      extensionWriter.writeExtension(u2);
+      extensionWriter.writeNull();
+      writer.endList();
+
+      writer.setValueCount(1);
+
+      // copy values from input to output
+      outVector.allocateNew();
+      outVector.copyFrom(0, 0, inVector, new UuidWriterFactory());
+      outVector.setValueCount(1);
+
+      UnionListReader reader = outVector.getReader();
+      assertTrue(reader.isSet(), "shouldn't be null");
+      reader.setPosition(0);
+      reader.next();
+      FieldReader uuidReader = reader.reader();
+      UuidHolder holder = new UuidHolder();
+      uuidReader.read(holder);
+      ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u1, actualUuid);
+      reader.next();
+      uuidReader = reader.reader();
+      uuidReader.read(holder);
+      bb = ByteBuffer.wrap(holder.value);
+      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u2, actualUuid);
+    }
+  }
+
   private void writeIntValues(UnionListWriter writer, int[] values) {
     writer.startList();
     for (int v : values) {

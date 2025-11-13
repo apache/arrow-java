@@ -24,13 +24,17 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.BaseFixedWidthVector;
+import org.apache.arrow.vector.BaseIntVector;
 import org.apache.arrow.vector.BaseLargeVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
+import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.BitVectorHelper;
 import org.apache.arrow.vector.ExtensionTypeVector;
+import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.NullVector;
+import org.apache.arrow.vector.SmallIntVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.compare.TypeEqualsVisitor;
 import org.apache.arrow.vector.compare.VectorVisitor;
@@ -39,6 +43,7 @@ import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.NonNullableStructVector;
+import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.UnionVector;
 
 /** Utility to append two vectors together. */
@@ -697,5 +702,99 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     VectorAppender underlyingAppender = new VectorAppender(targetUnderlying);
     deltaVector.getUnderlyingVector().accept(underlyingAppender, null);
     return targetVector;
+  }
+
+  @Override
+  public ValueVector visit(RunEndEncodedVector deltaVector, Void value) {
+    Preconditions.checkArgument(
+        typeVisitor.equals(deltaVector),
+        "The deltaVector to append must have the same type as the targetVector");
+
+    if (deltaVector.getValueCount() == 0) {
+      return targetVector; // optimization, nothing to append, return
+    }
+
+    RunEndEncodedVector targetEncodedVector = (RunEndEncodedVector) targetVector;
+
+    final int targetLogicalValueCount = targetEncodedVector.getValueCount();
+
+    // Append the values vector first.
+    VectorAppender valueAppender = new VectorAppender(targetEncodedVector.getValuesVector());
+    deltaVector.getValuesVector().accept(valueAppender, null);
+
+    // Then append the run-ends vector.
+    BaseIntVector targetRunEndsVector = (BaseIntVector) targetEncodedVector.getRunEndsVector();
+    BaseIntVector deltaRunEndsVector = (BaseIntVector) deltaVector.getRunEndsVector();
+    appendRunEndsVector(targetRunEndsVector, deltaRunEndsVector, targetLogicalValueCount);
+
+    targetEncodedVector.setValueCount(targetLogicalValueCount + deltaVector.getValueCount());
+    return targetVector;
+  }
+
+  private void appendRunEndsVector(
+      BaseIntVector targetRunEndsVector,
+      BaseIntVector deltaRunEndsVector,
+      int targetLogicalValueCount) {
+    int targetPhysicalValueCount = targetRunEndsVector.getValueCount();
+    int newPhysicalValueCount = targetPhysicalValueCount + deltaRunEndsVector.getValueCount();
+
+    // make sure there is enough capacity
+    while (targetVector.getValueCapacity() < newPhysicalValueCount) {
+      targetVector.reAlloc();
+    }
+
+    // append validity buffer
+    BitVectorHelper.concatBits(
+        targetRunEndsVector.getValidityBuffer(),
+        targetRunEndsVector.getValueCount(),
+        deltaRunEndsVector.getValidityBuffer(),
+        deltaRunEndsVector.getValueCount(),
+        targetRunEndsVector.getValidityBuffer());
+
+    // shift and append data buffer
+    shiftAndAppendRunEndsDataBuffer(
+        targetRunEndsVector,
+        targetPhysicalValueCount,
+        deltaRunEndsVector.getDataBuffer(),
+        targetLogicalValueCount,
+        deltaRunEndsVector.getValueCount());
+
+    targetRunEndsVector.setValueCount(newPhysicalValueCount);
+  }
+
+  private void shiftAndAppendRunEndsDataBuffer(
+      BaseIntVector toRunEndVector,
+      int toIndex,
+      ArrowBuf fromRunEndBuffer,
+      int offset,
+      int physicalLength) {
+    ArrowBuf toRunEndBuffer = toRunEndVector.getDataBuffer();
+    if (toRunEndVector instanceof SmallIntVector) {
+      byte typeWidth = SmallIntVector.TYPE_WIDTH;
+      for (int i = 0; i < physicalLength; i++) {
+        toRunEndBuffer.setShort(
+            (long) (i + toIndex) * typeWidth,
+            fromRunEndBuffer.getShort((long) (i) * typeWidth) + offset);
+      }
+
+    } else if (toRunEndVector instanceof IntVector) {
+      byte typeWidth = IntVector.TYPE_WIDTH;
+      for (int i = 0; i < physicalLength; i++) {
+        toRunEndBuffer.setInt(
+            (long) (i + toIndex) * typeWidth,
+            fromRunEndBuffer.getInt((long) (i) * typeWidth) + offset);
+      }
+
+    } else if (toRunEndVector instanceof BigIntVector) {
+      byte typeWidth = BigIntVector.TYPE_WIDTH;
+      for (int i = 0; i < physicalLength; i++) {
+        toRunEndBuffer.setLong(
+            (long) (i + toIndex) * typeWidth,
+            fromRunEndBuffer.getLong((long) (i) * typeWidth) + offset);
+      }
+    } else {
+      throw new IllegalArgumentException(
+          "Run-end vector and must be of type int with size 16, 32, or 64 bits.");
+    }
   }
 }

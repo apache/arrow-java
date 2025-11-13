@@ -23,6 +23,7 @@
 #include "arrow/array/concatenate.h"
 #include "arrow/c/bridge.h"
 #include "arrow/c/helpers.h"
+#include "arrow/compute/initialize.h"
 #include "arrow/dataset/api.h"
 #include "arrow/dataset/file_base.h"
 #ifdef ARROW_CSV
@@ -804,6 +805,13 @@ JNIEXPORT void JNICALL Java_org_apache_arrow_dataset_jni_JniWrapper_ensureS3Fina
 #ifdef ARROW_S3
   JniAssertOkOrThrow(arrow::fs::EnsureS3Finalized());
 #endif
+  JNI_METHOD_END()
+}
+
+JNIEXPORT void JNICALL Java_org_apache_arrow_dataset_jni_JniWrapper_initialize(
+    JNIEnv* env, jobject) {
+  JNI_METHOD_START
+  JniAssertOkOrThrow(arrow::compute::Initialize());
   JNI_METHOD_END()
 }
 

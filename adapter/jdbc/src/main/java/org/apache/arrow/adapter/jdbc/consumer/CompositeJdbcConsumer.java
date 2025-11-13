@@ -24,7 +24,6 @@ import org.apache.arrow.adapter.jdbc.consumer.exceptions.JdbcConsumerException;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
-import org.apache.arrow.vector.types.pojo.ArrowType;
 
 /** Composite consumer which hold all consumers. It manages the consume and cleanup process. */
 public class CompositeJdbcConsumer implements JdbcConsumer {
@@ -46,9 +45,9 @@ public class CompositeJdbcConsumer implements JdbcConsumer {
           BaseConsumer consumer = (BaseConsumer) consumers[i];
           JdbcFieldInfo fieldInfo =
               new JdbcFieldInfo(rs.getMetaData(), consumer.columnIndexInResultSet);
-          ArrowType arrowType = consumer.vector.getMinorType().getType();
+
           throw new JdbcConsumerException(
-              "Exception while consuming JDBC value", e, fieldInfo, arrowType);
+              "Exception while consuming JDBC value", e, fieldInfo, consumer.vector.getField());
         } else {
           throw e;
         }

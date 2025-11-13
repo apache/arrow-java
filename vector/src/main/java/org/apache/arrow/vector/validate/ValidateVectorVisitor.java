@@ -107,8 +107,13 @@ public class ValidateVectorVisitor implements VectorVisitor<Void, Void> {
   }
 
   @Override
-  public Void visit(BaseVariableWidthViewVector left, Void value) {
-    throw new UnsupportedOperationException("View vectors are not supported.");
+  public Void visit(BaseVariableWidthViewVector vector, Void value) {
+    if (vector.getValueCount() > 0) {
+      if (vector.getDataBuffer() == null || vector.getDataBuffer().capacity() == 0) {
+        throw new IllegalArgumentException("valueBuffer is null or capacity is 0");
+      }
+    }
+    return null;
   }
 
   @Override

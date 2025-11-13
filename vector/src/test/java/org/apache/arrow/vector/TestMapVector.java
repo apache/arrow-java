@@ -22,24 +22,30 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.impl.UnionMapReader;
 import org.apache.arrow.vector.complex.impl.UnionMapWriter;
+import org.apache.arrow.vector.complex.impl.UuidWriterFactory;
 import org.apache.arrow.vector.complex.reader.FieldReader;
+import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.UuidType;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
@@ -1261,6 +1267,96 @@ public class TestMapVector {
       Map<?, ?> resultStruct = (Map<?, ?>) resultSet.get(0);
       assertEquals(1L, getResultKey(resultStruct));
       assertEquals(11, getResultValue(resultStruct));
+    }
+  }
+
+  @Test
+  public void testMapVectorWithExtensionType() throws Exception {
+    try (final MapVector inVector = MapVector.empty("map", allocator, false)) {
+      inVector.allocateNew();
+      UnionMapWriter writer = inVector.getWriter();
+      writer.setPosition(0);
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      writer.startMap();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(0);
+      ExtensionWriter extensionWriter = writer.value().extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u1);
+      writer.endEntry();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(1);
+      extensionWriter = writer.value().extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u2);
+      writer.endEntry();
+      writer.endMap();
+
+      writer.setValueCount(1);
+
+      UnionMapReader mapReader = inVector.getReader();
+      mapReader.setPosition(0);
+      mapReader.next();
+      FieldReader uuidReader = mapReader.value();
+      UuidHolder holder = new UuidHolder();
+      uuidReader.read(holder);
+      ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u1, actualUuid);
+      mapReader.next();
+      uuidReader = mapReader.value();
+      uuidReader.read(holder);
+      bb = ByteBuffer.wrap(holder.value);
+      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u2, actualUuid);
+    }
+  }
+
+  @Test
+  public void testCopyFromForExtensionType() throws Exception {
+    try (final MapVector inVector = MapVector.empty("in", allocator, false);
+        final MapVector outVector = MapVector.empty("out", allocator, false)) {
+      inVector.allocateNew();
+      UnionMapWriter writer = inVector.getWriter();
+      writer.setPosition(0);
+      UUID u1 = UUID.randomUUID();
+      UUID u2 = UUID.randomUUID();
+      writer.startMap();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(0);
+      ExtensionWriter extensionWriter = writer.value().extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u1);
+      writer.endEntry();
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(1);
+      extensionWriter = writer.value().extension(new UuidType());
+      extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
+      extensionWriter.writeExtension(u2);
+      writer.endEntry();
+      writer.endMap();
+
+      writer.setValueCount(1);
+      outVector.allocateNew();
+      outVector.copyFrom(0, 0, inVector, new UuidWriterFactory());
+      outVector.setValueCount(1);
+
+      UnionMapReader mapReader = outVector.getReader();
+      mapReader.setPosition(0);
+      mapReader.next();
+      FieldReader uuidReader = mapReader.value();
+      UuidHolder holder = new UuidHolder();
+      uuidReader.read(holder);
+      ByteBuffer bb = ByteBuffer.wrap(holder.value);
+      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u1, actualUuid);
+      mapReader.next();
+      uuidReader = mapReader.value();
+      uuidReader.read(holder);
+      bb = ByteBuffer.wrap(holder.value);
+      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(u2, actualUuid);
     }
   }
 }

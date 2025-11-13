@@ -49,6 +49,7 @@ import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.impl.ComplexCopier;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory;
 import org.apache.arrow.vector.complex.impl.UnionLargeListReader;
 import org.apache.arrow.vector.complex.impl.UnionLargeListWriter;
 import org.apache.arrow.vector.complex.reader.FieldReader;
@@ -482,12 +483,42 @@ public class LargeListVector extends BaseValueVector
    */
   @Override
   public void copyFrom(int inIndex, int outIndex, ValueVector from) {
+    copyFrom(inIndex, outIndex, from, null);
+  }
+
+  /**
+   * Copy a cell value from a particular index in source vector to a particular position in this
+   * vector.
+   *
+   * @param inIndex position to copy from in source vector
+   * @param outIndex position to copy to in this vector
+   * @param from source vector
+   * @param writerFactory the extension type writer factory to use for copying extension type values
+   */
+  @Override
+  public void copyFrom(
+      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
     Preconditions.checkArgument(this.getMinorType() == from.getMinorType());
     FieldReader in = from.getReader();
     in.setPosition(inIndex);
     UnionLargeListWriter out = getWriter();
     out.setPosition(outIndex);
-    ComplexCopier.copy(in, out);
+    ComplexCopier.copy(in, out, writerFactory);
+  }
+
+  /**
+   * Same as {@link #copyFrom(int, int, ValueVector)} except that it handles the case when the
+   * capacity of the vector needs to be expanded before copy.
+   *
+   * @param inIndex position to copy from in source vector
+   * @param outIndex position to copy to in this vector
+   * @param from source vector
+   * @param writerFactory the extension type writer factory to use for copying extension type values
+   */
+  @Override
+  public void copyFromSafe(
+      int inIndex, int outIndex, ValueVector from, ExtensionTypeWriterFactory writerFactory) {
+    copyFrom(inIndex, outIndex, from, writerFactory);
   }
 
   /**

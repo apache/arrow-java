@@ -165,7 +165,7 @@ under the License.
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.arrow</groupId>
+        <groupId>org.apache.arrow.gandiva</groupId>
         <artifactId>arrow-gandiva</artifactId>
         <version>${project.version}</version>
       </dependency>

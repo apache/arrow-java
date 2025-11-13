@@ -327,19 +327,20 @@ void ArrowArrayStreamRelease(ArrowArrayStream* stream) {
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   JNIEnv* env;
-  if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION) != JNI_OK) {
-    return JNI_ERR;
+  const int err_code = vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION);
+  if (err_code != JNI_OK) {
+      return err_code;
   }
   JNI_METHOD_START
-  kObjectClass = CreateGlobalClassReference(env, "Ljava/lang/Object;");
+  kObjectClass = CreateGlobalClassReference(env, "java/lang/Object");
   kRuntimeExceptionClass =
-      CreateGlobalClassReference(env, "Ljava/lang/RuntimeException;");
+      CreateGlobalClassReference(env, "java/lang/RuntimeException");
   kPrivateDataClass =
-      CreateGlobalClassReference(env, "Lorg/apache/arrow/c/jni/PrivateData;");
+      CreateGlobalClassReference(env, "org/apache/arrow/c/jni/PrivateData");
   kCDataExceptionClass =
-      CreateGlobalClassReference(env, "Lorg/apache/arrow/c/jni/CDataJniException;");
+      CreateGlobalClassReference(env, "org/apache/arrow/c/jni/CDataJniException");
   kStreamPrivateDataClass = CreateGlobalClassReference(
-      env, "Lorg/apache/arrow/c/ArrayStreamExporter$ExportedArrayStreamPrivateData;");
+      env, "org/apache/arrow/c/ArrayStreamExporter$ExportedArrayStreamPrivateData");
 
   kPrivateDataLastErrorField =
       GetFieldID(env, kStreamPrivateDataClass, "lastError", "[B");
