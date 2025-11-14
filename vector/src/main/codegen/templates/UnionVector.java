@@ -104,6 +104,8 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
   private ValueVector singleVector;
 
   private int typeBufferAllocationSizeInBytes;
+  
+  private ExtensionTypeFactory extensionTypeFactory;
 
   private final FieldType fieldType;
   private final Field[] typeIds = new Field[Byte.MAX_VALUE + 1];
@@ -325,6 +327,26 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
       </#if>
     </#list>
   </#list>
+  
+  private ExtensionTypeVector extensionTypeVector;
+
+  public <T extends ExtensionTypeVector> T getExtensionTypeVector(ExtensionType type) {
+    return getExtensionTypeVector(null, type);
+  }
+
+  public <T extends ExtensionTypeVector> T getExtensionTypeVector(String name, ExtensionType type) {
+    if (extensionTypeVector == null) {
+      int vectorCount = internalStruct.size();
+      extensionTypeVector = addOrGet(name, MinorType.EXTENSIONTYPE, type, extensionTypeFactory.getVectorClass(type));
+      if (internalStruct.size() > vectorCount) {
+        extensionTypeVector.allocateNew();
+        if (callBack != null) {
+          callBack.doWork();
+        }
+      }
+    }
+    return (T) extensionTypeVector;
+  }
 
   public ListVector getList() {
     if (listVector == null) {
@@ -725,6 +747,8 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
           return getListView();
         case MAP:
           return getMap(name, arrowType);
+        case EXTENSIONTYPE:
+          return getExtensionTypeVector(name, (ExtensionType) arrowType);  
         default:
           throw new UnsupportedOperationException("Cannot support type: " + MinorType.values()[typeId]);
       }
@@ -847,6 +871,11 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
       </#list>
     </#list>
 
+  public void setSafe(int index, ExtensionHolder holder) {
+    setType(index, MinorType.EXTENSIONTYPE);
+    getExtensionTypeVector(null).setSafe(index, holder);
+  }
+
     public void setType(int index, MinorType type) {
       while (index >= getTypeBufferValueCapacity()) {
         reallocTypeBuffer();
@@ -928,5 +957,13 @@ public class UnionVector extends AbstractContainerVector implements FieldVector 
   @Override
   public void setNull(int index) {
     throw new UnsupportedOperationException("The method setNull() is not supported on UnionVector.");
+  }
+  
+  public void setExtensionTypeFactory(ExtensionTypeFactory extensionTypeFactory) {
+    this.extensionTypeFactory = extensionTypeFactory;
+  }
+  
+  public ExtensionTypeFactory getExtensionTypeFactory() {
+    return extensionTypeFactory;
   }
 }
