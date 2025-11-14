@@ -61,7 +61,7 @@ public class ConvertUtilsTest {
                 "col1",
                 new FieldType(
                     true,
-                    ArrowType.Utf8.INSTANCE,
+                    ArrowType.Utf8View.INSTANCE,
                     null,
                     new FlightSqlColumnMetadata.Builder()
                         .catalogName("catalog1")
@@ -78,6 +78,13 @@ public class ConvertUtilsTest {
                     .setCatalogName("catalog1")
                     .setSchemaName("schema1")
                     .setTableName("table1")
+                    .setColumnName("col1")
+                    .setType(
+                        Common.AvaticaType.newBuilder()
+                            .setId(SqlTypes.getSqlTypeIdFromArrowType(ArrowType.Utf8View.INSTANCE))
+                            .setName(
+                                SqlTypes.getSqlTypeNameFromArrowType(ArrowType.Utf8View.INSTANCE))
+                            .build())
                     .build()));
 
     final List<ColumnMetaData> actualColumnMetaData =
@@ -95,6 +102,8 @@ public class ConvertUtilsTest {
       assertThat(expectedColumnMetaData.catalogName, equalTo(actualColumnMetaData.catalogName));
       assertThat(expectedColumnMetaData.schemaName, equalTo(actualColumnMetaData.schemaName));
       assertThat(expectedColumnMetaData.tableName, equalTo(actualColumnMetaData.tableName));
+      assertThat(expectedColumnMetaData.columnName, equalTo(actualColumnMetaData.columnName));
+      assertThat(expectedColumnMetaData.type, equalTo(actualColumnMetaData.type));
       assertThat(expectedColumnMetaData.readOnly, equalTo(actualColumnMetaData.readOnly));
       assertThat(expectedColumnMetaData.autoIncrement, equalTo(actualColumnMetaData.autoIncrement));
       assertThat(expectedColumnMetaData.precision, equalTo(actualColumnMetaData.precision));

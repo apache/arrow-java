@@ -17,8 +17,10 @@
 package org.apache.arrow.driver.jdbc.converter.impl;
 
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.util.Text;
 import org.apache.calcite.avatica.AvaticaParameter;
 import org.apache.calcite.avatica.remote.TypedValue;
 
@@ -29,7 +31,12 @@ public class Utf8ViewAvaticaParameterConverter extends BaseAvaticaParameterConve
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    throw new UnsupportedOperationException("Utf8View not supported");
+    String value = (String) typedValue.toLocal();
+    if (vector instanceof ViewVarCharVector) {
+      ((ViewVarCharVector) vector).setSafe(index, new Text(value));
+      return true;
+    }
+    return false;
   }
 
   @Override

@@ -17,6 +17,7 @@
 package org.apache.arrow.driver.jdbc.converter.impl;
 
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.ViewVarBinaryVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.calcite.avatica.AvaticaParameter;
@@ -29,7 +30,12 @@ public class BinaryViewAvaticaParameterConverter extends BaseAvaticaParameterCon
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    throw new UnsupportedOperationException("Not implemented");
+    byte[] value = (byte[]) typedValue.toJdbc(null);
+    if (vector instanceof ViewVarBinaryVector) {
+      ((ViewVarBinaryVector) vector).setSafe(index, value);
+      return true;
+    }
+    return false;
   }
 
   @Override
