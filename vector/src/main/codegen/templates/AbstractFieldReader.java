@@ -109,10 +109,6 @@ abstract class AbstractFieldReader extends AbstractBaseReader implements FieldRe
 
   </#list></#list>
 
-  public void copyAsValue(StructWriter writer, ExtensionTypeWriterFactory writerFactory) {
-    fail("CopyAsValue StructWriter");
-  }
-
   public void read(ExtensionHolder holder) {
     fail("Extension");
   }
@@ -147,4 +143,5 @@ abstract class AbstractFieldReader extends AbstractBaseReader implements FieldRe
   private void fail(String name) {
     throw new IllegalArgumentException(String.format("You tried to read a [%s] type when you are using a field reader of type [%s].", name, this.getClass().getSimpleName()));
   }
+
 }

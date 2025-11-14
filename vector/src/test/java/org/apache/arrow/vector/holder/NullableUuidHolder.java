@@ -14,18 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.complex.impl;
+package org.apache.arrow.vector.holder;
 
-import org.apache.arrow.vector.ExtensionTypeVector;
-import org.apache.arrow.vector.UuidVector;
+import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.UuidType;
 
-public class UuidWriterFactory implements ExtensionTypeWriterFactory {
+public class NullableUuidHolder extends ExtensionHolder {
+  public byte[] value;
 
   @Override
-  public AbstractFieldWriter getWriterImpl(ExtensionTypeVector extensionTypeVector) {
-    if (extensionTypeVector instanceof UuidVector) {
-      return new UuidWriterImpl((UuidVector) extensionTypeVector);
-    }
-    return null;
+  public ArrowType type() {
+    return UuidType.INSTANCE;
   }
 }
