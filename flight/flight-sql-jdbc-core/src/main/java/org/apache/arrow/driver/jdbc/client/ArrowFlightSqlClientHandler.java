@@ -265,13 +265,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       try {
         sqlClient.closeSession(new CloseSessionRequest(), getOptions());
       } catch (FlightRuntimeException fre) {
-        handleBenignCloseException(fre, "Failed to close Flight SQL session.", "closing Flight SQL session");
+        handleBenignCloseException(
+            fre, "Failed to close Flight SQL session.", "closing Flight SQL session");
       }
     }
     try {
       AutoCloseables.close(sqlClient);
     } catch (FlightRuntimeException fre) {
-      handleBenignCloseException(fre, "Failed to clean up client resources.", "closing Flight SQL client");
+      handleBenignCloseException(
+          fre, "Failed to clean up client resources.", "closing Flight SQL client");
     } catch (final Exception e) {
       throw new SQLException("Failed to clean up client resources.", e);
     }
@@ -286,7 +288,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    * @param operationDescription description of the operation for logging
    * @throws SQLException if the exception represents a genuine failure
    */
-  private void handleBenignCloseException(FlightRuntimeException fre, String sqlErrorMessage, String operationDescription) throws SQLException {
+  private void handleBenignCloseException(
+      FlightRuntimeException fre, String sqlErrorMessage, String operationDescription)
+      throws SQLException {
     if (isBenignCloseException(fre)) {
       logSuppressedCloseException(fre, operationDescription);
     } else {
@@ -302,7 +306,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    * @param operationDescription description of the operation for logging
    * @throws FlightRuntimeException if the exception represents a genuine failure
    */
-  private void handleBenignCloseException(FlightRuntimeException fre, String operationDescription) throws FlightRuntimeException {
+  private void handleBenignCloseException(FlightRuntimeException fre, String operationDescription)
+      throws FlightRuntimeException {
     if (isBenignCloseException(fre)) {
       logSuppressedCloseException(fre, operationDescription);
     } else {
@@ -311,8 +316,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   }
 
   /**
-   * Determines if a FlightRuntimeException represents a benign close operation error
-   * that should be suppressed.
+   * Determines if a FlightRuntimeException represents a benign close operation error that should be
+   * suppressed.
    *
    * @param fre the FlightRuntimeException to check
    * @return true if the exception should be suppressed, false otherwise
@@ -330,13 +335,10 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    * @param fre the FlightRuntimeException being suppressed
    * @param operationDescription description of the operation for logging
    */
-  private void logSuppressedCloseException(FlightRuntimeException fre, String operationDescription) {
-    // ARROW-17785: suppress exceptions caused by flaky gRPC layer during shutdown
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("Suppressed error {}", operationDescription, fre);
-    } else {
-      LOGGER.info("Suppressed benign error {}: {}", operationDescription, fre.getMessage());
-    }
+  private void logSuppressedCloseException(
+      FlightRuntimeException fre, String operationDescription) {
+    // ARROW-17785 and GH-863: suppress exceptions caused by flaky gRPC layer during shutdown
+    LOGGER.info("Suppressed error {}", operationDescription, fre);
   }
 
   /** A prepared statement handler. */
