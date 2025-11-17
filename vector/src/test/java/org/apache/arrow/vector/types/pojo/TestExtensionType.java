@@ -47,6 +47,7 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.compare.Range;
 import org.apache.arrow.vector.compare.RangeEqualsVisitor;
 import org.apache.arrow.vector.complex.StructVector;
+import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.ipc.ArrowFileReader;
 import org.apache.arrow.vector.ipc.ArrowFileWriter;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
@@ -367,6 +368,11 @@ public class TestExtensionType {
     @Override
     public java.util.Map<String, ?> getObject(int index) {
       return getUnderlyingVector().getObject(index);
+    }
+
+    @Override
+    public void setSafe(int index, ExtensionHolder holder) {
+      throw new UnsupportedOperationException();
     }
 
     public void set(int index, float latitude, float longitude) {

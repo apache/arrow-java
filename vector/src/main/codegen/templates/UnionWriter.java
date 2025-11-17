@@ -16,8 +16,11 @@
  */
 
 import org.apache.arrow.util.Preconditions;
+import org.apache.arrow.vector.complex.impl.ExtensionTypeFactory;
 import org.apache.arrow.vector.complex.impl.NullableStructWriterFactory;
 import org.apache.arrow.vector.types.Types;
+import org.apache.arrow.vector.types.Types.MinorType;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 
 <@pp.dropOutputFile />
 <@pp.changeOutputFile name="/org/apache/arrow/vector/complex/impl/UnionWriter.java" />
@@ -47,8 +50,12 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
   protected UnionListWriter listWriter;
   protected UnionListViewWriter listViewWriter;
   protected UnionMapWriter mapWriter;
+  protected UnionExtensionWriter extensionWriter;
   protected List<BaseWriter> writers = new java.util.ArrayList<>();
+  private Map<ExtensionType, ExtensionWriter> extensionTypeWriters = new HashMap<>();
+
   protected final NullableStructWriterFactory nullableStructWriterFactory;
+  private ExtensionTypeFactory extensionTypeFactory;
 
   public UnionWriter(UnionVector vector) {
     this(vector, NullableStructWriterFactory.getNullableStructWriterFactoryInstance());
@@ -57,6 +64,7 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
   public UnionWriter(UnionVector vector, NullableStructWriterFactory nullableStructWriterFactory) {
     data = vector;
     this.nullableStructWriterFactory = nullableStructWriterFactory;
+    this.extensionTypeFactory = data.getExtensionTypeFactory();
   }
 
   /**
@@ -213,8 +221,24 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
     return getMapWriter(arrowType);
   }
 
-  private ExtensionWriter getExtensionWriter(ArrowType arrowType) {
-    throw new UnsupportedOperationException("ExtensionTypes are not supported yet.");
+  private ExtensionWriter getExtensionWriter(ExtensionType arrowType) {
+    if (extensionWriter == null) {
+      extensionWriter = new UnionExtensionWriter(data.getExtensionTypeVector(arrowType));
+      extensionWriter.addExtensionTypeWriterFactory(extensionTypeFactory, arrowType);
+      extensionWriter.setPosition(idx());
+    }
+    return extensionWriter;
+  }
+
+  public ExtensionWriter asExtension(ExtensionType arrowType) {
+    data.setType(idx(), MinorType.EXTENSIONTYPE);
+    return getExtensionWriter(arrowType);
+  }
+
+  public void writeExtension(Object value, ExtensionType extensionType) {
+    data.setType(idx(), MinorType.EXTENSIONTYPE);
+    getExtensionWriter(extensionType).setPosition(idx());
+    getExtensionWriter(extensionType).writeExtension(value, extensionType);
   }
 
   BaseWriter getWriter(MinorType minorType) {
@@ -232,7 +256,7 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
     case MAP:
       return getMapWriter(arrowType);
     case EXTENSIONTYPE:
-      return getExtensionWriter(arrowType);
+      return getExtensionWriter((ExtensionType) arrowType);
     <#list vv.types as type>
       <#list type.minor as minor>
         <#assign name = minor.class?cap_first />
@@ -392,7 +416,7 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
       </#if>
     </#list>
   </#list>
-
+  
   public void writeNull() {
   }
 
@@ -478,6 +502,11 @@ public class UnionWriter extends AbstractFieldWriter implements FieldWriter {
     data.setType(idx(), MinorType.EXTENSIONTYPE);
     getStructWriter().setPosition(idx());
     return getStructWriter().extension(name, arrowType);
+  }
+
+  @Override
+  public void addExtensionTypeWriterFactory(ExtensionTypeFactory var1, ExtensionType var2) {
+    this.extensionTypeFactory = var1;
   }
 
   <#list vv.types as type><#list type.minor as minor>

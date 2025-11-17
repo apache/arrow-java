@@ -21,6 +21,7 @@ import java.util.UUID;
 import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 
 public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
 
@@ -29,7 +30,7 @@ public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
   }
 
   @Override
-  public void writeExtension(Object value) {
+  public void writeExtension(Object value, ExtensionType extensionType) {
     UUID uuid = (UUID) value;
     ByteBuffer bb = ByteBuffer.allocate(16);
     bb.putLong(uuid.getMostSignificantBits());

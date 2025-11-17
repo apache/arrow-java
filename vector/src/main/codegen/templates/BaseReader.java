@@ -49,7 +49,7 @@ public interface BaseReader extends Positionable{
     boolean next();
     int size();
     void copyAsValue(StructWriter writer);
-    void copyAsValue(StructWriter writer, ExtensionTypeWriterFactory writerFactory);
+    void copyAsValue(StructWriter writer, ExtensionTypeFactory writerFactory);
   }
 
   public interface ListReader extends BaseReader{
@@ -60,7 +60,7 @@ public interface BaseReader extends Positionable{
     boolean next();
     int size();
     void copyAsValue(ListWriter writer);
-    void copyAsValue(ListWriter writer, ExtensionTypeWriterFactory writerFactory);
+    void copyAsValue(ListWriter writer, ExtensionTypeFactory writerFactory);
   }
 
   public interface MapReader extends BaseReader{
@@ -71,7 +71,7 @@ public interface BaseReader extends Positionable{
     boolean next();
     int size();
     void copyAsValue(MapWriter writer);
-    void copyAsValue(MapWriter writer, ExtensionTypeWriterFactory writerFactory);
+    void copyAsValue(MapWriter writer, ExtensionTypeFactory writerFactory);
   }
 
   public interface ScalarReader extends
