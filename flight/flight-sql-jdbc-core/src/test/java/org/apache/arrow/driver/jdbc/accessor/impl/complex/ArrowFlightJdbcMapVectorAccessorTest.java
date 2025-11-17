@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Map;
 import org.apache.arrow.driver.jdbc.utils.AccessorTestUtils;
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
@@ -105,7 +106,7 @@ public class ArrowFlightJdbcMapVectorAccessorTest {
     AccessorTestUtils.Cursor cursor = new AccessorTestUtils.Cursor(vector.getValueCount());
     ArrowFlightJdbcMapVectorAccessor accessor =
         new ArrowFlightJdbcMapVectorAccessor(
-            vector, cursor::getCurrentRow, (boolean wasNull) -> {});
+            vector, cursor::getCurrentRow, (boolean wasNull) -> {}, Calendar.getInstance());
 
     Map<Object, Object> expected = new JsonStringHashMap<>();
     expected.put(1, 11);
@@ -134,7 +135,8 @@ public class ArrowFlightJdbcMapVectorAccessorTest {
   public void testShouldGetObjectReturnNull() {
     vector.setNull(0);
     ArrowFlightJdbcMapVectorAccessor accessor =
-        new ArrowFlightJdbcMapVectorAccessor(vector, () -> 0, (boolean wasNull) -> {});
+        new ArrowFlightJdbcMapVectorAccessor(
+            vector, () -> 0, (boolean wasNull) -> {}, Calendar.getInstance());
 
     assertNull(accessor.getObject());
     assertTrue(accessor.wasNull());
@@ -145,7 +147,7 @@ public class ArrowFlightJdbcMapVectorAccessorTest {
     AccessorTestUtils.Cursor cursor = new AccessorTestUtils.Cursor(vector.getValueCount());
     ArrowFlightJdbcMapVectorAccessor accessor =
         new ArrowFlightJdbcMapVectorAccessor(
-            vector, cursor::getCurrentRow, (boolean wasNull) -> {});
+            vector, cursor::getCurrentRow, (boolean wasNull) -> {}, Calendar.getInstance());
 
     Array array = accessor.getArray();
     assertNotNull(array);
@@ -210,7 +212,8 @@ public class ArrowFlightJdbcMapVectorAccessorTest {
     ((StructVector) vector.getDataVector()).setNull(0);
 
     ArrowFlightJdbcMapVectorAccessor accessor =
-        new ArrowFlightJdbcMapVectorAccessor(vector, () -> 0, (boolean wasNull) -> {});
+        new ArrowFlightJdbcMapVectorAccessor(
+            vector, () -> 0, (boolean wasNull) -> {}, Calendar.getInstance());
 
     assertNull(accessor.getArray());
     assertTrue(accessor.wasNull());
