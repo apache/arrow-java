@@ -59,6 +59,7 @@ public class UnionExtensionWriter extends AbstractFieldWriter {
     this.writer.writeExtension(var1);
   }
 
+  @Override
   public void write(ExtensionHolder holder) {
     this.writer.write(holder);
   }

@@ -133,7 +133,7 @@ public class TestPromotableWriter {
 
       writer.setPosition(9);
       UUID uuid = UUID.randomUUID();
-      writer.extension("A", UuidType.INSTANCE).writeExtension(uuid);
+      writer.extension("A", UuidType.INSTANCE).writeExtension(uuid, UuidType.INSTANCE);
       writer.end();
 
       writer.setPosition(10);
@@ -814,9 +814,9 @@ public class TestPromotableWriter {
       container.setValueCount(1);
 
       writer.setPosition(0);
-      writer.writeExtension(u1);
+      writer.writeExtension(u1, UuidType.INSTANCE);
       writer.setPosition(1);
-      writer.writeExtension(u2);
+      writer.writeExtension(u2, UuidType.INSTANCE);
 
       container.setValueCount(2);
 
@@ -839,9 +839,9 @@ public class TestPromotableWriter {
       container.setValueCount(1);
 
       writer.setPosition(0);
-      writer.writeExtension(u1);
+      writer.writeExtension(u1, UuidType.INSTANCE);
       writer.setPosition(1);
-      writer.writeExtension(u2);
+      writer.writeExtension(u2, UuidType.INSTANCE);
 
       container.setValueCount(2);
 

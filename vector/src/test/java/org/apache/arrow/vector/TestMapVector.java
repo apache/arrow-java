@@ -1284,12 +1284,12 @@ public class TestMapVector {
       writer.startEntry();
       writer.key().bigInt().writeBigInt(0);
       ExtensionWriter extensionWriter = writer.value().extension(UuidType.INSTANCE);
-      extensionWriter.writeExtension(u1);
+      extensionWriter.writeExtension(u1, UuidType.INSTANCE);
       writer.endEntry();
       writer.startEntry();
       writer.key().bigInt().writeBigInt(1);
       extensionWriter = writer.value().extension(UuidType.INSTANCE);
-      extensionWriter.writeExtension(u2);
+      extensionWriter.writeExtension(u2, UuidType.INSTANCE);
       writer.endEntry();
       writer.endMap();
 
@@ -1324,12 +1324,11 @@ public class TestMapVector {
       writer.startEntry();
       writer.key().bigInt().writeBigInt(0);
       ExtensionWriter extensionWriter = writer.value().extension(UuidType.INSTANCE);
-      extensionWriter.writeExtension(u1);
+      extensionWriter.writeExtension(u1, UuidType.INSTANCE);
       writer.endEntry();
       writer.startEntry();
       writer.key().bigInt().writeBigInt(1);
-      extensionWriter = writer.value().extension(UuidType.INSTANCE);
-      extensionWriter.writeExtension(u2);
+      extensionWriter.writeExtension(u2, UuidType.INSTANCE);
       writer.endEntry();
       writer.endMap();
 
@@ -1569,6 +1568,107 @@ public class TestMapVector {
       assertTrue(resultStruct.containsKey(MapVector.VALUE_NAME));
       assertArrayEquals(new byte[] {11, 22}, (byte[]) resultStruct.get(MapVector.KEY_NAME));
       assertArrayEquals(new byte[] {32, 21}, (byte[]) resultStruct.get(MapVector.VALUE_NAME));
+    }
+  }
+
+  @Test
+  public void testMapWithUuidKeyAndListUuidValue() throws Exception {
+    try (final MapVector mapVector = MapVector.empty("map", allocator, false)) {
+      mapVector.allocateNew();
+      UnionMapWriter writer = mapVector.getWriter();
+
+      // Create test UUIDs
+      UUID key1 = UUID.randomUUID();
+      UUID key2 = UUID.randomUUID();
+      UUID value1a = UUID.randomUUID();
+      UUID value1b = UUID.randomUUID();
+      UUID value2a = UUID.randomUUID();
+      UUID value2b = UUID.randomUUID();
+      UUID value2c = UUID.randomUUID();
+
+      // Write first map entry: {key1 -> [value1a, value1b]}
+      writer.setPosition(0);
+      writer.startMap();
+
+      writer.startEntry();
+      ExtensionWriter keyWriter = writer.key().extension(UuidType.INSTANCE);
+      keyWriter.writeExtension(key1, UuidType.INSTANCE);
+      ListWriter valueWriter = writer.value().list();
+      valueWriter.startList();
+      ExtensionWriter listItemWriter = valueWriter.extension(UuidType.INSTANCE);
+      listItemWriter.writeExtension(value1a, UuidType.INSTANCE);
+      listItemWriter = valueWriter.extension(UuidType.INSTANCE);
+      listItemWriter.writeExtension(value1b, UuidType.INSTANCE);
+      valueWriter.endList();
+      writer.endEntry();
+
+      writer.startEntry();
+      keyWriter = writer.key().extension(UuidType.INSTANCE);
+      keyWriter.writeExtension(key2, UuidType.INSTANCE);
+      valueWriter = writer.value().list();
+      valueWriter.startList();
+      listItemWriter = valueWriter.extension(UuidType.INSTANCE);
+      listItemWriter.writeExtension(value2a, UuidType.INSTANCE);
+      listItemWriter = valueWriter.extension(UuidType.INSTANCE);
+      listItemWriter.writeExtension(value2b, UuidType.INSTANCE);
+      listItemWriter = valueWriter.extension(UuidType.INSTANCE);
+      listItemWriter.writeExtension(value2c, UuidType.INSTANCE);
+      valueWriter.endList();
+      writer.endEntry();
+
+      writer.endMap();
+      writer.setValueCount(1);
+
+      // Read and verify the data
+      UnionMapReader mapReader = mapVector.getReader();
+      mapReader.setPosition(0);
+
+      // Read first entry
+      mapReader.next();
+      FieldReader keyReader = mapReader.key();
+      UuidHolder keyHolder = new UuidHolder();
+      keyReader.read(keyHolder);
+      ByteBuffer bb = ByteBuffer.wrap(keyHolder.value);
+      UUID actualKey = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(key1, actualKey);
+
+      FieldReader valueReader = mapReader.value();
+      assertTrue(valueReader.isSet());
+      List<?> listValue = (List<?>) valueReader.readObject();
+      assertEquals(2, listValue.size());
+
+      // Verify first list item - readObject() returns UUID objects for extension types
+      UUID actualValue1a = (UUID) listValue.get(0);
+      assertEquals(value1a, actualValue1a);
+
+      // Verify second list item
+      UUID actualValue1b = (UUID) listValue.get(1);
+      assertEquals(value1b, actualValue1b);
+
+      // Read second entry
+      mapReader.next();
+      keyReader = mapReader.key();
+      keyReader.read(keyHolder);
+      bb = ByteBuffer.wrap(keyHolder.value);
+      actualKey = new UUID(bb.getLong(), bb.getLong());
+      assertEquals(key2, actualKey);
+
+      valueReader = mapReader.value();
+      assertTrue(valueReader.isSet());
+      listValue = (List<?>) valueReader.readObject();
+      assertEquals(3, listValue.size());
+
+      // Verify first list item - readObject() returns UUID objects for extension types
+      UUID actualValue2a = (UUID) listValue.get(0);
+      assertEquals(value2a, actualValue2a);
+
+      // Verify second list item
+      UUID actualValue2b = (UUID) listValue.get(1);
+      assertEquals(value2b, actualValue2b);
+
+      // Verify third list item
+      UUID actualValue2c = (UUID) listValue.get(2);
+      assertEquals(value2c, actualValue2c);
     }
   }
 }

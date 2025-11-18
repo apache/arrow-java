@@ -111,7 +111,7 @@ public class ComplexCopier {
         if (reader.isSet()) {
           Object value = reader.readObject();
           if (value != null) {
-            writer.writeExtension(value);
+            writer.writeExtension(value, reader.getField().getType());
           }
         } else {
           writer.writeNull();
