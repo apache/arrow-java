@@ -22,6 +22,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
+import org.apache.arrow.vector.holder.NullableUuidHolder;
 import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -93,6 +94,11 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
   }
 
   public void get(int index, UuidHolder holder) {
+    holder.value = getUnderlyingVector().get(index);
+    holder.isSet = 1;
+  }
+
+  public void get(int index, NullableUuidHolder holder) {
     holder.value = getUnderlyingVector().get(index);
     holder.isSet = 1;
   }
