@@ -896,9 +896,9 @@ public class TestComplexCopier {
         mapWriter.startMap();
         mapWriter.startEntry();
         ExtensionWriter extensionKeyWriter = mapWriter.key().extension(UuidType.INSTANCE);
-        extensionKeyWriter.writeExtension(UUID.randomUUID());
+        extensionKeyWriter.writeExtension(UUID.randomUUID(), UuidType.INSTANCE);
         ExtensionWriter extensionValueWriter = mapWriter.value().extension(UuidType.INSTANCE);
-        extensionValueWriter.writeExtension(UUID.randomUUID());
+        extensionValueWriter.writeExtension(UUID.randomUUID(), UuidType.INSTANCE);
         mapWriter.endEntry();
         mapWriter.endMap();
       }
@@ -932,9 +932,9 @@ public class TestComplexCopier {
         structWriter.setPosition(i);
         structWriter.start();
         ExtensionWriter extensionWriter1 = structWriter.extension("uuid1", UuidType.INSTANCE);
-        extensionWriter1.writeExtension(UUID.randomUUID());
+        extensionWriter1.writeExtension(UUID.randomUUID(), UuidType.INSTANCE);
         ExtensionWriter extensionWriter2 = structWriter.extension("uuid2", UuidType.INSTANCE);
-        extensionWriter2.writeExtension(UUID.randomUUID());
+        extensionWriter2.writeExtension(UUID.randomUUID(), UuidType.INSTANCE);
         structWriter.end();
       }
 
