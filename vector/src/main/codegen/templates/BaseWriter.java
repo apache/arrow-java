@@ -123,6 +123,14 @@ public interface BaseWriter extends AutoCloseable, Positionable {
      * @param value the extension type value to write
      */
     void writeExtension(Object value);
+
+    /**
+     * Writes the given extension type value.
+     *
+     * @param value the extension type value to write
+     * @param type of the extension
+     */
+    void writeExtension(Object value, ArrowType type);
   }
 
   public interface ScalarWriter extends

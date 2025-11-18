@@ -2530,7 +2530,7 @@ public class TestComplexWriter {
       {
         ExtensionWriter extensionWriter = rootWriter.extension("uuid1", UuidType.INSTANCE);
         extensionWriter.setPosition(0);
-        extensionWriter.writeExtension(u1);
+        extensionWriter.writeExtension(u1, UuidType.INSTANCE);
       }
       // read
       StructReader rootReader = new SingleStructReaderImpl(parent).reader("root");
