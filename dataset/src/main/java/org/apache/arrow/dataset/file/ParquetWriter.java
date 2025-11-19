@@ -66,12 +66,12 @@ public class ParquetWriter implements AutoCloseable {
     try {
       // Convert Java Schema to Arrow C Data Interface Schema
       arrowSchemaLocal = ArrowSchema.allocateNew(this.allocator);
+      this.arrowSchema = arrowSchemaLocal;
       Data.exportSchema(this.allocator, schema, null, arrowSchemaLocal);
     } catch (Exception e) {
       this.close();
       throw new IOException("Failed to convert schema to ArrowSchema: " + e.getMessage(), e);
     }
-    this.arrowSchema = arrowSchemaLocal;
 
     long ptr = jni.nativeCreateParquetWriter(outputStream, arrowSchema.memoryAddress(), properties);
 
