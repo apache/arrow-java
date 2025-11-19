@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector.types.pojo;
 
+import static org.apache.arrow.vector.TestUtils.ensureRegistered;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -60,9 +61,9 @@ public class TestExtensionType {
   /** Test that a custom UUID type can be round-tripped through a temporary file. */
   @Test
   public void roundtripUuid() throws IOException {
-    ExtensionTypeRegistry.register(new UuidType());
+    ensureRegistered(UuidType.INSTANCE);
     final Schema schema =
-        new Schema(Collections.singletonList(Field.nullable("a", new UuidType())));
+        new Schema(Collections.singletonList(Field.nullable("a", UuidType.INSTANCE)));
     try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
         final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
       UUID u1 = UUID.randomUUID();
@@ -90,7 +91,7 @@ public class TestExtensionType {
         assertEquals(root.getSchema(), readerRoot.getSchema());
 
         final Field field = readerRoot.getSchema().getFields().get(0);
-        final UuidType expectedType = new UuidType();
+        final UuidType expectedType = UuidType.INSTANCE;
         assertEquals(
             field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_NAME),
             expectedType.extensionName());
@@ -114,9 +115,9 @@ public class TestExtensionType {
   /** Test that a custom UUID type can be read as its underlying type. */
   @Test
   public void readUnderlyingType() throws IOException {
-    ExtensionTypeRegistry.register(new UuidType());
+    ensureRegistered(UuidType.INSTANCE);
     final Schema schema =
-        new Schema(Collections.singletonList(Field.nullable("a", new UuidType())));
+        new Schema(Collections.singletonList(Field.nullable("a", UuidType.INSTANCE)));
     try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
         final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
       UUID u1 = UUID.randomUUID();
@@ -136,7 +137,7 @@ public class TestExtensionType {
         writer.end();
       }
 
-      ExtensionTypeRegistry.unregister(new UuidType());
+      ExtensionTypeRegistry.unregister(UuidType.INSTANCE);
 
       try (final SeekableByteChannel channel =
               Files.newByteChannel(Paths.get(file.getAbsolutePath()));
@@ -154,7 +155,7 @@ public class TestExtensionType {
                 .getByteWidth());
 
         final Field field = readerRoot.getSchema().getFields().get(0);
-        final UuidType expectedType = new UuidType();
+        final UuidType expectedType = UuidType.INSTANCE;
         assertEquals(
             field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_NAME),
             expectedType.extensionName());
@@ -255,7 +256,7 @@ public class TestExtensionType {
 
   @Test
   public void testVectorCompare() {
-    UuidType uuidType = new UuidType();
+    UuidType uuidType = UuidType.INSTANCE;
     ExtensionTypeRegistry.register(uuidType);
     try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
         UuidVector a1 =

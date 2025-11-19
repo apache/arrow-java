@@ -20,6 +20,7 @@ import java.util.Random;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.FieldType;
 
 public class TestUtils {
@@ -61,5 +62,15 @@ public class TestUtils {
       sb.append(random.nextInt(10)); // 0-9
     }
     return sb.toString();
+  }
+
+  /*
+   * Ensure the extension type is registered, as there might other tests trying to unregister the
+   * type. ex.: TestExtensionType#readUnderlyingType
+   */
+  public static void ensureRegistered(ArrowType.ExtensionType type) {
+    if (ExtensionTypeRegistry.lookup(type.extensionName()) == null) {
+      ExtensionTypeRegistry.register(type);
+    }
   }
 }

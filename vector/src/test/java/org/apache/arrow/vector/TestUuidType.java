@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector;
 
+import static org.apache.arrow.vector.TestUtils.ensureRegistered;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -164,9 +165,9 @@ class TestUuidType {
 
   @Test
   void testIpcRoundTrip() {
-    UuidType.ensureRegistered();
+    UuidType type = UuidType.INSTANCE;
+    ensureRegistered(type);
 
-    UuidType type = new UuidType();
     Schema schema = new Schema(Collections.singletonList(Field.nullable("uuid", type)));
     byte[] serialized = schema.serializeAsMessage();
     Schema deserialized = Schema.deserializeMessage(ByteBuffer.wrap(serialized));
@@ -175,9 +176,9 @@ class TestUuidType {
 
   @Test
   void testVectorIpcRoundTrip() throws IOException {
-    UuidType.ensureRegistered();
+    UuidType type = UuidType.INSTANCE;
+    ensureRegistered(type);
 
-    UuidType type = new UuidType();
     UUID uuid1 = UUID.randomUUID();
     UUID uuid2 = UUID.randomUUID();
 
