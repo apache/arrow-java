@@ -14,24 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector;
+package org.apache.arrow.vector.holders;
+
+import org.apache.arrow.memory.ArrowBuf;
 
 /**
- * Interface for all fixed width {@link ElementAddressableVector} (e.g. integer, fixed size binary,
- * etc).
+ * Value holder for nullable UUID values.
+ *
+ * <p>The {@code isSet} field controls nullability: when {@code isSet = 1}, the holder contains a
+ * valid UUID in {@code buffer}; when {@code isSet = 0}, the holder represents a null value and
+ * {@code buffer} should not be accessed.
+ *
+ * @see UuidHolder
+ * @see org.apache.arrow.vector.UuidVector
+ * @see org.apache.arrow.vector.extension.UuidType
  */
-public interface FixedWidthVector extends ElementAddressableVector {
-
-  /**
-   * Allocate a new memory space for this vector. Must be called prior to using the ValueVector.
-   *
-   * @param valueCount Number of values in the vector.
-   */
-  void allocateNew(int valueCount);
-
-  /** Zero out the underlying buffer backing this vector. */
-  void zeroVector();
-
-  /** Get the width of the type in bytes. */
-  int getTypeWidth();
+public class NullableUuidHolder extends ExtensionHolder {
+  /** Buffer containing 16-byte UUID data. */
+  public ArrowBuf buffer;
 }

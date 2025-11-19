@@ -16,32 +16,53 @@
  */
 package org.apache.arrow.vector.complex.impl;
 
-import java.nio.ByteBuffer;
-import java.util.UUID;
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.vector.UuidVector;
-import org.apache.arrow.vector.holder.UuidHolder;
 import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.holders.NullableUuidHolder;
+import org.apache.arrow.vector.holders.UuidHolder;
 
+/**
+ * Writer implementation for {@link UuidVector}.
+ *
+ * <p>Supports writing UUID values in multiple formats: {@link java.util.UUID}, byte arrays, and
+ * {@link ArrowBuf}. Also handles {@link UuidHolder} and {@link NullableUuidHolder}.
+ *
+ * @see UuidVector
+ * @see org.apache.arrow.vector.extension.UuidType
+ */
 public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
 
+  /**
+   * Constructs a writer for the given UUID vector.
+   *
+   * @param vector the UUID vector to write to
+   */
   public UuidWriterImpl(UuidVector vector) {
     super(vector);
   }
 
   @Override
   public void writeExtension(Object value) {
-    UUID uuid = (UUID) value;
-    ByteBuffer bb = ByteBuffer.allocate(16);
-    bb.putLong(uuid.getMostSignificantBits());
-    bb.putLong(uuid.getLeastSignificantBits());
-    vector.setSafe(getPosition(), bb.array());
+    if (value instanceof byte[]) {
+      vector.setSafe(getPosition(), (byte[]) value);
+    } else if (value instanceof ArrowBuf) {
+      vector.setSafe(getPosition(), (ArrowBuf) value);
+    } else if (value instanceof java.util.UUID) {
+      vector.setSafe(getPosition(), (java.util.UUID) value);
+    } else {
+      throw new IllegalArgumentException("Unsupported value type for UUID: " + value.getClass());
+    }
     vector.setValueCount(getPosition() + 1);
   }
 
   @Override
   public void write(ExtensionHolder holder) {
-    UuidHolder uuidHolder = (UuidHolder) holder;
-    vector.setSafe(getPosition(), uuidHolder.value);
+    if (holder instanceof UuidHolder) {
+      vector.setSafe(getPosition(), (UuidHolder) holder);
+    } else if (holder instanceof NullableUuidHolder) {
+      vector.setSafe(getPosition(), (NullableUuidHolder) holder);
+    }
     vector.setValueCount(getPosition() + 1);
   }
 }
