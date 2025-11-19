@@ -107,12 +107,14 @@ public class SqlTypes {
         }
         break;
       case Binary:
+      case BinaryView:
         return Types.VARBINARY;
       case FixedSizeBinary:
         return Types.BINARY;
       case LargeBinary:
         return Types.LONGVARBINARY;
       case Utf8:
+      case Utf8View:
         return Types.VARCHAR;
       case LargeUtf8:
         return Types.LONGVARCHAR;

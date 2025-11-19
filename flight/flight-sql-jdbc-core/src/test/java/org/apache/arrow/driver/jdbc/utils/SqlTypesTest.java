@@ -40,9 +40,11 @@ public class SqlTypesTest {
 
     assertEquals(Types.BINARY, getSqlTypeIdFromArrowType(new ArrowType.FixedSizeBinary(1024)));
     assertEquals(Types.VARBINARY, getSqlTypeIdFromArrowType(new ArrowType.Binary()));
+    assertEquals(Types.VARBINARY, getSqlTypeIdFromArrowType(new ArrowType.BinaryView()));
     assertEquals(Types.LONGVARBINARY, getSqlTypeIdFromArrowType(new ArrowType.LargeBinary()));
 
     assertEquals(Types.VARCHAR, getSqlTypeIdFromArrowType(new ArrowType.Utf8()));
+    assertEquals(Types.VARCHAR, getSqlTypeIdFromArrowType(new ArrowType.Utf8View()));
     assertEquals(Types.LONGVARCHAR, getSqlTypeIdFromArrowType(new ArrowType.LargeUtf8()));
 
     assertEquals(Types.DATE, getSqlTypeIdFromArrowType(new ArrowType.Date(DateUnit.MILLISECOND)));
@@ -94,9 +96,11 @@ public class SqlTypesTest {
 
     assertEquals("BINARY", getSqlTypeNameFromArrowType(new ArrowType.FixedSizeBinary(1024)));
     assertEquals("VARBINARY", getSqlTypeNameFromArrowType(new ArrowType.Binary()));
+    assertEquals("VARBINARY", getSqlTypeNameFromArrowType(new ArrowType.BinaryView()));
     assertEquals("LONGVARBINARY", getSqlTypeNameFromArrowType(new ArrowType.LargeBinary()));
 
     assertEquals("VARCHAR", getSqlTypeNameFromArrowType(new ArrowType.Utf8()));
+    assertEquals("VARCHAR", getSqlTypeNameFromArrowType(new ArrowType.Utf8View()));
     assertEquals("LONGVARCHAR", getSqlTypeNameFromArrowType(new ArrowType.LargeUtf8()));
 
     assertEquals("DATE", getSqlTypeNameFromArrowType(new ArrowType.Date(DateUnit.MILLISECOND)));
