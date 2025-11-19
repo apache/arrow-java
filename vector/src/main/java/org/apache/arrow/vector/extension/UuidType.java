@@ -16,7 +16,6 @@
  */
 package org.apache.arrow.vector.extension;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -64,19 +63,8 @@ public class UuidType extends ExtensionType {
   /** Storage type for UUID: FixedSizeBinary(16). */
   public static final ArrowType STORAGE_TYPE = new ArrowType.FixedSizeBinary(UUID_BYTE_WIDTH);
 
-  /** Registers the UuidType in the extension type registry. */
-  private static final AtomicBoolean registered = new AtomicBoolean(false);
-
   static {
     ExtensionTypeRegistry.register(INSTANCE);
-  }
-
-  /** Register the extension type so it can be used globally. */
-  public static void ensureRegistered() {
-    if (!registered.getAndSet(true)) {
-      // The values don't matter, we just need an instance
-      ExtensionTypeRegistry.register(UuidType.INSTANCE);
-    }
   }
 
   @Override
