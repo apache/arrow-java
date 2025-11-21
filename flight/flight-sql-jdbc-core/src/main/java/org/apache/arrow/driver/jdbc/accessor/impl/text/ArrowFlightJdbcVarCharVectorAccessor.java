@@ -35,6 +35,7 @@ import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
 import org.apache.arrow.driver.jdbc.utils.DateTimeUtils;
 import org.apache.arrow.vector.LargeVarCharVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.util.Text;
 
 /** Accessor for the Arrow types: {@link VarCharVector} and {@link LargeVarCharVector}. */
@@ -59,6 +60,13 @@ public class ArrowFlightJdbcVarCharVectorAccessor extends ArrowFlightJdbcAccesso
       LargeVarCharVector vector,
       IntSupplier currentRowSupplier,
       ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+    this(vector::get, currentRowSupplier, setCursorWasNull);
+  }
+
+  public ArrowFlightJdbcVarCharVectorAccessor(
+          ViewVarCharVector vector,
+          IntSupplier currentRowSupplier,
+          ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
     this(vector::get, currentRowSupplier, setCursorWasNull);
   }
 
