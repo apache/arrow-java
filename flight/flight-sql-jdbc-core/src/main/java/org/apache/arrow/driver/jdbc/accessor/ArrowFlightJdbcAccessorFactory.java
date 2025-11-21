@@ -67,6 +67,7 @@ import org.apache.arrow.vector.UInt4Vector;
 import org.apache.arrow.vector.UInt8Vector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarBinaryVector;
+import org.apache.arrow.vector.ViewVarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
@@ -130,6 +131,9 @@ public class ArrowFlightJdbcAccessorFactory {
     } else if (vector instanceof VarBinaryVector) {
       return new ArrowFlightJdbcBinaryVectorAccessor(
           (VarBinaryVector) vector, getCurrentRow, setCursorWasNull);
+    } else if (vector instanceof ViewVarBinaryVector) {
+      return new ArrowFlightJdbcBinaryVectorAccessor(
+              (ViewVarBinaryVector) vector, getCurrentRow, setCursorWasNull);
     } else if (vector instanceof LargeVarBinaryVector) {
       return new ArrowFlightJdbcBinaryVectorAccessor(
           (LargeVarBinaryVector) vector, getCurrentRow, setCursorWasNull);
