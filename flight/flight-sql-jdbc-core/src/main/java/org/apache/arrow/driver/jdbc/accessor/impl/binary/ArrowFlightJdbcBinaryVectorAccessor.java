@@ -27,6 +27,7 @@ import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.LargeVarBinaryVector;
 import org.apache.arrow.vector.VarBinaryVector;
+import org.apache.arrow.vector.ViewVarBinaryVector;
 
 /**
  * Accessor for the Arrow types: {@link FixedSizeBinaryVector}, {@link VarBinaryVector} and {@link
@@ -58,6 +59,13 @@ public class ArrowFlightJdbcBinaryVectorAccessor extends ArrowFlightJdbcAccessor
       LargeVarBinaryVector vector,
       IntSupplier currentRowSupplier,
       ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+    this(vector::get, currentRowSupplier, setCursorWasNull);
+  }
+
+  public ArrowFlightJdbcBinaryVectorAccessor(
+          ViewVarBinaryVector vector,
+          IntSupplier currentRowSupplier,
+          ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
     this(vector::get, currentRowSupplier, setCursorWasNull);
   }
 
