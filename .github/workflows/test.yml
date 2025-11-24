@@ -58,7 +58,7 @@ jobs:
       MAVEN: ${{ matrix.maven }}
     steps:
       - name: Checkout Arrow
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
@@ -100,7 +100,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
       - name: Checkout Arrow
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
@@ -131,7 +131,7 @@ jobs:
           java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
       - name: Checkout Arrow
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
@@ -152,37 +152,37 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Checkout Arrow
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           repository: apache/arrow
           submodules: recursive
       - name: Checkout Arrow Rust
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: apache/arrow-rs
           path: rust
       - name: Checkout Arrow nanoarrow
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: apache/arrow-nanoarrow
           path: nanoarrow
       - name: Checkout Arrow .NET
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: apache/arrow-dotnet
           path: dotnet
       - name: Checkout Arrow Go
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: apache/arrow-go
           path: go
       - name: Checkout Arrow Java
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: java
       - name: Checkout Arrow JavaScript
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: apache/arrow-js
           path: js
