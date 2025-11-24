@@ -64,9 +64,9 @@ public class ArrowFlightJdbcVarCharVectorAccessor extends ArrowFlightJdbcAccesso
   }
 
   public ArrowFlightJdbcVarCharVectorAccessor(
-          ViewVarCharVector vector,
-          IntSupplier currentRowSupplier,
-          ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+      ViewVarCharVector vector,
+      IntSupplier currentRowSupplier,
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
     this(vector::get, currentRowSupplier, setCursorWasNull);
   }
 

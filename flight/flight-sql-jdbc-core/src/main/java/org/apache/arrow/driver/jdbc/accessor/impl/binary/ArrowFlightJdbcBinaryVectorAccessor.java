@@ -63,9 +63,9 @@ public class ArrowFlightJdbcBinaryVectorAccessor extends ArrowFlightJdbcAccessor
   }
 
   public ArrowFlightJdbcBinaryVectorAccessor(
-          ViewVarBinaryVector vector,
-          IntSupplier currentRowSupplier,
-          ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+      ViewVarBinaryVector vector,
+      IntSupplier currentRowSupplier,
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
     this(vector::get, currentRowSupplier, setCursorWasNull);
   }
 
