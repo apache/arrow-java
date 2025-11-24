@@ -24,6 +24,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
@@ -46,6 +48,8 @@ import org.apache.arrow.driver.jdbc.utils.ThrowableAssertionUtils;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.TimeMilliVector;
 import org.apache.arrow.vector.TimeStampVector;
+import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -694,5 +698,27 @@ public class ArrowFlightJdbcVarCharVectorAccessorTest {
   public void testShouldGetObjectClassReturnString() {
     final Class<?> clazz = accessor.getObjectClass();
     assertThat(clazz, equalTo(String.class));
+  }
+
+  @Test
+  public void testViewVarcharVector() throws Exception {
+    try (VarCharVector varCharVector =
+            new VarCharVector("", rootAllocatorTestExtension.getRootAllocator());
+        ViewVarCharVector viewVarCharVector =
+            new ViewVarCharVector("", rootAllocatorTestExtension.getRootAllocator())) {
+      varCharVector.allocateNew(1);
+      viewVarCharVector.allocateNew(1);
+
+      ArrowFlightJdbcVarCharVectorAccessor varCharVectorAccessor =
+          new ArrowFlightJdbcVarCharVectorAccessor(varCharVector, () -> 0, (boolean wasNull) -> {});
+      ArrowFlightJdbcVarCharVectorAccessor viewVarcharVectorAccessor =
+          new ArrowFlightJdbcVarCharVectorAccessor(
+              viewVarCharVector, () -> 0, (boolean wasNull) -> {});
+      assertNull(viewVarcharVectorAccessor.getString());
+
+      varCharVector.set(0, new Text("looooong_string"));
+      viewVarCharVector.set(0, new Text("looooong_string"));
+      assertEquals(varCharVectorAccessor.getString(), viewVarcharVectorAccessor.getString());
+    }
   }
 }
