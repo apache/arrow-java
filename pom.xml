@@ -101,7 +101,7 @@ under the License.
     <dep.grpc-bom.version>1.73.0</dep.grpc-bom.version>
     <dep.protobuf-bom.version>4.33.1</dep.protobuf-bom.version>
     <dep.jackson-bom.version>2.18.3</dep.jackson-bom.version>
-    <dep.hadoop.version>3.4.1</dep.hadoop.version>
+    <dep.hadoop.version>3.4.2</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
     <dep.avro.version>1.12.0</dep.avro.version>
     <dep.mockito-bom.version>5.17.0</dep.mockito-bom.version>
