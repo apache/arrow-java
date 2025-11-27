@@ -338,7 +338,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   private void logSuppressedCloseException(
       FlightRuntimeException fre, String operationDescription) {
     // ARROW-17785 and GH-863: suppress exceptions caused by flaky gRPC layer during shutdown
-    LOGGER.info("Suppressed error {}", operationDescription, fre);
+    LOGGER.debug("Suppressed error {}", operationDescription, fre);
   }
 
   /** A prepared statement handler. */
