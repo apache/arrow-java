@@ -23,6 +23,7 @@ import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holder.UuidHolder;
+import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.UuidType;
@@ -47,6 +48,12 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
   public UUID getObject(int index) {
     final ByteBuffer bb = ByteBuffer.wrap(getUnderlyingVector().getObject(index));
     return new UUID(bb.getLong(), bb.getLong());
+  }
+
+  @Override
+  public void setSafe(int index, ExtensionHolder holder) {
+    UuidHolder uuidHolder = (UuidHolder) holder;
+    setSafe(index, uuidHolder.value);
   }
 
   @Override

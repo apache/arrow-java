@@ -851,6 +851,7 @@ public class TestComplexCopier {
 
   @Test
   public void testCopyListVectorWithExtensionType() {
+    UuidType uuidType = new UuidType();
     try (ListVector from = ListVector.empty("v", allocator);
         ListVector to = ListVector.empty("v", allocator)) {
 
@@ -860,10 +861,10 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         listWriter.setPosition(i);
         listWriter.startList();
-        ExtensionWriter extensionWriter = listWriter.extension(new UuidType());
-        extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-        extensionWriter.writeExtension(UUID.randomUUID());
-        extensionWriter.writeExtension(UUID.randomUUID());
+        ExtensionWriter extensionWriter = listWriter.extension(uuidType);
+        extensionWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+        extensionWriter.writeExtension(UUID.randomUUID(), uuidType);
+        extensionWriter.writeExtension(UUID.randomUUID(), uuidType);
         listWriter.endList();
       }
       from.setValueCount(COUNT);
@@ -874,7 +875,7 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         in.setPosition(i);
         out.setPosition(i);
-        ComplexCopier.copy(in, out, new UuidWriterFactory());
+        ComplexCopier.copy(in, out, new UuidFactory());
       }
 
       to.setValueCount(COUNT);
@@ -886,6 +887,7 @@ public class TestComplexCopier {
 
   @Test
   public void testCopyMapVectorWithExtensionType() {
+    UuidType uuidType = new UuidType();
     try (final MapVector from = MapVector.empty("v", allocator, false);
         final MapVector to = MapVector.empty("v", allocator, false)) {
 
@@ -896,12 +898,12 @@ public class TestComplexCopier {
         mapWriter.setPosition(i);
         mapWriter.startMap();
         mapWriter.startEntry();
-        ExtensionWriter extensionKeyWriter = mapWriter.key().extension(new UuidType());
-        extensionKeyWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-        extensionKeyWriter.writeExtension(UUID.randomUUID());
-        ExtensionWriter extensionValueWriter = mapWriter.value().extension(new UuidType());
-        extensionValueWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
-        extensionValueWriter.writeExtension(UUID.randomUUID());
+        ExtensionWriter extensionKeyWriter = mapWriter.key().extension(uuidType);
+        extensionKeyWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+        extensionKeyWriter.writeExtension(UUID.randomUUID(), uuidType);
+        ExtensionWriter extensionValueWriter = mapWriter.value().extension(uuidType);
+        extensionValueWriter.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+        extensionValueWriter.writeExtension(UUID.randomUUID(), uuidType);
         mapWriter.endEntry();
         mapWriter.endMap();
       }
@@ -914,7 +916,7 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         in.setPosition(i);
         out.setPosition(i);
-        ComplexCopier.copy(in, out, new UuidWriterFactory());
+        ComplexCopier.copy(in, out, new UuidFactory());
       }
       to.setValueCount(COUNT);
 
@@ -925,6 +927,7 @@ public class TestComplexCopier {
 
   @Test
   public void testCopyStructVectorWithExtensionType() {
+    UuidType uuidType = new UuidType();
     try (final StructVector from = StructVector.empty("v", allocator);
         final StructVector to = StructVector.empty("v", allocator)) {
 
@@ -934,12 +937,12 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         structWriter.setPosition(i);
         structWriter.start();
-        ExtensionWriter extensionWriter1 = structWriter.extension("timestamp1", new UuidType());
-        extensionWriter1.addExtensionTypeWriterFactory(new UuidWriterFactory());
-        extensionWriter1.writeExtension(UUID.randomUUID());
-        ExtensionWriter extensionWriter2 = structWriter.extension("timestamp2", new UuidType());
-        extensionWriter2.addExtensionTypeWriterFactory(new UuidWriterFactory());
-        extensionWriter2.writeExtension(UUID.randomUUID());
+        ExtensionWriter extensionWriter1 = structWriter.extension("timestamp1", uuidType);
+        extensionWriter1.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+        extensionWriter1.writeExtension(UUID.randomUUID(), uuidType);
+        ExtensionWriter extensionWriter2 = structWriter.extension("timestamp2", uuidType);
+        extensionWriter2.addExtensionTypeWriterFactory(new UuidFactory(), uuidType);
+        extensionWriter2.writeExtension(UUID.randomUUID(), uuidType);
         structWriter.end();
       }
 
@@ -951,7 +954,7 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         in.setPosition(i);
         out.setPosition(i);
-        ComplexCopier.copy(in, out, new UuidWriterFactory());
+        ComplexCopier.copy(in, out, new UuidFactory());
       }
       to.setValueCount(COUNT);
 
