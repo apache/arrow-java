@@ -18,6 +18,8 @@ package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.vector.UuidVector;
+import org.apache.arrow.vector.ValueVector;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;

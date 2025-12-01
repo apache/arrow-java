@@ -86,8 +86,8 @@ import org.apache.arrow.vector.holders.NullableDurationHolder;
 import org.apache.arrow.vector.holders.NullableFixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder;
-import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
+import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
@@ -1137,9 +1137,10 @@ public class TestComplexWriter {
         bufs.add(buf);
       } else if (i % 5 == 4) {
         UuidHolder holder = new UuidHolder();
-
-        holder.value = uuidByte;
+        holder.buffer = allocator.buffer(UuidType.UUID_BYTE_WIDTH);
+        holder.buffer.setBytes(0, uuidByte);
         unionWriter.write(holder);
+        allocator.releaseBytes(UuidType.UUID_BYTE_WIDTH);
       } else {
         unionWriter.writeFloat4((float) i);
       }
@@ -1168,10 +1169,7 @@ public class TestComplexWriter {
       } else if (i % 5 == 4) {
         NullableUuidHolder holder = new NullableUuidHolder();
         unionReader.read(holder);
-        ByteBuffer b = ByteBuffer.wrap(holder.value);
-        long high = b.getLong();
-        long low = b.getLong();
-        assertEquals(new UUID(high, low), uuid);
+        assertEquals(UuidUtility.uuidFromArrowBuf(holder.buffer, 0), uuid);
       } else {
         assertEquals((float) i, unionReader.readFloat(), 1e-12);
       }

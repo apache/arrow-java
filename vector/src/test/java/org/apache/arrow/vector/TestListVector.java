@@ -1352,14 +1352,12 @@ public class TestListVector {
       FieldReader uuidReader = reader.reader();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      ByteBuffer bb = ByteBuffer.wrap(holder.value);
-      UUID actualUuid = new UUID(bb.getLong(), bb.getLong());
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
       assertEquals(u1, actualUuid);
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      bb = ByteBuffer.wrap(holder.value);
-      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
       assertEquals(u2, actualUuid);
 
       // Verify second list
@@ -1368,14 +1366,12 @@ public class TestListVector {
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      bb = ByteBuffer.wrap(holder.value);
-      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
       assertEquals(u3, actualUuid);
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      bb = ByteBuffer.wrap(holder.value);
-      actualUuid = new UUID(bb.getLong(), bb.getLong());
+      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
       assertEquals(u4, actualUuid);
       reader.next();
       uuidReader = reader.reader();
