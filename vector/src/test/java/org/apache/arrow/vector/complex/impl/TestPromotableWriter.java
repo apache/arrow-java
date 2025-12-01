@@ -43,7 +43,6 @@ import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.extension.UuidType;
-import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.NullableDecimalHolder;
@@ -51,6 +50,7 @@ import org.apache.arrow.vector.holders.NullableIntHolder;
 import org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.UnionHolder;
+import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -59,6 +59,7 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.arrow.vector.util.Text;
+import org.apache.arrow.vector.util.UuidUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -139,13 +140,11 @@ public class TestPromotableWriter {
       writer.setPosition(10);
       UUID uuid2 = UUID.randomUUID();
       UuidHolder uuidHolder = new UuidHolder();
-      uuidHolder.value =
-          ByteBuffer.allocate(16)
-              .putLong(uuid2.getMostSignificantBits())
-              .putLong(uuid2.getLeastSignificantBits())
-              .array();
+      uuidHolder.buffer = allocator.buffer(UuidType.UUID_BYTE_WIDTH);
+      uuidHolder.buffer.setBytes(0, UuidUtility.getBytesFromUUID(uuid2));
       writer.extension("A", UuidType.INSTANCE).write(uuidHolder);
       writer.end();
+      allocator.releaseBytes(UuidType.UUID_BYTE_WIDTH);
 
       container.setValueCount(11);
 
