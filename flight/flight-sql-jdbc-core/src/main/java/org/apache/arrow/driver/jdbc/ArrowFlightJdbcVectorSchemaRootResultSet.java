@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -68,10 +69,10 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
    * @return a ResultSet which accesses the given VectorSchemaRoot
    */
   public static ArrowFlightJdbcVectorSchemaRootResultSet fromVectorSchemaRoot(
-      final VectorSchemaRoot vectorSchemaRoot) throws SQLException {
+      final VectorSchemaRoot vectorSchemaRoot, Calendar localCalendar) throws SQLException {
     // Similar to how org.apache.calcite.avatica.util.ArrayFactoryImpl does
 
-    final TimeZone timeZone = TimeZone.getDefault();
+    final TimeZone timeZone = localCalendar.getTimeZone();
     final QueryState state = new QueryState();
 
     final Meta.Signature signature = ArrowFlightMetaImpl.newSignature(null, null, null);

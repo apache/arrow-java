@@ -17,6 +17,7 @@
 package org.apache.arrow.driver.jdbc.accessor.impl.complex;
 
 import java.sql.Array;
+import java.util.Calendar;
 import java.util.List;
 import java.util.function.IntSupplier;
 import org.apache.arrow.driver.jdbc.ArrowFlightJdbcArray;
@@ -33,10 +34,14 @@ import org.apache.arrow.vector.complex.ListVector;
  */
 public abstract class AbstractArrowFlightJdbcListVectorAccessor extends ArrowFlightJdbcAccessor {
 
+  private final Calendar localCalendar;
+
   protected AbstractArrowFlightJdbcListVectorAccessor(
       IntSupplier currentRowSupplier,
-      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull,
+      Calendar localCalendar) {
     super(currentRowSupplier, setCursorWasNull);
+    this.localCalendar = localCalendar;
   }
 
   @Override
@@ -67,6 +72,6 @@ public abstract class AbstractArrowFlightJdbcListVectorAccessor extends ArrowFli
     long endOffset = getEndOffset(index);
 
     long valuesCount = endOffset - startOffset;
-    return new ArrowFlightJdbcArray(dataVector, startOffset, valuesCount);
+    return new ArrowFlightJdbcArray(dataVector, startOffset, valuesCount, localCalendar);
   }
 }
