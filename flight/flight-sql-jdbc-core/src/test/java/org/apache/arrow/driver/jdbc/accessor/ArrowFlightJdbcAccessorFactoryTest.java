@@ -16,10 +16,12 @@
  */
 package org.apache.arrow.driver.jdbc.accessor;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.function.IntSupplier;
 import org.apache.arrow.driver.jdbc.accessor.impl.binary.ArrowFlightJdbcBinaryVectorAccessor;
+import org.apache.arrow.driver.jdbc.accessor.impl.binary.ArrowFlightJdbcUuidVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcDateVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcDurationVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcIntervalVectorAccessor;
@@ -495,6 +497,17 @@ public class ArrowFlightJdbcAccessorFactoryTest {
               valueVector, GET_CURRENT_ROW, (boolean wasNull) -> {});
 
       assertTrue(accessor instanceof ArrowFlightJdbcMapVectorAccessor);
+    }
+  }
+
+  @Test
+  public void createAccessorForUuidVector() {
+    try (ValueVector valueVector = rootAllocatorTestExtension.createUuidVector()) {
+      ArrowFlightJdbcAccessor accessor =
+          ArrowFlightJdbcAccessorFactory.createAccessor(
+              valueVector, GET_CURRENT_ROW, (boolean wasNull) -> {});
+
+      assertInstanceOf(ArrowFlightJdbcUuidVectorAccessor.class, accessor);
     }
   }
 }

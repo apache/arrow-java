@@ -19,6 +19,7 @@ package org.apache.arrow.driver.jdbc.accessor;
 import java.util.function.IntSupplier;
 import org.apache.arrow.driver.jdbc.accessor.impl.ArrowFlightJdbcNullVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.binary.ArrowFlightJdbcBinaryVectorAccessor;
+import org.apache.arrow.driver.jdbc.accessor.impl.binary.ArrowFlightJdbcUuidVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcDateVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcDurationVectorAccessor;
 import org.apache.arrow.driver.jdbc.accessor.impl.calendar.ArrowFlightJdbcIntervalVectorAccessor;
@@ -65,6 +66,7 @@ import org.apache.arrow.vector.UInt1Vector;
 import org.apache.arrow.vector.UInt2Vector;
 import org.apache.arrow.vector.UInt4Vector;
 import org.apache.arrow.vector.UInt8Vector;
+import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
@@ -138,6 +140,9 @@ public class ArrowFlightJdbcAccessorFactory {
     } else if (vector instanceof LargeVarBinaryVector) {
       return new ArrowFlightJdbcBinaryVectorAccessor(
           (LargeVarBinaryVector) vector, getCurrentRow, setCursorWasNull);
+    } else if (vector instanceof UuidVector) {
+      return new ArrowFlightJdbcUuidVectorAccessor(
+          (UuidVector) vector, getCurrentRow, setCursorWasNull);
     } else if (vector instanceof FixedSizeBinaryVector) {
       return new ArrowFlightJdbcBinaryVectorAccessor(
           (FixedSizeBinaryVector) vector, getCurrentRow, setCursorWasNull);
