@@ -20,11 +20,16 @@ import com.google.common.base.Strings;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.Field;
 
 /** SQL Types utility functions. */
 public class SqlTypes {
+  /** SQL type name for UUID (matches PostgreSQL JDBC driver convention). */
+  public static final String UUID_TYPE_NAME = "uuid";
+
   private static final Map<Integer, String> typeIdToName = new HashMap<>();
 
   static {
@@ -163,5 +168,45 @@ public class SqlTypes {
     }
 
     throw new IllegalArgumentException("Unsupported ArrowType " + arrowType);
+  }
+
+  /**
+   * Convert given {@link Field} to its corresponding SQL type ID, handling extension types.
+   *
+   * @param field field to convert from
+   * @return corresponding SQL type ID.
+   * @see java.sql.Types
+   */
+  public static int getSqlTypeIdFromField(Field field) {
+    ArrowType arrowType = field.getType();
+    if (arrowType instanceof UuidType) {
+      return Types.OTHER;
+    }
+    return getSqlTypeIdFromArrowType(arrowType);
+  }
+
+  /**
+   * Convert given {@link Field} to its corresponding SQL type name, handling extension types.
+   *
+   * @param field field to convert from
+   * @return corresponding SQL type name.
+   * @see java.sql.Types
+   */
+  public static String getSqlTypeNameFromField(Field field) {
+    ArrowType arrowType = field.getType();
+    if (arrowType instanceof UuidType) {
+      return UUID_TYPE_NAME;
+    }
+    return getSqlTypeNameFromArrowType(arrowType);
+  }
+
+  /**
+   * Check if the given field represents a UUID type.
+   *
+   * @param field field to check
+   * @return true if the field is a UUID extension type
+   */
+  public static boolean isUuidField(Field field) {
+    return field.getType() instanceof UuidType;
   }
 }
