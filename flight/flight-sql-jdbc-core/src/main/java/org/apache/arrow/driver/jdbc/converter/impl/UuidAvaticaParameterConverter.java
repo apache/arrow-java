@@ -21,8 +21,12 @@ import java.sql.Types;
 import java.util.UUID;
 import org.apache.arrow.driver.jdbc.converter.AvaticaParameterConverter;
 import org.apache.arrow.driver.jdbc.utils.SqlTypes;
+import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeIdFromArrowType;
+import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeNameFromArrowType;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.UuidVector;
+import org.apache.arrow.vector.extension.UuidType;
+import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.util.UuidUtility;
 import org.apache.calcite.avatica.AvaticaParameter;
@@ -82,26 +86,19 @@ public class UuidAvaticaParameterConverter implements AvaticaParameterConverter 
   @Override
   public AvaticaParameter createParameter(Field field) {
     final String name = field.getName();
-    final int jdbcType = Types.OTHER;
-    final String typeName = SqlTypes.UUID_TYPE_NAME;
+    final int jdbcType = getSqlTypeIdFromArrowType(field.getType());
+    final String typeName = getSqlTypeNameFromArrowType(field.getType());
     final String className = UUID.class.getCanonicalName();
     return new AvaticaParameter(false, 0, 0, jdbcType, typeName, className, name);
   }
 
   private static UUID uuidFromBytes(byte[] bytes) {
-//    long msb = 0;
-//    long lsb = 0;
-//    for (int i = 0; i < 8; i++) {
-//      msb = (msb << 8) | (bytes[i] & 0xff);
-//    }
-//    for (int i = 8; i < 16; i++) {
-//      lsb = (lsb << 8) | (bytes[i] & 0xff);
-//    }
-
     final long mostSignificantBits;
     final long leastSignificantBits;
     ByteBuffer bb = ByteBuffer.wrap(bytes);
+    // Reads the first eight bytes
     mostSignificantBits = bb.getLong();
+    // Reads the first eight bytes at this buffer's current
     leastSignificantBits = bb.getLong();
 
     return new UUID(mostSignificantBits, leastSignificantBits);

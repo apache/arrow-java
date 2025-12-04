@@ -155,7 +155,7 @@ public class UuidAvaticaParameterConverterTest {
 
     assertThat(parameter.name, is("uuid_col"));
     assertThat(parameter.parameterType, is(Types.OTHER));
-    assertThat(parameter.typeName, is(SqlTypes.UUID_TYPE_NAME));
+    assertThat(parameter.typeName, is("OTHER"));
     assertThat(parameter.className, equalTo(UUID.class.getCanonicalName()));
   }
 }
