@@ -17,6 +17,8 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ExtensionTypeVector;
+import org.apache.arrow.vector.ValueVector;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.pojo.Field;
 
 /**

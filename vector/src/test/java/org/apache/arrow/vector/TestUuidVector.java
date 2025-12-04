@@ -33,6 +33,7 @@ import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.util.UuidUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -358,7 +359,13 @@ class TestUuidVector {
       reader.setPosition(0);
 
       // Create a mock unsupported holder
-      ExtensionHolder unsupportedHolder = new ExtensionHolder() {};
+      ExtensionHolder unsupportedHolder =
+          new ExtensionHolder() {
+            @Override
+            public ArrowType type() {
+              return null;
+            }
+          };
 
       IllegalArgumentException exception =
           assertThrows(IllegalArgumentException.class, () -> reader.read(unsupportedHolder));
@@ -377,7 +384,13 @@ class TestUuidVector {
       UuidReaderImpl reader = (UuidReaderImpl) vector.getReader();
 
       // Create a mock unsupported holder
-      ExtensionHolder unsupportedHolder = new ExtensionHolder() {};
+      ExtensionHolder unsupportedHolder =
+          new ExtensionHolder() {
+            @Override
+            public ArrowType type() {
+              return null;
+            }
+          };
 
       IllegalArgumentException exception =
           assertThrows(IllegalArgumentException.class, () -> reader.read(0, unsupportedHolder));

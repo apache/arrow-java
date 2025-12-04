@@ -125,11 +125,12 @@ public interface BaseWriter extends AutoCloseable, Positionable {
     void writeExtension(Object value);
 
     /**
-     * Adds the given extension type factory. This factory allows configuring writer implementations for specific ExtensionTypeVector.
+     * Writes the given extension type value.
      *
-     * @param factory the extension type factory to add
+     * @param value the extension type value to write
+     * @param type of the extension
      */
-    void addExtensionTypeWriterFactory(ExtensionTypeWriterFactory factory);
+    void writeExtension(Object value, ArrowType type);
   }
 
   public interface ScalarWriter extends

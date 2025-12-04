@@ -44,10 +44,12 @@ import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.ValueIterableVector;
+import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.compare.Range;
 import org.apache.arrow.vector.compare.RangeEqualsVisitor;
 import org.apache.arrow.vector.complex.StructVector;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.ipc.ArrowFileReader;
 import org.apache.arrow.vector.ipc.ArrowFileWriter;
@@ -332,6 +334,11 @@ public class TestExtensionType {
     @Override
     public FieldVector getNewVector(String name, FieldType fieldType, BufferAllocator allocator) {
       return new LocationVector(name, allocator);
+    }
+
+    @Override
+    public FieldWriter getNewFieldWriter(ValueVector vector) {
+      throw new UnsupportedOperationException("Not yet implemented.");
     }
   }
 
