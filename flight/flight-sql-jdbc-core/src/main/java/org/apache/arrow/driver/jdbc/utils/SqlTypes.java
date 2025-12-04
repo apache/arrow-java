@@ -115,6 +115,9 @@ public class SqlTypes {
       case BinaryView:
         return Types.VARBINARY;
       case FixedSizeBinary:
+        if (arrowType instanceof UuidType) {
+          return Types.OTHER;
+        }
         return Types.BINARY;
       case LargeBinary:
         return Types.LONGVARBINARY;
@@ -168,45 +171,5 @@ public class SqlTypes {
     }
 
     throw new IllegalArgumentException("Unsupported ArrowType " + arrowType);
-  }
-
-  /**
-   * Convert given {@link Field} to its corresponding SQL type ID, handling extension types.
-   *
-   * @param field field to convert from
-   * @return corresponding SQL type ID.
-   * @see java.sql.Types
-   */
-  public static int getSqlTypeIdFromField(Field field) {
-    ArrowType arrowType = field.getType();
-    if (arrowType instanceof UuidType) {
-      return Types.OTHER;
-    }
-    return getSqlTypeIdFromArrowType(arrowType);
-  }
-
-  /**
-   * Convert given {@link Field} to its corresponding SQL type name, handling extension types.
-   *
-   * @param field field to convert from
-   * @return corresponding SQL type name.
-   * @see java.sql.Types
-   */
-  public static String getSqlTypeNameFromField(Field field) {
-    ArrowType arrowType = field.getType();
-    if (arrowType instanceof UuidType) {
-      return UUID_TYPE_NAME;
-    }
-    return getSqlTypeNameFromArrowType(arrowType);
-  }
-
-  /**
-   * Check if the given field represents a UUID type.
-   *
-   * @param field field to check
-   * @return true if the field is a UUID extension type
-   */
-  public static boolean isUuidField(Field field) {
-    return field.getType() instanceof UuidType;
   }
 }

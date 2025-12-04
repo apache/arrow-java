@@ -72,6 +72,7 @@ public final class ConvertUtils {
         .map(
             index -> {
               final Field field = fields.get(index);
+              final ArrowType fieldType = field.getType();
 
               final Common.ColumnMetaData.Builder builder =
                   Common.ColumnMetaData.newBuilder()
@@ -83,8 +84,8 @@ public final class ConvertUtils {
 
               builder.setType(
                   Common.AvaticaType.newBuilder()
-                      .setId(SqlTypes.getSqlTypeIdFromField(field))
-                      .setName(SqlTypes.getSqlTypeNameFromField(field))
+                      .setId(SqlTypes.getSqlTypeIdFromArrowType(fieldType))
+                      .setName(SqlTypes.getSqlTypeNameFromArrowType(fieldType))
                       .build());
 
               return ColumnMetaData.fromProto(builder.build());

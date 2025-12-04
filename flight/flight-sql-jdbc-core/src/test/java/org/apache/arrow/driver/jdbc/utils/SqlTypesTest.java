@@ -17,10 +17,7 @@
 package org.apache.arrow.driver.jdbc.utils;
 
 import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeIdFromArrowType;
-import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeIdFromField;
 import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeNameFromArrowType;
-import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeNameFromField;
-import static org.apache.arrow.driver.jdbc.utils.SqlTypes.isUuidField;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -153,13 +150,13 @@ public class SqlTypesTest {
   @Test
   public void testGetSqlTypeIdFromFieldForUuid() {
     Field uuidField = new Field("uuid_col", new FieldType(true, UuidType.INSTANCE, null), null);
-    assertEquals(Types.OTHER, getSqlTypeIdFromField(uuidField));
+    assertEquals(Types.OTHER, getSqlTypeIdFromArrowType(uuidField.getType()));
   }
 
   @Test
   public void testGetSqlTypeNameFromFieldForUuid() {
     Field uuidField = new Field("uuid_col", new FieldType(true, UuidType.INSTANCE, null), null);
-    assertEquals("uuid", getSqlTypeNameFromField(uuidField));
+    assertEquals("OTHER", getSqlTypeNameFromArrowType(uuidField.getType()));
   }
 
   @Test
@@ -181,12 +178,16 @@ public class SqlTypesTest {
   @Test
   public void testGetSqlTypeIdFromFieldForNonUuid() {
     Field intField = new Field("int_col", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    assertEquals(Types.INTEGER, getSqlTypeIdFromField(intField));
+    assertEquals(Types.INTEGER, getSqlTypeIdFromArrowType(intField.getType()));
   }
 
   @Test
   public void testGetSqlTypeNameFromFieldForNonUuid() {
     Field intField = new Field("int_col", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    assertEquals("INTEGER", getSqlTypeNameFromField(intField));
+    assertEquals("INTEGER", getSqlTypeNameFromArrowType(intField.getType()));
+  }
+
+  static boolean isUuidField(Field field) {
+    return field.getType() instanceof UuidType;
   }
 }
