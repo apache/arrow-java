@@ -19,8 +19,6 @@ package org.apache.arrow.driver.jdbc.utils;
 import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeIdFromArrowType;
 import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeNameFromArrowType;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Types;
 import org.apache.arrow.vector.extension.UuidType;
@@ -30,8 +28,6 @@ import org.apache.arrow.vector.types.IntervalUnit;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.UnionMode;
 import org.apache.arrow.vector.types.pojo.ArrowType;
-import org.apache.arrow.vector.types.pojo.Field;
-import org.apache.arrow.vector.types.pojo.FieldType;
 import org.junit.jupiter.api.Test;
 
 public class SqlTypesTest {
@@ -90,6 +86,8 @@ public class SqlTypesTest {
     assertEquals(Types.JAVA_OBJECT, getSqlTypeIdFromArrowType(new ArrowType.Map(true)));
 
     assertEquals(Types.NULL, getSqlTypeIdFromArrowType(new ArrowType.Null()));
+
+    assertEquals(Types.OTHER, getSqlTypeIdFromArrowType(new UuidType()));
   }
 
   @Test
@@ -145,49 +143,7 @@ public class SqlTypesTest {
     assertEquals("JAVA_OBJECT", getSqlTypeNameFromArrowType(new ArrowType.Map(true)));
 
     assertEquals("NULL", getSqlTypeNameFromArrowType(new ArrowType.Null()));
-  }
 
-  @Test
-  public void testGetSqlTypeIdFromFieldForUuid() {
-    Field uuidField = new Field("uuid_col", new FieldType(true, UuidType.INSTANCE, null), null);
-    assertEquals(Types.OTHER, getSqlTypeIdFromArrowType(uuidField.getType()));
-  }
-
-  @Test
-  public void testGetSqlTypeNameFromFieldForUuid() {
-    Field uuidField = new Field("uuid_col", new FieldType(true, UuidType.INSTANCE, null), null);
-    assertEquals("OTHER", getSqlTypeNameFromArrowType(uuidField.getType()));
-  }
-
-  @Test
-  public void testIsUuidFieldReturnsTrue() {
-    Field uuidField = new Field("uuid_col", new FieldType(true, UuidType.INSTANCE, null), null);
-    assertTrue(isUuidField(uuidField));
-  }
-
-  @Test
-  public void testIsUuidFieldReturnsFalseForNonUuid() {
-    Field intField = new Field("int_col", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    assertFalse(isUuidField(intField));
-
-    Field binaryField =
-        new Field("binary_col", FieldType.nullable(new ArrowType.FixedSizeBinary(16)), null);
-    assertFalse(isUuidField(binaryField));
-  }
-
-  @Test
-  public void testGetSqlTypeIdFromFieldForNonUuid() {
-    Field intField = new Field("int_col", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    assertEquals(Types.INTEGER, getSqlTypeIdFromArrowType(intField.getType()));
-  }
-
-  @Test
-  public void testGetSqlTypeNameFromFieldForNonUuid() {
-    Field intField = new Field("int_col", FieldType.nullable(new ArrowType.Int(32, true)), null);
-    assertEquals("INTEGER", getSqlTypeNameFromArrowType(intField.getType()));
-  }
-
-  static boolean isUuidField(Field field) {
-    return field.getType() instanceof UuidType;
+    assertEquals("OTHER", getSqlTypeNameFromArrowType(new UuidType()));
   }
 }
