@@ -23,12 +23,9 @@ import java.util.Map;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
-import org.apache.arrow.vector.types.pojo.Field;
 
 /** SQL Types utility functions. */
 public class SqlTypes {
-  /** SQL type name for UUID (matches PostgreSQL JDBC driver convention). */
-  public static final String UUID_TYPE_NAME = "uuid";
 
   private static final Map<Integer, String> typeIdToName = new HashMap<>();
 
