@@ -17,6 +17,7 @@
 package org.apache.arrow.driver.jdbc.utils;
 
 import static java.lang.String.format;
+import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,6 +31,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import org.apache.arrow.flight.FlightProducer.ServerStreamListener;
@@ -40,10 +42,13 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.Float4Vector;
 import org.apache.arrow.vector.Float8Vector;
+import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.TimeStampMilliVector;
 import org.apache.arrow.vector.UInt4Vector;
+import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
@@ -52,6 +57,7 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Text;
+import org.apache.arrow.vector.util.UuidUtility;
 
 /** Standard {@link MockFlightSqlProducer} instances for tests. */
 // TODO Remove this once all tests are refactor to use only the queries they need.
@@ -61,6 +67,20 @@ public final class CoreMockedSqlProducers {
   public static final String LEGACY_METADATA_SQL_CMD = "SELECT * FROM METADATA";
   public static final String LEGACY_CANCELLATION_SQL_CMD = "SELECT * FROM TAKES_FOREVER";
   public static final String LEGACY_REGULAR_WITH_EMPTY_SQL_CMD = "SELECT * FROM TEST_EMPTIES";
+
+  public static final String UUID_SQL_CMD = "SELECT * FROM UUID_TABLE";
+  public static final String UUID_PREPARED_SELECT_SQL_CMD = "SELECT * FROM UUID_TABLE WHERE uuid_col = ?";
+  public static final String UUID_PREPARED_UPDATE_SQL_CMD = "UPDATE UUID_TABLE SET uuid_col = ? WHERE id = ?";
+
+  public static final UUID UUID_1 = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
+  public static final UUID UUID_2 = UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
+  public static final UUID UUID_3 = UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479");
+
+  public static final Schema UUID_SCHEMA =
+      new Schema(
+          ImmutableList.of(
+              new Field("id", new FieldType(true, new ArrowType.Int(32, true), null), null),
+              new Field("uuid_col", new FieldType(true, UuidType.INSTANCE, null), null)));
 
   private CoreMockedSqlProducers() {
     // Prevent instantiation.
@@ -78,7 +98,106 @@ public final class CoreMockedSqlProducers {
     addLegacyMetadataSqlCmdSupport(producer);
     addLegacyCancellationSqlCmdSupport(producer);
     addQueryWithEmbeddedEmptyRoot(producer);
+    addUuidSqlCmdSupport(producer);
+    addUuidPreparedSelectSqlCmdSupport(producer);
+    addUuidPreparedUpdateSqlCmdSupport(producer);
     return producer;
+  }
+
+  /**
+   * Gets a {@link MockFlightSqlProducer} configured with UUID test data.
+   *
+   * @return a new producer with UUID support.
+   */
+  public static MockFlightSqlProducer getUuidProducer() {
+    final MockFlightSqlProducer producer = new MockFlightSqlProducer();
+    addUuidSqlCmdSupport(producer);
+    return producer;
+  }
+  private static void addUuidPreparedUpdateSqlCmdSupport(final MockFlightSqlProducer producer) {
+    final String query = "UPDATE UUID_TABLE SET uuid_col = ? WHERE id = ?";
+    final Schema parameterSchema =
+        new Schema(
+            Arrays.asList(
+                new Field("", new FieldType(true, UuidType.INSTANCE, null), null),
+                Field.nullable("", new ArrowType.Int(32, true))));
+
+    producer.addUpdateQuery(query, 1);
+    producer.addExpectedParameters(
+        UUID_PREPARED_UPDATE_SQL_CMD,
+        parameterSchema,
+        Collections.singletonList(Arrays.asList(CoreMockedSqlProducers.UUID_3, 1)));
+  }
+
+  private static void addUuidPreparedSelectSqlCmdSupport(final MockFlightSqlProducer producer) {
+    final Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                new Field("", new FieldType(true, UuidType.INSTANCE, null), null)));
+
+    final Consumer<ServerStreamListener> uuidResultProvider =
+        listener -> {
+          try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+              final VectorSchemaRoot root = VectorSchemaRoot.create(UUID_SCHEMA, allocator)) {
+            root.allocateNew();
+            IntVector idVector = (IntVector) root.getVector("id");
+            UuidVector uuidVector = (UuidVector) root.getVector("uuid_col");
+            idVector.setSafe(0, 1);
+            uuidVector.setSafe(0, UuidUtility.getBytesFromUUID(CoreMockedSqlProducers.UUID_1));
+            root.setRowCount(1);
+            listener.start(root);
+            listener.putNext();
+          } catch (final Throwable throwable) {
+            listener.error(throwable);
+          } finally {
+            listener.completed();
+          }
+        };
+
+    producer.addSelectQuery(
+        UUID_PREPARED_SELECT_SQL_CMD, UUID_SCHEMA, Collections.singletonList(uuidResultProvider));
+    producer.addExpectedParameters(
+        UUID_PREPARED_SELECT_SQL_CMD,
+        parameterSchema,
+        Collections.singletonList(Collections.singletonList(CoreMockedSqlProducers.UUID_1)));
+  }
+
+  private static void addUuidSqlCmdSupport(final MockFlightSqlProducer producer) {
+    final Consumer<ServerStreamListener> uuidResultProvider =
+        listener -> {
+          try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+              final VectorSchemaRoot root = VectorSchemaRoot.create(UUID_SCHEMA, allocator)) {
+            root.allocateNew();
+
+            IntVector idVector = (IntVector) root.getVector("id");
+            UuidVector uuidVector = (UuidVector) root.getVector("uuid_col");
+
+            // Row 0: id=1, uuid=UUID_1
+            idVector.setSafe(0, 1);
+            uuidVector.setSafe(0, UuidUtility.getBytesFromUUID(UUID_1));
+
+            // Row 1: id=2, uuid=UUID_2
+            idVector.setSafe(1, 2);
+            uuidVector.setSafe(1, UuidUtility.getBytesFromUUID(UUID_2));
+
+            // Row 2: id=3, uuid=UUID_3
+            idVector.setSafe(2, 3);
+            uuidVector.setSafe(2, UuidUtility.getBytesFromUUID(UUID_3));
+
+            // Row 3: id=4, uuid=NULL
+            idVector.setSafe(3, 4);
+            uuidVector.setNull(3);
+
+            root.setRowCount(4);
+            listener.start(root);
+            listener.putNext();
+          } finally {
+            listener.completed();
+          }
+        };
+
+    producer.addSelectQuery(
+        UUID_SQL_CMD, UUID_SCHEMA, Collections.singletonList(uuidResultProvider));
   }
 
   private static void addQueryWithEmbeddedEmptyRoot(final MockFlightSqlProducer producer) {

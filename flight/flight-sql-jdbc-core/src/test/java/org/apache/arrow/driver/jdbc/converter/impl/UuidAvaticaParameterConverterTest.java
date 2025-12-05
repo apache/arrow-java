@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.sql.Types;
 import java.util.UUID;
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
-import org.apache.arrow.driver.jdbc.utils.SqlTypes;
 import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.pojo.Field;

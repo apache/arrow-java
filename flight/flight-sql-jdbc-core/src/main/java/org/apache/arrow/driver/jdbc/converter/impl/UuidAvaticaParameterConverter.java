@@ -16,17 +16,14 @@
  */
 package org.apache.arrow.driver.jdbc.converter.impl;
 
-import java.nio.ByteBuffer;
-import java.sql.Types;
-import java.util.UUID;
-import org.apache.arrow.driver.jdbc.converter.AvaticaParameterConverter;
-import org.apache.arrow.driver.jdbc.utils.SqlTypes;
 import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeIdFromArrowType;
 import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeNameFromArrowType;
+
+import java.nio.ByteBuffer;
+import java.util.UUID;
+import org.apache.arrow.driver.jdbc.converter.AvaticaParameterConverter;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.UuidVector;
-import org.apache.arrow.vector.extension.UuidType;
-import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.util.UuidUtility;
 import org.apache.calcite.avatica.AvaticaParameter;
