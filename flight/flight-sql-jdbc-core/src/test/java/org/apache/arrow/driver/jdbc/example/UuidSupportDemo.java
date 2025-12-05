@@ -91,7 +91,8 @@ import org.apache.arrow.driver.jdbc.ArrowFlightJdbcDriver;
  */
 public class UuidSupportDemo {
 
-  private static final String JDBC_URL = "jdbc:arrow-flight-sql://<flight_sql_server_host>:<flight_sql_server_port>";
+  private static final String JDBC_URL =
+      "jdbc:arrow-flight-sql://<flight_sql_server_host>:<flight_sql_server_port>";
   private static final String USERNAME = "";
   private static final String PASSWORD = "";
 
@@ -310,10 +311,10 @@ public class UuidSupportDemo {
       System.out.println("  Updated ID 1000 to UUID: " + UUID_4);
 
       // Update UUID to NULL
-            String sql2 = String.format("UPDATE %s SET uuid = NULL WHERE id = 1002", TABLE_NAME);
-            int rows2 = stmt.executeUpdate(sql2);
-            System.out.println("Update UUID to NULL: " + rows2 + " row(s) affected");
-            System.out.println("  Updated ID 1002 to UUID: NULL");
+      String sql2 = String.format("UPDATE %s SET uuid = NULL WHERE id = 1002", TABLE_NAME);
+      int rows2 = stmt.executeUpdate(sql2);
+      System.out.println("Update UUID to NULL: " + rows2 + " row(s) affected");
+      System.out.println("  Updated ID 1002 to UUID: NULL");
 
       // Update based on UUID condition
       String sql3 =
@@ -332,41 +333,41 @@ public class UuidSupportDemo {
 
     // Update UUID using setObject()
     String sql1 = String.format("UPDATE %s SET uuid = ? WHERE id = 2001", TABLE_NAME);
-        try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
-          pstmt.setObject(1, UUID_2);
-          pstmt.setInt(2, 2000);
-          int rows1 = pstmt.executeUpdate();
-          System.out.println("Update with setObject(UUID): " + rows1 + " row(s) affected");
-          System.out.println("  Updated ID 2000 to UUID: " + UUID_2);
-        }
+    try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
+      pstmt.setObject(1, UUID_2);
+      pstmt.setInt(2, 2000);
+      int rows1 = pstmt.executeUpdate();
+      System.out.println("Update with setObject(UUID): " + rows1 + " row(s) affected");
+      System.out.println("  Updated ID 2000 to UUID: " + UUID_2);
+    }
 
-//     Update UUID using setString()
-        try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
-          pstmt.setString(1, UUID_3.toString());
-          pstmt.setInt(2, 2001);
-          int rows2 = pstmt.executeUpdate();
-          System.out.println("Update with setString(UUID.toString()): " + rows2 + " row(s) affected");
-          System.out.println("  Updated ID 2001 to UUID: " + UUID_3);
-        }
+    //     Update UUID using setString()
+    try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
+      pstmt.setString(1, UUID_3.toString());
+      pstmt.setInt(2, 2001);
+      int rows2 = pstmt.executeUpdate();
+      System.out.println("Update with setString(UUID.toString()): " + rows2 + " row(s) affected");
+      System.out.println("  Updated ID 2001 to UUID: " + UUID_3);
+    }
 
-//     Update UUID to NULL using setNull()
-        try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
-          pstmt.setNull(1, Types.OTHER);
-          pstmt.setInt(2, 2004);
-          int rows3 = pstmt.executeUpdate();
-          System.out.println("Update with setNull(): " + rows3 + " row(s) affected");
-          System.out.println("  Updated ID 2004 to UUID: NULL");
-        }
+    //     Update UUID to NULL using setNull()
+    try (PreparedStatement pstmt = connection.prepareStatement(sql1)) {
+      pstmt.setNull(1, Types.OTHER);
+      pstmt.setInt(2, 2004);
+      int rows3 = pstmt.executeUpdate();
+      System.out.println("Update with setNull(): " + rows3 + " row(s) affected");
+      System.out.println("  Updated ID 2004 to UUID: NULL");
+    }
 
     // Update based on UUID parameter condition
     String sql2 = String.format("UPDATE %s SET uuid = ? WHERE uuid = ?", TABLE_NAME);
-        try (PreparedStatement pstmt = connection.prepareStatement(sql2)) {
-          pstmt.setObject(1, UUID_5);
-          pstmt.setObject(2, UUID_2);
-          int rows4 = pstmt.executeUpdate();
-          System.out.println("Update UUID based on UUID condition: " + rows4 + " row(s) affected");
-          System.out.println("  Changed UUID " + UUID_2 + " to " + UUID_5);
-        }
+    try (PreparedStatement pstmt = connection.prepareStatement(sql2)) {
+      pstmt.setObject(1, UUID_5);
+      pstmt.setObject(2, UUID_2);
+      int rows4 = pstmt.executeUpdate();
+      System.out.println("Update UUID based on UUID condition: " + rows4 + " row(s) affected");
+      System.out.println("  Changed UUID " + UUID_2 + " to " + UUID_5);
+    }
     System.out.println();
   }
 
