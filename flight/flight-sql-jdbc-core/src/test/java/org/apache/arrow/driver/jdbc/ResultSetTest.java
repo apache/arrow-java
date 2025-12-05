@@ -22,8 +22,10 @@ import static org.apache.arrow.flight.Location.forGrpcInsecure;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,7 +33,9 @@ import com.google.common.collect.ImmutableSet;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.sql.Statement;
@@ -42,6 +46,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import org.apache.arrow.driver.jdbc.utils.CoreMockedSqlProducers;
 import org.apache.arrow.driver.jdbc.utils.FallbackFlightSqlProducer;
@@ -61,6 +66,7 @@ import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
+import org.apache.arrow.vector.util.UuidUtility;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -793,6 +799,174 @@ public class ResultSetTest {
       assertArrayEquals(
           ((ArrowFlightJdbcFlightStreamResultSet) resultSet).getAppMetadata(),
           "foo".getBytes(StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  public void testSelectQueryWithUuidColumn() throws SQLException {
+    // Expectations
+    final int expectedRowCount = 4;
+    final UUID[] expectedUuids = new UUID[] {
+        CoreMockedSqlProducers.UUID_1,
+        CoreMockedSqlProducers.UUID_2,
+        CoreMockedSqlProducers.UUID_3,
+        null
+    };
+
+    final Integer[] expectedIds = new Integer[] {1, 2, 3, 4};
+
+    final List<UUID> actualUuids = new ArrayList<>(expectedRowCount);
+    final List<Integer> actualIds = new ArrayList<>(expectedRowCount);
+
+
+    // Query
+    int actualRowCount = 0;
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      for (; resultSet.next(); actualRowCount++) {
+        actualIds.add((Integer) resultSet.getObject("id"));
+        actualUuids.add((UUID) resultSet.getObject("uuid_col"));
+      }
+    }
+
+    // Assertions
+    int finalActualRowCount = actualRowCount;
+    assertAll(
+        "UUID ResultSet values are as expected",
+        () -> assertThat(finalActualRowCount, is(equalTo(expectedRowCount))),
+        () -> assertThat(actualIds.toArray(new Integer[0]), is(expectedIds)),
+        () -> assertThat(actualUuids.toArray(new UUID[0]), is(expectedUuids)));
+  }
+
+  @Test
+  public void testGetObjectReturnsUuid() throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      resultSet.next();
+      Object result = resultSet.getObject("uuid_col");
+      assertThat(result, instanceOf(UUID.class));
+      assertThat(result, is(CoreMockedSqlProducers.UUID_1));
+    }
+  }
+
+  @Test
+  public void testGetObjectByIndexReturnsUuid() throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      resultSet.next();
+      Object result = resultSet.getObject(2);
+      assertThat(result, instanceOf(UUID.class));
+      assertThat(result, is(CoreMockedSqlProducers.UUID_1));
+    }
+  }
+
+  @Test
+  public void testGetStringReturnsHyphenatedFormat() throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      resultSet.next();
+      String result = resultSet.getString("uuid_col");
+      assertThat(result, is(CoreMockedSqlProducers.UUID_1.toString()));
+    }
+  }
+
+  @Test
+  public void testGetBytesReturns16ByteArray() throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      resultSet.next();
+      byte[] result = resultSet.getBytes("uuid_col");
+      assertThat(result.length, is(16));
+      assertThat(result, is(UuidUtility.getBytesFromUUID(CoreMockedSqlProducers.UUID_1)));
+    }
+  }
+
+  @Test
+  public void testNullUuidHandling() throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      // Skip to row 4 which has NULL UUID
+      resultSet.next(); // row 1
+      resultSet.next(); // row 2
+      resultSet.next(); // row 3
+      resultSet.next(); // row 4 (NULL UUID)
+
+      Object objResult = resultSet.getObject("uuid_col");
+      assertThat(objResult, nullValue());
+      assertThat(resultSet.wasNull(), is(true));
+
+      String strResult = resultSet.getString("uuid_col");
+      assertThat(strResult, nullValue());
+      assertThat(resultSet.wasNull(), is(true));
+
+      byte[] bytesResult = resultSet.getBytes("uuid_col");
+      assertThat(bytesResult, nullValue());
+      assertThat(resultSet.wasNull(), is(true));
+    }
+  }
+
+  @Test
+  public void testMultipleUuidRows() throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      resultSet.next();
+      assertThat(resultSet.getObject("uuid_col"), is(CoreMockedSqlProducers.UUID_1));
+
+      resultSet.next();
+      assertThat(resultSet.getObject("uuid_col"), is(CoreMockedSqlProducers.UUID_2));
+
+      resultSet.next();
+      assertThat(resultSet.getObject("uuid_col"), is(CoreMockedSqlProducers.UUID_3));
+
+      resultSet.next();
+      assertThat(resultSet.getObject("uuid_col"), nullValue());
+    }
+  }
+
+  @Test
+  public void testUuidExtensionTypeInSchema() throws SQLException {
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(CoreMockedSqlProducers.UUID_SQL_CMD)) {
+      ResultSetMetaData metaData = resultSet.getMetaData();
+
+      assertThat(metaData.getColumnCount(), is(2));
+      assertThat(metaData.getColumnName(1), is("id"));
+      assertThat(metaData.getColumnName(2), is("uuid_col"));
+
+      assertThat(metaData.getColumnType(2), is(java.sql.Types.OTHER));
+    }
+  }
+
+  @Test
+  public void testPreparedStatementWithUuidParameter() throws SQLException {
+    try (PreparedStatement pstmt =
+        connection.prepareStatement(CoreMockedSqlProducers.UUID_PREPARED_SELECT_SQL_CMD)) {
+      pstmt.setObject(1, CoreMockedSqlProducers.UUID_1);
+      try (ResultSet rs = pstmt.executeQuery()) {
+        rs.next();
+        assertThat(rs.getObject("uuid_col"), is(CoreMockedSqlProducers.UUID_1));
+      }
+    }
+  }
+
+  @Test
+  public void testPreparedStatementWithUuidStringParameter() throws SQLException {
+    try (PreparedStatement pstmt = connection.prepareStatement(CoreMockedSqlProducers.UUID_PREPARED_SELECT_SQL_CMD)) {
+      pstmt.setString(1, CoreMockedSqlProducers.UUID_1.toString());
+      try (ResultSet rs = pstmt.executeQuery()) {
+        rs.next();
+        assertThat(rs.getObject("uuid_col"), is(CoreMockedSqlProducers.UUID_1));
+      }
+    }
+  }
+
+  @Test
+  public void testPreparedStatementUpdateWithUuid() throws SQLException {
+    try (PreparedStatement pstmt = connection.prepareStatement(CoreMockedSqlProducers.UUID_PREPARED_UPDATE_SQL_CMD)) {
+      pstmt.setObject(1, CoreMockedSqlProducers.UUID_3);
+      pstmt.setInt(2, 1);
+      int updated = pstmt.executeUpdate();
+      assertThat(updated, is(1));
     }
   }
 }
