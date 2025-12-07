@@ -20,6 +20,7 @@ import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl
 
 import io.netty.util.concurrent.DefaultThreadFactory;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -180,6 +181,12 @@ public final class ArrowFlightConnection extends AvaticaConnection {
 
   @Override
   public void close() throws SQLException {
+    // Clean up any open Statements
+    try {
+      AutoCloseables.close(List.copyOf(statementMap.values()));
+    } catch (final Exception e) {
+      throw AvaticaConnection.HELPER.createException(e.getMessage(), e);
+    }
     clientHandler.close();
     if (executorService != null) {
       executorService.shutdown();
