@@ -20,11 +20,13 @@ import com.google.common.base.Strings;
 import java.sql.Types;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 
 /** SQL Types utility functions. */
 public class SqlTypes {
+
   private static final Map<Integer, String> typeIdToName = new HashMap<>();
 
   static {
@@ -110,6 +112,9 @@ public class SqlTypes {
       case BinaryView:
         return Types.VARBINARY;
       case FixedSizeBinary:
+        if (arrowType instanceof UuidType) {
+          return Types.OTHER;
+        }
         return Types.BINARY;
       case LargeBinary:
         return Types.LONGVARBINARY;

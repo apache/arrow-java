@@ -43,8 +43,12 @@ import org.apache.arrow.driver.jdbc.converter.impl.TimestampAvaticaParameterConv
 import org.apache.arrow.driver.jdbc.converter.impl.UnionAvaticaParameterConverter;
 import org.apache.arrow.driver.jdbc.converter.impl.Utf8AvaticaParameterConverter;
 import org.apache.arrow.driver.jdbc.converter.impl.Utf8ViewAvaticaParameterConverter;
+import org.apache.arrow.driver.jdbc.converter.impl.UuidAvaticaParameterConverter;
 import org.apache.arrow.flight.sql.FlightSqlColumnMetadata;
+import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.ArrowType.ArrowTypeVisitor;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.calcite.avatica.AvaticaParameter;
 import org.apache.calcite.avatica.ColumnMetaData;
@@ -293,6 +297,16 @@ public final class ConvertUtils {
     public AvaticaParameter visit(ArrowType.RunEndEncoded type) {
       throw new UnsupportedOperationException(
           "No Avatica parameter binder implemented for type " + type);
+    }
+
+    @Override
+    public AvaticaParameter visit(ExtensionType type) {
+      if (type instanceof UuidType) {
+        return new UuidAvaticaParameterConverter().createParameter(field);
+      }
+
+      // fallback to default implementation
+      return ArrowTypeVisitor.super.visit(type);
     }
   }
 }
