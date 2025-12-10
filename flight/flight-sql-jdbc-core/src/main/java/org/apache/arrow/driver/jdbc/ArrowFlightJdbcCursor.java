@@ -55,18 +55,19 @@ public class ArrowFlightJdbcCursor extends AbstractCursor {
 
     return IntStream.range(0, fieldVectors.size())
         .mapToObj(root::getVector)
-        .map(this::createAccessor)
+        .map(v -> this.createAccessor(v, localCalendar))
         .collect(Collectors.toCollection(() -> new ArrayList<>(fieldVectors.size())));
   }
 
-  private Accessor createAccessor(FieldVector vector) {
+  private Accessor createAccessor(FieldVector vector, Calendar localCalendar) {
     return ArrowFlightJdbcAccessorFactory.createAccessor(
         vector,
         this::getCurrentRow,
         (boolean wasNull) -> {
           // AbstractCursor creates a boolean array of length 1 to hold the wasNull value
           this.wasNull[0] = wasNull;
-        });
+        },
+        localCalendar);
   }
 
   /**

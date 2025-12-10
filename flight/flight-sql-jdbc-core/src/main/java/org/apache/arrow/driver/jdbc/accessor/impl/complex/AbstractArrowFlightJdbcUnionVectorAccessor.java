@@ -50,13 +50,17 @@ public abstract class AbstractArrowFlightJdbcUnionVectorAccessor extends ArrowFl
    */
   private final ArrowFlightJdbcAccessor[] accessors = new ArrowFlightJdbcAccessor[128];
 
+  protected final Calendar localCalendar;
+
   private final ArrowFlightJdbcNullVectorAccessor nullAccessor =
       new ArrowFlightJdbcNullVectorAccessor((boolean wasNull) -> {});
 
   protected AbstractArrowFlightJdbcUnionVectorAccessor(
       IntSupplier currentRowSupplier,
-      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull,
+      Calendar localCalendar) {
     super(currentRowSupplier, setCursorWasNull);
+    this.localCalendar = localCalendar;
   }
 
   protected abstract ArrowFlightJdbcAccessor createAccessorForVector(ValueVector vector);

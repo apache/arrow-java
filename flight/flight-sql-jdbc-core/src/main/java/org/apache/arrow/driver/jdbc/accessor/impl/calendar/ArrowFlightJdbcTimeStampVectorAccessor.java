@@ -51,6 +51,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
   private final LongToLocalDateTime longToLocalDateTime;
   private final Holder holder;
   private final boolean isZoned;
+  private final Calendar localCalendar;
 
   /** Functional interface used to convert a number (in any time resolution) to LocalDateTime. */
   interface LongToLocalDateTime {
@@ -61,9 +62,11 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
   public ArrowFlightJdbcTimeStampVectorAccessor(
       TimeStampVector vector,
       IntSupplier currentRowSupplier,
-      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull,
+      Calendar localCalendar) {
     super(currentRowSupplier, setCursorWasNull);
     this.holder = new Holder();
+    this.localCalendar = localCalendar;
     this.getter = createGetter(vector);
 
     // whether the vector included TZ info
@@ -89,7 +92,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
     } else if (type == OffsetDateTime.class) {
       value = getOffsetDateTime();
     } else if (type == LocalDateTime.class) {
-      value = getLocalDateTime(null);
+      value = getLocalDateTime(localCalendar);
     } else if (type == ZonedDateTime.class) {
       value = getZonedDateTime();
     } else if (type == Instant.class) {
@@ -105,7 +108,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
 
   @Override
   public Object getObject() {
-    return this.getTimestamp(null);
+    return this.getTimestamp(localCalendar);
   }
 
   private ZonedDateTime getZonedDateTime() {
@@ -154,7 +157,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
       long millis = this.timeUnit.toMillis(value);
       localDateTime =
           localDateTime.minus(
-              timeZone.getOffset(millis) - this.timeZone.getOffset(millis), ChronoUnit.MILLIS);
+              this.timeZone.getOffset(millis) - timeZone.getOffset(millis), ChronoUnit.MILLIS);
     }
     return localDateTime;
   }
@@ -202,7 +205,7 @@ public class ArrowFlightJdbcTimeStampVectorAccessor extends ArrowFlightJdbcAcces
       long millis = Timestamp.valueOf(localDateTime).getTime();
       localDateTime =
           localDateTime.minus(
-              timeZone.getOffset(millis) - this.timeZone.getOffset(millis), ChronoUnit.MILLIS);
+              this.timeZone.getOffset(millis) - timeZone.getOffset(millis), ChronoUnit.MILLIS);
     }
     return Timestamp.valueOf(localDateTime);
   }
