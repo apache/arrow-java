@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.converter.impl;
 
+import java.time.Instant;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
 import org.apache.arrow.vector.TimeStampMicroVector;
@@ -37,7 +38,34 @@ public class TimestampAvaticaParameterConverter extends BaseAvaticaParameterConv
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    long value = (long) typedValue.toLocal();
+    Object valueObj = typedValue.toLocal();
+    if (valueObj instanceof String) {
+      return bindTimestampAsString(vector, (String) valueObj, index);
+    } else if (valueObj instanceof Long) {
+      return bindTimestampAsLong(vector, (Long) valueObj, index);
+    } else {
+      return false;
+    }
+  }
+
+  private boolean bindTimestampAsString(FieldVector vector, String value, int index) {
+    Instant instant = Instant.parse(value);
+    long result;
+    if (vector instanceof TimeStampSecVector || vector instanceof TimeStampSecTZVector) {
+      result = instant.getEpochSecond();
+    } else if (vector instanceof TimeStampMilliVector || vector instanceof TimeStampMilliTZVector) {
+      result = instant.toEpochMilli();
+    } else if (vector instanceof TimeStampMicroVector || vector instanceof TimeStampMicroTZVector) {
+      result = instant.toEpochMilli() * 1000;
+    } else if (vector instanceof TimeStampNanoVector || vector instanceof TimeStampNanoTZVector) {
+      result = instant.toEpochMilli() * 1000000;
+    } else {
+      return false;
+    }
+    return bindTimestampAsLong(vector, result, index);
+  }
+
+  private boolean bindTimestampAsLong(FieldVector vector, long value, int index) {
     if (vector instanceof TimeStampSecVector) {
       ((TimeStampSecVector) vector).setSafe(index, value);
       return true;
