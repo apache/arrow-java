@@ -181,25 +181,55 @@ public final class ArrowFlightConnection extends AvaticaConnection {
 
   @Override
   public void close() throws SQLException {
-    // Clean up any open Statements
+    Exception topLevelException = null;
     try {
       AutoCloseables.close(List.copyOf(statementMap.values()));
     } catch (final Exception e) {
-      throw AvaticaConnection.HELPER.createException(e.getMessage(), e);
+      topLevelException = e;
     }
-    clientHandler.close();
-    if (executorService != null) {
-      executorService.shutdown();
+    try {
+      AutoCloseables.close(clientHandler);
+    } catch (final Exception e) {
+      if (topLevelException == null) {
+        topLevelException = e;
+      } else {
+        topLevelException.addSuppressed(e);
+      }
+    }
+    try {
+      if (executorService != null) {
+        executorService.shutdown();
+      }
+    } catch (final Exception e) {
+      if (topLevelException == null) {
+        topLevelException = e;
+      } else {
+        topLevelException.addSuppressed(e);
+      }
     }
 
     try {
-      AutoCloseables.close(clientHandler);
       allocator.getChildAllocators().forEach(AutoCloseables::closeNoChecked);
       AutoCloseables.close(allocator);
-
+    } catch (final Exception e) {
+      if (topLevelException == null) {
+        topLevelException = e;
+      } else {
+        topLevelException.addSuppressed(e);
+      }
+    }
+    try {
       super.close();
     } catch (final Exception e) {
-      throw AvaticaConnection.HELPER.createException(e.getMessage(), e);
+      if (topLevelException == null) {
+        topLevelException = e;
+      } else {
+        topLevelException.addSuppressed(e);
+      }
+    }
+    if (topLevelException != null) {
+      throw AvaticaConnection.HELPER.createException(
+          topLevelException.getMessage(), topLevelException);
     }
   }
 
