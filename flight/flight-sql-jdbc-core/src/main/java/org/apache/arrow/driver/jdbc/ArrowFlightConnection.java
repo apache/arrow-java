@@ -189,36 +189,11 @@ public final class ArrowFlightConnection extends AvaticaConnection {
     }
     try {
       AutoCloseables.close(clientHandler);
-    } catch (final Exception e) {
-      if (topLevelException == null) {
-        topLevelException = e;
-      } else {
-        topLevelException.addSuppressed(e);
-      }
-    }
-    try {
       if (executorService != null) {
         executorService.shutdown();
       }
-    } catch (final Exception e) {
-      if (topLevelException == null) {
-        topLevelException = e;
-      } else {
-        topLevelException.addSuppressed(e);
-      }
-    }
-
-    try {
       allocator.getChildAllocators().forEach(AutoCloseables::closeNoChecked);
       AutoCloseables.close(allocator);
-    } catch (final Exception e) {
-      if (topLevelException == null) {
-        topLevelException = e;
-      } else {
-        topLevelException.addSuppressed(e);
-      }
-    }
-    try {
       super.close();
     } catch (final Exception e) {
       if (topLevelException == null) {
