@@ -17,6 +17,8 @@
 package org.apache.arrow.vector.holders;
 
 import org.apache.arrow.memory.ArrowBuf;
+import org.apache.arrow.vector.extension.UuidType;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 
 /**
  * Value holder for nullable UUID values.
@@ -32,4 +34,9 @@ import org.apache.arrow.memory.ArrowBuf;
 public class NullableUuidHolder extends ExtensionHolder {
   /** Buffer containing 16-byte UUID data. */
   public ArrowBuf buffer;
+
+  @Override
+  public ArrowType type() {
+    return UuidType.INSTANCE;
+  }
 }

@@ -18,9 +18,12 @@ package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.vector.UuidVector;
+import org.apache.arrow.vector.ValueVector;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 
 /**
  * Writer implementation for {@link UuidVector}.
@@ -54,6 +57,11 @@ public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
       throw new IllegalArgumentException("Unsupported value type for UUID: " + value.getClass());
     }
     vector.setValueCount(getPosition() + 1);
+  }
+
+  @Override
+  public void writeExtension(Object value, ArrowType type) {
+    writeExtension(value);
   }
 
   @Override

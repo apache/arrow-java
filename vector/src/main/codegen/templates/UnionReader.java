@@ -79,6 +79,10 @@ public class UnionReader extends AbstractFieldReader {
   }
 
   private FieldReader getReaderForIndex(int index) {
+    return getReaderForIndex(index, null);
+  }
+
+  private FieldReader getReaderForIndex(int index, ArrowType type) {
     int typeValue = data.getTypeValue(index);
     FieldReader reader = (FieldReader) readers[typeValue];
     if (reader != null) {
@@ -105,9 +109,24 @@ public class UnionReader extends AbstractFieldReader {
         </#if>
       </#list>
     </#list>
+    case EXTENSIONTYPE:
+      if(type == null) {
+        throw new RuntimeException("Cannot get Extension reader without an ArrowType");
+      }
+      return (FieldReader) getExtension(type);
     default:
       throw new UnsupportedOperationException("Unsupported type: " + MinorType.values()[typeValue]);
     }
+  }
+
+  private ExtensionReader extensionReader;
+
+  private ExtensionReader getExtension(ArrowType type) {
+    if (extensionReader == null) {
+      extensionReader = data.getExtension(type).getReader();
+      extensionReader.setPosition(idx());
+    }
+    return extensionReader;
   }
 
   private SingleStructReaderImpl structReader;
@@ -239,5 +258,9 @@ public class UnionReader extends AbstractFieldReader {
 
   public boolean next() {
     return getReaderForIndex(idx()).next();
+  }
+
+  public void read(ExtensionHolder holder){
+    getReaderForIndex(idx(), holder.type()).read(holder);
   }
 }
