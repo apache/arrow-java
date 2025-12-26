@@ -9,6 +9,8 @@
 .classpath
 .factorypath
 .idea/
+.vscode/
+.cursor/
 .project
 .settings/
 /*-build/

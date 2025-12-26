@@ -55,7 +55,9 @@ public class DenseUnionWriter extends AbstractFieldWriter implements FieldWriter
   public void setPosition(int index) {
     super.setPosition(index);
     for (BaseWriter writer : writers) {
-      writer.setPosition(index);
+      if (writer != null) {
+        writer.setPosition(index);
+      }
     }
   }
 
