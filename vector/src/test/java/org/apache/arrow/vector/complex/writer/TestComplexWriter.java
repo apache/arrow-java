@@ -2530,4 +2530,47 @@ public class TestComplexWriter {
       }
     }
   }
+
+  @Test
+  void testListOfDenseUnionWriterNPE() {
+    // Regression test for https://github.com/apache/arrow-java/issues/399
+    try (ListVector listVector = ListVector.empty("list", allocator)) {
+      listVector.addOrGetVector(FieldType.nullable(MinorType.DENSEUNION.getType()));
+      UnionListWriter listWriter = listVector.getWriter();
+
+      listWriter.startList();
+      listWriter.endList();
+    }
+  }
+
+  @Test
+  void testListOfDenseUnionWriterWithData() {
+    try (ListVector listVector = ListVector.empty("list", allocator)) {
+      listVector.addOrGetVector(FieldType.nullable(MinorType.DENSEUNION.getType()));
+
+      UnionListWriter listWriter = listVector.getWriter();
+      listWriter.startList();
+      listWriter.writeInt(100);
+      listWriter.writeBigInt(200L);
+      listWriter.endList();
+
+      listWriter.startList();
+      listWriter.writeFloat4(3.14f);
+      listWriter.endList();
+
+      listVector.setValueCount(2);
+
+      assertEquals(2, listVector.getValueCount());
+
+      List<?> value0 = (List<?>) listVector.getObject(0);
+      List<?> value1 = (List<?>) listVector.getObject(1);
+
+      assertEquals(2, value0.size());
+      assertEquals(100, value0.get(0));
+      assertEquals(200L, value0.get(1));
+
+      assertEquals(1, value1.size());
+      assertEquals(3.14f, value1.get(0));
+    }
+  }
 }
