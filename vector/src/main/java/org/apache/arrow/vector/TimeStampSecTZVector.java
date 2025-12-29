@@ -150,7 +150,7 @@ public final class TimeStampSecTZVector extends TimeStampVector
   public void set(int index, NullableTimeStampSecTZHolder holder) throws IllegalArgumentException {
     if (holder.isSet < 0) {
       throw new IllegalArgumentException();
-    } else if (!this.timeZone.equals(holder.timezone)) {
+    } else if (holder.isSet > 0 && !this.timeZone.equals(holder.timezone)) {
       throw new IllegalArgumentException(
           String.format(
               "holder.timezone: %s not equal to vector timezone: %s",
