@@ -154,12 +154,13 @@ public final class TimeStampNanoTZVector extends TimeStampVector
   public void set(int index, NullableTimeStampNanoTZHolder holder) throws IllegalArgumentException {
     if (holder.isSet < 0) {
       throw new IllegalArgumentException();
-    } else if (holder.isSet > 0 && !this.timeZone.equals(holder.timezone)) {
-      throw new IllegalArgumentException(
-          String.format(
-              "holder.timezone: %s not equal to vector timezone: %s",
-              holder.timezone, this.timeZone));
     } else if (holder.isSet > 0) {
+      if (!this.timeZone.equals(holder.timezone)) {
+        throw new IllegalArgumentException(
+            String.format(
+                "holder.timezone: %s not equal to vector timezone: %s",
+                holder.timezone, this.timeZone));
+      }
       BitVectorHelper.setBit(validityBuffer, index);
       setValue(index, holder.value);
     } else {
