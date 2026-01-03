@@ -312,8 +312,12 @@ class ArrowMessage implements AutoCloseable {
           case APP_METADATA_TAG:
             {
               int size = readRawVarint32(stream);
-              appMetadata = allocator.buffer(size);
-              GetReadableBuffer.readIntoBuffer(stream, appMetadata, size, ENABLE_ZERO_COPY_READ);
+              if (ENABLE_ZERO_COPY_READ) {
+                appMetadata = GetReadableBuffer.readWithOwnershipTransfer(allocator, stream, size);
+              } else {
+                appMetadata = allocator.buffer(size);
+                GetReadableBuffer.readIntoBuffer(stream, appMetadata, size, false);
+              }
               break;
             }
           case BODY_TAG:
@@ -323,8 +327,12 @@ class ArrowMessage implements AutoCloseable {
               body = null;
             }
             int size = readRawVarint32(stream);
-            body = allocator.buffer(size);
-            GetReadableBuffer.readIntoBuffer(stream, body, size, ENABLE_ZERO_COPY_READ);
+            if (ENABLE_ZERO_COPY_READ) {
+              body = GetReadableBuffer.readWithOwnershipTransfer(allocator, stream, size);
+            } else {
+              body = allocator.buffer(size);
+              GetReadableBuffer.readIntoBuffer(stream, body, size, false);
+            }
             break;
 
           default:
