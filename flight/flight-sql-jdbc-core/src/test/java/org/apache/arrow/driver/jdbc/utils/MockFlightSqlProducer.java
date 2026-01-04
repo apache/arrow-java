@@ -52,6 +52,9 @@ import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.flight.PutResult;
 import org.apache.arrow.flight.Result;
 import org.apache.arrow.flight.SchemaResult;
+import org.apache.arrow.flight.SessionOptionValue;
+import org.apache.arrow.flight.SetSessionOptionsRequest;
+import org.apache.arrow.flight.SetSessionOptionsResult;
 import org.apache.arrow.flight.Ticket;
 import org.apache.arrow.flight.sql.FlightSqlProducer;
 import org.apache.arrow.flight.sql.SqlInfoBuilder;
@@ -91,10 +94,8 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   private final Map<String, Entry<Schema, List<UUID>>> queryResults = new HashMap<>();
   private final Map<UUID, Consumer<ServerStreamListener>> selectResultProviders = new HashMap<>();
   private final Map<ByteString, String> preparedStatements = new HashMap<>();
-  private final Map<Message, Consumer<ServerStreamListener>> catalogQueriesResults =
-      new HashMap<>();
-  private final Map<String, BiConsumer<FlightStream, StreamListener<PutResult>>>
-      updateResultProviders = new HashMap<>();
+  private final Map<Message, Consumer<ServerStreamListener>> catalogQueriesResults = new HashMap<>();
+  private final Map<String, BiConsumer<FlightStream, StreamListener<PutResult>>> updateResultProviders = new HashMap<>();
   private final SqlInfoBuilder sqlInfoBuilder = new SqlInfoBuilder();
   private final Map<String, Schema> parameterSchemas = new HashMap<>();
   private final Map<String, List<List<Object>>> expectedParameterValues = new HashMap<>();
@@ -130,8 +131,8 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   /**
    * Registers a new {@link StatementType#SELECT} SQL query.
    *
-   * @param sqlCommand the SQL command under which to register the new query.
-   * @param schema the schema to use for the query result.
+   * @param sqlCommand      the SQL command under which to register the new query.
+   * @param schema          the schema to use for the query result.
    * @param resultProviders the result provider for this query.
    */
   public void addSelectQuery(
@@ -139,10 +140,9 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final Schema schema,
       final List<Consumer<ServerStreamListener>> resultProviders) {
     final int providers = resultProviders.size();
-    final List<UUID> uuids =
-        IntStream.range(0, providers)
-            .mapToObj(index -> new UUID(sqlCommand.hashCode(), Integer.hashCode(index)))
-            .collect(toList());
+    final List<UUID> uuids = IntStream.range(0, providers)
+        .mapToObj(index -> new UUID(sqlCommand.hashCode(), Integer.hashCode(index)))
+        .collect(toList());
     queryResults.put(sqlCommand, new SimpleImmutableEntry<>(schema, uuids));
     IntStream.range(0, providers)
         .forEach(
@@ -152,15 +152,14 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   /**
    * Registers a new {@link StatementType#UPDATE} SQL query.
    *
-   * @param sqlCommand the SQL command.
+   * @param sqlCommand  the SQL command.
    * @param updatedRows the number of rows affected.
    */
   public void addUpdateQuery(final String sqlCommand, final long updatedRows) {
     addUpdateQuery(
         sqlCommand,
         (flightStream, putResultStreamListener) -> {
-          final DoPutUpdateResult result =
-              DoPutUpdateResult.newBuilder().setRecordCount(updatedRows).build();
+          final DoPutUpdateResult result = DoPutUpdateResult.newBuilder().setRecordCount(updatedRows).build();
           try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
               final ArrowBuf buffer = allocator.buffer(result.getSerializedSize())) {
             buffer.writeBytes(result.toByteArray());
@@ -176,7 +175,8 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   /**
    * Adds a catalog query to the results.
    *
-   * @param message the {@link Message} corresponding to the catalog query request type to register.
+   * @param message         the {@link Message} corresponding to the catalog query
+   *                        request type to register.
    * @param resultsProvider the results provider.
    */
   public void addCatalogQuery(
@@ -187,7 +187,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   /**
    * Registers a new {@link StatementType#UPDATE} SQL query.
    *
-   * @param sqlCommand the SQL command.
+   * @param sqlCommand      the SQL command.
    * @param resultsProvider consumer for producing update results.
    */
   void addUpdateQuery(
@@ -211,13 +211,11 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CallContext callContext,
       final StreamListener<Result> listener) {
     try {
-      final ByteString preparedStatementHandle =
-          copyFrom(randomUUID().toString().getBytes(StandardCharsets.UTF_8));
+      final ByteString preparedStatementHandle = copyFrom(randomUUID().toString().getBytes(StandardCharsets.UTF_8));
       final String query = request.getQuery();
 
-      final ActionCreatePreparedStatementResult.Builder resultBuilder =
-          ActionCreatePreparedStatementResult.newBuilder()
-              .setPreparedStatementHandle(preparedStatementHandle);
+      final ActionCreatePreparedStatementResult.Builder resultBuilder = ActionCreatePreparedStatementResult.newBuilder()
+          .setPreparedStatementHandle(preparedStatementHandle);
 
       final Entry<Schema, List<UUID>> entry = queryResults.get(query);
       if (entry != null) {
@@ -267,15 +265,13 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CallContext callContext,
       final FlightDescriptor flightDescriptor) {
     final String query = commandStatementQuery.getQuery();
-    final Entry<Schema, List<UUID>> queryInfo =
-        Preconditions.checkNotNull(
-            queryResults.get(query), format("Query not registered: <%s>.", query));
-    final List<FlightEndpoint> endpoints =
-        queryInfo.getValue().stream()
-            .map(TicketConversionUtils::getTicketBytesFromUuid)
-            .map(TicketConversionUtils::getTicketStatementQueryFromHandle)
-            .map(TicketConversionUtils::getEndpointFromMessage)
-            .collect(toList());
+    final Entry<Schema, List<UUID>> queryInfo = Preconditions.checkNotNull(
+        queryResults.get(query), format("Query not registered: <%s>.", query));
+    final List<FlightEndpoint> endpoints = queryInfo.getValue().stream()
+        .map(TicketConversionUtils::getTicketBytesFromUuid)
+        .map(TicketConversionUtils::getTicketStatementQueryFromHandle)
+        .map(TicketConversionUtils::getEndpointFromMessage)
+        .collect(toList());
     return FlightInfo.builder(queryInfo.getKey(), flightDescriptor, endpoints)
         .setAppMetadata("foo".getBytes(StandardCharsets.UTF_8))
         .build();
@@ -286,22 +282,18 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CommandPreparedStatementQuery commandPreparedStatementQuery,
       final CallContext callContext,
       final FlightDescriptor flightDescriptor) {
-    final ByteString preparedStatementHandle =
-        commandPreparedStatementQuery.getPreparedStatementHandle();
+    final ByteString preparedStatementHandle = commandPreparedStatementQuery.getPreparedStatementHandle();
 
-    final String query =
-        Preconditions.checkNotNull(
-            preparedStatements.get(preparedStatementHandle),
-            format("No query registered under handle: <%s>.", preparedStatementHandle));
-    final Entry<Schema, List<UUID>> queryInfo =
-        Preconditions.checkNotNull(
-            queryResults.get(query), format("Query not registered: <%s>.", query));
-    final List<FlightEndpoint> endpoints =
-        queryInfo.getValue().stream()
-            .map(TicketConversionUtils::getTicketBytesFromUuid)
-            .map(TicketConversionUtils::getCommandPreparedStatementQueryFromHandle)
-            .map(TicketConversionUtils::getEndpointFromMessage)
-            .collect(toList());
+    final String query = Preconditions.checkNotNull(
+        preparedStatements.get(preparedStatementHandle),
+        format("No query registered under handle: <%s>.", preparedStatementHandle));
+    final Entry<Schema, List<UUID>> queryInfo = Preconditions.checkNotNull(
+        queryResults.get(query), format("Query not registered: <%s>.", query));
+    final List<FlightEndpoint> endpoints = queryInfo.getValue().stream()
+        .map(TicketConversionUtils::getTicketBytesFromUuid)
+        .map(TicketConversionUtils::getCommandPreparedStatementQueryFromHandle)
+        .map(TicketConversionUtils::getEndpointFromMessage)
+        .collect(toList());
     return FlightInfo.builder(queryInfo.getKey(), flightDescriptor, endpoints)
         .setAppMetadata("foo".getBytes(StandardCharsets.UTF_8))
         .build();
@@ -313,9 +305,8 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CallContext callContext,
       final FlightDescriptor flightDescriptor) {
     final String query = commandStatementQuery.getQuery();
-    final Entry<Schema, List<UUID>> queryInfo =
-        Preconditions.checkNotNull(
-            queryResults.get(query), format("Query not registered: <%s>.", query));
+    final Entry<Schema, List<UUID>> queryInfo = Preconditions.checkNotNull(
+        queryResults.get(query), format("Query not registered: <%s>.", query));
 
     return new SchemaResult(queryInfo.getKey());
   }
@@ -327,9 +318,9 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final ServerStreamListener serverStreamListener) {
     final UUID uuid = UUID.fromString(ticketStatementQuery.getStatementHandle().toStringUtf8());
     Preconditions.checkNotNull(
-            selectResultProviders.get(uuid),
-            "No consumer was registered for the specified UUID: <%s>.",
-            uuid)
+        selectResultProviders.get(uuid),
+        "No consumer was registered for the specified UUID: <%s>.",
+        uuid)
         .accept(serverStreamListener);
   }
 
@@ -338,12 +329,11 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CommandPreparedStatementQuery commandPreparedStatementQuery,
       final CallContext callContext,
       final ServerStreamListener serverStreamListener) {
-    final UUID uuid =
-        UUID.fromString(commandPreparedStatementQuery.getPreparedStatementHandle().toStringUtf8());
+    final UUID uuid = UUID.fromString(commandPreparedStatementQuery.getPreparedStatementHandle().toStringUtf8());
     Preconditions.checkNotNull(
-            selectResultProviders.get(uuid),
-            "No consumer was registered for the specified UUID: <%s>.",
-            uuid)
+        selectResultProviders.get(uuid),
+        "No consumer was registered for the specified UUID: <%s>.",
+        uuid)
         .accept(serverStreamListener);
   }
 
@@ -355,10 +345,9 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final StreamListener<PutResult> streamListener) {
     return () -> {
       final String query = commandStatementUpdate.getQuery();
-      final BiConsumer<FlightStream, StreamListener<PutResult>> resultProvider =
-          Preconditions.checkNotNull(
-              updateResultProviders.get(query),
-              format("No consumer found for query: <%s>.", query));
+      final BiConsumer<FlightStream, StreamListener<PutResult>> resultProvider = Preconditions.checkNotNull(
+          updateResultProviders.get(query),
+          format("No consumer found for query: <%s>.", query));
       resultProvider.accept(flightStream, streamListener);
     };
   }
@@ -392,8 +381,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
             Object actual = root.getVector(paramIndex).getObject(i);
             boolean matches;
             if (expected.getClass().isArray()) {
-              matches =
-                  Arrays.equals((Object[]) expected, ((JsonStringArrayList) actual).toArray());
+              matches = Arrays.equals((Object[]) expected, ((JsonStringArrayList) actual).toArray());
             } else {
               matches = Objects.equals(expected, actual);
             }
@@ -427,13 +415,13 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final FlightStream flightStream,
       final StreamListener<PutResult> streamListener) {
     final ByteString handle = commandPreparedStatementUpdate.getPreparedStatementHandle();
-    final String query =
-        Preconditions.checkNotNull(
-            preparedStatements.get(handle),
-            format("No query registered under handle: <%s>.", handle));
+    final String query = Preconditions.checkNotNull(
+        preparedStatements.get(handle),
+        format("No query registered under handle: <%s>.", handle));
 
     if (validateParameters(query, flightStream, streamListener)) {
-      return () -> {};
+      return () -> {
+      };
     }
 
     return acceptPutStatement(
@@ -450,13 +438,13 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final FlightStream flightStream,
       final StreamListener<PutResult> streamListener) {
     final ByteString handle = commandPreparedStatementQuery.getPreparedStatementHandle();
-    final String query =
-        Preconditions.checkNotNull(
-            preparedStatements.get(handle),
-            format("No query registered under handle: <%s>.", handle));
+    final String query = Preconditions.checkNotNull(
+        preparedStatements.get(handle),
+        format("No query registered under handle: <%s>.", handle));
 
     if (validateParameters(query, flightStream, streamListener)) {
-      return () -> {};
+      return () -> {
+      };
     }
 
     return streamListener::onCompleted;
@@ -641,7 +629,8 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   }
 
   /**
-   * Clear the `actionTypeCounter` map and restore to its default state. Intended to be used in
+   * Clear the `actionTypeCounter` map and restore to its default state. Intended
+   * to be used in
    * tests.
    */
   public void clearActionTypeCounter() {
@@ -655,13 +644,29 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   private void getStreamCatalogFunctions(
       final Message ticket, final ServerStreamListener serverStreamListener) {
     Preconditions.checkNotNull(
-            catalogQueriesResults.get(ticket),
-            format("Query not registered for ticket: <%s>", ticket))
+        catalogQueriesResults.get(ticket),
+        format("Query not registered for ticket: <%s>", ticket))
         .accept(serverStreamListener);
   }
 
   public SqlInfoBuilder getSqlInfoBuilder() {
     return sqlInfoBuilder;
+  }
+
+  private final Map<String, SessionOptionValue> sessionOptions = new HashMap<>();
+
+  @Override
+  public void setSessionOptions(
+      final SetSessionOptionsRequest request,
+      final CallContext context,
+      final StreamListener<SetSessionOptionsResult> listener) {
+    sessionOptions.putAll(request.getSessionOptions());
+    listener.onNext(new SetSessionOptionsResult(Collections.emptyMap()));
+    listener.onCompleted();
+  }
+
+  public Map<String, SessionOptionValue> getSessionOptions() {
+    return sessionOptions;
   }
 
   private static final class TicketConversionUtils {
