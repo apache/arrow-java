@@ -61,6 +61,7 @@ public class UuidReaderImpl extends AbstractFieldReader {
     return !vector.isNull(idx());
   }
 
+  @Override
   public void read(ExtensionHolder holder) {
     if (holder instanceof UuidHolder) {
       vector.get(idx(), (UuidHolder) holder);
