@@ -63,6 +63,8 @@ public class UuidType extends ExtensionType {
   /** Storage type for UUID: FixedSizeBinary(16). */
   public static final ArrowType STORAGE_TYPE = new ArrowType.FixedSizeBinary(UUID_BYTE_WIDTH);
 
+  private UuidType() {}
+
   static {
     ExtensionTypeRegistry.register(INSTANCE);
   }
