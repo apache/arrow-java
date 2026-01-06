@@ -194,7 +194,7 @@ public class OAuthConfiguration {
       if (flowStr == null || flowStr.isEmpty()) {
         throw new SQLException("OAuth flow cannot be null or empty");
       }
-      String normalized = flowStr.toLowerCase(Locale.ROOT).replace("-", "_");
+      String normalized = flowStr.toLowerCase(Locale.ROOT);
       switch (normalized) {
         case "client_credentials":
           this.flow = OAuthFlow.CLIENT_CREDENTIALS;

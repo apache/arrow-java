@@ -1090,7 +1090,6 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         // Authentication priority: OAuth > token > username/password
         if (oauthConfig != null) {
           OAuthTokenProvider tokenProvider = oauthConfig.createTokenProvider();
-          tokenProvider.getValidToken(); // Fail fast validation
           credentialOptions.add(new CredentialCallOption(new OAuthCredentialWriter(tokenProvider)));
         } else if (isUsingUserPasswordAuth) {
           // If the authFactory has already been used for a handshake, use the existing
