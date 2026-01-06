@@ -16,7 +16,6 @@
  */
 package org.apache.arrow.driver.jdbc.client.oauth;
 
-import java.util.Base64;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -24,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
+import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -86,7 +86,8 @@ public class ClientCredentialsTokenProviderTest {
     mockServer.enqueue(
         mockResponse.setBody(
             String.format(
-            "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":3600}", expectedToken)));
+                "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":3600}",
+                expectedToken)));
 
     // return new token after obtaining cached-token
     mockServer.enqueue(

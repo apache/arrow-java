@@ -49,7 +49,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class TokenExchangeTokenProvider implements OAuthTokenProvider {
   private static final int EXPIRATION_BUFFER_SECONDS = 30;
   private static final int DEFAULT_EXPIRATION_SECONDS = 3600;
-  private static final String DEFAULT_TOKEN_TYPE = "urn:ietf:params:oauth:token-type:access_token";
 
   private final URI tokenUri;
   private final Token subjectToken;
@@ -82,7 +81,7 @@ public class TokenExchangeTokenProvider implements OAuthTokenProvider {
   public TokenExchangeTokenProvider(
       URI tokenUri,
       String subjectToken,
-      @Nullable String subjectTokenType,
+      String subjectTokenType,
       @Nullable String actorToken,
       @Nullable String actorTokenType,
       @Nullable String audience,
@@ -94,13 +93,14 @@ public class TokenExchangeTokenProvider implements OAuthTokenProvider {
     this.tokenUri = Objects.requireNonNull(tokenUri, "tokenUri cannot be null");
     Objects.requireNonNull(subjectToken, "subjectToken cannot be null");
     this.subjectToken = new TypelessAccessToken(subjectToken);
-    this.subjectTokenType = parseTokenType(subjectTokenType, DEFAULT_TOKEN_TYPE);
+    Objects.requireNonNull(subjectTokenType, "subjectTokenType cannot be null");
+    this.subjectTokenType = parseTokenType(subjectTokenType);
     this.actorToken = actorToken != null ? new TypelessAccessToken(actorToken) : null;
-    this.actorTokenType = actorTokenType != null ? parseTokenType(actorTokenType, null) : null;
+    this.actorTokenType = actorTokenType != null ? parseTokenType(actorTokenType) : null;
     this.audiences = audience != null ? Collections.singletonList(new Audience(audience)) : null;
     this.resources = resource != null ? Collections.singletonList(URI.create(resource)) : null;
     this.requestedTokenType =
-        requestedTokenType != null ? parseTokenType(requestedTokenType, null) : null;
+        requestedTokenType != null ? parseTokenType(requestedTokenType) : null;
     this.scope = (scope != null && !scope.isEmpty()) ? Scope.parse(scope) : null;
 
     if (clientId != null && clientSecret != null) {
@@ -110,9 +110,9 @@ public class TokenExchangeTokenProvider implements OAuthTokenProvider {
     }
   }
 
-  private static TokenTypeURI parseTokenType(String tokenType, @Nullable String defaultType) {
+  private static TokenTypeURI parseTokenType(String tokenType) {
     try {
-      return TokenTypeURI.parse(tokenType != null ? tokenType : defaultType);
+      return TokenTypeURI.parse(tokenType);
     } catch (ParseException e) {
       throw new IllegalArgumentException("Invalid token type URI: " + tokenType, e);
     }
@@ -174,7 +174,7 @@ public class TokenExchangeTokenProvider implements OAuthTokenProvider {
       return new TokenRequest(tokenUri, clientAuth, grant, scope, resources, null);
     } else if (resources != null) {
       // Use constructor with ClientID to include resources
-      return new TokenRequest(tokenUri, (ClientID) null, grant, scope, resources, null, null);
+      return new TokenRequest(tokenUri, null, grant, scope, resources, null, null);
     } else {
       return new TokenRequest(tokenUri, grant, scope);
     }
