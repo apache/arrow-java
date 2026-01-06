@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.utils;
 
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 import org.apache.arrow.driver.jdbc.ArrowFlightConnection;
+import org.apache.arrow.driver.jdbc.client.oauth.OAuthConfiguration;
 import org.apache.arrow.flight.CallHeaders;
 import org.apache.arrow.flight.CallOption;
 import org.apache.arrow.flight.FlightCallHeaders;
@@ -31,6 +33,7 @@ import org.apache.arrow.util.Preconditions;
 import org.apache.calcite.avatica.ConnectionConfig;
 import org.apache.calcite.avatica.ConnectionConfigImpl;
 import org.apache.calcite.avatica.ConnectionProperty;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** A {@link ConnectionConfig} for the {@link ArrowFlightConnection}. */
 public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl {
@@ -211,6 +214,39 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     return headers;
   }
 
+  /**
+   * Returns OAuth configuration if oauth.flow is specified, null otherwise.
+   *
+   * @return the OAuth configuration or null
+   * @throws SQLException if the OAuth configuration is invalid
+   */
+  public @Nullable OAuthConfiguration getOAuthConfiguration() throws SQLException {
+    String flow = ArrowFlightConnectionProperty.OAUTH_FLOW.getString(properties);
+    if (flow == null) {
+      return null;
+    }
+
+    return new OAuthConfiguration.Builder()
+        .flow(flow)
+        .clientId(ArrowFlightConnectionProperty.OAUTH_CLIENT_ID.getString(properties))
+        .clientSecret(ArrowFlightConnectionProperty.OAUTH_CLIENT_SECRET.getString(properties))
+        .tokenUri(ArrowFlightConnectionProperty.OAUTH_TOKEN_URI.getString(properties))
+        .scope(ArrowFlightConnectionProperty.OAUTH_SCOPE.getString(properties))
+        .subjectToken(
+            ArrowFlightConnectionProperty.OAUTH_EXCHANGE_SUBJECT_TOKEN.getString(properties))
+        .subjectTokenType(
+            ArrowFlightConnectionProperty.OAUTH_EXCHANGE_SUBJECT_TOKEN_TYPE.getString(properties))
+        .actorToken(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_ACTOR_TOKEN.getString(properties))
+        .actorTokenType(
+            ArrowFlightConnectionProperty.OAUTH_EXCHANGE_ACTOR_TOKEN_TYPE.getString(properties))
+        .audience(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_AUDIENCE.getString(properties))
+        .resource(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_RESOURCE.getString(properties))
+        .requestedTokenType(
+            ArrowFlightConnectionProperty.OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE.getString(properties))
+        .exchangeScope(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_SCOPE.getString(properties))
+        .build();
+  }
+
   /** Custom {@link ConnectionProperty} for the {@link ArrowFlightConnectionConfigImpl}. */
   public enum ArrowFlightConnectionProperty implements ConnectionProperty {
     HOST("host", null, Type.STRING, true),
@@ -232,6 +268,24 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     CATALOG("catalog", null, Type.STRING, false),
     CONNECT_TIMEOUT_MILLIS("connectTimeoutMs", 10000, Type.NUMBER, false),
     USE_CLIENT_CACHE("useClientCache", true, Type.BOOLEAN, false),
+
+    // OAuth configuration properties
+    OAUTH_FLOW("oauth.flow", null, Type.STRING, false),
+    OAUTH_CLIENT_ID("oauth.clientId", null, Type.STRING, false),
+    OAUTH_CLIENT_SECRET("oauth.clientSecret", null, Type.STRING, false),
+    OAUTH_TOKEN_URI("oauth.tokenUri", null, Type.STRING, false),
+    OAUTH_SCOPE("oauth.scope", null, Type.STRING, false),
+
+    // Token exchange specific properties
+    OAUTH_EXCHANGE_SUBJECT_TOKEN("oauth.exchange.subjectToken", null, Type.STRING, false),
+    OAUTH_EXCHANGE_SUBJECT_TOKEN_TYPE("oauth.exchange.subjectTokenType", null, Type.STRING, false),
+    OAUTH_EXCHANGE_ACTOR_TOKEN("oauth.exchange.actorToken", null, Type.STRING, false),
+    OAUTH_EXCHANGE_ACTOR_TOKEN_TYPE("oauth.exchange.actorTokenType", null, Type.STRING, false),
+    OAUTH_EXCHANGE_AUDIENCE("oauth.exchange.audience", null, Type.STRING, false),
+    OAUTH_EXCHANGE_RESOURCE("oauth.exchange.resource", null, Type.STRING, false),
+    OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE(
+        "oauth.exchange.requestedTokenType", null, Type.STRING, false),
+    OAUTH_EXCHANGE_SCOPE("oauth.exchange.scope", null, Type.STRING, false),
     ;
 
     private final String camelName;

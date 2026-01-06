@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.arrow.driver.jdbc.client.oauth.OAuthConfiguration;
+import org.apache.arrow.driver.jdbc.client.oauth.OAuthCredentialWriter;
+import org.apache.arrow.driver.jdbc.client.oauth.OAuthTokenProvider;
 import org.apache.arrow.driver.jdbc.client.utils.ClientAuthenticationUtils;
 import org.apache.arrow.driver.jdbc.client.utils.FlightClientCache;
 import org.apache.arrow.driver.jdbc.client.utils.FlightLocationQueue;
@@ -675,6 +678,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting @Nullable Duration connectTimeout;
 
+    @VisibleForTesting @Nullable OAuthConfiguration oauthConfig;
+
     // These two middleware are for internal use within build() and should not be
     // exposed by builder
     // APIs.
@@ -714,6 +719,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.clientKeyPath = original.clientKeyPath;
       this.allocator = original.allocator;
       this.catalog = original.catalog;
+      this.oauthConfig = original.oauthConfig;
 
       if (original.retainCookies) {
         this.cookieFactory = original.cookieFactory;
@@ -983,6 +989,17 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       return this;
     }
 
+    /**
+     * Sets the OAuth configuration for this handler.
+     *
+     * @param oauthConfig the OAuth configuration
+     * @return this builder instance
+     */
+    public Builder withOAuthConfiguration(final OAuthConfiguration oauthConfig) {
+      this.oauthConfig = oauthConfig;
+      return this;
+    }
+
     public String getCacheKey() {
       return getLocation().toString();
     }
@@ -1070,7 +1087,12 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
             FlightGrpcUtils.createFlightClient(
                 allocator, channelBuilder.build(), clientBuilder.middleware());
         final ArrayList<CallOption> credentialOptions = new ArrayList<>();
-        if (isUsingUserPasswordAuth) {
+        // Authentication priority: OAuth > token > username/password
+        if (oauthConfig != null) {
+          OAuthTokenProvider tokenProvider = oauthConfig.createTokenProvider();
+          tokenProvider.getValidToken(); // Fail fast validation
+          credentialOptions.add(new CredentialCallOption(new OAuthCredentialWriter(tokenProvider)));
+        } else if (isUsingUserPasswordAuth) {
           // If the authFactory has already been used for a handshake, use the existing
           // token.
           // This can occur if the authFactory is being re-used for a new connection
