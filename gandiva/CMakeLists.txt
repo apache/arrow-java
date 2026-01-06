@@ -57,7 +57,6 @@ set_property(TARGET arrow_java_jni_gandiva PROPERTY OUTPUT_NAME "gandiva_jni")
 target_link_libraries(arrow_java_jni_gandiva
                       arrow_java_jni_gandiva_headers
                       jni
-                      protobuf::libprotobuf
                       Gandiva::gandiva_static)
 
 # Localize thirdparty symbols using a linker version script. This hides them
