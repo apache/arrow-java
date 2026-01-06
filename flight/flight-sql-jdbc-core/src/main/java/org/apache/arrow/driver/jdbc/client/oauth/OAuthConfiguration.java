@@ -81,6 +81,9 @@ public class OAuthConfiguration {
         if (subjectToken == null || subjectToken.isEmpty()) {
           throw new SQLException("subjectToken is required for token_exchange flow");
         }
+        if (subjectTokenType == null || subjectTokenType.isEmpty()) {
+          throw new SQLException("subjectTokenType is required for token_exchange flow");
+        }
         break;
       default:
         throw new SQLException("Unsupported OAuth flow: " + flow);
