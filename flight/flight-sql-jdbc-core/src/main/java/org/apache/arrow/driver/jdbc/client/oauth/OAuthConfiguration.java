@@ -94,11 +94,22 @@ public class OAuthConfiguration {
    * @throws SQLException if the flow is not supported or configuration is invalid
    */
   public OAuthTokenProvider createTokenProvider() throws SQLException {
-    // Flow implementations added in Phase 2 and Phase 3
-    throw new SQLException("Unsupported OAuth flow: " + flow);
     switch (flow) {
       case CLIENT_CREDENTIALS:
         return new ClientCredentialsTokenProvider(tokenUri, clientId, clientSecret, scope);
+      case TOKEN_EXCHANGE:
+        return new TokenExchangeTokenProvider(
+            tokenUri,
+            subjectToken,
+            subjectTokenType,
+            actorToken,
+            actorTokenType,
+            audience,
+            resource,
+            requestedTokenType,
+            exchangeScope,
+            clientId,
+            clientSecret);
       default:
         throw new SQLException("Unsupported OAuth flow: " + flow);
     }
