@@ -50,14 +50,12 @@ public class OAuthConfigurationTest {
     return Stream.of(
         Arguments.of(
             Named.of(
-                "string flow",
-                (BuilderConfigurer) builder -> builder.flow("client_credentials"))),
+                "string flow", (BuilderConfigurer) builder -> builder.flow("client_credentials"))),
         Arguments.of(
             Named.of(
                 "enum flow",
                 (BuilderConfigurer)
-                    builder ->
-                        builder.flow(OAuthConfiguration.OAuthFlow.CLIENT_CREDENTIALS))),
+                    builder -> builder.flow(OAuthConfiguration.OAuthFlow.CLIENT_CREDENTIALS))),
         Arguments.of(
             Named.of(
                 "uppercase string flow",
@@ -114,16 +112,14 @@ public class OAuthConfigurationTest {
                 config -> {
                   assertEquals("actor-token-value", config.getActorToken());
                   assertEquals(
-                      "urn:ietf:params:oauth:token-type:access_token",
-                      config.getActorTokenType());
+                      "urn:ietf:params:oauth:token-type:access_token", config.getActorTokenType());
                 }),
         Arguments.of(
             Named.of(
                 "requested token type",
                 (BuilderConfigurer)
                     builder ->
-                        builder.requestedTokenType(
-                            "urn:ietf:params:oauth:token-type:id_token")),
+                        builder.requestedTokenType("urn:ietf:params:oauth:token-type:id_token")),
             (Consumer<OAuthConfiguration>)
                 config ->
                     assertEquals(
@@ -148,8 +144,7 @@ public class OAuthConfigurationTest {
     assertEquals(OAuthConfiguration.OAuthFlow.TOKEN_EXCHANGE, config.getFlow());
     assertEquals(URI.create(TOKEN_URI), config.getTokenUri());
     assertEquals(SUBJECT_TOKEN, config.getSubjectToken());
-    assertEquals(
-        "urn:ietf:params:oauth:token-type:access_token", config.getSubjectTokenType());
+    assertEquals("urn:ietf:params:oauth:token-type:access_token", config.getSubjectTokenType());
     verifier.accept(config);
   }
 
