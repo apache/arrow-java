@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.nimbusds.oauth2.sdk.GrantType;
 import java.net.URI;
 import java.sql.SQLException;
 import java.util.function.Consumer;
@@ -53,9 +54,8 @@ public class OAuthConfigurationTest {
                 "string flow", (BuilderConfigurer) builder -> builder.flow("client_credentials"))),
         Arguments.of(
             Named.of(
-                "enum flow",
-                (BuilderConfigurer)
-                    builder -> builder.flow(OAuthConfiguration.OAuthFlow.CLIENT_CREDENTIALS))),
+                "grant type",
+                (BuilderConfigurer) builder -> builder.grantType(GrantType.CLIENT_CREDENTIALS))),
         Arguments.of(
             Named.of(
                 "uppercase string flow",
@@ -76,7 +76,7 @@ public class OAuthConfigurationTest {
             .scope(SCOPE)
             .build();
 
-    assertEquals(OAuthConfiguration.OAuthFlow.CLIENT_CREDENTIALS, config.getFlow());
+    assertEquals(GrantType.CLIENT_CREDENTIALS, config.getGrantType());
     assertEquals(URI.create(TOKEN_URI), config.getTokenUri());
     assertEquals(CLIENT_ID, config.getClientId());
     assertEquals(CLIENT_SECRET, config.getClientSecret());
@@ -141,7 +141,7 @@ public class OAuthConfigurationTest {
     optionalConfigurer.configure(builder);
     OAuthConfiguration config = builder.build();
 
-    assertEquals(OAuthConfiguration.OAuthFlow.TOKEN_EXCHANGE, config.getFlow());
+    assertEquals(GrantType.TOKEN_EXCHANGE, config.getGrantType());
     assertEquals(URI.create(TOKEN_URI), config.getTokenUri());
     assertEquals(SUBJECT_TOKEN, config.getSubjectToken());
     assertEquals("urn:ietf:params:oauth:token-type:access_token", config.getSubjectTokenType());

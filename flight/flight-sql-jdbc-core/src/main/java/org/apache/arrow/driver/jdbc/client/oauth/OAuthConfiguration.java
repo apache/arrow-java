@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.client.oauth;
 
+import com.nimbusds.oauth2.sdk.GrantType;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
@@ -26,13 +27,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /** Configuration class for OAuth settings parsed from connection properties. */
 public class OAuthConfiguration {
 
-  /** Supported OAuth flows. */
-  public enum OAuthFlow {
-    CLIENT_CREDENTIALS,
-    TOKEN_EXCHANGE
-  }
-
-  private final OAuthFlow flow;
+  private final GrantType grantType;
   private final URI tokenUri;
   private final @Nullable String clientId;
   private final @Nullable String clientSecret;
@@ -47,7 +42,7 @@ public class OAuthConfiguration {
   private final @Nullable String exchangeScope;
 
   private OAuthConfiguration(Builder builder) throws SQLException {
-    this.flow = builder.flow;
+    this.grantType = builder.grantType;
     this.tokenUri = builder.tokenUri;
     this.clientId = builder.clientId;
     this.clientSecret = builder.clientSecret;
@@ -65,61 +60,57 @@ public class OAuthConfiguration {
   }
 
   private void validate() throws SQLException {
-    Objects.requireNonNull(flow, "OAuth flow is required");
+    Objects.requireNonNull(grantType, "OAuth grant type is required");
     Objects.requireNonNull(tokenUri, "Token URI is required");
 
-    switch (flow) {
-      case CLIENT_CREDENTIALS:
-        if (clientId == null || clientId.isEmpty()) {
-          throw new SQLException("clientId is required for client_credentials flow");
-        }
-        if (clientSecret == null || clientSecret.isEmpty()) {
-          throw new SQLException("clientSecret is required for client_credentials flow");
-        }
-        break;
-      case TOKEN_EXCHANGE:
-        if (subjectToken == null || subjectToken.isEmpty()) {
-          throw new SQLException("subjectToken is required for token_exchange flow");
-        }
-        if (subjectTokenType == null || subjectTokenType.isEmpty()) {
-          throw new SQLException("subjectTokenType is required for token_exchange flow");
-        }
-        break;
-      default:
-        throw new SQLException("Unsupported OAuth flow: " + flow);
+    if (GrantType.CLIENT_CREDENTIALS.equals(grantType)) {
+      if (clientId == null || clientId.isEmpty()) {
+        throw new SQLException("clientId is required for client_credentials flow");
+      }
+      if (clientSecret == null || clientSecret.isEmpty()) {
+        throw new SQLException("clientSecret is required for client_credentials flow");
+      }
+    } else if (GrantType.TOKEN_EXCHANGE.equals(grantType)) {
+      if (subjectToken == null || subjectToken.isEmpty()) {
+        throw new SQLException("subjectToken is required for token_exchange flow");
+      }
+      if (subjectTokenType == null || subjectTokenType.isEmpty()) {
+        throw new SQLException("subjectTokenType is required for token_exchange flow");
+      }
+    } else {
+      throw new SQLException("Unsupported OAuth grant type: " + grantType);
     }
   }
 
   /**
-   * Creates an OAuthTokenProvider based on the configured flow.
+   * Creates an OAuthTokenProvider based on the configured grant type.
    *
    * @return the token provider
-   * @throws SQLException if the flow is not supported or configuration is invalid
+   * @throws SQLException if the grant type is not supported or configuration is invalid
    */
   public OAuthTokenProvider createTokenProvider() throws SQLException {
-    switch (flow) {
-      case CLIENT_CREDENTIALS:
-        return new ClientCredentialsTokenProvider(tokenUri, clientId, clientSecret, scope);
-      case TOKEN_EXCHANGE:
-        return new TokenExchangeTokenProvider(
-            tokenUri,
-            subjectToken,
-            subjectTokenType,
-            actorToken,
-            actorTokenType,
-            audience,
-            resource,
-            requestedTokenType,
-            exchangeScope,
-            clientId,
-            clientSecret);
-      default:
-        throw new SQLException("Unsupported OAuth flow: " + flow);
+    if (GrantType.CLIENT_CREDENTIALS.equals(grantType)) {
+      return new ClientCredentialsTokenProvider(tokenUri, clientId, clientSecret, scope);
+    } else if (GrantType.TOKEN_EXCHANGE.equals(grantType)) {
+      return new TokenExchangeTokenProvider(
+          tokenUri,
+          subjectToken,
+          subjectTokenType,
+          actorToken,
+          actorTokenType,
+          audience,
+          resource,
+          requestedTokenType,
+          exchangeScope,
+          clientId,
+          clientSecret);
+    } else {
+      throw new SQLException("Unsupported OAuth grant type: " + grantType);
     }
   }
 
-  public OAuthFlow getFlow() {
-    return flow;
+  public GrantType getGrantType() {
+    return grantType;
   }
 
   public URI getTokenUri() {
@@ -172,7 +163,7 @@ public class OAuthConfiguration {
 
   /** Builder for OAuthConfiguration. */
   public static class Builder {
-    private OAuthFlow flow;
+    private GrantType grantType;
     private URI tokenUri;
     private @Nullable String clientId;
     private @Nullable String clientSecret;
@@ -187,7 +178,7 @@ public class OAuthConfiguration {
     private @Nullable String exchangeScope;
 
     /**
-     * Sets the OAuth flow from a string value.
+     * Sets the OAuth grant type from a string value.
      *
      * @param flowStr the flow type string (e.g., "client_credentials", "token_exchange")
      * @return this builder
@@ -200,10 +191,10 @@ public class OAuthConfiguration {
       String normalized = flowStr.toLowerCase(Locale.ROOT);
       switch (normalized) {
         case "client_credentials":
-          this.flow = OAuthFlow.CLIENT_CREDENTIALS;
+          this.grantType = GrantType.CLIENT_CREDENTIALS;
           break;
         case "token_exchange":
-          this.flow = OAuthFlow.TOKEN_EXCHANGE;
+          this.grantType = GrantType.TOKEN_EXCHANGE;
           break;
         default:
           throw new SQLException("Unknown OAuth flow: " + flowStr);
@@ -212,13 +203,13 @@ public class OAuthConfiguration {
     }
 
     /**
-     * Sets the OAuth flow.
+     * Sets the OAuth grant type.
      *
-     * @param flow the OAuth flow type
+     * @param grantType the OAuth grant type
      * @return this builder
      */
-    public Builder flow(OAuthFlow flow) {
-      this.flow = flow;
+    public Builder grantType(GrantType grantType) {
+      this.grantType = grantType;
       return this;
     }
 
