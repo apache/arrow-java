@@ -1256,12 +1256,12 @@ public class TestListVector {
       FieldReader uuidReader = reader.reader();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u2, actualUuid);
     }
   }
@@ -1296,12 +1296,12 @@ public class TestListVector {
       FieldReader uuidReader = reader.reader();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u2, actualUuid);
     }
   }

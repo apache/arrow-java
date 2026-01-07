@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.complex.impl.NullableUuidHolderReaderImpl;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.impl.UuidWriterImpl;
 import org.apache.arrow.vector.extension.UuidType;
@@ -136,8 +137,8 @@ class TestUuidVector {
       IllegalArgumentException exception =
           assertThrows(IllegalArgumentException.class, () -> writer.writeExtension("invalid-type"));
 
-      assertEquals(
-          "Unsupported value type for UUID: class java.lang.String", exception.getMessage());
+      assertTrue(
+          exception.getMessage().contains("Unsupported value type for UUID: java.lang.String"));
     }
   }
 
@@ -237,7 +238,7 @@ class TestUuidVector {
       UuidReaderImpl reader2 = (UuidReaderImpl) vector.getReader();
       UuidHolder holder = new UuidHolder();
       reader2.read(0, holder);
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(uuid, actualUuid);
     }
   }
@@ -255,7 +256,7 @@ class TestUuidVector {
       UuidHolder holder = new UuidHolder();
       reader.read(holder);
 
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(uuid, actualUuid);
       assertEquals(1, holder.isSet);
     }
@@ -274,7 +275,7 @@ class TestUuidVector {
       NullableUuidHolder holder = new NullableUuidHolder();
       reader.read(holder);
 
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(uuid, actualUuid);
       assertEquals(1, holder.isSet);
     }
@@ -313,7 +314,7 @@ class TestUuidVector {
       UuidHolder holder = new UuidHolder();
       reader.read(1, holder);
 
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(uuid2, actualUuid);
       assertEquals(1, holder.isSet);
     }
@@ -334,7 +335,7 @@ class TestUuidVector {
 
       NullableUuidHolder holder1 = new NullableUuidHolder();
       reader.read(0, holder1);
-      assertEquals(uuid1, UuidUtility.uuidFromArrowBuf(holder1.buffer, 0));
+      assertEquals(uuid1, UuidUtility.uuidFromArrowBuf(holder1.buffer, holder1.start));
       assertEquals(1, holder1.isSet);
 
       NullableUuidHolder holder2 = new NullableUuidHolder();
@@ -343,7 +344,7 @@ class TestUuidVector {
 
       NullableUuidHolder holder3 = new NullableUuidHolder();
       reader.read(2, holder3);
-      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder3.buffer, 0));
+      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder3.buffer, holder3.start));
       assertEquals(1, holder3.isSet);
     }
   }
@@ -459,6 +460,303 @@ class TestUuidVector {
       UuidReaderImpl reader = (UuidReaderImpl) vector.getReader();
       assertEquals(vector.getField(), reader.getField());
       assertEquals("test", reader.getField().getName());
+    }
+  }
+
+  @Test
+  void testHolderStartOffsetWithMultipleValues() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      UUID uuid1 = UUID.randomUUID();
+      UUID uuid2 = UUID.randomUUID();
+      UUID uuid3 = UUID.randomUUID();
+
+      vector.setSafe(0, uuid1);
+      vector.setSafe(1, uuid2);
+      vector.setSafe(2, uuid3);
+      vector.setValueCount(3);
+
+      // Test UuidHolder with different indices
+      UuidHolder holder1 = new UuidHolder();
+      vector.get(0, holder1);
+      assertEquals(0, holder1.start);
+      assertEquals(uuid1, UuidUtility.uuidFromArrowBuf(holder1.buffer, holder1.start));
+
+      UuidHolder holder2 = new UuidHolder();
+      vector.get(1, holder2);
+      assertEquals(16, holder2.start); // UUID_BYTE_WIDTH = 16
+      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder2.buffer, holder2.start));
+
+      UuidHolder holder3 = new UuidHolder();
+      vector.get(2, holder3);
+      assertEquals(32, holder3.start); // 2 * UUID_BYTE_WIDTH = 32
+      assertEquals(uuid3, UuidUtility.uuidFromArrowBuf(holder3.buffer, holder3.start));
+
+      // Verify all holders share the same buffer
+      assertEquals(holder1.buffer, holder2.buffer);
+      assertEquals(holder2.buffer, holder3.buffer);
+    }
+  }
+
+  @Test
+  void testNullableHolderStartOffsetWithMultipleValues() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      UUID uuid1 = UUID.randomUUID();
+      UUID uuid2 = UUID.randomUUID();
+
+      vector.setSafe(0, uuid1);
+      vector.setNull(1);
+      vector.setSafe(2, uuid2);
+      vector.setValueCount(3);
+
+      // Test NullableUuidHolder with different indices
+      NullableUuidHolder holder1 = new NullableUuidHolder();
+      vector.get(0, holder1);
+      assertEquals(0, holder1.start);
+      assertEquals(1, holder1.isSet);
+      assertEquals(uuid1, UuidUtility.uuidFromArrowBuf(holder1.buffer, holder1.start));
+
+      NullableUuidHolder holder2 = new NullableUuidHolder();
+      vector.get(1, holder2);
+      assertEquals(16, holder2.start); // UUID_BYTE_WIDTH = 16
+      assertEquals(0, holder2.isSet);
+
+      NullableUuidHolder holder3 = new NullableUuidHolder();
+      vector.get(2, holder3);
+      assertEquals(32, holder3.start); // 2 * UUID_BYTE_WIDTH = 32
+      assertEquals(1, holder3.isSet);
+      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder3.buffer, holder3.start));
+
+      // Verify all holders share the same buffer
+      assertEquals(holder1.buffer, holder2.buffer);
+      assertEquals(holder2.buffer, holder3.buffer);
+    }
+  }
+
+  @Test
+  void testSetFromHolderWithStartOffset() throws Exception {
+    try (UuidVector sourceVector = new UuidVector("source", allocator);
+        UuidVector targetVector = new UuidVector("target", allocator)) {
+      UUID uuid1 = UUID.randomUUID();
+      UUID uuid2 = UUID.randomUUID();
+      UUID uuid3 = UUID.randomUUID();
+
+      sourceVector.setSafe(0, uuid1);
+      sourceVector.setSafe(1, uuid2);
+      sourceVector.setSafe(2, uuid3);
+      sourceVector.setValueCount(3);
+
+      // Get holder from index 1 (should have start = 16)
+      UuidHolder holder = new UuidHolder();
+      sourceVector.get(1, holder);
+      assertEquals(16, holder.start);
+
+      // Set target vector using holder with non-zero start offset
+      targetVector.setSafe(0, holder);
+      targetVector.setValueCount(1);
+
+      // Verify the value was copied correctly
+      assertEquals(uuid2, targetVector.getObject(0));
+    }
+  }
+
+  @Test
+  void testSetFromNullableHolderWithStartOffset() throws Exception {
+    try (UuidVector sourceVector = new UuidVector("source", allocator);
+        UuidVector targetVector = new UuidVector("target", allocator)) {
+      UUID uuid1 = UUID.randomUUID();
+      UUID uuid2 = UUID.randomUUID();
+
+      sourceVector.setSafe(0, uuid1);
+      sourceVector.setNull(1);
+      sourceVector.setSafe(2, uuid2);
+      sourceVector.setValueCount(3);
+
+      // Get holder from index 2 (should have start = 32)
+      NullableUuidHolder holder = new NullableUuidHolder();
+      sourceVector.get(2, holder);
+      assertEquals(32, holder.start);
+      assertEquals(1, holder.isSet);
+
+      // Set target vector using holder with non-zero start offset
+      targetVector.setSafe(0, holder);
+      targetVector.setValueCount(1);
+
+      // Verify the value was copied correctly
+      assertEquals(uuid2, targetVector.getObject(0));
+
+      // Test with null holder
+      NullableUuidHolder nullHolder = new NullableUuidHolder();
+      sourceVector.get(1, nullHolder);
+      assertEquals(16, nullHolder.start);
+      assertEquals(0, nullHolder.isSet);
+
+      targetVector.setSafe(1, nullHolder);
+      targetVector.setValueCount(2);
+      assertTrue(targetVector.isNull(1));
+    }
+  }
+
+  @Test
+  void testGetStartOffset() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      vector.allocateNew(10);
+
+      // Test getStartOffset for various indices
+      assertEquals(0, vector.getStartOffset(0));
+      assertEquals(16, vector.getStartOffset(1));
+      assertEquals(32, vector.getStartOffset(2));
+      assertEquals(48, vector.getStartOffset(3));
+      assertEquals(160, vector.getStartOffset(10));
+    }
+  }
+
+  @Test
+  void testReaderWithStartOffsetMultipleReads() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      UUID uuid1 = UUID.randomUUID();
+      UUID uuid2 = UUID.randomUUID();
+      UUID uuid3 = UUID.randomUUID();
+
+      vector.setSafe(0, uuid1);
+      vector.setSafe(1, uuid2);
+      vector.setSafe(2, uuid3);
+      vector.setValueCount(3);
+
+      UuidReaderImpl reader = (UuidReaderImpl) vector.getReader();
+      UuidHolder holder = new UuidHolder();
+
+      // Read from different positions and verify start offset
+      reader.read(0, holder);
+      assertEquals(0, holder.start);
+      assertEquals(uuid1, UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start));
+
+      reader.read(1, holder);
+      assertEquals(16, holder.start);
+      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start));
+
+      reader.read(2, holder);
+      assertEquals(32, holder.start);
+      assertEquals(uuid3, UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start));
+    }
+  }
+
+  @Test
+  void testWriterWithExtensionHolder() throws Exception {
+    try (UuidVector sourceVector = new UuidVector("source", allocator);
+        UuidVector targetVector = new UuidVector("target", allocator)) {
+      UUID uuid = UUID.randomUUID();
+      sourceVector.setSafe(0, uuid);
+      sourceVector.setValueCount(1);
+
+      // Get holder from source
+      UuidHolder holder = new UuidHolder();
+      sourceVector.get(0, holder);
+
+      // Write using UuidWriterImpl with ExtensionHolder
+      UuidWriterImpl writer = new UuidWriterImpl(targetVector);
+      writer.setPosition(0);
+      writer.writeExtension(holder);
+
+      assertEquals(uuid, targetVector.getObject(0));
+    }
+  }
+
+  @Test
+  void testNullableUuidHolderReaderImpl() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      UUID uuid = UUID.randomUUID();
+      vector.setSafe(0, uuid);
+      vector.setValueCount(1);
+
+      // Get holder from vector
+      NullableUuidHolder sourceHolder = new NullableUuidHolder();
+      vector.get(0, sourceHolder);
+      assertEquals(1, sourceHolder.isSet);
+      assertEquals(0, sourceHolder.start);
+
+      // Create reader from holder
+      NullableUuidHolderReaderImpl reader = new NullableUuidHolderReaderImpl(sourceHolder);
+      assertTrue(reader.isSet());
+      assertEquals(uuid, reader.readObject());
+
+      // Read into another holder
+      NullableUuidHolder targetHolder = new NullableUuidHolder();
+      reader.read(targetHolder);
+      assertEquals(1, targetHolder.isSet);
+      assertEquals(0, targetHolder.start);
+      assertEquals(uuid, UuidUtility.uuidFromArrowBuf(targetHolder.buffer, targetHolder.start));
+    }
+  }
+
+  @Test
+  void testNullableUuidHolderReaderImplWithNull() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      vector.setNull(0);
+      vector.setValueCount(1);
+
+      // Get null holder from vector
+      NullableUuidHolder sourceHolder = new NullableUuidHolder();
+      vector.get(0, sourceHolder);
+      assertEquals(0, sourceHolder.isSet);
+
+      // Create reader from null holder
+      NullableUuidHolderReaderImpl reader = new NullableUuidHolderReaderImpl(sourceHolder);
+      assertFalse(reader.isSet());
+      assertNull(reader.readObject());
+
+      // Read into another holder
+      NullableUuidHolder targetHolder = new NullableUuidHolder();
+      reader.read(targetHolder);
+      assertEquals(0, targetHolder.isSet);
+    }
+  }
+
+  @Test
+  void testNullableUuidHolderReaderImplReadIntoUuidHolder() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      UUID uuid = UUID.randomUUID();
+      vector.setSafe(0, uuid);
+      vector.setValueCount(1);
+
+      // Get holder from vector
+      NullableUuidHolder sourceHolder = new NullableUuidHolder();
+      vector.get(0, sourceHolder);
+
+      // Create reader from holder
+      NullableUuidHolderReaderImpl reader = new NullableUuidHolderReaderImpl(sourceHolder);
+
+      // Read into UuidHolder (non-nullable)
+      UuidHolder targetHolder = new UuidHolder();
+      reader.read(targetHolder);
+      assertEquals(0, targetHolder.start);
+      assertEquals(uuid, UuidUtility.uuidFromArrowBuf(targetHolder.buffer, targetHolder.start));
+    }
+  }
+
+  @Test
+  void testNullableUuidHolderReaderImplWithNonZeroStart() throws Exception {
+    try (UuidVector vector = new UuidVector("test", allocator)) {
+      UUID uuid1 = UUID.randomUUID();
+      UUID uuid2 = UUID.randomUUID();
+      vector.setSafe(0, uuid1);
+      vector.setSafe(1, uuid2);
+      vector.setValueCount(2);
+
+      // Get holder from index 1 (start = 16)
+      NullableUuidHolder sourceHolder = new NullableUuidHolder();
+      vector.get(1, sourceHolder);
+      assertEquals(1, sourceHolder.isSet);
+      assertEquals(16, sourceHolder.start);
+
+      // Create reader from holder
+      NullableUuidHolderReaderImpl reader = new NullableUuidHolderReaderImpl(sourceHolder);
+      assertEquals(uuid2, reader.readObject());
+
+      // Read into another holder and verify start is preserved
+      NullableUuidHolder targetHolder = new NullableUuidHolder();
+      reader.read(targetHolder);
+      assertEquals(16, targetHolder.start);
+      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(targetHolder.buffer, targetHolder.start));
     }
   }
 }

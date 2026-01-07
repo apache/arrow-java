@@ -233,7 +233,8 @@ class TestUuidType {
 
       // Verify the bytes match
       byte[] actualBytes = new byte[UuidType.UUID_BYTE_WIDTH];
-      uuidVector.get(0).getBytes(0, actualBytes);
+      int offset = uuidVector.getStartOffset(0);
+      uuidVector.getDataBuffer().getBytes(offset, actualBytes);
       assertArrayEquals(uuidBytes, actualBytes);
     }
   }

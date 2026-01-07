@@ -39,4 +39,6 @@ public class NullableUuidHolder extends ExtensionHolder {
   public ArrowType type() {
     return UuidType.INSTANCE;
   }
+  /** Offset in the buffer where the UUID data starts. */
+  public int start = 0;
 }

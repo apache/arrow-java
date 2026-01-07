@@ -51,8 +51,15 @@ public class UuidWriterImpl extends AbstractExtensionTypeWriter<UuidVector> {
       vector.setSafe(getPosition(), (ArrowBuf) value);
     } else if (value instanceof java.util.UUID) {
       vector.setSafe(getPosition(), (java.util.UUID) value);
+    } else if (value instanceof ExtensionHolder) {
+      write((ExtensionHolder) value);
     } else {
-      throw new IllegalArgumentException("Unsupported value type for UUID: " + value.getClass());
+      throw new IllegalArgumentException(
+          "Unsupported value type for UUID: "
+              + value.getClass().getName()
+              + ". "
+              + "Supported types are: byte[] (16 bytes), ArrowBuf (16 bytes), or java.util.UUID. "
+              + "Convert your value to one of these types before writing.");
     }
     vector.setValueCount(getPosition() + 1);
   }

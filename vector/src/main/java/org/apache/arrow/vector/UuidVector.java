@@ -23,10 +23,13 @@ import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.ArrowBufPointer;
+import org.apache.arrow.memory.util.ByteFunctionHelpers;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.extension.UuidType;
+import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -132,7 +135,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
 
   @Override
   public int hashCode(int index, ArrowBufHasher hasher) {
-    return getUnderlyingVector().hashCode(index, hasher);
+    int start = this.getStartOffset(index);
+    return ByteFunctionHelpers.hash(hasher, this.getDataBuffer(), start, start + UUID_BYTE_WIDTH);
   }
 
   /**
@@ -146,17 +150,19 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
   }
 
   /**
-   * Gets the UUID value at the given index as an ArrowBuf.
+   * Reads the UUID value at the given index into a UuidHolder.
    *
-   * @param index the index to retrieve
-   * @return a buffer slice containing the 16-byte UUID
-   * @throws IllegalStateException if the value at the index is null and null checking is enabled
+   * @param index the index to read from
+   * @param holder the holder to populate with the UUID data
    */
-  public ArrowBuf get(int index) throws IllegalStateException {
+  public void get(int index, UuidHolder holder) {
+    Preconditions.checkArgument(index >= 0, "Cannot get negative index in UUID vector.");
     if (NullCheckingForGet.NULL_CHECKING_ENABLED && this.isSet(index) == 0) {
-      throw new IllegalStateException("Value at index is null");
+      holder.isSet = 0;
     } else {
-      return getBufferSlicePostNullCheck(index);
+      holder.isSet = 1;
+      holder.buffer = getDataBuffer();
+      holder.start = getStartOffset(index);
     }
   }
 
@@ -167,23 +173,24 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder to populate with the UUID data
    */
   public void get(int index, NullableUuidHolder holder) {
+    Preconditions.checkArgument(index >= 0, "Cannot get negative index in UUID vector.");
     if (NullCheckingForGet.NULL_CHECKING_ENABLED && this.isSet(index) == 0) {
       holder.isSet = 0;
     } else {
       holder.isSet = 1;
-      holder.buffer = getBufferSlicePostNullCheck(index);
+      holder.buffer = getDataBuffer();
+      holder.start = getStartOffset(index);
     }
   }
 
   /**
-   * Reads the UUID value at the given index into a UuidHolder.
+   * Calculates the byte offset for a given index in the data buffer.
    *
-   * @param index the index to read from
-   * @param holder the holder to populate with the UUID data
+   * @param index the index of the UUID value
+   * @return the byte offset in the data buffer
    */
-  public void get(int index, UuidHolder holder) {
-    holder.isSet = 1;
-    holder.buffer = getBufferSlicePostNullCheck(index);
+  public final int getStartOffset(int index) {
+    return index * UUID_BYTE_WIDTH;
   }
 
   /**
@@ -207,7 +214,7 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder containing the UUID data
    */
   public void set(int index, UuidHolder holder) {
-    this.set(index, holder.isSet, holder.buffer);
+    this.set(index, holder.buffer, holder.start);
   }
 
   /**
@@ -217,28 +224,11 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder containing the UUID data
    */
   public void set(int index, NullableUuidHolder holder) {
-    this.set(index, holder.isSet, holder.buffer);
-  }
-
-  /**
-   * Sets the UUID value at the given index with explicit null flag.
-   *
-   * @param index the index to set
-   * @param isSet 1 if the value is set, 0 if null
-   * @param buffer the buffer containing the 16-byte UUID data
-   */
-  public void set(int index, int isSet, ArrowBuf buffer) {
-    getUnderlyingVector().set(index, isSet, buffer);
-  }
-
-  /**
-   * Sets the UUID value at the given index from an ArrowBuf.
-   *
-   * @param index the index to set
-   * @param value the buffer containing the 16-byte UUID data
-   */
-  public void set(int index, ArrowBuf value) {
-    getUnderlyingVector().set(index, value);
+    if (holder.isSet == 0) {
+      getUnderlyingVector().setNull(index);
+    } else {
+      this.set(index, holder.buffer, holder.start);
+    }
   }
 
   /**
@@ -249,10 +239,12 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param sourceOffset the offset in the source buffer where the UUID data starts
    */
   public void set(int index, ArrowBuf source, int sourceOffset) {
-    // Copy bytes from source buffer to target vector data buffer
-    ArrowBuf dataBuffer = getUnderlyingVector().getDataBuffer();
-    dataBuffer.setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
-    getUnderlyingVector().setIndexDefined(index);
+    Preconditions.checkNotNull(source, "Cannot set UUID vector, the source buffer is null.");
+
+    BitVectorHelper.setBit(getUnderlyingVector().getValidityBuffer(), index);
+    getUnderlyingVector()
+            .getDataBuffer()
+            .setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
   }
 
   /**
@@ -286,10 +278,10 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder containing the UUID data, or null to set a null value
    */
   public void setSafe(int index, NullableUuidHolder holder) {
-    if (holder != null) {
-      getUnderlyingVector().setSafe(index, holder.isSet, holder.buffer);
-    } else {
+    if (holder == null || holder.isSet == 0) {
       getUnderlyingVector().setNull(index);
+    } else {
+      this.setSafe(index, holder.buffer, holder.start);
     }
   }
 
@@ -297,14 +289,23 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * Sets the UUID value at the given index from a UuidHolder, expanding capacity if needed.
    *
    * @param index the index to set
-   * @param holder the holder containing the UUID data, or null to set a null value
+   * @param holder the holder containing the UUID data
    */
   public void setSafe(int index, UuidHolder holder) {
-    if (holder != null) {
-      getUnderlyingVector().setSafe(index, holder.isSet, holder.buffer);
-    } else {
-      getUnderlyingVector().setNull(index);
-    }
+    this.setSafe(index, holder.buffer, holder.start);
+  }
+
+  /**
+   * Sets the UUID value at the given index by copying from a source buffer, expanding capacity if
+   * needed.
+   *
+   * @param index the index to set
+   * @param buffer the source buffer to copy from
+   * @param start the offset in the source buffer where the UUID data starts
+   */
+  public void setSafe(int index, ArrowBuf buffer, int start) {
+    getUnderlyingVector().handleSafe(index);
+    this.set(index, buffer, start);
   }
 
   /**
@@ -400,15 +401,9 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     return getTransferPair(this.getField().getName(), allocator);
   }
 
-  private ArrowBuf getBufferSlicePostNullCheck(int index) {
-    return getUnderlyingVector()
-        .getDataBuffer()
-        .slice((long) index * UUID_BYTE_WIDTH, UUID_BYTE_WIDTH);
-  }
-
   @Override
   public int getTypeWidth() {
-    return getUnderlyingVector().getTypeWidth();
+    return UUID_BYTE_WIDTH;
   }
 
   /** {@link TransferPair} for {@link UuidVector}. */
