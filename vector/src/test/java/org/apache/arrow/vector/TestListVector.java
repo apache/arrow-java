@@ -1208,7 +1208,7 @@ public class TestListVector {
 
   @Test
   public void testListVectorWithExtensionType() throws Exception {
-    final FieldType type = FieldType.nullable(new UuidType());
+    final FieldType type = FieldType.nullable(UuidType.INSTANCE);
     try (final ListVector inVector = new ListVector("list", allocator, type, null)) {
       UnionListWriter writer = inVector.getWriter();
       writer.allocate();
@@ -1216,7 +1216,7 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
+      ExtensionWriter extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
       extensionWriter.writeExtension(u1);
       extensionWriter.writeExtension(u2);
@@ -1236,7 +1236,7 @@ public class TestListVector {
 
   @Test
   public void testListVectorReaderForExtensionType() throws Exception {
-    final FieldType type = FieldType.nullable(new UuidType());
+    final FieldType type = FieldType.nullable(UuidType.INSTANCE);
     try (final ListVector inVector = new ListVector("list", allocator, type, null)) {
       UnionListWriter writer = inVector.getWriter();
       writer.allocate();
@@ -1244,7 +1244,7 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
+      ExtensionWriter extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
       extensionWriter.writeExtension(u1);
       extensionWriter.writeExtension(u2);
@@ -1279,7 +1279,7 @@ public class TestListVector {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
       writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(new UuidType());
+      ExtensionWriter extensionWriter = writer.extension(UuidType.INSTANCE);
       extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
       extensionWriter.writeExtension(u1);
       extensionWriter.writeExtension(u2);

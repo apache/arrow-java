@@ -810,9 +810,9 @@ public class RoundtripTest {
 
   @Test
   public void testExtensionTypeVector() {
-    ExtensionTypeRegistry.register(new UuidType());
+    ExtensionTypeRegistry.register(UuidType.INSTANCE);
     final Schema schema =
-        new Schema(Collections.singletonList(Field.nullable("a", new UuidType())));
+        new Schema(Collections.singletonList(Field.nullable("a", UuidType.INSTANCE)));
     try (final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
       // Fill with data
       UUID u1 = UUID.randomUUID();
@@ -830,13 +830,12 @@ public class RoundtripTest {
       assertEquals(root.getSchema(), importedRoot.getSchema());
 
       final Field field = importedRoot.getSchema().getFields().get(0);
-      final UuidType expectedType = new UuidType();
       assertEquals(
           field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_NAME),
-          expectedType.extensionName());
+          UuidType.INSTANCE.extensionName());
       assertEquals(
           field.getMetadata().get(ExtensionType.EXTENSION_METADATA_KEY_METADATA),
-          expectedType.serialize());
+          UuidType.INSTANCE.serialize());
 
       final UuidVector deserialized = (UuidVector) importedRoot.getFieldVectors().get(0);
       assertEquals(vector.getValueCount(), deserialized.getValueCount());
@@ -1139,7 +1138,7 @@ public class RoundtripTest {
         throw new UnsupportedOperationException(
             "Cannot construct UuidType from underlying type " + storageType);
       }
-      return new UuidType();
+      return UuidType.INSTANCE;
     }
 
     @Override

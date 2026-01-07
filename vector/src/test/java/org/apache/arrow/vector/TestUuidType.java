@@ -75,21 +75,21 @@ class TestUuidType {
 
   @Test
   void testStorageType() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     assertEquals(UuidType.STORAGE_TYPE, type.storageType());
     assertInstanceOf(ArrowType.FixedSizeBinary.class, type.storageType());
   }
 
   @Test
   void testExtensionName() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     assertEquals("arrow.uuid", type.extensionName());
   }
 
   @Test
   void testExtensionEquals() {
-    UuidType type1 = new UuidType();
-    UuidType type2 = new UuidType();
+    UuidType type1 = UuidType.INSTANCE;
+    UuidType type2 = UuidType.INSTANCE;
     UuidType type3 = UuidType.INSTANCE;
 
     assertTrue(type1.extensionEquals(type2));
@@ -99,20 +99,20 @@ class TestUuidType {
 
   @Test
   void testIsComplex() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     assertFalse(type.isComplex());
   }
 
   @Test
   void testSerialize() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     String serialized = type.serialize();
     assertEquals("", serialized);
   }
 
   @Test
   void testDeserializeValid() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     ArrowType storageType = new ArrowType.FixedSizeBinary(UuidType.UUID_BYTE_WIDTH);
 
     ArrowType deserialized = assertDoesNotThrow(() -> type.deserialize(storageType, ""));
@@ -122,7 +122,7 @@ class TestUuidType {
 
   @Test
   void testDeserializeInvalidStorageType() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     ArrowType wrongStorageType = new ArrowType.FixedSizeBinary(32);
 
     assertThrows(UnsupportedOperationException.class, () -> type.deserialize(wrongStorageType, ""));
@@ -130,7 +130,7 @@ class TestUuidType {
 
   @Test
   void testGetNewVector() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     try (FieldVector vector =
         type.getNewVector("uuid_field", FieldType.nullable(type), allocator)) {
       assertInstanceOf(UuidVector.class, vector);
@@ -141,7 +141,7 @@ class TestUuidType {
 
   @Test
   void testVectorOperations() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     try (FieldVector vector =
         type.getNewVector("uuid_field", FieldType.nullable(type), allocator)) {
       UuidVector uuidVector = (UuidVector) vector;
@@ -218,7 +218,7 @@ class TestUuidType {
 
   @Test
   void testVectorByteArrayOperations() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     try (FieldVector vector =
         type.getNewVector("uuid_field", FieldType.nullable(type), allocator)) {
       UuidVector uuidVector = (UuidVector) vector;
@@ -240,7 +240,7 @@ class TestUuidType {
 
   @Test
   void testGetNewVectorWithCustomFieldType() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     FieldType fieldType = new FieldType(false, type, null);
 
     try (FieldVector vector = type.getNewVector("non_nullable_uuid", fieldType, allocator)) {
@@ -262,7 +262,7 @@ class TestUuidType {
 
   @Test
   void testUnderlyingVector() {
-    UuidType type = new UuidType();
+    UuidType type = UuidType.INSTANCE;
     try (FieldVector vector =
         type.getNewVector("uuid_field", FieldType.nullable(type), allocator)) {
       UuidVector uuidVector = (UuidVector) vector;

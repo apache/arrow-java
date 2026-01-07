@@ -785,7 +785,7 @@ public class TestPromotableWriter {
     try (final NonNullableStructVector container =
             NonNullableStructVector.empty(EMPTY_SCHEMA_PATH, allocator);
         final UuidVector v =
-            container.addOrGet("uuid", FieldType.nullable(new UuidType()), UuidVector.class);
+            container.addOrGet("uuid", FieldType.nullable(UuidType.INSTANCE), UuidVector.class);
         final PromotableWriter writer = new PromotableWriter(v, container)) {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();
@@ -810,7 +810,8 @@ public class TestPromotableWriter {
   public void testExtensionTypeForList() throws Exception {
     try (final ListVector container = ListVector.empty(EMPTY_SCHEMA_PATH, allocator);
         final UuidVector v =
-            (UuidVector) container.addOrGetVector(FieldType.nullable(new UuidType())).getVector();
+            (UuidVector)
+                container.addOrGetVector(FieldType.nullable(UuidType.INSTANCE)).getVector();
         final PromotableWriter writer = new PromotableWriter(v, container)) {
       UUID u1 = UUID.randomUUID();
       UUID u2 = UUID.randomUUID();

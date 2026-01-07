@@ -860,7 +860,7 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         listWriter.setPosition(i);
         listWriter.startList();
-        ExtensionWriter extensionWriter = listWriter.extension(new UuidType());
+        ExtensionWriter extensionWriter = listWriter.extension(UuidType.INSTANCE);
         extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
         extensionWriter.writeExtension(UUID.randomUUID());
         extensionWriter.writeExtension(UUID.randomUUID());
@@ -896,10 +896,10 @@ public class TestComplexCopier {
         mapWriter.setPosition(i);
         mapWriter.startMap();
         mapWriter.startEntry();
-        ExtensionWriter extensionKeyWriter = mapWriter.key().extension(new UuidType());
+        ExtensionWriter extensionKeyWriter = mapWriter.key().extension(UuidType.INSTANCE);
         extensionKeyWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
         extensionKeyWriter.writeExtension(UUID.randomUUID());
-        ExtensionWriter extensionValueWriter = mapWriter.value().extension(new UuidType());
+        ExtensionWriter extensionValueWriter = mapWriter.value().extension(UuidType.INSTANCE);
         extensionValueWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
         extensionValueWriter.writeExtension(UUID.randomUUID());
         mapWriter.endEntry();
@@ -934,10 +934,10 @@ public class TestComplexCopier {
       for (int i = 0; i < COUNT; i++) {
         structWriter.setPosition(i);
         structWriter.start();
-        ExtensionWriter extensionWriter1 = structWriter.extension("timestamp1", new UuidType());
+        ExtensionWriter extensionWriter1 = structWriter.extension("timestamp1", UuidType.INSTANCE);
         extensionWriter1.addExtensionTypeWriterFactory(new UuidWriterFactory());
         extensionWriter1.writeExtension(UUID.randomUUID());
-        ExtensionWriter extensionWriter2 = structWriter.extension("timestamp2", new UuidType());
+        ExtensionWriter extensionWriter2 = structWriter.extension("timestamp2", UuidType.INSTANCE);
         extensionWriter2.addExtensionTypeWriterFactory(new UuidWriterFactory());
         extensionWriter2.writeExtension(UUID.randomUUID());
         structWriter.end();
