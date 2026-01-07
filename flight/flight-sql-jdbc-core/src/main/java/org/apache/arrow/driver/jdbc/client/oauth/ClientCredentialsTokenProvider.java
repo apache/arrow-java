@@ -34,10 +34,6 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public class ClientCredentialsTokenProvider extends AbstractOAuthTokenProvider {
 
-  private final URI tokenUri;
-  private final ClientSecretBasic clientAuth;
-  private final @Nullable Scope scope;
-
   /**
    * Creates a new ClientCredentialsTokenProvider.
    *
@@ -46,6 +42,7 @@ public class ClientCredentialsTokenProvider extends AbstractOAuthTokenProvider {
    * @param clientSecret the OAuth client secret
    * @param scope optional OAuth scopes (space-separated)
    */
+  //TODO CLientCredentials can be public (without a secret)?
   public ClientCredentialsTokenProvider(
       URI tokenUri, String clientId, String clientSecret, @Nullable String scope) {
     this.tokenUri = Objects.requireNonNull(tokenUri, "tokenUri cannot be null");
