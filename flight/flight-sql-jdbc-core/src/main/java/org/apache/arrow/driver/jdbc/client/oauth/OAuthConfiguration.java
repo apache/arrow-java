@@ -17,9 +17,16 @@
 package org.apache.arrow.driver.jdbc.client.oauth;
 
 import com.nimbusds.oauth2.sdk.GrantType;
+import com.nimbusds.oauth2.sdk.Scope;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
+import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
+import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.id.ClientID;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -39,7 +46,6 @@ public class OAuthConfiguration {
   private final @Nullable String audience;
   private final @Nullable String resource;
   private final @Nullable String requestedTokenType;
-  private final @Nullable String exchangeScope;
 
   private OAuthConfiguration(Builder builder) throws SQLException {
     this.grantType = builder.grantType;
@@ -54,7 +60,6 @@ public class OAuthConfiguration {
     this.audience = builder.audience;
     this.resource = builder.resource;
     this.requestedTokenType = builder.requestedTokenType;
-    this.exchangeScope = builder.exchangeScope;
 
     validate();
   }
@@ -92,73 +97,82 @@ public class OAuthConfiguration {
     if (GrantType.CLIENT_CREDENTIALS.equals(grantType)) {
       return new ClientCredentialsTokenProvider(tokenUri, clientId, clientSecret, scope);
     } else if (GrantType.TOKEN_EXCHANGE.equals(grantType)) {
-      return new TokenExchangeTokenProvider(
-          tokenUri,
-          subjectToken,
-          subjectTokenType,
-          actorToken,
-          actorTokenType,
-          audience,
-          resource,
-          requestedTokenType,
-          exchangeScope,
-          clientId,
-          clientSecret);
+      TokenExchangeTokenProvider.Builder builder =
+          new TokenExchangeTokenProvider.Builder()
+              .tokenUri(tokenUri)
+              .subjectToken(subjectToken)
+              .subjectTokenType(subjectTokenType);
+
+      if (actorToken != null) {
+        builder.actorToken(actorToken);
+      }
+      if (actorTokenType != null) {
+        builder.actorTokenType(actorTokenType);
+      }
+      if (audience != null) {
+        builder.audience(audience);
+      }
+      if (requestedTokenType != null) {
+        builder.requestedTokenType(requestedTokenType);
+      }
+
+      Scope scopeObj = createScope(scope);
+      if (scopeObj != null) {
+        builder.scope(scopeObj);
+      }
+
+      List<URI> resources = createResources(resource);
+      if (resources != null) {
+        builder.resources(resources);
+      }
+
+      ClientAuthentication clientAuth = createClientAuthentication();
+      if (clientAuth != null) {
+        builder.clientAuthentication(clientAuth);
+      }
+
+      return builder.build();
     } else {
       throw new SQLException("Unsupported OAuth grant type: " + grantType);
     }
   }
 
-  public GrantType getGrantType() {
-    return grantType;
+  /**
+   * Creates a Scope object from the scope string.
+   *
+   * @param scopeStr the space-separated scope string
+   * @return the Scope object, or null if the scope string is null or empty
+   */
+  private @Nullable Scope createScope(@Nullable String scopeStr) {
+    if (scopeStr != null && !scopeStr.isEmpty()) {
+      return Scope.parse(scopeStr);
+    }
+    return null;
   }
 
-  public URI getTokenUri() {
-    return tokenUri;
+  /**
+   * Creates a list of resource URIs from the resource string.
+   *
+   * @param resourceStr the resource URI string
+   * @return the list of resource URIs, or null if the resource string is null or empty
+   */
+  private @Nullable List<URI> createResources(@Nullable String resourceStr) {
+    if (resourceStr != null && !resourceStr.isEmpty()) {
+      return Collections.singletonList(URI.create(resourceStr));
+    }
+    return null;
   }
 
-  public @Nullable String getClientId() {
-    return clientId;
-  }
-
-  public @Nullable String getClientSecret() {
-    return clientSecret;
-  }
-
-  public @Nullable String getScope() {
-    return scope;
-  }
-
-  public @Nullable String getSubjectToken() {
-    return subjectToken;
-  }
-
-  public @Nullable String getSubjectTokenType() {
-    return subjectTokenType;
-  }
-
-  public @Nullable String getActorToken() {
-    return actorToken;
-  }
-
-  public @Nullable String getActorTokenType() {
-    return actorTokenType;
-  }
-
-  public @Nullable String getAudience() {
-    return audience;
-  }
-
-  public @Nullable String getResource() {
-    return resource;
-  }
-
-  public @Nullable String getRequestedTokenType() {
-    return requestedTokenType;
-  }
-
-  public @Nullable String getExchangeScope() {
-    return exchangeScope;
+  /**
+   * Creates a ClientAuthentication object from the configured client credentials.
+   *
+   * @return the ClientAuthentication object, or null if no credentials are configured
+   */
+  private @Nullable ClientAuthentication createClientAuthentication() {
+    if (clientId != null && clientSecret != null) {
+      return new ClientSecretBasic(new ClientID(clientId), new Secret(clientSecret));
+    }
+    return null;
   }
 
   /** Builder for OAuthConfiguration. */
@@ -175,10 +189,12 @@ public class OAuthConfiguration {
     private @Nullable String audience;
     private @Nullable String resource;
     private @Nullable String requestedTokenType;
-    private @Nullable String exchangeScope;
 
     /**
      * Sets the OAuth grant type from a string value.
+     *
+     * <p>Accepts either user-friendly names ("client_credentials", "token_exchange") or the full
+     * URN format as defined in RFC 6749 and RFC 8693.
      *
      * @param flowStr the flow type string (e.g., "client_credentials", "token_exchange")
      * @return this builder
@@ -188,28 +204,21 @@ public class OAuthConfiguration {
       if (flowStr == null || flowStr.isEmpty()) {
         throw new SQLException("OAuth flow cannot be null or empty");
       }
-      String normalized = flowStr.toLowerCase(Locale.ROOT);
-      switch (normalized) {
-        case "client_credentials":
-          this.grantType = GrantType.CLIENT_CREDENTIALS;
-          break;
-        case "token_exchange":
-          this.grantType = GrantType.TOKEN_EXCHANGE;
-          break;
-        default:
-          throw new SQLException("Unknown OAuth flow: " + flowStr);
+      try {
+        String normalized = flowStr.toLowerCase(Locale.ROOT);
+        // Map user-friendly names to URN format for token_exchange
+        if ("token_exchange".equals(normalized)) {
+          normalized = GrantType.TOKEN_EXCHANGE.getValue();
+        }
+        GrantType parsed = GrantType.parse(normalized);
+        if (!parsed.equals(GrantType.CLIENT_CREDENTIALS)
+            && !parsed.equals(GrantType.TOKEN_EXCHANGE)) {
+          throw new SQLException("Unsupported OAuth flow: " + flowStr);
+        }
+        this.grantType = parsed;
+      } catch (com.nimbusds.oauth2.sdk.ParseException e) {
+        throw new SQLException("Invalid OAuth flow: " + flowStr, e);
       }
-      return this;
-    }
-
-    /**
-     * Sets the OAuth grant type.
-     *
-     * @param grantType the OAuth grant type
-     * @return this builder
-     */
-    public Builder grantType(GrantType grantType) {
-      this.grantType = grantType;
       return this;
     }
 
@@ -279,11 +288,6 @@ public class OAuthConfiguration {
 
     public Builder requestedTokenType(@Nullable String requestedTokenType) {
       this.requestedTokenType = requestedTokenType;
-      return this;
-    }
-
-    public Builder exchangeScope(@Nullable String exchangeScope) {
-      this.exchangeScope = exchangeScope;
       return this;
     }
 

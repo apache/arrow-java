@@ -22,11 +22,19 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.nimbusds.oauth2.sdk.GrantType;
+import com.nimbusds.oauth2.sdk.Scope;
+import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
+import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.id.Audience;
+import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.token.TokenTypeURI;
+import com.nimbusds.oauth2.sdk.token.TypelessAccessToken;
+import com.nimbusds.oauth2.sdk.tokenexchange.TokenExchangeGrant;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
@@ -73,26 +81,19 @@ public class TokenExchangeTokenProviderTest {
     String actorToken = "actor-token-value";
     String actorTokenType = "urn:ietf:params:oauth:token-type:access_token";
 
-    String clientId = "client-id";
-    String clientSecret = "client-secret";
-
-    String resource = "https://api.example.com/resource";
-
     String requestedTokenType = "urn:ietf:params:oauth:token-type:refresh_token";
 
+    TokenExchangeGrant grant =
+        new TokenExchangeGrant(
+            new TypelessAccessToken(SUBJECT_TOKEN),
+            TokenTypeURI.parse(SUBJECT_TOKEN_TYPE),
+            new TypelessAccessToken(actorToken),
+            TokenTypeURI.parse(actorTokenType),
+            TokenTypeURI.parse(requestedTokenType),
+            Collections.singletonList(new Audience(audience)));
+
     TokenExchangeTokenProvider provider =
-        new TokenExchangeTokenProvider(
-            tokenUri,
-            SUBJECT_TOKEN,
-            SUBJECT_TOKEN_TYPE,
-            actorToken,
-            actorTokenType,
-            audience,
-            resource,
-            requestedTokenType,
-            "dremio.all",
-            clientId,
-            clientSecret);
+        new TokenExchangeTokenProvider(tokenUri, grant, null, Scope.parse("dremio.all"), null);
 
     String token = provider.getValidToken();
 
@@ -106,12 +107,7 @@ public class TokenExchangeTokenProviderTest {
     assertTrue(body.contains("subject_token_type=" + SUBJECT_TOKEN_TYPE));
     assertTrue(body.contains("audience=" + audience));
 
-    String authHeader = request.getHeader("Authorization");
-    assertNotNull(authHeader);
-    assertTrue(authHeader.startsWith("Basic "));
-
     assertTrue(body.contains("scope=dremio.all"));
-    assertTrue(body.contains("resource=" + resource));
 
     assertTrue(body.contains("requested_token_type=" + requestedTokenType));
   }
@@ -122,19 +118,11 @@ public class TokenExchangeTokenProviderTest {
     mockServer.enqueue(mockResponse.setBody(tokenResponse(expectedToken)));
     mockServer.enqueue(mockResponse.setBody(tokenResponse("new-not-cached-token")));
 
-    TokenExchangeTokenProvider provider =
-        new TokenExchangeTokenProvider(
-            tokenUri,
-            SUBJECT_TOKEN,
-            SUBJECT_TOKEN_TYPE,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null);
+    TokenExchangeGrant grant =
+        new TokenExchangeGrant(
+            new TypelessAccessToken(SUBJECT_TOKEN), TokenTypeURI.parse(SUBJECT_TOKEN_TYPE));
+
+    TokenExchangeTokenProvider provider = new TokenExchangeTokenProvider(tokenUri, grant);
 
     String token1 = provider.getValidToken();
     String token2 = provider.getValidToken();
@@ -146,29 +134,237 @@ public class TokenExchangeTokenProviderTest {
     assertEquals(1, mockServer.getRequestCount());
   }
 
+  // Builder pattern tests
+
   @Test
-  public void testErrorResponse() throws Exception {
-    mockServer.enqueue(
-        new MockResponse()
-            .setResponseCode(400)
-            .setHeader("Content-Type", "application/json")
-            .setBody("{\"error\":\"invalid_grant\",\"error_description\":\"Token expired\"}"));
+  public void testBuilderWithRequiredParametersOnly() throws Exception {
+    String expectedToken = "builder-token";
+    mockServer.enqueue(mockResponse.setBody(tokenResponse(expectedToken)));
+
+    TokenExchangeTokenProvider provider =
+        TokenExchangeTokenProvider.builder()
+            .tokenUri(tokenUri)
+            .subjectToken(SUBJECT_TOKEN)
+            .subjectTokenType(SUBJECT_TOKEN_TYPE)
+            .build();
+
+    String token = provider.getValidToken();
+
+    assertEquals(expectedToken, token);
+    RecordedRequest request = mockServer.takeRequest();
+    String body = URLDecoder.decode(request.getBody().readUtf8(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("grant_type=" + GrantType.TOKEN_EXCHANGE));
+    assertTrue(body.contains("subject_token=" + SUBJECT_TOKEN));
+    assertTrue(body.contains("subject_token_type=" + SUBJECT_TOKEN_TYPE));
+  }
+
+  @Test
+  public void testBuilderWithAllParameters() throws Exception {
+    String expectedToken = "full-builder-token";
+    mockServer.enqueue(mockResponse.setBody(tokenResponse(expectedToken)));
+
+    String audience = "https://api.example.com";
+    String actorToken = "actor-token-value";
+    String actorTokenType = "urn:ietf:params:oauth:token-type:access_token";
+    String requestedTokenType = "urn:ietf:params:oauth:token-type:refresh_token";
+
+    TokenExchangeTokenProvider provider =
+        TokenExchangeTokenProvider.builder()
+            .tokenUri(tokenUri)
+            .subjectToken(SUBJECT_TOKEN)
+            .subjectTokenType(SUBJECT_TOKEN_TYPE)
+            .actorToken(actorToken)
+            .actorTokenType(actorTokenType)
+            .audience(audience)
+            .requestedTokenType(requestedTokenType)
+            .scope(Scope.parse("dremio.all"))
+            .build();
+
+    String token = provider.getValidToken();
+
+    assertEquals(expectedToken, token);
+    RecordedRequest request = mockServer.takeRequest();
+    String body = URLDecoder.decode(request.getBody().readUtf8(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("grant_type=" + GrantType.TOKEN_EXCHANGE));
+    assertTrue(body.contains("subject_token=" + SUBJECT_TOKEN));
+    assertTrue(body.contains("audience=" + audience));
+    assertTrue(body.contains("scope=dremio.all"));
+    assertTrue(body.contains("requested_token_type=" + requestedTokenType));
+  }
+
+  @Test
+  public void testBuilderMissingTokenUri() {
+    IllegalStateException exception =
+        assertThrows(
+            IllegalStateException.class,
+            () ->
+                TokenExchangeTokenProvider.builder()
+                    .subjectToken(SUBJECT_TOKEN)
+                    .subjectTokenType(SUBJECT_TOKEN_TYPE)
+                    .build());
+
+    assertEquals("tokenUri is required", exception.getMessage());
+  }
+
+  @Test
+  public void testBuilderMissingSubjectToken() {
+    IllegalStateException exception =
+        assertThrows(
+            IllegalStateException.class,
+            () ->
+                TokenExchangeTokenProvider.builder()
+                    .tokenUri(tokenUri)
+                    .subjectTokenType(SUBJECT_TOKEN_TYPE)
+                    .build());
+
+    assertEquals("subject_token is required", exception.getMessage());
+  }
+
+  @Test
+  public void testBuilderMissingSubjectTokenType() {
+    IllegalStateException exception =
+        assertThrows(
+            IllegalStateException.class,
+            () ->
+                TokenExchangeTokenProvider.builder()
+                    .tokenUri(tokenUri)
+                    .subjectToken(SUBJECT_TOKEN)
+                    .build());
+
+    assertEquals("subject_token_type is required", exception.getMessage());
+  }
+
+  @Test
+  public void testBuilderWithResourceParameter() throws Exception {
+    String expectedToken = "resource-token";
+    mockServer.enqueue(mockResponse.setBody(tokenResponse(expectedToken)));
+
+    String resource = "https://api.example.com/resource";
+    List<URI> resources = Collections.singletonList(URI.create(resource));
+
+    TokenExchangeTokenProvider provider =
+        TokenExchangeTokenProvider.builder()
+            .tokenUri(tokenUri)
+            .subjectToken(SUBJECT_TOKEN)
+            .subjectTokenType(SUBJECT_TOKEN_TYPE)
+            .resources(resources)
+            .build();
+
+    String token = provider.getValidToken();
+
+    assertEquals(expectedToken, token);
+    RecordedRequest request = mockServer.takeRequest();
+    String body = URLDecoder.decode(request.getBody().readUtf8(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("grant_type=" + GrantType.TOKEN_EXCHANGE));
+    assertTrue(body.contains("subject_token=" + SUBJECT_TOKEN));
+    assertTrue(body.contains("resource=" + resource));
+  }
+
+  @Test
+  public void testBuilderWithClientAuthentication() throws Exception {
+    String expectedToken = "client-auth-token";
+    mockServer.enqueue(mockResponse.setBody(tokenResponse(expectedToken)));
+
+    String clientId = "test-client-id";
+    String clientSecret = "test-client-secret";
+    ClientSecretBasic clientAuth =
+        new ClientSecretBasic(new ClientID(clientId), new Secret(clientSecret));
+
+    TokenExchangeTokenProvider provider =
+        TokenExchangeTokenProvider.builder()
+            .tokenUri(tokenUri)
+            .subjectToken(SUBJECT_TOKEN)
+            .subjectTokenType(SUBJECT_TOKEN_TYPE)
+            .clientAuthentication(clientAuth)
+            .build();
+
+    String token = provider.getValidToken();
+
+    assertEquals(expectedToken, token);
+    RecordedRequest request = mockServer.takeRequest();
+
+    // Verify Basic auth header is present
+    String authHeader = request.getHeader("Authorization");
+    assertNotNull(authHeader);
+    assertTrue(authHeader.startsWith("Basic "));
+
+    String body = URLDecoder.decode(request.getBody().readUtf8(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("grant_type=" + GrantType.TOKEN_EXCHANGE));
+    assertTrue(body.contains("subject_token=" + SUBJECT_TOKEN));
+  }
+
+  @Test
+  public void testBuilderWithResourceAndClientAuth() throws Exception {
+    String expectedToken = "full-config-token";
+    mockServer.enqueue(mockResponse.setBody(tokenResponse(expectedToken)));
+
+    String resource = "https://api.example.com/resource";
+    List<URI> resources = Collections.singletonList(URI.create(resource));
+    String clientId = "test-client-id";
+    String clientSecret = "test-client-secret";
+    ClientSecretBasic clientAuth =
+        new ClientSecretBasic(new ClientID(clientId), new Secret(clientSecret));
+
+    TokenExchangeTokenProvider provider =
+        TokenExchangeTokenProvider.builder()
+            .tokenUri(tokenUri)
+            .subjectToken(SUBJECT_TOKEN)
+            .subjectTokenType(SUBJECT_TOKEN_TYPE)
+            .resources(resources)
+            .clientAuthentication(clientAuth)
+            .scope(Scope.parse("dremio.all"))
+            .build();
+
+    String token = provider.getValidToken();
+
+    assertEquals(expectedToken, token);
+    RecordedRequest request = mockServer.takeRequest();
+
+    // Verify Basic auth header is present
+    String authHeader = request.getHeader("Authorization");
+    assertNotNull(authHeader);
+    assertTrue(authHeader.startsWith("Basic "));
+
+    String body = URLDecoder.decode(request.getBody().readUtf8(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("grant_type=" + GrantType.TOKEN_EXCHANGE));
+    assertTrue(body.contains("subject_token=" + SUBJECT_TOKEN));
+    assertTrue(body.contains("resource=" + resource));
+    assertTrue(body.contains("scope=dremio.all"));
+  }
+
+  @Test
+  public void testConstructorWithResourceAndClientAuth() throws Exception {
+    String expectedToken = "constructor-token";
+    mockServer.enqueue(mockResponse.setBody(tokenResponse(expectedToken)));
+
+    String resource = "https://api.example.com/resource";
+    List<URI> resources = Collections.singletonList(URI.create(resource));
+    String clientId = "test-client-id";
+    String clientSecret = "test-client-secret";
+    ClientSecretBasic clientAuth =
+        new ClientSecretBasic(new ClientID(clientId), new Secret(clientSecret));
+
+    TokenExchangeGrant grant =
+        new TokenExchangeGrant(
+            new TypelessAccessToken(SUBJECT_TOKEN), TokenTypeURI.parse(SUBJECT_TOKEN_TYPE));
 
     TokenExchangeTokenProvider provider =
         new TokenExchangeTokenProvider(
-            tokenUri,
-            SUBJECT_TOKEN,
-            SUBJECT_TOKEN_TYPE,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null);
+            tokenUri, grant, clientAuth, Scope.parse("dremio.all"), resources);
 
-    SQLException exception = assertThrows(SQLException.class, provider::getValidToken);
-    assertTrue(exception.getMessage().contains("invalid_grant"));
+    String token = provider.getValidToken();
+
+    assertEquals(expectedToken, token);
+    RecordedRequest request = mockServer.takeRequest();
+
+    // Verify Basic auth header is present
+    String authHeader = request.getHeader("Authorization");
+    assertNotNull(authHeader);
+    assertTrue(authHeader.startsWith("Basic "));
+
+    String body = URLDecoder.decode(request.getBody().readUtf8(), StandardCharsets.UTF_8);
+    assertTrue(body.contains("grant_type=" + GrantType.TOKEN_EXCHANGE));
+    assertTrue(body.contains("resource=" + resource));
+    assertTrue(body.contains("scope=dremio.all"));
   }
 }

@@ -16,16 +16,15 @@
  */
 package org.apache.arrow.driver.jdbc.client.oauth;
 
+import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.nimbusds.oauth2.sdk.GrantType;
+import com.nimbusds.oauth2.sdk.Scope;
 import java.net.URI;
 import java.sql.SQLException;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
@@ -41,21 +40,18 @@ public class OAuthConfigurationTest {
   private static final String CLIENT_SECRET = "test-client-secret";
   private static final String SCOPE = "read write";
   private static final String SUBJECT_TOKEN = "subject-token-value";
+  public static final String RESOURCE = "https://api.example.com/resource";
 
   @FunctionalInterface
   interface BuilderConfigurer {
     void configure(OAuthConfiguration.Builder builder) throws SQLException;
   }
 
-  static Stream<Arguments> clientCredentialsFlowCases() {
+  static Stream<Arguments> createFlowCases() {
     return Stream.of(
         Arguments.of(
             Named.of(
                 "string flow", (BuilderConfigurer) builder -> builder.flow("client_credentials"))),
-        Arguments.of(
-            Named.of(
-                "grant type",
-                (BuilderConfigurer) builder -> builder.grantType(GrantType.CLIENT_CREDENTIALS))),
         Arguments.of(
             Named.of(
                 "uppercase string flow",
@@ -63,8 +59,8 @@ public class OAuthConfigurationTest {
   }
 
   @ParameterizedTest
-  @MethodSource("clientCredentialsFlowCases")
-  public void testClientCredentialsFlowConfiguration(BuilderConfigurer flowConfigurer)
+  @MethodSource("createFlowCases")
+  public void testCreateFlowConfiguration(BuilderConfigurer flowConfigurer)
       throws SQLException {
     OAuthConfiguration.Builder builder = new OAuthConfiguration.Builder();
     flowConfigurer.configure(builder);
@@ -73,141 +69,80 @@ public class OAuthConfigurationTest {
             .tokenUri(TOKEN_URI)
             .clientId(CLIENT_ID)
             .clientSecret(CLIENT_SECRET)
-            .scope(SCOPE)
             .build();
 
-    assertEquals(GrantType.CLIENT_CREDENTIALS, config.getGrantType());
-    assertEquals(URI.create(TOKEN_URI), config.getTokenUri());
-    assertEquals(CLIENT_ID, config.getClientId());
-    assertEquals(CLIENT_SECRET, config.getClientSecret());
-    assertEquals(SCOPE, config.getScope());
+    // Verify configuration creates correct provider type
+    OAuthTokenProvider provider = config.createTokenProvider();
+    assertInstanceOf(ClientCredentialsTokenProvider.class, provider);
   }
 
-  static Stream<Arguments> tokenExchangeConfigurationCases() {
-    return Stream.of(
-        Arguments.of(
-            Named.of(
-                "all optional fields",
-                (BuilderConfigurer)
-                    builder ->
-                        builder
-                            .audience("target-audience")
-                            .resource("https://api.example.com")
-                            .exchangeScope("api:read")),
-            (Consumer<OAuthConfiguration>)
-                config -> {
-                  assertEquals("target-audience", config.getAudience());
-                  assertEquals("https://api.example.com", config.getResource());
-                  assertEquals("api:read", config.getExchangeScope());
-                }),
-        Arguments.of(
-            Named.of(
-                "actor token fields",
-                (BuilderConfigurer)
-                    builder ->
-                        builder
-                            .actorToken("actor-token-value")
-                            .actorTokenType("urn:ietf:params:oauth:token-type:access_token")),
-            (Consumer<OAuthConfiguration>)
-                config -> {
-                  assertEquals("actor-token-value", config.getActorToken());
-                  assertEquals(
-                      "urn:ietf:params:oauth:token-type:access_token", config.getActorTokenType());
-                }),
-        Arguments.of(
-            Named.of(
-                "requested token type",
-                (BuilderConfigurer)
-                    builder ->
-                        builder.requestedTokenType("urn:ietf:params:oauth:token-type:id_token")),
-            (Consumer<OAuthConfiguration>)
-                config ->
-                    assertEquals(
-                        "urn:ietf:params:oauth:token-type:id_token",
-                        config.getRequestedTokenType())));
-  }
-
-  @ParameterizedTest
-  @MethodSource("tokenExchangeConfigurationCases")
-  public void testTokenExchangeConfiguration(
-      BuilderConfigurer optionalConfigurer, Consumer<OAuthConfiguration> verifier)
-      throws SQLException {
-    OAuthConfiguration.Builder builder =
+  @Test
+  public void testCreateClientCredentialsTokenProvider() throws SQLException {
+    OAuthConfiguration config =
         new OAuthConfiguration.Builder()
-            .flow("token_exchange")
+            .flow("client_credentials")
             .tokenUri(TOKEN_URI)
-            .subjectToken(SUBJECT_TOKEN)
-            .subjectTokenType("urn:ietf:params:oauth:token-type:access_token");
-    optionalConfigurer.configure(builder);
-    OAuthConfiguration config = builder.build();
-
-    assertEquals(GrantType.TOKEN_EXCHANGE, config.getGrantType());
-    assertEquals(URI.create(TOKEN_URI), config.getTokenUri());
-    assertEquals(SUBJECT_TOKEN, config.getSubjectToken());
-    assertEquals("urn:ietf:params:oauth:token-type:access_token", config.getSubjectTokenType());
-    verifier.accept(config);
-  }
-
-  static Stream<Arguments> tokenProviderCases() {
-    return Stream.of(
-        Arguments.of(
-            Named.of(
-                "client_credentials provider",
-                (BuilderConfigurer)
-                    builder ->
-                        builder
-                            .flow("client_credentials")
-                            .tokenUri(TOKEN_URI)
-                            .clientId(CLIENT_ID)
-                            .clientSecret(CLIENT_SECRET)),
-            ClientCredentialsTokenProvider.class),
-        Arguments.of(
-            Named.of(
-                "token_exchange provider",
-                (BuilderConfigurer)
-                    builder ->
-                        builder
-                            .flow("token_exchange")
-                            .tokenUri(TOKEN_URI)
-                            .subjectToken(SUBJECT_TOKEN)
-                            .subjectTokenType("urn:ietf:params:oauth:token-type:access_token")),
-            TokenExchangeTokenProvider.class));
-  }
-
-  @ParameterizedTest
-  @MethodSource("tokenProviderCases")
-  public void testCreateTokenProvider(
-      BuilderConfigurer configurer, Class<? extends OAuthTokenProvider> expectedProviderClass)
-      throws SQLException {
-    OAuthConfiguration.Builder builder = new OAuthConfiguration.Builder();
-    configurer.configure(builder);
-    OAuthConfiguration config = builder.build();
+            .clientId(CLIENT_ID)
+            .clientSecret(CLIENT_SECRET)
+            .scope(SCOPE)
+            .build();
 
     OAuthTokenProvider provider = config.createTokenProvider();
 
     assertNotNull(provider);
-    assertTrue(expectedProviderClass.isInstance(provider));
+    assertInstanceOf(ClientCredentialsTokenProvider.class, provider);
+
+    ClientCredentialsTokenProvider ccProvider = (ClientCredentialsTokenProvider) provider;
+    assertEquals(URI.create(TOKEN_URI), ccProvider.tokenUri);
+    assertEquals(CLIENT_ID, ccProvider.clientAuth.getClientID().getValue());
+    assertEquals(Scope.parse(SCOPE), ccProvider.scope);
   }
 
   @Test
-  public void testOptionalFieldsAreNullByDefault() throws SQLException {
+  public void testCreateTokenExchangeTokenProviderWithAllOptions() throws SQLException {
+    String subjectTokenType = "urn:ietf:params:oauth:token-type:access_token";
+    String actorToken = "actor-token-value";
+    String actorTokenType = "urn:ietf:params:oauth:token-type:jwt";
+    String audience = "https://api.example.com";
+    String requestedTokenType = "urn:ietf:params:oauth:token-type:access_token";
+
     OAuthConfiguration config =
         new OAuthConfiguration.Builder()
             .flow("token_exchange")
             .tokenUri(TOKEN_URI)
+            .scope(SCOPE)
+            .clientId(CLIENT_ID)
+            .clientSecret(CLIENT_SECRET)
+            .resource(RESOURCE)
             .subjectToken(SUBJECT_TOKEN)
-            .subjectTokenType("urn:ietf:params:oauth:token-type:access_token")
+            .subjectTokenType(subjectTokenType)
+            .actorToken(actorToken)
+            .actorTokenType(actorTokenType)
+            .audience(audience)
+            .requestedTokenType(requestedTokenType)
             .build();
 
-    assertNull(config.getClientId());
-    assertNull(config.getClientSecret());
-    assertNull(config.getScope());
-    assertNull(config.getActorToken());
-    assertNull(config.getActorTokenType());
-    assertNull(config.getAudience());
-    assertNull(config.getResource());
-    assertNull(config.getRequestedTokenType());
-    assertNull(config.getExchangeScope());
+    OAuthTokenProvider provider = config.createTokenProvider();
+
+    assertNotNull(provider);
+    assertInstanceOf(TokenExchangeTokenProvider.class, provider);
+
+    TokenExchangeTokenProvider teProvider = (TokenExchangeTokenProvider) provider;
+    assertEquals(URI.create(TOKEN_URI), teProvider.tokenUri);
+    assertNotNull(teProvider.grant);
+    assertEquals(SUBJECT_TOKEN, teProvider.grant.getSubjectToken().getValue());
+    assertEquals(subjectTokenType, teProvider.grant.getSubjectTokenType().getURI().toString());
+    assertEquals(actorToken, teProvider.grant.getActorToken().getValue());
+    assertEquals(actorTokenType, teProvider.grant.getActorTokenType().getURI().toString());
+    assertNotNull(teProvider.grant.getAudience());
+    assertEquals(1, teProvider.grant.getAudience().size());
+    assertEquals(audience, teProvider.grant.getAudience().get(0).getValue());
+    assertEquals(
+        requestedTokenType, teProvider.grant.getRequestedTokenType().getURI().toString());
+    assertEquals(Scope.parse(SCOPE), teProvider.scope);
+    assertEquals(Collections.singletonList(URI.create(RESOURCE)), teProvider.resources);
+
+    assertEquals(CLIENT_ID, teProvider.clientAuth.getClientID().getValue());
   }
 
   static Stream<Arguments> generalValidationErrorCases() {
@@ -225,7 +160,7 @@ public class OAuthConfigurationTest {
             Named.of(
                 "invalid flow",
                 (BuilderConfigurer) builder -> builder.flow("invalid_flow").tokenUri(TOKEN_URI)),
-            "Unknown OAuth flow: invalid_flow"),
+            "Unsupported OAuth flow: invalid_flow"),
         Arguments.of(
             Named.of(
                 "null tokenUri",
@@ -258,7 +193,17 @@ public class OAuthConfigurationTest {
                             .tokenUri("not a valid uri ://")
                             .clientId(CLIENT_ID)
                             .clientSecret(CLIENT_SECRET)),
-            null)); // null means verify exception has message and cause
+            null),
+        Arguments.of(
+            Named.of(
+                "invalid tokenUri",
+                (BuilderConfigurer)
+                    builder ->
+                        builder
+                            .flow("client_credentials")
+                            .tokenUri(TOKEN_URI)
+                            .clientId(CLIENT_ID)),
+            "clientSecret is required for client_credentials flow")); // null means verify exception has message and cause
   }
 
   @ParameterizedTest
@@ -343,8 +288,8 @@ public class OAuthConfigurationTest {
 
   @ParameterizedTest
   @MethodSource("flowSpecificValidationErrorCases")
-  public void testFlowSpecificValidationErrors(BuilderConfigurer configurer, String expectedMessage)
-      throws SQLException {
+  public void testFlowSpecificValidationErrors(
+      BuilderConfigurer configurer, String expectedMessage) {
     SQLException exception =
         assertThrows(
             SQLException.class,

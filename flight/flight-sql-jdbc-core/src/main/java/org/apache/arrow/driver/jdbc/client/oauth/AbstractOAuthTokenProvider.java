@@ -17,21 +17,23 @@
 package org.apache.arrow.driver.jdbc.client.oauth;
 
 import com.nimbusds.oauth2.sdk.ParseException;
+import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.TokenResponse;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.util.List;
+import org.apache.arrow.util.VisibleForTesting;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Abstract base class for OAuth token providers that handles token caching, refresh logic, and
  * common request/response handling.
- *
- * <p>Subclasses implement flow-specific request building via {@link #buildTokenRequest()} and
- * provide error message customization via {@link #getErrorMessagePrefix()}.
  */
 public abstract class AbstractOAuthTokenProvider implements OAuthTokenProvider {
   protected static final int EXPIRATION_BUFFER_SECONDS = 30;
@@ -39,6 +41,15 @@ public abstract class AbstractOAuthTokenProvider implements OAuthTokenProvider {
 
   private final Object tokenLock = new Object();
   private volatile @Nullable TokenInfo cachedToken;
+
+  @VisibleForTesting
+  URI tokenUri;
+
+  @VisibleForTesting
+  @Nullable ClientAuthentication clientAuth;
+
+  @VisibleForTesting
+  @Nullable Scope scope;
 
   @Override
   public String getValidToken() throws SQLException {

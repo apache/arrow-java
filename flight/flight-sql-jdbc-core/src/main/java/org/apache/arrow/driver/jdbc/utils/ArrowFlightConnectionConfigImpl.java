@@ -243,7 +243,6 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
         .resource(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_RESOURCE.getString(properties))
         .requestedTokenType(
             ArrowFlightConnectionProperty.OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE.getString(properties))
-        .exchangeScope(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_SCOPE.getString(properties))
         .build();
   }
 
@@ -285,7 +284,6 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     OAUTH_EXCHANGE_RESOURCE("oauth.exchange.resource", null, Type.STRING, false),
     OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE(
         "oauth.exchange.requestedTokenType", null, Type.STRING, false),
-    OAUTH_EXCHANGE_SCOPE("oauth.exchange.scope", null, Type.STRING, false),
     ;
 
     private final String camelName;
