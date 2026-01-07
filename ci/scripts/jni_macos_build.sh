@@ -77,7 +77,7 @@ cmake \
 cmake --build "${build_dir}/cpp" --target install
 github_actions_group_end
 
-export JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/protobuf_ep-install"
+export JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/_deps/protobuf-build"
 "${source_dir}/ci/scripts/jni_build.sh" \
   "${source_dir}" \
   "${install_dir}" \
