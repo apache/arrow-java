@@ -32,4 +32,7 @@ import org.apache.arrow.memory.ArrowBuf;
 public class NullableUuidHolder extends ExtensionHolder {
   /** Buffer containing 16-byte UUID data. */
   public ArrowBuf buffer;
+
+  /** Offset in the buffer where the UUID data starts. */
+  public int start = 0;
 }
