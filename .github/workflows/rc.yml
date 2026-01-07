@@ -319,8 +319,7 @@ jobs:
         # if: github.event_name == 'schedule'
         uses: actions/checkout@v6
         with:
-          repository: kou/arrow
-          ref: cpp-bundled-protobuf
+          repository: apache/arrow
           path: arrow
       - name: Set up Java
         uses: actions/setup-java@v5
