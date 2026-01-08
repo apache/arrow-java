@@ -220,7 +220,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
    * @return the OAuth configuration or null
    * @throws SQLException if the OAuth configuration is invalid
    */
-  public @Nullable OAuthConfiguration getOAuthConfiguration() throws SQLException {
+  public @Nullable OAuthConfiguration getOauthConfiguration() throws SQLException {
     String flow = ArrowFlightConnectionProperty.OAUTH_FLOW.getString(properties);
     if (flow == null) {
       return null;
@@ -232,6 +232,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
         .clientSecret(ArrowFlightConnectionProperty.OAUTH_CLIENT_SECRET.getString(properties))
         .tokenUri(ArrowFlightConnectionProperty.OAUTH_TOKEN_URI.getString(properties))
         .scope(ArrowFlightConnectionProperty.OAUTH_SCOPE.getString(properties))
+        .resource(ArrowFlightConnectionProperty.OAUTH_RESOURCE.getString(properties))
         .subjectToken(
             ArrowFlightConnectionProperty.OAUTH_EXCHANGE_SUBJECT_TOKEN.getString(properties))
         .subjectTokenType(
@@ -240,7 +241,6 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
         .actorTokenType(
             ArrowFlightConnectionProperty.OAUTH_EXCHANGE_ACTOR_TOKEN_TYPE.getString(properties))
         .audience(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_AUDIENCE.getString(properties))
-        .resource(ArrowFlightConnectionProperty.OAUTH_EXCHANGE_RESOURCE.getString(properties))
         .requestedTokenType(
             ArrowFlightConnectionProperty.OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE.getString(properties))
         .build();
@@ -274,6 +274,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     OAUTH_CLIENT_SECRET("oauth.clientSecret", null, Type.STRING, false),
     OAUTH_TOKEN_URI("oauth.tokenUri", null, Type.STRING, false),
     OAUTH_SCOPE("oauth.scope", null, Type.STRING, false),
+    OAUTH_RESOURCE("oauth.resource", null, Type.STRING, false),
 
     // Token exchange specific properties
     OAUTH_EXCHANGE_SUBJECT_TOKEN("oauth.exchange.subjectToken", null, Type.STRING, false),
@@ -281,7 +282,6 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     OAUTH_EXCHANGE_ACTOR_TOKEN("oauth.exchange.actorToken", null, Type.STRING, false),
     OAUTH_EXCHANGE_ACTOR_TOKEN_TYPE("oauth.exchange.actorTokenType", null, Type.STRING, false),
     OAUTH_EXCHANGE_AUDIENCE("oauth.exchange.audience", null, Type.STRING, false),
-    OAUTH_EXCHANGE_RESOURCE("oauth.exchange.resource", null, Type.STRING, false),
     OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE(
         "oauth.exchange.requestedTokenType", null, Type.STRING, false),
     ;
