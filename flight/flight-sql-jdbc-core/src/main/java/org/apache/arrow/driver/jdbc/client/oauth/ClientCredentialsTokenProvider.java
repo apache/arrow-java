@@ -42,7 +42,6 @@ public class ClientCredentialsTokenProvider extends AbstractOAuthTokenProvider {
    * @param clientSecret the OAuth client secret
    * @param scope optional OAuth scopes (space-separated)
    */
-  // TODO CLientCredentials can be public (without a secret)?
   ClientCredentialsTokenProvider(
       URI tokenUri, String clientId, String clientSecret, @Nullable String scope) {
     this.tokenUri = Objects.requireNonNull(tokenUri, "tokenUri cannot be null");
