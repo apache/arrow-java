@@ -20,6 +20,9 @@ import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
+import com.nimbusds.oauth2.sdk.id.Audience;
+import com.nimbusds.oauth2.sdk.token.TokenTypeURI;
+import com.nimbusds.oauth2.sdk.token.TypelessAccessToken;
 import com.nimbusds.oauth2.sdk.tokenexchange.TokenExchangeGrant;
 import java.net.URI;
 import java.util.Collections;
@@ -61,11 +64,6 @@ public class TokenExchangeTokenProvider extends AbstractOAuthTokenProvider {
     this.scope = scope;
     this.resources = resource;
     this.clientAuth = clientAuth;
-  }
-
-  private static TokenExchangeGrant createGrant(Map<String, List<String>> params)
-      throws ParseException {
-    return TokenExchangeGrant.parse(params);
   }
 
   @Override

@@ -49,7 +49,8 @@ public class TokenExchangeTokenProviderTest {
   private static final String SUBJECT_TOKEN = "original-subject-token";
   private static final String SUBJECT_TOKEN_TYPE = TokenTypeURI.JWT.toString();
   private static final String TEST_AUDIENCE = "https://api.example.com";
-  private static final String TEST_RESOURCE = "https://api.example.com/resourceA";
+  private static final String TEST_RESOURCE_A = "https://api.example.com/resourceA";
+  private static final String TEST_RESOURCE_B = "https://graph.example.com/resourceB";
   private static final String TEST_ACTOR_TOKEN = "actor-token-value";
   private static final String TEST_ACTOR_TOKEN_TYPE =
       "urn:ietf:params:oauth:token-type:access_token";
@@ -122,8 +123,12 @@ public class TokenExchangeTokenProviderTest {
     return new ClientSecretBasic(new ClientID(TEST_CLIENT_ID), new Secret(TEST_CLIENT_SECRET));
   }
 
-  private List<URI> createResourceList() {
-    return Collections.singletonList(URI.create(TEST_RESOURCE));
+  private List<URI> createSingleResourceList() {
+    return Collections.singletonList(URI.create(TEST_RESOURCE_A));
+  }
+
+  private List<URI> createMultipleResourcesList() {
+    return java.util.Arrays.asList(URI.create(TEST_RESOURCE_A), URI.create(TEST_RESOURCE_B));
   }
 
   private OAuthTokenProviders.TokenExchangeBuilder defaultProviderBuilder() {
@@ -180,7 +185,7 @@ public class TokenExchangeTokenProviderTest {
             .audience(TEST_AUDIENCE)
             .requestedTokenType(TEST_REQUESTED_TOKEN_TYPE)
             .scope(DEFAULT_SCOPE)
-            .resources(createResourceList())
+            .resources(createSingleResourceList())
             .build();
 
     String token = provider.getValidToken();
@@ -195,7 +200,7 @@ public class TokenExchangeTokenProviderTest {
         "audience=" + TEST_AUDIENCE,
         "scope=" + DEFAULT_SCOPE,
         "requested_token_type=" + TEST_REQUESTED_TOKEN_TYPE,
-        "resource=" + TEST_RESOURCE);
+        "resource=" + TEST_RESOURCE_A);
   }
 
   @Test
@@ -205,10 +210,9 @@ public class TokenExchangeTokenProviderTest {
 
     TokenExchangeTokenProvider provider =
         defaultProviderBuilder()
-            .resources(createResourceList())
+            .resources(createSingleResourceList())
             .clientAuthentication(createClientSecretBasic())
             .scope(Scope.parse(DEFAULT_SCOPE))
-            .resources(createResourceList())
             .build();
 
     String token = provider.getValidToken();
@@ -217,8 +221,36 @@ public class TokenExchangeTokenProviderTest {
     assertRequestWithBasicAuth(
         "grant_type=" + GrantType.TOKEN_EXCHANGE,
         "subject_token=" + SUBJECT_TOKEN,
-        "resource=" + TEST_RESOURCE,
+        "resource=" + TEST_RESOURCE_A,
         "scope=" + DEFAULT_SCOPE);
+  }
+
+  @Test
+  public void testBuilderWithMultipleResources() throws Exception {
+    String expectedToken = "multi-resource-token";
+    enqueueMockTokenResponse(expectedToken);
+
+    TokenExchangeTokenProvider provider =
+        defaultProviderBuilder().resources(createMultipleResourcesList()).build();
+
+    String token = provider.getValidToken();
+    assertEquals(expectedToken, token);
+
+    RecordedRequest request = mockServer.takeRequest();
+    assertEquals("POST", request.getMethod());
+    String body = request.getBody().readUtf8();
+
+    // Verify both resources are present as separate parameters (URL-encoded)
+    assertTrue(
+        body.contains("resource=" + java.net.URLEncoder.encode(TEST_RESOURCE_A, "UTF-8")),
+        "Request should contain first resource: " + TEST_RESOURCE_A);
+    assertTrue(
+        body.contains("resource=" + java.net.URLEncoder.encode(TEST_RESOURCE_B, "UTF-8")),
+        "Request should contain second resource: " + TEST_RESOURCE_B);
+
+    // Count occurrences of 'resource=' to verify multiple parameters
+    int resourceCount = body.split("resource=", -1).length - 1;
+    assertEquals(2, resourceCount, "Request should contain exactly 2 resource parameters");
   }
 
   @ParameterizedTest(name = "{0}")

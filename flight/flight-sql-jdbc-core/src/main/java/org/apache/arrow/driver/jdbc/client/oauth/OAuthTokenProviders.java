@@ -16,11 +16,16 @@
  */
 package org.apache.arrow.driver.jdbc.client.oauth;
 
+import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.Secret;
+import com.nimbusds.oauth2.sdk.id.Audience;
 import com.nimbusds.oauth2.sdk.id.ClientID;
+import com.nimbusds.oauth2.sdk.token.TokenTypeURI;
+import com.nimbusds.oauth2.sdk.token.TypelessAccessToken;
+import com.nimbusds.oauth2.sdk.tokenexchange.TokenExchangeGrant;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -381,35 +386,34 @@ public final class OAuthTokenProviders {
         throw new IllegalStateException("subjectTokenType is required");
       }
 
-      TokenExchangeTokenProvider.Builder builder =
-          TokenExchangeTokenProvider.builder()
-              .tokenUri(tokenUri)
-              .subjectToken(subjectToken)
-              .subjectTokenType(subjectTokenType);
+      TokenExchangeGrant grant = createGrant();
+      return new TokenExchangeTokenProvider(tokenUri, grant, clientAuth, scope, resources);
+    }
 
-      if (actorToken != null) {
-        builder.actorToken(actorToken);
-      }
-      if (actorTokenType != null) {
-        builder.actorTokenType(actorTokenType);
-      }
-      if (audience != null) {
-        builder.audience(audience);
-      }
-      if (requestedTokenType != null) {
-        builder.requestedTokenType(requestedTokenType);
-      }
-      if (scope != null) {
-        builder.scope(scope);
-      }
-      if (resources != null) {
-        builder.resources(resources);
-      }
-      if (clientAuth != null) {
-        builder.clientAuthentication(clientAuth);
-      }
+    private TokenExchangeGrant createGrant() {
+      try {
+        TypelessAccessToken subjectAccessToken = new TypelessAccessToken(subjectToken);
+        TokenTypeURI subjectTypeUri = TokenTypeURI.parse(subjectTokenType);
 
-      return builder.build();
+        TypelessAccessToken actorAccessToken =
+            actorToken != null ? new TypelessAccessToken(actorToken) : null;
+        TokenTypeURI actorTypeUri =
+            actorTokenType != null ? TokenTypeURI.parse(actorTokenType) : null;
+        TokenTypeURI requestedTypeUri =
+            requestedTokenType != null ? TokenTypeURI.parse(requestedTokenType) : null;
+        List<Audience> audienceList =
+            audience != null ? Collections.singletonList(new Audience(audience)) : null;
+
+        return new TokenExchangeGrant(
+            subjectAccessToken,
+            subjectTypeUri,
+            actorAccessToken,
+            actorTypeUri,
+            requestedTypeUri,
+            audienceList);
+      } catch (ParseException e) {
+        throw new IllegalStateException("Failed to create TokenExchangeGrant", e);
+      }
     }
   }
 }
