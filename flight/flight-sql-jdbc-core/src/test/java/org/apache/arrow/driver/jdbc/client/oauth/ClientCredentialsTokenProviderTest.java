@@ -223,11 +223,13 @@ public class ClientCredentialsTokenProviderTest {
   public void testEmptyScopeIsIgnored() throws Exception {
     enqueueMockTokenResponse("token");
 
-    ClientCredentialsTokenProvider provider = OAuthTokenProviders.clientCredentials()
-        .tokenUri(tokenUri)
-        .clientId(DEFAULT_CLIENT_ID)
-        .clientSecret(DEFAULT_CLIENT_SECRET)
-        .scope("").build();
+    ClientCredentialsTokenProvider provider =
+        OAuthTokenProviders.clientCredentials()
+            .tokenUri(tokenUri)
+            .clientId(DEFAULT_CLIENT_ID)
+            .clientSecret(DEFAULT_CLIENT_SECRET)
+            .scope("")
+            .build();
 
     provider.getValidToken();
     assertRequestBodyDoesNotContain("scope");
