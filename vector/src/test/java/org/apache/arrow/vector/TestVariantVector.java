@@ -28,13 +28,13 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.complex.impl.VariantReaderImpl;
-import org.apache.arrow.vector.complex.impl.VariantWriterFactory;
 import org.apache.arrow.vector.complex.impl.VariantWriterImpl;
-import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.extension.VariantType;
 import org.apache.arrow.vector.extension.VariantVector;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableVariantHolder;
 import org.apache.arrow.vector.holders.VariantHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -305,7 +305,13 @@ class TestVariantVector {
     try (VariantVector vector = new VariantVector("test", allocator);
         VariantWriterImpl writer = new VariantWriterImpl(vector)) {
 
-      ExtensionHolder unsupportedHolder = new ExtensionHolder() {};
+      ExtensionHolder unsupportedHolder =
+          new ExtensionHolder() {
+            @Override
+            public ArrowType type() {
+              return VariantType.INSTANCE;
+            }
+          };
 
       writer.setPosition(0);
 
@@ -437,30 +443,6 @@ class TestVariantVector {
       assertArrayEquals(metadata, actualMetadata);
       assertArrayEquals(value, actualValue);
       assertEquals(1, result.isSet);
-    }
-  }
-
-  // ========== Factory Tests ==========
-
-  @Test
-  void testVariantWriterFactory() {
-    VariantWriterFactory factory = new VariantWriterFactory();
-
-    try (VariantVector vector = new VariantVector("test", allocator)) {
-      FieldWriter writer = factory.getWriterImpl(vector);
-      assertNotNull(writer);
-      assertTrue(writer instanceof VariantWriterImpl);
-    }
-  }
-
-  @Test
-  void testVariantWriterFactoryWithNonVariantVector() {
-    VariantWriterFactory factory = new VariantWriterFactory();
-
-    // Use UuidVector as a different extension type
-    try (UuidVector uuidVector = new UuidVector("uuid", allocator)) {
-      FieldWriter writer = factory.getWriterImpl(uuidVector);
-      assertNull(writer);
     }
   }
 

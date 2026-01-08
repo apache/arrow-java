@@ -18,6 +18,9 @@ package org.apache.arrow.vector.extension;
 
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.ValueVector;
+import org.apache.arrow.vector.complex.impl.VariantWriterImpl;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
@@ -76,5 +79,10 @@ public final class VariantType extends ExtensionType {
     // Meanwhile, the containing vector is complex in terms of containing multiple values (metadata
     // and value)
     return false;
+  }
+
+  @Override
+  public FieldWriter getNewFieldWriter(ValueVector vector) {
+    return new VariantWriterImpl((VariantVector) vector);
   }
 }

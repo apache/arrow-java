@@ -17,6 +17,8 @@
 package org.apache.arrow.vector.holders;
 
 import org.apache.arrow.memory.ArrowBuf;
+import org.apache.arrow.vector.extension.VariantType;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 
 @SuppressWarnings("checkstyle:VisibilityModifier")
 public final class VariantHolder extends ExtensionHolder {
@@ -44,5 +46,10 @@ public final class VariantHolder extends ExtensionHolder {
   @Override
   public String toString() {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public ArrowType type() {
+    return VariantType.INSTANCE;
   }
 }
