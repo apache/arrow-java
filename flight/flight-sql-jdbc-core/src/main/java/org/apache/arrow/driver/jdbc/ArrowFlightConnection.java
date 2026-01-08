@@ -20,7 +20,7 @@ import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl
 
 import io.netty.util.concurrent.DefaultThreadFactory;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -183,17 +183,26 @@ public final class ArrowFlightConnection extends AvaticaConnection {
   public void close() throws SQLException {
     Exception topLevelException = null;
     try {
-      AutoCloseables.close(List.copyOf(statementMap.values()));
-    } catch (final Exception e) {
-      topLevelException = e;
-    }
-    try {
-      AutoCloseables.close(clientHandler);
       if (executorService != null) {
         executorService.shutdown();
       }
-      allocator.getChildAllocators().forEach(AutoCloseables::closeNoChecked);
-      AutoCloseables.close(allocator);
+    } catch (final Exception e) {
+      topLevelException = e;
+    }
+    ArrayList<AutoCloseable> closeables = new ArrayList<>(statementMap.values());
+    closeables.add(clientHandler);
+    closeables.addAll(allocator.getChildAllocators());
+    closeables.add(allocator);
+    try {
+      AutoCloseables.close(closeables);
+    } catch (final Exception e) {
+      if (topLevelException == null) {
+        topLevelException = e;
+      } else {
+        topLevelException.addSuppressed(e);
+      }
+    }
+    try {
       super.close();
     } catch (final Exception e) {
       if (topLevelException == null) {
