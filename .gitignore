@@ -7,10 +7,12 @@
 .buildpath
 .checkstyle
 .classpath
+.cursor/
 .factorypath
 .idea/
 .project
 .settings/
+.vscode/
 /*-build/
 /.mvn/.develocity/
 /apache-arrow-java-*

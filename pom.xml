@@ -110,7 +110,7 @@ under the License.
     <checkstyle.version>10.23.0</checkstyle.version>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.42.0</error_prone_core.version>
-    <checker.framework.version>3.52.0</checker.framework.version>
+    <checker.framework.version>3.53.0</checker.framework.version>
     <logback.version>1.5.21</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
@@ -350,7 +350,7 @@ under the License.
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.13</version>
+          <version>0.8.14</version>
         </plugin>
 
         <!--This plugin's configuration is used to store Eclipse m2e settings

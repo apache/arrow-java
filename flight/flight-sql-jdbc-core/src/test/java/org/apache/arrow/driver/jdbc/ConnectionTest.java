@@ -17,6 +17,7 @@
 package org.apache.arrow.driver.jdbc;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,12 +29,15 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
 import org.apache.arrow.flight.FlightMethod;
+import org.apache.arrow.flight.NoOpSessionOptionValueVisitor;
+import org.apache.arrow.flight.SessionOptionValue;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -616,12 +620,46 @@ public class ConnectionTest {
 
       var expectedUserAgent =
           "JDBC Flight SQL Driver " + driverVersion.getDriverVersion().versionString;
-      // Driver appends version to grpc user-agent header. Assert the header starts with the
+      // Driver appends version to grpc user-agent header. Assert the header starts
+      // with the
       // expected
       // value and ignored grpc version.
       assertTrue(
           actualUserAgent.startsWith(expectedUserAgent),
           "Expected: " + expectedUserAgent + " but found: " + actualUserAgent);
+    }
+  }
+
+  @Test
+  public void testSetCatalogShouldUpdateSessionOptions() throws Exception {
+    final Properties properties = new Properties();
+    properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+    properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+    properties.put("useEncryption", false);
+
+    try (Connection connection =
+        DriverManager.getConnection(
+            "jdbc:arrow-flight-sql://"
+                + FLIGHT_SERVER_TEST_EXTENSION.getHost()
+                + ":"
+                + FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+            properties)) {
+      final String catalog = "new_catalog";
+      connection.setCatalog(catalog);
+
+      final Map<String, SessionOptionValue> options = PRODUCER.getSessionOptions();
+      assertTrue(options.containsKey("catalog"));
+      String actualCatalog =
+          options
+              .get("catalog")
+              .acceptVisitor(
+                  new NoOpSessionOptionValueVisitor<String>() {
+                    @Override
+                    public String visit(String value) {
+                      return value;
+                    }
+                  });
+      assertEquals(catalog, actualCatalog);
     }
   }
 

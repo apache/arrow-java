@@ -47,7 +47,6 @@ import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.FlightStatusCode;
 import org.apache.arrow.flight.Location;
 import org.apache.arrow.flight.LocationSchemes;
-import org.apache.arrow.flight.SessionOptionValue;
 import org.apache.arrow.flight.SessionOptionValueFactory;
 import org.apache.arrow.flight.SetSessionOptionsRequest;
 import org.apache.arrow.flight.SetSessionOptionsResult;
@@ -147,20 +146,26 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     try {
       for (FlightEndpoint endpoint : flightInfo.getEndpoints()) {
         if (endpoint.getLocations().isEmpty()) {
-          // Create a stream using the current client only and do not close the client at the end.
+          // Create a stream using the current client only and do not close the client at
+          // the end.
           endpoints.add(
               new CloseableEndpointStreamPair(
                   sqlClient.getStream(endpoint.getTicket(), getOptions()), null));
         } else {
           // Clone the builder and then set the new endpoint on it.
 
-          // GH-38574: Currently a new FlightClient will be made for each partition that returns a
-          // non-empty Location then disposed of. It may be better to cache clients because a server
-          // may report the same Locations. It would also be good to identify when the reported
+          // GH-38574: Currently a new FlightClient will be made for each partition that
+          // returns a
+          // non-empty Location then disposed of. It may be better to cache clients
+          // because a server
+          // may report the same Locations. It would also be good to identify when the
+          // reported
           // location
-          // is the same as the original connection's Location and skip creating a FlightClient in
+          // is the same as the original connection's Location and skip creating a
+          // FlightClient in
           // that scenario.
-          // Also copy the cache to the client so we can share a cache. Cache needs to cache
+          // Also copy the cache to the client so we can share a cache. Cache needs to
+          // cache
           // negative attempts too.
           List<Exception> exceptions = new ArrayList<>();
           CloseableEndpointStreamPair stream = null;
@@ -337,7 +342,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    */
   private void logSuppressedCloseException(
       FlightRuntimeException fre, String operationDescription) {
-    // ARROW-17785 and GH-863: suppress exceptions caused by flaky gRPC layer during shutdown
+    // ARROW-17785 and GH-863: suppress exceptions caused by flaky gRPC layer during
+    // shutdown
     LOGGER.debug("Suppressed error {}", operationDescription, fre);
   }
 
@@ -388,25 +394,40 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   /** A connection is created with catalog set as a session option. */
   private void setSetCatalogInSessionIfPresent() {
     if (catalog.isPresent()) {
-      final SetSessionOptionsRequest setSessionOptionRequest =
-          new SetSessionOptionsRequest(
-              ImmutableMap.<String, SessionOptionValue>builder()
-                  .put(CATALOG, SessionOptionValueFactory.makeSessionOptionValue(catalog.get()))
-                  .build());
-      final SetSessionOptionsResult result =
-          sqlClient.setSessionOptions(setSessionOptionRequest, getOptions());
-
-      if (result.hasErrors()) {
-        Map<String, SetSessionOptionsResult.Error> errors = result.getErrors();
-        for (Map.Entry<String, SetSessionOptionsResult.Error> error : errors.entrySet()) {
-          LOGGER.warn(error.toString());
-        }
+      try {
+        setCatalog(catalog.get());
+      } catch (SQLException e) {
         throw CallStatus.INVALID_ARGUMENT
-            .withDescription(
-                String.format(
-                    "Cannot set session option for catalog = %s. Check log for details.", catalog))
+            .withDescription(e.getMessage())
+            .withCause(e)
             .toRuntimeException();
       }
+    }
+  }
+
+  /**
+   * Sets the catalog for the current session.
+   *
+   * @param catalog the catalog to set.
+   * @throws SQLException if an error occurs while setting the catalog.
+   */
+  public void setCatalog(final String catalog) throws SQLException {
+    final SetSessionOptionsRequest request =
+        new SetSessionOptionsRequest(
+            ImmutableMap.of(CATALOG, SessionOptionValueFactory.makeSessionOptionValue(catalog)));
+    try {
+      final SetSessionOptionsResult result = sqlClient.setSessionOptions(request, getOptions());
+      if (result.hasErrors()) {
+        final Map<String, SetSessionOptionsResult.Error> errors = result.getErrors();
+        for (final Map.Entry<String, SetSessionOptionsResult.Error> error : errors.entrySet()) {
+          LOGGER.warn(error.toString());
+        }
+        throw new SQLException(
+            String.format(
+                "Cannot set session option for catalog = %s. Check log for details.", catalog));
+      }
+    } catch (final FlightRuntimeException e) {
+      throw new SQLException(e);
     }
   }
 
@@ -654,7 +675,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting @Nullable Duration connectTimeout;
 
-    // These two middleware are for internal use within build() and should not be exposed by builder
+    // These two middleware are for internal use within build() and should not be
+    // exposed by builder
     // APIs.
     // Note that these middleware may not necessarily be registered.
     @VisibleForTesting
@@ -980,7 +1002,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      * @throws SQLException on error.
      */
     public ArrowFlightSqlClientHandler build() throws SQLException {
-      // Copy middleware so that the build method doesn't change the state of the builder fields
+      // Copy middleware so that the build method doesn't change the state of the
+      // builder fields
       // itself.
       Set<FlightClientMiddleware.Factory> buildTimeMiddlewareFactories =
           new HashSet<>(this.middlewareFactories);
@@ -988,7 +1011,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       boolean isUsingUserPasswordAuth = username != null && token == null;
 
       try {
-        // Token should take priority since some apps pass in a username/password even when a token
+        // Token should take priority since some apps pass in a username/password even
+        // when a token
         // is provided
         if (isUsingUserPasswordAuth) {
           buildTimeMiddlewareFactories.add(authFactory);
@@ -1047,8 +1071,10 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                 allocator, channelBuilder.build(), clientBuilder.middleware());
         final ArrayList<CallOption> credentialOptions = new ArrayList<>();
         if (isUsingUserPasswordAuth) {
-          // If the authFactory has already been used for a handshake, use the existing token.
-          // This can occur if the authFactory is being re-used for a new connection spawned for
+          // If the authFactory has already been used for a handshake, use the existing
+          // token.
+          // This can occur if the authFactory is being re-used for a new connection
+          // spawned for
           // getStream().
           if (authFactory.getCredentialCallOption() != null) {
             credentialOptions.add(authFactory.getCredentialCallOption());

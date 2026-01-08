@@ -52,6 +52,9 @@ import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.flight.PutResult;
 import org.apache.arrow.flight.Result;
 import org.apache.arrow.flight.SchemaResult;
+import org.apache.arrow.flight.SessionOptionValue;
+import org.apache.arrow.flight.SetSessionOptionsRequest;
+import org.apache.arrow.flight.SetSessionOptionsResult;
 import org.apache.arrow.flight.Ticket;
 import org.apache.arrow.flight.sql.FlightSqlProducer;
 import org.apache.arrow.flight.sql.SqlInfoBuilder;
@@ -662,6 +665,22 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
 
   public SqlInfoBuilder getSqlInfoBuilder() {
     return sqlInfoBuilder;
+  }
+
+  private final Map<String, SessionOptionValue> sessionOptions = new HashMap<>();
+
+  @Override
+  public void setSessionOptions(
+      final SetSessionOptionsRequest request,
+      final CallContext context,
+      final StreamListener<SetSessionOptionsResult> listener) {
+    sessionOptions.putAll(request.getSessionOptions());
+    listener.onNext(new SetSessionOptionsResult(Collections.emptyMap()));
+    listener.onCompleted();
+  }
+
+  public Map<String, SessionOptionValue> getSessionOptions() {
+    return sessionOptions;
   }
 
   private static final class TicketConversionUtils {

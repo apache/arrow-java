@@ -71,7 +71,7 @@ jobs:
         run: |
           dev/release/run_rat.sh "${TAR_GZ}"
       - name: Upload source archive
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: release-source
           path: |
@@ -101,7 +101,7 @@ jobs:
       packages: write
     steps:
       - name: Download source archive
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: release-source
       - name: Extract source archive
@@ -139,7 +139,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: .docker
           key: jni-linux-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
@@ -154,7 +154,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-linux-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: jni-linux-${{ matrix.platform.arch }}
           path: jni-linux-${{ matrix.platform.arch }}.tar.gz
@@ -174,7 +174,7 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: "14.0"
     steps:
       - name: Download source archive
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: release-source
       - name: Extract source archive
@@ -270,7 +270,7 @@ jobs:
         run: |
           echo "CCACHE_DIR=${PWD}/ccache" >> ${GITHUB_ENV}
       - name: Cache ccache
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ccache
           key: jni-macos-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
@@ -284,7 +284,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: jni-macos-${{ matrix.platform.arch }}
           path: jni-macos-${{ matrix.platform.arch }}.tar.gz
@@ -302,7 +302,7 @@ jobs:
             arch: "x86_64"
     steps:
       - name: Download source archive
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: release-source
       - name: Extract source archive
@@ -352,7 +352,7 @@ jobs:
         run: |
           echo "CCACHE_DIR=${PWD}/ccache" >> ${GITHUB_ENV}
       - name: Cache ccache
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ccache
           key: jni-windows-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
@@ -368,7 +368,7 @@ jobs:
         shell: bash
         run: tar -cvzf jni-windows-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: jni-windows-${{ matrix.platform.arch }}
           path: jni-windows-${{ matrix.platform.arch }}.tar.gz
@@ -381,7 +381,7 @@ jobs:
       - jni-windows
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           path: artifacts
       - name: Decompress artifacts
@@ -426,7 +426,7 @@ jobs:
           repository: apache/arrow-testing
           path: testing
       - name: Cache ~/.m2
-        uses: actions/cache@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: ~/.m2
           key: binaries-build-${{ hashFiles('**/*.java', '**/pom.xml') }}
@@ -440,12 +440,12 @@ jobs:
           cp -a target/site/apidocs reference
           tar -cvzf reference.tar.gz reference
       - name: Upload binaries
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: release-binaries
           path: binaries/*
       - name: Upload docs
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: reference
           path: reference.tar.gz
@@ -462,11 +462,11 @@ jobs:
         with:
           cache: 'pip'
       - name: Download source archive
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: release-source
       - name: Download Javadocs
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: reference
       - name: Extract source archive
@@ -483,7 +483,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf html.tar.gz -C docs/build html
       - name: Upload artifacts
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: release-html
           path: html.tar.gz
@@ -531,7 +531,7 @@ jobs:
           cp ../.asf.yaml ./
           git add .nojekyll .asf.yaml
       - name: Download
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           name: release-html
       - name: Extract
@@ -567,7 +567,7 @@ jobs:
           - ubuntu-latest
     steps:
       - name: Download release artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           pattern: release-*
       - name: Verify
@@ -601,7 +601,7 @@ jobs:
       contents: write
     steps:
       - name: Download release artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
           pattern: release-*
           path: artifacts
