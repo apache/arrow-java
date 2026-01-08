@@ -16,23 +16,21 @@
  */
 package org.apache.arrow.vector.holders;
 
-import org.apache.arrow.memory.ArrowBuf;
-
 /**
  * Value holder for nullable UUID values.
  *
  * <p>The {@code isSet} field controls nullability: when {@code isSet = 1}, the holder contains a
- * valid UUID in {@code buffer}; when {@code isSet = 0}, the holder represents a null value and
- * {@code buffer} should not be accessed.
+ * valid UUID represented as two longs; when {@code isSet = 0}, the holder represents a null value
+ * and the long fields should not be accessed.
  *
  * @see UuidHolder
  * @see org.apache.arrow.vector.UuidVector
  * @see org.apache.arrow.vector.extension.UuidType
  */
 public class NullableUuidHolder extends ExtensionHolder {
-  /** Buffer containing 16-byte UUID data. */
-  public ArrowBuf buffer;
+  /** The most significant 64 bits of the UUID. */
+  public long mostSigBits;
 
-  /** Offset in the buffer where the UUID data starts. */
-  public int start = 0;
+  /** The least significant 64 bits of the UUID. */
+  public long leastSigBits;
 }

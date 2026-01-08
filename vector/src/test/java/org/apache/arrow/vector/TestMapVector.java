@@ -50,7 +50,6 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.TransferPair;
-import org.apache.arrow.vector.util.UuidUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1304,12 +1303,12 @@ public class TestMapVector {
       FieldReader uuidReader = mapReader.value();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
+      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
       assertEquals(u1, actualUuid);
       mapReader.next();
       uuidReader = mapReader.value();
       uuidReader.read(holder);
-      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
+      actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
       assertEquals(u2, actualUuid);
     }
   }
@@ -1349,12 +1348,12 @@ public class TestMapVector {
       FieldReader uuidReader = mapReader.value();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
+      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
       assertEquals(u1, actualUuid);
       mapReader.next();
       uuidReader = mapReader.value();
       uuidReader.read(holder);
-      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
+      actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
       assertEquals(u2, actualUuid);
     }
   }

@@ -29,7 +29,6 @@ import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.extension.UuidType;
-import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -161,8 +160,9 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
       holder.isSet = 0;
     } else {
       holder.isSet = 1;
-      holder.buffer = getDataBuffer();
-      holder.start = getStartOffset(index);
+      final ByteBuffer bb = ByteBuffer.wrap(getUnderlyingVector().getObject(index));
+      holder.mostSigBits = bb.getLong();
+      holder.leastSigBits = bb.getLong();
     }
   }
 
@@ -178,8 +178,9 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
       holder.isSet = 0;
     } else {
       holder.isSet = 1;
-      holder.buffer = getDataBuffer();
-      holder.start = getStartOffset(index);
+      final ByteBuffer bb = ByteBuffer.wrap(getUnderlyingVector().getObject(index));
+      holder.mostSigBits = bb.getLong();
+      holder.leastSigBits = bb.getLong();
     }
   }
 
@@ -214,7 +215,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder containing the UUID data
    */
   public void set(int index, UuidHolder holder) {
-    this.set(index, holder.buffer, holder.start);
+    UUID uuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+    set(index, uuid);
   }
 
   /**
@@ -227,7 +229,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     if (holder.isSet == 0) {
       getUnderlyingVector().setNull(index);
     } else {
-      this.set(index, holder.buffer, holder.start);
+      UUID uuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      set(index, uuid);
     }
   }
 
@@ -281,7 +284,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     if (holder == null || holder.isSet == 0) {
       getUnderlyingVector().setNull(index);
     } else {
-      this.setSafe(index, holder.buffer, holder.start);
+      UUID uuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      setSafe(index, uuid);
     }
   }
 
@@ -292,7 +296,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder containing the UUID data
    */
   public void setSafe(int index, UuidHolder holder) {
-    this.setSafe(index, holder.buffer, holder.start);
+    UUID uuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+    setSafe(index, uuid);
   }
 
   /**
