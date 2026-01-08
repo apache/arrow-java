@@ -16,18 +16,12 @@
  */
 package org.apache.arrow.driver.jdbc.client.oauth;
 
-import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.Scope;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.id.Audience;
-import com.nimbusds.oauth2.sdk.token.TokenTypeURI;
-import com.nimbusds.oauth2.sdk.token.TypelessAccessToken;
 import com.nimbusds.oauth2.sdk.tokenexchange.TokenExchangeGrant;
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import org.apache.arrow.util.VisibleForTesting;
 import org.checkerframework.checker.nullness.qual.Nullable;
