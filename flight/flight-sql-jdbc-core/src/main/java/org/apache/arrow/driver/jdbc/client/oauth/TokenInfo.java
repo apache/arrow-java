@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.util.Objects;
 
 /** Holds OAuth token information including the access token and expiration time. */
-// TODO: Search for alternative TokenInfo class if available in the library
 public class TokenInfo {
   private final String accessToken;
   private final Instant expiresAt;
@@ -32,10 +31,6 @@ public class TokenInfo {
 
   public String getAccessToken() {
     return accessToken;
-  }
-
-  public Instant getExpiresAt() {
-    return expiresAt;
   }
 
   /**
