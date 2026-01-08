@@ -16,7 +16,6 @@
  */
 package org.apache.arrow.driver.jdbc.client.oauth;
 
-import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.nimbusds.oauth2.sdk.Scope;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
@@ -60,16 +60,11 @@ public class OAuthConfigurationTest {
 
   @ParameterizedTest
   @MethodSource("createFlowCases")
-  public void testCreateFlowConfiguration(BuilderConfigurer flowConfigurer)
-      throws SQLException {
+  public void testCreateFlowConfiguration(BuilderConfigurer flowConfigurer) throws SQLException {
     OAuthConfiguration.Builder builder = new OAuthConfiguration.Builder();
     flowConfigurer.configure(builder);
     OAuthConfiguration config =
-        builder
-            .tokenUri(TOKEN_URI)
-            .clientId(CLIENT_ID)
-            .clientSecret(CLIENT_SECRET)
-            .build();
+        builder.tokenUri(TOKEN_URI).clientId(CLIENT_ID).clientSecret(CLIENT_SECRET).build();
 
     // Verify configuration creates correct provider type
     OAuthTokenProvider provider = config.createTokenProvider();
@@ -137,8 +132,7 @@ public class OAuthConfigurationTest {
     assertNotNull(teProvider.grant.getAudience());
     assertEquals(1, teProvider.grant.getAudience().size());
     assertEquals(audience, teProvider.grant.getAudience().get(0).getValue());
-    assertEquals(
-        requestedTokenType, teProvider.grant.getRequestedTokenType().getURI().toString());
+    assertEquals(requestedTokenType, teProvider.grant.getRequestedTokenType().getURI().toString());
     assertEquals(Scope.parse(SCOPE), teProvider.scope);
     assertEquals(Collections.singletonList(URI.create(RESOURCE)), teProvider.resources);
 
@@ -199,11 +193,9 @@ public class OAuthConfigurationTest {
                 "invalid tokenUri",
                 (BuilderConfigurer)
                     builder ->
-                        builder
-                            .flow("client_credentials")
-                            .tokenUri(TOKEN_URI)
-                            .clientId(CLIENT_ID)),
-            "clientSecret is required for client_credentials flow")); // null means verify exception has message and cause
+                        builder.flow("client_credentials").tokenUri(TOKEN_URI).clientId(CLIENT_ID)),
+            // null means verify exception has message and cause
+            "clientSecret is required for client_credentials flow"));
   }
 
   @ParameterizedTest

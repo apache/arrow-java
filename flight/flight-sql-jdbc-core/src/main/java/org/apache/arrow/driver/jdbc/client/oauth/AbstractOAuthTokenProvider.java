@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.List;
 import org.apache.arrow.util.VisibleForTesting;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -42,14 +41,11 @@ public abstract class AbstractOAuthTokenProvider implements OAuthTokenProvider {
   private final Object tokenLock = new Object();
   private volatile @Nullable TokenInfo cachedToken;
 
-  @VisibleForTesting
-  URI tokenUri;
+  @VisibleForTesting URI tokenUri;
 
-  @VisibleForTesting
-  @Nullable ClientAuthentication clientAuth;
+  @VisibleForTesting @Nullable ClientAuthentication clientAuth;
 
-  @VisibleForTesting
-  @Nullable Scope scope;
+  @VisibleForTesting @Nullable Scope scope;
 
   @Override
   public String getValidToken() throws SQLException {

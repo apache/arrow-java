@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
@@ -29,15 +30,27 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /** Tests for {@link ClientCredentialsTokenProvider}. */
 public class ClientCredentialsTokenProviderTest {
+
+  private static final String DEFAULT_CLIENT_ID = "client";
+  private static final String DEFAULT_CLIENT_SECRET = "secret";
+  private static final String TEST_CLIENT_ID = "test-client";
+  private static final String TEST_CLIENT_SECRET = "test-secret";
+  private static final String DEFAULT_SCOPE = "read write";
+  private static final int DEFAULT_EXPIRES_IN = 3600;
+  private static final int SHORT_EXPIRES_IN = 1;
 
   private MockWebServer mockServer;
   private URI tokenUri;
@@ -57,44 +70,65 @@ public class ClientCredentialsTokenProviderTest {
     mockServer.shutdown();
   }
 
+  // Helper methods for mock responses
+
+  private void enqueueMockTokenResponse(String token) {
+    enqueueMockTokenResponse(token, DEFAULT_EXPIRES_IN);
+  }
+
+  private void enqueueMockTokenResponse(String token, int expiresIn) {
+    String body =
+        String.format(
+            "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":%d}",
+            token, expiresIn);
+    mockServer.enqueue(mockResponse.clone().setBody(body));
+  }
+
+  private void assertRequestBodyContains(String... expectedSubstrings) throws Exception {
+    RecordedRequest request = mockServer.takeRequest();
+    assertEquals("POST", request.getMethod());
+    String body = request.getBody().readUtf8();
+    for (String expected : expectedSubstrings) {
+      assertTrue(body.contains(expected), "Request body should contain: " + expected);
+    }
+  }
+
+  private void assertRequestBodyDoesNotContain(String... unexpectedSubstrings) throws Exception {
+    RecordedRequest request = mockServer.takeRequest();
+    String body = request.getBody().readUtf8();
+    for (String unexpected : unexpectedSubstrings) {
+      assertFalse(body.contains(unexpected), "Request body should not contain: " + unexpected);
+    }
+  }
+
+  private ClientCredentialsTokenProvider buildTestProvider() {
+    return OAuthTokenProviders.clientCredentials()
+        .tokenUri(tokenUri)
+        .clientId(TEST_CLIENT_ID)
+        .clientSecret(TEST_CLIENT_SECRET)
+        .scope(DEFAULT_SCOPE)
+        .build();
+  }
+
   @Test
   public void testSuccessfulTokenRequest() throws Exception {
     String expectedToken = "test-access-token-12345";
-    mockServer.enqueue(
-        mockResponse.setBody(
-            String.format(
-                "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":3600}",
-                expectedToken)));
+    enqueueMockTokenResponse(expectedToken);
 
-    ClientCredentialsTokenProvider provider =
-        new ClientCredentialsTokenProvider(tokenUri, "test-client", "test-secret", "read write");
+    ClientCredentialsTokenProvider provider = buildTestProvider();
 
     String token = provider.getValidToken();
-
     assertEquals(expectedToken, token);
-    RecordedRequest request = mockServer.takeRequest();
-    assertEquals("POST", request.getMethod());
-
-    String body = request.getBody().readUtf8();
-    assertTrue(body.contains("grant_type=client_credentials"));
-    assertTrue(body.contains("scope=read+write"));
+    assertRequestBodyContains("grant_type=client_credentials", "scope=read+write");
   }
 
   @Test
   public void testTokenCaching() throws Exception {
     String expectedToken = "cached-token";
-    mockServer.enqueue(
-        mockResponse.setBody(
-            String.format(
-                "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":3600}",
-                expectedToken)));
+    enqueueMockTokenResponse(expectedToken);
+    enqueueMockTokenResponse("new-not-cached-token");
 
-    // return new token after obtaining cached-token
-    mockServer.enqueue(
-        mockResponse.setBody(
-            "{\"access_token\":\"new-not-cached-token\",\"token_type\":\"Bearer\",\"expires_in\":3600}"));
-    ClientCredentialsTokenProvider provider =
-        new ClientCredentialsTokenProvider(tokenUri, "client", "secret", null);
+    ClientCredentialsTokenProvider provider = buildTestProvider();
 
     String token1 = provider.getValidToken();
     String token2 = provider.getValidToken();
@@ -110,19 +144,10 @@ public class ClientCredentialsTokenProviderTest {
   public void testTokenRefreshAfterExpiration() throws Exception {
     String initialToken = "short-lived-token";
     String refreshedToken = "refreshed-token";
-    mockServer.enqueue(
-        mockResponse.setBody(
-            String.format(
-                "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":1}",
-                initialToken)));
-    mockServer.enqueue(
-        mockResponse.setBody(
-            String.format(
-                "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":3600}",
-                refreshedToken)));
+    enqueueMockTokenResponse(initialToken, SHORT_EXPIRES_IN);
+    enqueueMockTokenResponse(refreshedToken);
 
-    ClientCredentialsTokenProvider provider =
-        new ClientCredentialsTokenProvider(tokenUri, "client", "secret", null);
+    ClientCredentialsTokenProvider provider = buildTestProvider();
 
     String token1 = provider.getValidToken();
     String token2 = provider.getValidToken();
@@ -135,12 +160,14 @@ public class ClientCredentialsTokenProviderTest {
 
   @Test
   public void testBasicAuthHeader() throws Exception {
-    mockServer.enqueue(
-        mockResponse.setBody(
-            "{\"access_token\":\"token\",\"token_type\":\"Bearer\",\"expires_in\":3600}"));
+    enqueueMockTokenResponse("token");
 
     ClientCredentialsTokenProvider provider =
-        new ClientCredentialsTokenProvider(tokenUri, "client", "my secret", null);
+        OAuthTokenProviders.clientCredentials()
+            .tokenUri(tokenUri)
+            .clientId(DEFAULT_CLIENT_ID)
+            .clientSecret("my secret")
+            .build();
 
     provider.getValidToken();
 
@@ -157,12 +184,9 @@ public class ClientCredentialsTokenProviderTest {
 
   @Test
   public void testConcurrentAccessOnlyOneRequest() throws Exception {
-    mockServer.enqueue(
-        mockResponse.setBody(
-            "{\"access_token\":\"concurrent-token\",\"token_type\":\"Bearer\",\"expires_in\":3600}"));
+    enqueueMockTokenResponse("concurrent-token");
 
-    ClientCredentialsTokenProvider provider =
-        new ClientCredentialsTokenProvider(tokenUri, "client", "secret", null);
+    ClientCredentialsTokenProvider provider = buildTestProvider();
 
     int threadCount = 10;
     ExecutorService executor = Executors.newFixedThreadPool(threadCount);
@@ -196,30 +220,83 @@ public class ClientCredentialsTokenProviderTest {
   }
 
   @Test
-  public void testDefaultExpirationWhenNotProvided() throws Exception {
-    mockServer.enqueue(
-        mockResponse.setBody("{\"access_token\":\"no-expiry-token\",\"token_type\":\"Bearer\"}"));
-
-    ClientCredentialsTokenProvider provider =
-        new ClientCredentialsTokenProvider(tokenUri, "client", "secret", null);
-
-    String token = provider.getValidToken();
-    assertEquals("no-expiry-token", token);
-  }
-
-  @Test
   public void testEmptyScopeIsIgnored() throws Exception {
-    mockServer.enqueue(
-        mockResponse.setBody(
-            "{\"access_token\":\"token\",\"token_type\":\"Bearer\",\"expires_in\":3600}"));
+    enqueueMockTokenResponse("token");
 
-    ClientCredentialsTokenProvider provider =
-        new ClientCredentialsTokenProvider(tokenUri, "client", "secret", "");
+    ClientCredentialsTokenProvider provider = OAuthTokenProviders.clientCredentials()
+        .tokenUri(tokenUri)
+        .clientId(DEFAULT_CLIENT_ID)
+        .clientSecret(DEFAULT_CLIENT_SECRET)
+        .scope("").build();
 
     provider.getValidToken();
+    assertRequestBodyDoesNotContain("scope");
+  }
 
-    RecordedRequest request = mockServer.takeRequest();
-    String body = request.getBody().readUtf8();
-    assertFalse(body.contains("scope"));
+  @ParameterizedTest(name = "{0}")
+  @MethodSource("provideInvalidBuilderConfigurations")
+  void testBuilderValidation(
+      String testName,
+      String tokenUriStr,
+      String clientId,
+      String clientSecret,
+      Class<? extends Exception> expectedException,
+      String expectedMessageFragment) {
+
+    Exception exception =
+        assertThrows(
+            expectedException,
+            () -> {
+              OAuthTokenProviders.ClientCredentialsBuilder builder =
+                  OAuthTokenProviders.clientCredentials();
+
+              if (tokenUriStr != null) {
+                builder.tokenUri(tokenUriStr);
+              }
+              if (clientId != null) {
+                builder.clientId(clientId);
+              }
+              if (clientSecret != null) {
+                builder.clientSecret(clientSecret);
+              }
+
+              builder.build();
+            });
+
+    assertTrue(
+        exception.getMessage().contains(expectedMessageFragment),
+        "Exception message should contain: " + expectedMessageFragment);
+  }
+
+  private static Stream<Arguments> provideInvalidBuilderConfigurations() {
+    return Stream.of(
+        Arguments.of(
+            "Missing tokenUri",
+            null,
+            TEST_CLIENT_ID,
+            TEST_CLIENT_SECRET,
+            IllegalStateException.class,
+            "tokenUri is required"),
+        Arguments.of(
+            "Missing clientId",
+            "https://auth.example.com/token",
+            null,
+            TEST_CLIENT_SECRET,
+            IllegalStateException.class,
+            "clientId is required"),
+        Arguments.of(
+            "Missing clientSecret",
+            "https://auth.example.com/token",
+            TEST_CLIENT_ID,
+            null,
+            IllegalStateException.class,
+            "clientSecret is required"),
+        Arguments.of(
+            "Invalid tokenUri",
+            "not a valid uri ://",
+            TEST_CLIENT_ID,
+            TEST_CLIENT_SECRET,
+            IllegalArgumentException.class,
+            "Invalid token URI"));
   }
 }

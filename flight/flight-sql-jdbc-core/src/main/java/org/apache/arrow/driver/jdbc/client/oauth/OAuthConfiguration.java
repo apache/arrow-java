@@ -17,16 +17,9 @@
 package org.apache.arrow.driver.jdbc.client.oauth;
 
 import com.nimbusds.oauth2.sdk.GrantType;
-import com.nimbusds.oauth2.sdk.Scope;
-import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
-import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
-import com.nimbusds.oauth2.sdk.auth.Secret;
-import com.nimbusds.oauth2.sdk.id.ClientID;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -95,84 +88,33 @@ public class OAuthConfiguration {
    */
   public OAuthTokenProvider createTokenProvider() throws SQLException {
     if (GrantType.CLIENT_CREDENTIALS.equals(grantType)) {
-      return new ClientCredentialsTokenProvider(tokenUri, clientId, clientSecret, scope);
+      return OAuthTokenProviders.clientCredentials()
+          .tokenUri(tokenUri)
+          .clientId(clientId)
+          .clientSecret(clientSecret)
+          .scope(scope)
+          .build();
     } else if (GrantType.TOKEN_EXCHANGE.equals(grantType)) {
-      TokenExchangeTokenProvider.Builder builder =
-          new TokenExchangeTokenProvider.Builder()
+      OAuthTokenProviders.TokenExchangeBuilder builder =
+          OAuthTokenProviders.tokenExchange()
               .tokenUri(tokenUri)
               .subjectToken(subjectToken)
-              .subjectTokenType(subjectTokenType);
+              .subjectTokenType(subjectTokenType)
+              .actorToken(actorToken)
+              .actorTokenType(actorTokenType)
+              .audience(audience)
+              .requestedTokenType(requestedTokenType)
+              .scope(scope)
+              .resource(resource);
 
-      if (actorToken != null) {
-        builder.actorToken(actorToken);
-      }
-      if (actorTokenType != null) {
-        builder.actorTokenType(actorTokenType);
-      }
-      if (audience != null) {
-        builder.audience(audience);
-      }
-      if (requestedTokenType != null) {
-        builder.requestedTokenType(requestedTokenType);
-      }
-
-      Scope scopeObj = createScope(scope);
-      if (scopeObj != null) {
-        builder.scope(scopeObj);
-      }
-
-      List<URI> resources = createResources(resource);
-      if (resources != null) {
-        builder.resources(resources);
-      }
-
-      ClientAuthentication clientAuth = createClientAuthentication();
-      if (clientAuth != null) {
-        builder.clientAuthentication(clientAuth);
+      if (clientId != null && clientSecret != null) {
+        builder.clientCredentials(clientId, clientSecret);
       }
 
       return builder.build();
     } else {
       throw new SQLException("Unsupported OAuth grant type: " + grantType);
     }
-  }
-
-  /**
-   * Creates a Scope object from the scope string.
-   *
-   * @param scopeStr the space-separated scope string
-   * @return the Scope object, or null if the scope string is null or empty
-   */
-  private @Nullable Scope createScope(@Nullable String scopeStr) {
-    if (scopeStr != null && !scopeStr.isEmpty()) {
-      return Scope.parse(scopeStr);
-    }
-    return null;
-  }
-
-  /**
-   * Creates a list of resource URIs from the resource string.
-   *
-   * @param resourceStr the resource URI string
-   * @return the list of resource URIs, or null if the resource string is null or empty
-   */
-  private @Nullable List<URI> createResources(@Nullable String resourceStr) {
-    if (resourceStr != null && !resourceStr.isEmpty()) {
-      return Collections.singletonList(URI.create(resourceStr));
-    }
-    return null;
-  }
-
-  /**
-   * Creates a ClientAuthentication object from the configured client credentials.
-   *
-   * @return the ClientAuthentication object, or null if no credentials are configured
-   */
-  private @Nullable ClientAuthentication createClientAuthentication() {
-    if (clientId != null && clientSecret != null) {
-      return new ClientSecretBasic(new ClientID(clientId), new Secret(clientSecret));
-    }
-    return null;
   }
 
   /** Builder for OAuthConfiguration. */
