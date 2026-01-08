@@ -309,8 +309,11 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><span class="type-name-label">NullVector.</span><code><a href="../../../NullVector.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../../ValueVector.html#getField()" class="member-name-link">getField</a>()</code></div>
-<div class="col-last even-row-color">
+<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../UuidVector.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../../ValueVector.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Get information about how this field is materialized.</div>
 </div>
 </div>
@@ -595,6 +598,15 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair comprising this and a target vector of the same type.</div>
 </div>
+<div class="col-first odd-row-color"><code><a href="../../../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../UuidVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../UuidVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="../../../util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../../ValueVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
@@ -908,28 +920,40 @@ loadScripts(document, 'script');</script>
 <div class="block">Instantiate a TinyIntVector.</div>
 </div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../../../UInt1Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt1Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+<div class="col-second odd-row-color"><code><a href="../../../UuidVector.TransferImpl.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">TransferImpl</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Constructs a transfer pair, creating a new target vector from the field and allocator.</div>
+</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../UInt1Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt1Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Constructor for UInt1Vector.</div>
 </div>
-<div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../UInt2Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt2Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
- <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Constructor for UInt2Vector type.</div>
-</div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../../../UInt4Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt4Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+<div class="col-second odd-row-color"><code><a href="../../../UInt2Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt2Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Constructor for UInt4Vector.</div>
+<div class="block">Constructor for UInt2Vector type.</div>
 </div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../UInt8Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt8Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+<div class="col-second even-row-color"><code><a href="../../../UInt4Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt4Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Constructor for UInt4Vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../UInt8Vector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UInt8Vector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Constructor for UInt8Vector.</div>
+</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../UuidVector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">UuidVector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a UUID vector from a field and allocator.</div>
 </div>
 <div class="col-first odd-row-color"><code>&nbsp;</code></div>
 <div class="col-second odd-row-color"><code><a href="../../../VarBinaryVector.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">VarBinaryVector</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
@@ -1583,29 +1607,32 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryReaderImpl.</span><code><a href="../../../complex/impl/VarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidReaderImpl.</span><code><a href="../../../complex/impl/UuidReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarBinaryWriterImpl.</span><code><a href="../../../complex/impl/VarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VarBinaryReaderImpl.</span><code><a href="../../../complex/impl/VarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarCharReaderImpl.</span><code><a href="../../../complex/impl/VarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryWriterImpl.</span><code><a href="../../../complex/impl/VarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarCharWriterImpl.</span><code><a href="../../../complex/impl/VarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VarCharReaderImpl.</span><code><a href="../../../complex/impl/VarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryReaderImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VarCharWriterImpl.</span><code><a href="../../../complex/impl/VarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryWriterImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryReaderImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharReaderImpl.</span><code><a href="../../../complex/impl/ViewVarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryWriterImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharWriterImpl.</span><code><a href="../../../complex/impl/ViewVarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharReaderImpl.</span><code><a href="../../../complex/impl/ViewVarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharWriterImpl.</span><code><a href="../../../complex/impl/ViewVarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

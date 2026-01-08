@@ -79,10 +79,14 @@ loadScripts(document, 'script');</script>
 <dt>Type Parameters:</dt>
 <dd><code>T</code> - the type of writer implementation for a specific <a href="../../ExtensionTypeVector.html" title="class in org.apache.arrow.vector"><code>ExtensionTypeVector</code></a>.</dd>
 </dl>
+<dl class="notes">
+<dt>All Known Implementing Classes:</dt>
+<dd><code><a href="UuidWriterFactory.html" title="class in org.apache.arrow.vector.complex.impl">UuidWriterFactory</a></code></dd>
+</dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">ExtensionTypeWriterFactory&lt;T extends <a href="../writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&gt;</span></div>
-<div class="block">A factory interface for creating instances of <code>ExtensionTypeWriter</code>. This factory allows
- configuring writer implementations for specific <a href="../../ExtensionTypeVector.html" title="class in org.apache.arrow.vector"><code>ExtensionTypeVector</code></a>.</div>
+<div class="block">A factory interface for creating instances of <a href="AbstractExtensionTypeWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>AbstractExtensionTypeWriter</code></a>. This factory
+ allows configuring writer implementations for specific <a href="../../ExtensionTypeVector.html" title="class in org.apache.arrow.vector"><code>ExtensionTypeVector</code></a>.</div>
 </section>
 <section class="summary">
 <ul class="summary-list">

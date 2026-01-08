@@ -957,9 +957,17 @@ loadScripts(document, 'script');</script>
 <div class="block">Vector for which each data element resides in a continuous memory region, so it can be pointed to
  by an <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/util/ArrowBufPointer.html" title="class in org.apache.arrow.memory.util"><code>ArrowBufPointer</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/FieldVector.html#org.apache.arrow.vector">FieldVector</a></div>
+<div class="col-first odd-row-color"><a href="class-use/ExtensionTypeVector.html#org.apache.arrow.vector">ExtensionTypeVector</a></div>
 <div class="col-last odd-row-color">
+<div class="block">A vector that wraps an underlying vector, used to help implement extension types.</div>
+</div>
+<div class="col-first even-row-color"><a href="class-use/FieldVector.html#org.apache.arrow.vector">FieldVector</a></div>
+<div class="col-last even-row-color">
 <div class="block">A vector corresponding to a Field in the schema.</div>
+</div>
+<div class="col-first odd-row-color"><a href="class-use/FixedSizeBinaryVector.html#org.apache.arrow.vector">FixedSizeBinaryVector</a></div>
+<div class="col-last odd-row-color">
+<div class="block">FixedSizeBinaryVector implements a fixed width vector of binary values which could be null.</div>
 </div>
 <div class="col-first even-row-color"><a href="class-use/FixedWidthVector.html#org.apache.arrow.vector">FixedWidthVector</a></div>
 <div class="col-last even-row-color">
@@ -991,30 +999,34 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">The buffer layout of vectors for a given type.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/ValueIterableVector.html#org.apache.arrow.vector">ValueIterableVector</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="class-use/ValueVector.html#org.apache.arrow.vector">ValueVector</a></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><a href="class-use/UuidVector.html#org.apache.arrow.vector">UuidVector</a></div>
+<div class="col-last odd-row-color">
+<div class="block">Vector implementation for UUID values using <a href="extension/UuidType.html" title="class in org.apache.arrow.vector.extension"><code>UuidType</code></a>.</div>
+</div>
+<div class="col-first even-row-color"><a href="class-use/ValueIterableVector.html#org.apache.arrow.vector">ValueIterableVector</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="class-use/ValueVector.html#org.apache.arrow.vector">ValueVector</a></div>
+<div class="col-last odd-row-color">
 <div class="block">An abstraction that is used to store a sequence of values in an individual column.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/VariableWidthFieldVector.html#org.apache.arrow.vector">VariableWidthFieldVector</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><a href="class-use/VariableWidthFieldVector.html#org.apache.arrow.vector">VariableWidthFieldVector</a></div>
+<div class="col-last even-row-color">
 <div class="block">A base interface for common functionalities in variable width vectors.</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/VariableWidthVector.html#org.apache.arrow.vector">VariableWidthVector</a></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><a href="class-use/VariableWidthVector.html#org.apache.arrow.vector">VariableWidthVector</a></div>
+<div class="col-last odd-row-color">
 <div class="block">Interface vectors that contain variable width members (e.g.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/VectorDefinitionSetter.html#org.apache.arrow.vector">VectorDefinitionSetter</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><a href="class-use/VectorDefinitionSetter.html#org.apache.arrow.vector">VectorDefinitionSetter</a></div>
+<div class="col-last even-row-color">
 <div class="block">Interface for setting a specific index values as defined/valid on a vector.</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/VectorSchemaRoot.html#org.apache.arrow.vector">VectorSchemaRoot</a></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><a href="class-use/VectorSchemaRoot.html#org.apache.arrow.vector">VectorSchemaRoot</a></div>
+<div class="col-last odd-row-color">
 <div class="block">Holder for a set of vectors to be loaded/unloaded.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/ZeroVector.html#org.apache.arrow.vector">ZeroVector</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><a href="class-use/ZeroVector.html#org.apache.arrow.vector">ZeroVector</a></div>
+<div class="col-last even-row-color">
 <div class="block">A zero length vector of any type.</div>
 </div>
 </div>
@@ -1467,24 +1479,28 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">UInt8Vector implements a fixed width vector (8 bytes) of integer values which could be null.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/ValueVector.html#org.apache.arrow.vector.complex.impl">ValueVector</a></div>
+<div class="col-first odd-row-color"><a href="class-use/UuidVector.html#org.apache.arrow.vector.complex.impl">UuidVector</a></div>
 <div class="col-last odd-row-color">
+<div class="block">Vector implementation for UUID values using <a href="extension/UuidType.html" title="class in org.apache.arrow.vector.extension"><code>UuidType</code></a>.</div>
+</div>
+<div class="col-first even-row-color"><a href="class-use/ValueVector.html#org.apache.arrow.vector.complex.impl">ValueVector</a></div>
+<div class="col-last even-row-color">
 <div class="block">An abstraction that is used to store a sequence of values in an individual column.</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/VarBinaryVector.html#org.apache.arrow.vector.complex.impl">VarBinaryVector</a></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><a href="class-use/VarBinaryVector.html#org.apache.arrow.vector.complex.impl">VarBinaryVector</a></div>
+<div class="col-last odd-row-color">
 <div class="block">VarBinaryVector implements a variable width vector of binary values which could be NULL.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/VarCharVector.html#org.apache.arrow.vector.complex.impl">VarCharVector</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><a href="class-use/VarCharVector.html#org.apache.arrow.vector.complex.impl">VarCharVector</a></div>
+<div class="col-last even-row-color">
 <div class="block">VarCharVector implements a variable width vector of VARCHAR values which could be NULL.</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/ViewVarBinaryVector.html#org.apache.arrow.vector.complex.impl">ViewVarBinaryVector</a></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><a href="class-use/ViewVarBinaryVector.html#org.apache.arrow.vector.complex.impl">ViewVarBinaryVector</a></div>
+<div class="col-last odd-row-color">
 <div class="block">ViewVarBinaryVector implements a variable width view vector of binary values which could be NULL.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/ViewVarCharVector.html#org.apache.arrow.vector.complex.impl">ViewVarCharVector</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><a href="class-use/ViewVarCharVector.html#org.apache.arrow.vector.complex.impl">ViewVarCharVector</a></div>
+<div class="col-last even-row-color">
 <div class="block">ViewVarCharVector implements a view of a variable width vector of VARCHAR values which could be
  NULL.</div>
 </div>

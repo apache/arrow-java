@@ -62,6 +62,8 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.holders">org.apache.arrow.vector.holders</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -75,6 +77,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>void</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">NullReader.</span><code><a href="../../complex/impl/NullReader.html#read(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">read</a><wbr>(<a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidReaderImpl.</span><code><a href="../../complex/impl/UuidReaderImpl.html#read(int,org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">read</a><wbr>(int&nbsp;arrayIndex,
+ <a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidReaderImpl.</span><code><a href="../../complex/impl/UuidReaderImpl.html#read(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">read</a><wbr>(<a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">UnionExtensionWriter.</span><code><a href="../../complex/impl/UnionExtensionWriter.html#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
@@ -91,6 +100,9 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code>void</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../complex/impl/UnionListWriter.html#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;var1)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidWriterImpl.</span><code><a href="../../complex/impl/UuidWriterImpl.html#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -122,6 +134,27 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">BaseWriter.ExtensionWriter.</span><code><a href="../../complex/writer/BaseWriter.ExtensionWriter.html#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Writes value from the given extension holder.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.vector.holders">
+<h2>Uses of <a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a> in <a href="../package-summary.html">org.apache.arrow.vector.holders</a></h2>
+<div class="caption"><span>Subclasses of <a href="../ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a> in <a href="../package-summary.html">org.apache.arrow.vector.holders</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../NullableUuidHolder.html" class="type-name-link" title="class in org.apache.arrow.vector.holders">NullableUuidHolder</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Value holder for nullable UUID values.</div>
+</div>
+<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../UuidHolder.html" class="type-name-link" title="class in org.apache.arrow.vector.holders">UuidHolder</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block">Value holder for non-nullable UUID values.</div>
 </div>
 </div>
 </section>

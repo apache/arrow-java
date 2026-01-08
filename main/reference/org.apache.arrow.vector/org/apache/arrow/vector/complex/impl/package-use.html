@@ -77,7 +77,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="class-use/ExtensionTypeWriterFactory.html#org.apache.arrow.vector">ExtensionTypeWriterFactory</a></div>
 <div class="col-last even-row-color">
-<div class="block">A factory interface for creating instances of <code>ExtensionTypeWriter</code>.</div>
+<div class="block">A factory interface for creating instances of <a href="AbstractExtensionTypeWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>AbstractExtensionTypeWriter</code></a>.</div>
 </div>
 </div>
 </section>
@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="class-use/ExtensionTypeWriterFactory.html#org.apache.arrow.vector.complex">ExtensionTypeWriterFactory</a></div>
 <div class="col-last even-row-color">
-<div class="block">A factory interface for creating instances of <code>ExtensionTypeWriter</code>.</div>
+<div class="block">A factory interface for creating instances of <a href="AbstractExtensionTypeWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>AbstractExtensionTypeWriter</code></a>.</div>
 </div>
 <div class="col-first odd-row-color"><a href="class-use/NullableStructReaderImpl.html#org.apache.arrow.vector.complex">NullableStructReaderImpl</a></div>
 <div class="col-last odd-row-color">
@@ -146,54 +146,58 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="class-use/ExtensionTypeWriterFactory.html#org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a></div>
+<div class="col-first even-row-color"><a href="class-use/AbstractExtensionTypeWriter.html#org.apache.arrow.vector.complex.impl">AbstractExtensionTypeWriter</a></div>
 <div class="col-last even-row-color">
-<div class="block">A factory interface for creating instances of <code>ExtensionTypeWriter</code>.</div>
+<div class="block">Base <code>AbstractFieldWriter</code> class for an <a href="../../ExtensionTypeVector.html" title="class in org.apache.arrow.vector"><code>ExtensionTypeVector</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/NullableStructWriter.html#org.apache.arrow.vector.complex.impl">NullableStructWriter</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="class-use/NullableStructWriterFactory.html#org.apache.arrow.vector.complex.impl">NullableStructWriterFactory</a></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><a href="class-use/ExtensionTypeWriterFactory.html#org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a></div>
+<div class="col-last odd-row-color">
+<div class="block">A factory interface for creating instances of <a href="AbstractExtensionTypeWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>AbstractExtensionTypeWriter</code></a>.</div>
+</div>
+<div class="col-first even-row-color"><a href="class-use/NullableStructWriter.html#org.apache.arrow.vector.complex.impl">NullableStructWriter</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="class-use/NullableStructWriterFactory.html#org.apache.arrow.vector.complex.impl">NullableStructWriterFactory</a></div>
+<div class="col-last odd-row-color">
 <div class="block">A factory for <a href="NullableStructWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>NullableStructWriter</code></a> instances.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/NullReader.html#org.apache.arrow.vector.complex.impl">NullReader</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><a href="class-use/NullReader.html#org.apache.arrow.vector.complex.impl">NullReader</a></div>
+<div class="col-last even-row-color">
 <div class="block">Source code generated using FreeMarker template NullReader.java</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/PromotableViewWriter.html#org.apache.arrow.vector.complex.impl">PromotableViewWriter</a></div>
+<div class="col-first odd-row-color"><a href="class-use/PromotableViewWriter.html#org.apache.arrow.vector.complex.impl">PromotableViewWriter</a></div>
+<div class="col-last odd-row-color">
+<div class="block">This FieldWriter implementation delegates all FieldWriter API calls to an inner FieldWriter.</div>
+</div>
+<div class="col-first even-row-color"><a href="class-use/PromotableWriter.html#org.apache.arrow.vector.complex.impl">PromotableWriter</a></div>
 <div class="col-last even-row-color">
 <div class="block">This FieldWriter implementation delegates all FieldWriter API calls to an inner FieldWriter.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/PromotableWriter.html#org.apache.arrow.vector.complex.impl">PromotableWriter</a></div>
-<div class="col-last odd-row-color">
-<div class="block">This FieldWriter implementation delegates all FieldWriter API calls to an inner FieldWriter.</div>
-</div>
-<div class="col-first even-row-color"><a href="class-use/PromotableWriter.State.html#org.apache.arrow.vector.complex.impl">PromotableWriter.State</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/SingleStructReaderImpl.html#org.apache.arrow.vector.complex.impl">SingleStructReaderImpl</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first odd-row-color"><a href="class-use/PromotableWriter.State.html#org.apache.arrow.vector.complex.impl">PromotableWriter.State</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="class-use/SingleStructReaderImpl.html#org.apache.arrow.vector.complex.impl">SingleStructReaderImpl</a></div>
+<div class="col-last even-row-color">
 <div class="block"><a href="../reader/FieldReader.html" title="interface in org.apache.arrow.vector.complex.reader"><code>FieldReader</code></a> for a single <a href="../NonNullableStructVector.html" title="class in org.apache.arrow.vector.complex"><code>NonNullableStructVector</code></a>.</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/SingleStructWriter.html#org.apache.arrow.vector.complex.impl">SingleStructWriter</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/UnionLargeListWriter.html#org.apache.arrow.vector.complex.impl">UnionLargeListWriter</a></div>
+<div class="col-first odd-row-color"><a href="class-use/SingleStructWriter.html#org.apache.arrow.vector.complex.impl">SingleStructWriter</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="class-use/UnionListReader.html#org.apache.arrow.vector.complex.impl">UnionListReader</a></div>
-<div class="col-last even-row-color">
+<div class="col-first even-row-color"><a href="class-use/UnionLargeListWriter.html#org.apache.arrow.vector.complex.impl">UnionLargeListWriter</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="class-use/UnionListReader.html#org.apache.arrow.vector.complex.impl">UnionListReader</a></div>
+<div class="col-last odd-row-color">
 <div class="block"><a href="../reader/FieldReader.html" title="interface in org.apache.arrow.vector.complex.reader"><code>FieldReader</code></a> for list of union types.</div>
 </div>
-<div class="col-first odd-row-color"><a href="class-use/UnionListViewWriter.html#org.apache.arrow.vector.complex.impl">UnionListViewWriter</a></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="class-use/UnionListWriter.html#org.apache.arrow.vector.complex.impl">UnionListWriter</a></div>
+<div class="col-first even-row-color"><a href="class-use/UnionListViewWriter.html#org.apache.arrow.vector.complex.impl">UnionListViewWriter</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/UnionMapWriter.html#org.apache.arrow.vector.complex.impl">UnionMapWriter</a></div>
-<div class="col-last odd-row-color">
+<div class="col-first odd-row-color"><a href="class-use/UnionListWriter.html#org.apache.arrow.vector.complex.impl">UnionListWriter</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="class-use/UnionMapWriter.html#org.apache.arrow.vector.complex.impl">UnionMapWriter</a></div>
+<div class="col-last even-row-color">
 <div class="block">Writer for MapVectors.</div>
 </div>
-<div class="col-first even-row-color"><a href="class-use/UnionViewWriter.html#org.apache.arrow.vector.complex.impl">UnionViewWriter</a></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="class-use/UnionWriter.html#org.apache.arrow.vector.complex.impl">UnionWriter</a></div>
+<div class="col-first odd-row-color"><a href="class-use/UnionViewWriter.html#org.apache.arrow.vector.complex.impl">UnionViewWriter</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="class-use/UnionWriter.html#org.apache.arrow.vector.complex.impl">UnionWriter</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -207,7 +211,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="class-use/ExtensionTypeWriterFactory.html#org.apache.arrow.vector.complex.reader">ExtensionTypeWriterFactory</a></div>
 <div class="col-last odd-row-color">
-<div class="block">A factory interface for creating instances of <code>ExtensionTypeWriter</code>.</div>
+<div class="block">A factory interface for creating instances of <a href="AbstractExtensionTypeWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>AbstractExtensionTypeWriter</code></a>.</div>
 </div>
 <div class="col-first even-row-color"><a href="class-use/UnionWriter.html#org.apache.arrow.vector.complex.reader">UnionWriter</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
@@ -222,7 +226,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="class-use/ExtensionTypeWriterFactory.html#org.apache.arrow.vector.complex.writer">ExtensionTypeWriterFactory</a></div>
 <div class="col-last even-row-color">
-<div class="block">A factory interface for creating instances of <code>ExtensionTypeWriter</code>.</div>
+<div class="block">A factory interface for creating instances of <a href="AbstractExtensionTypeWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>AbstractExtensionTypeWriter</code></a>.</div>
 </div>
 </div>
 </section>

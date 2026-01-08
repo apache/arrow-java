@@ -76,6 +76,11 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block"><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util"><code>TransferPair</code></a> for <a href="../../TimeStampVector.html" title="class in org.apache.arrow.vector"><code>TimeStampVector</code></a>.</div>
 </div>
+<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../UuidVector.TransferImpl.html" class="type-name-link" title="class in org.apache.arrow.vector">UuidVector.TransferImpl</a></code></div>
+<div class="col-last odd-row-color">
+<div class="block"><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util"><code>TransferPair</code></a> for <a href="../../UuidVector.html" title="class in org.apache.arrow.vector"><code>UuidVector</code></a>.</div>
+</div>
 </div>
 <div class="caption"><span>Methods in <a href="../../package-summary.html">org.apache.arrow.vector</a> that return <a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span></div>
 <div class="summary-table three-column-summary">
@@ -660,262 +665,286 @@ loadScripts(document, 'script');</script>
 <div class="block">Construct a TransferPair comprising this and a target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../UuidVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../UuidVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="../CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../UuidVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../UuidVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../UuidVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="../CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">
+<div class="block">To transfer quota responsibility.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="../CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">To transfer quota responsibility.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">
+<div class="block">To transfer quota responsibility.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">To transfer quota responsibility.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
 <div class="col-last even-row-color">
 <div class="block">To transfer quota responsibility.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">To transfer quota responsibility.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryVector.</span><code><a href="../../VarBinaryVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last even-row-color">
-<div class="block">To transfer quota responsibility.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
- <a href="../CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">To transfer quota responsibility.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarBinaryVector.</span><code><a href="../../VarBinaryVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last even-row-color">
 <div class="block">Construct a TransferPair comprising of this and a target vector of the same type.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryVector.</span><code><a href="../../VarBinaryVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarCharVector.</span><code><a href="../../VarCharVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second even-row-color"><span class="type-name-label">VarBinaryVector.</span><code><a href="../../VarBinaryVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VarCharVector.</span><code><a href="../../VarCharVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair comprising of this and a target vector of the same type.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarCharVector.</span><code><a href="../../VarCharVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryVector.</span><code><a href="../../ViewVarBinaryVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair comprising this and a target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryVector.</span><code><a href="../../ViewVarBinaryVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharVector.</span><code><a href="../../ViewVarCharVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair comprising this and a target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharVector.</span><code><a href="../../ViewVarCharVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../../ZeroVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second even-row-color"><span class="type-name-label">VarCharVector.</span><code><a href="../../VarCharVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../../ZeroVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryVector.</span><code><a href="../../ViewVarBinaryVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair comprising this and a target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryVector.</span><code><a href="../../ViewVarBinaryVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharVector.</span><code><a href="../../ViewVarCharVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair comprising this and a target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharVector.</span><code><a href="../../ViewVarCharVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../../ZeroVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../../ZeroVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../../ZeroVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../../ZeroVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BigIntVector.</span><code><a href="../../BigIntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BitVector.</span><code><a href="../../BitVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BigIntVector.</span><code><a href="../../BigIntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DateDayVector.</span><code><a href="../../DateDayVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BitVector.</span><code><a href="../../BitVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DateMilliVector.</span><code><a href="../../DateMilliVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DateDayVector.</span><code><a href="../../DateDayVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../Decimal256Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DateMilliVector.</span><code><a href="../../DateMilliVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../DecimalVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../Decimal256Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../DurationVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../DecimalVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../../ExtensionTypeVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../FixedSizeBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float2Vector.</span><code><a href="../../Float2Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../DurationVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Float4Vector.</span><code><a href="../../Float4Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float8Vector.</span><code><a href="../../Float8Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../IntervalDayVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../IntervalMonthDayNanoVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalYearVector.</span><code><a href="../../IntervalYearVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntVector.</span><code><a href="../../IntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">LargeVarBinaryVector.</span><code><a href="../../LargeVarBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LargeVarCharVector.</span><code><a href="../../LargeVarCharVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">NullVector.</span><code><a href="../../NullVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../../ExtensionTypeVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">SmallIntVector.</span><code><a href="../../SmallIntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../FixedSizeBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeMicroVector.</span><code><a href="../../TimeMicroVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float2Vector.</span><code><a href="../../Float2Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeMilliVector.</span><code><a href="../../TimeMilliVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Float4Vector.</span><code><a href="../../Float4Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeNanoVector.</span><code><a href="../../TimeNanoVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float8Vector.</span><code><a href="../../Float8Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeSecVector.</span><code><a href="../../TimeSecVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../IntervalDayVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroTZVector.</span><code><a href="../../TimeStampMicroTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../IntervalMonthDayNanoVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroVector.</span><code><a href="../../TimeStampMicroVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalYearVector.</span><code><a href="../../IntervalYearVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliTZVector.</span><code><a href="../../TimeStampMilliTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntVector.</span><code><a href="../../IntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliVector.</span><code><a href="../../TimeStampMilliVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">LargeVarBinaryVector.</span><code><a href="../../LargeVarBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoTZVector.</span><code><a href="../../TimeStampNanoTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">LargeVarCharVector.</span><code><a href="../../LargeVarCharVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoVector.</span><code><a href="../../TimeStampNanoVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecTZVector.</span><code><a href="../../TimeStampSecTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecVector.</span><code><a href="../../TimeStampSecVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TinyIntVector.</span><code><a href="../../TinyIntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
-<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt1Vector.</span><code><a href="../../UInt1Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NullVector.</span><code><a href="../../NullVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt2Vector.</span><code><a href="../../UInt2Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SmallIntVector.</span><code><a href="../../SmallIntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeMicroVector.</span><code><a href="../../TimeMicroVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeMilliVector.</span><code><a href="../../TimeMilliVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeNanoVector.</span><code><a href="../../TimeNanoVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeSecVector.</span><code><a href="../../TimeSecVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroTZVector.</span><code><a href="../../TimeStampMicroTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroVector.</span><code><a href="../../TimeStampMicroVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliTZVector.</span><code><a href="../../TimeStampMilliTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliVector.</span><code><a href="../../TimeStampMilliVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoTZVector.</span><code><a href="../../TimeStampNanoTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoVector.</span><code><a href="../../TimeStampNanoVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecTZVector.</span><code><a href="../../TimeStampSecTZVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecVector.</span><code><a href="../../TimeStampSecVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TinyIntVector.</span><code><a href="../../TinyIntVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt1Vector.</span><code><a href="../../UInt1Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt4Vector.</span><code><a href="../../UInt4Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt2Vector.</span><code><a href="../../UInt2Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt8Vector.</span><code><a href="../../UInt8Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt4Vector.</span><code><a href="../../UInt4Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt8Vector.</span><code><a href="../../UInt8Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../UuidVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../../ValueVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>

@@ -56,19 +56,37 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Package</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.compare">org.apache.arrow.vector.compare</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.compare">org.apache.arrow.vector.compare</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.validate">org.apache.arrow.vector.validate</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.validate">org.apache.arrow.vector.validate</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
+<li>
+<section class="detail" id="org.apache.arrow.vector">
+<h2>Uses of <a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a> in <a href="../package-summary.html">org.apache.arrow.vector</a></h2>
+<div class="caption"><span>Subclasses of <a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a> in <a href="../package-summary.html">org.apache.arrow.vector</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../UuidVector.html" class="type-name-link" title="class in org.apache.arrow.vector">UuidVector</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Vector implementation for UUID values using <a href="../extension/UuidType.html" title="class in org.apache.arrow.vector.extension"><code>UuidType</code></a>.</div>
+</div>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="org.apache.arrow.vector.compare">
 <h2>Uses of <a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a> in <a href="../compare/package-summary.html">org.apache.arrow.vector.compare</a></h2>
@@ -127,6 +145,11 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">ExtensionTypeWriterFactory.</span><code><a href="../complex/impl/ExtensionTypeWriterFactory.html#getWriterImpl(org.apache.arrow.vector.ExtensionTypeVector)" class="member-name-link">getWriterImpl</a><wbr>(<a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a>&nbsp;vector)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Returns an instance of the writer implementation for the given <a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector"><code>ExtensionTypeVector</code></a>.</div>
+</div>
+<div class="col-first odd-row-color"><code>org.apache.arrow.vector.complex.impl.AbstractFieldWriter</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidWriterFactory.</span><code><a href="../complex/impl/UuidWriterFactory.html#getWriterImpl(org.apache.arrow.vector.ExtensionTypeVector)" class="member-name-link">getWriterImpl</a><wbr>(<a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a>&nbsp;extensionTypeVector)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Creates a writer implementation for the given extension type vector.</div>
 </div>
 </div>
 <div class="caption"><span>Constructors in <a href="../complex/impl/package-summary.html">org.apache.arrow.vector.complex.impl</a> with parameters of type <a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></span></div>

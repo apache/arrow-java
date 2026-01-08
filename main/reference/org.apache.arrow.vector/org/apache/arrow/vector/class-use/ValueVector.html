@@ -681,30 +681,35 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">UInt8Vector implements a fixed width vector (8 bytes) of integer values which could be null.</div>
 </div>
-<div class="col-first odd-row-color"><code>final class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../VarBinaryVector.html" class="type-name-link" title="class in org.apache.arrow.vector">VarBinaryVector</a></code></div>
+<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../UuidVector.html" class="type-name-link" title="class in org.apache.arrow.vector">UuidVector</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">Vector implementation for UUID values using <a href="../extension/UuidType.html" title="class in org.apache.arrow.vector.extension"><code>UuidType</code></a>.</div>
+</div>
+<div class="col-first even-row-color"><code>final class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../VarBinaryVector.html" class="type-name-link" title="class in org.apache.arrow.vector">VarBinaryVector</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">VarBinaryVector implements a variable width vector of binary values which could be NULL.</div>
 </div>
-<div class="col-first even-row-color"><code>final class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../VarCharVector.html" class="type-name-link" title="class in org.apache.arrow.vector">VarCharVector</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>final class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../VarCharVector.html" class="type-name-link" title="class in org.apache.arrow.vector">VarCharVector</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">VarCharVector implements a variable width vector of VARCHAR values which could be NULL.</div>
 </div>
-<div class="col-first odd-row-color"><code>final class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../ViewVarBinaryVector.html" class="type-name-link" title="class in org.apache.arrow.vector">ViewVarBinaryVector</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>final class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../ViewVarBinaryVector.html" class="type-name-link" title="class in org.apache.arrow.vector">ViewVarBinaryVector</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">ViewVarBinaryVector implements a variable width view vector of binary values which could be NULL.</div>
 </div>
-<div class="col-first even-row-color"><code>final class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../ViewVarCharVector.html" class="type-name-link" title="class in org.apache.arrow.vector">ViewVarCharVector</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>final class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../ViewVarCharVector.html" class="type-name-link" title="class in org.apache.arrow.vector">ViewVarCharVector</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">ViewVarCharVector implements a view of a variable width vector of VARCHAR values which could be
  NULL.</div>
 </div>
-<div class="col-first odd-row-color"><code>final class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../ZeroVector.html" class="type-name-link" title="class in org.apache.arrow.vector">ZeroVector</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>final class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../ZeroVector.html" class="type-name-link" title="class in org.apache.arrow.vector">ZeroVector</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">A zero length vector of any type.</div>
 </div>
 </div>
@@ -826,75 +831,85 @@ loadScripts(document, 'script');</script>
  <a href="../complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../ValueVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../UuidVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
  int&nbsp;thisIndex,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Copy a cell value from a particular index in source vector to a particular position in this
- vector.</div>
-</div>
+<div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../ValueVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../ValueVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
  int&nbsp;thisIndex,
- <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
- <a href="../complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Copy a cell value from a particular index in source vector to a particular position in this
  vector.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseFixedWidthVector.</span><code><a href="../BaseFixedWidthVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../ValueVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Copy a cell value from a particular index in source vector to a particular position in this
+ vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseFixedWidthVector.</span><code><a href="../BaseFixedWidthVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
  int&nbsp;thisIndex,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Same as <a href="../BaseFixedWidthVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>BaseFixedWidthVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
  capacity of the vector needs to be expanded before copy.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../BaseLargeVariableWidthVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Same as <a href="../BaseLargeVariableWidthVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>BaseLargeVariableWidthVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
- capacity of the vector needs to be expanded before copy.</div>
-</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../BaseValueVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../BaseValueVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
- <a href="../complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../BaseVariableWidthVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../BaseLargeVariableWidthVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
  int&nbsp;thisIndex,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Same as <a href="../BaseVariableWidthVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>BaseVariableWidthVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
+<div class="block">Same as <a href="../BaseLargeVariableWidthVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>BaseLargeVariableWidthVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
  capacity of the vector needs to be expanded before copy.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../BaseVariableWidthViewVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+<div class="col-second odd-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../BaseValueVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
  int&nbsp;thisIndex,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Same as <a href="../BaseVariableWidthViewVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>BaseVariableWidthViewVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
- capacity of the vector needs to be expanded before copy.</div>
-</div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">NullVector.</span><code><a href="../NullVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">NullVector.</span><code><a href="../NullVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+<div class="col-second even-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../BaseValueVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
  int&nbsp;thisIndex,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
  <a href="../complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../BaseVariableWidthVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Same as <a href="../BaseVariableWidthVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>BaseVariableWidthVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
+ capacity of the vector needs to be expanded before copy.</div>
+</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../BaseVariableWidthViewVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Same as <a href="../BaseVariableWidthViewVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>BaseVariableWidthViewVector.copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
+ capacity of the vector needs to be expanded before copy.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NullVector.</span><code><a href="../NullVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NullVector.</span><code><a href="../NullVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
+ <a href="../complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../UuidVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../ValueVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
@@ -1093,33 +1108,36 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color"><span class="type-name-label">UInt8Vector.</span><code><a href="../UInt8Vector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../ValueVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
-<div class="col-last even-row-color">
+<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../UuidVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ValueVector.</span><code><a href="../ValueVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Makes a new transfer pair used to transfer underlying buffers.</div>
 </div>
-<div class="col-first odd-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryVector.</span><code><a href="../VarBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
-</div>
 <div class="col-first even-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarCharVector.</span><code><a href="../VarCharVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VarBinaryVector.</span><code><a href="../VarBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryVector.</span><code><a href="../ViewVarBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VarCharVector.</span><code><a href="../VarCharVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first even-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharVector.</span><code><a href="../ViewVarCharVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryVector.</span><code><a href="../ViewVarBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../ZeroVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharVector.</span><code><a href="../ViewVarCharVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;to)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
+</div>
+<div class="col-first even-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ZeroVector.</span><code><a href="../ZeroVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
