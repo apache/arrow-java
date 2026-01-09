@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
 import org.apache.arrow.vector.IntVector;
@@ -58,21 +59,21 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetBaseTypeNameReturnCorrectTypeName() {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     assertEquals("INTEGER", arrowFlightJdbcArray.getBaseTypeName());
   }
 
   @Test
   public void testShouldGetBaseTypeReturnCorrectType() {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     assertEquals(Types.INTEGER, arrowFlightJdbcArray.getBaseType());
   }
 
   @Test
   public void testShouldGetArrayReturnValidArray() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     Object[] array = (Object[]) arrowFlightJdbcArray.getArray();
 
     Object[] expected = new Object[dataVector.getValueCount()];
@@ -85,7 +86,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetArrayReturnValidArrayWithOffsets() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     Object[] array = (Object[]) arrowFlightJdbcArray.getArray(1, 5);
 
     Object[] expected = new Object[5];
@@ -99,7 +100,7 @@ public class ArrowFlightJdbcArrayTest {
   public void testShouldGetArrayWithOffsetsThrowArrayIndexOutOfBoundsException()
       throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     assertThrows(
         ArrayIndexOutOfBoundsException.class,
         () -> arrowFlightJdbcArray.getArray(0, dataVector.getValueCount() + 1));
@@ -108,7 +109,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetArrayWithMapNotBeSupported() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     HashMap<String, Class<?>> map = new HashMap<>();
     assertThrows(SQLFeatureNotSupportedException.class, () -> arrowFlightJdbcArray.getArray(map));
   }
@@ -116,7 +117,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetArrayWithOffsetsAndMapNotBeSupported() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     HashMap<String, Class<?>> map = new HashMap<>();
     assertThrows(
         SQLFeatureNotSupportedException.class, () -> arrowFlightJdbcArray.getArray(0, 5, map));
@@ -125,7 +126,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetResultSetReturnValidResultSet() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     try (ResultSet resultSet = arrowFlightJdbcArray.getResultSet()) {
       int count = 0;
       while (resultSet.next()) {
@@ -138,7 +139,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetResultSetReturnValidResultSetWithOffsets() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     try (ResultSet resultSet = arrowFlightJdbcArray.getResultSet(3, 5)) {
       int count = 0;
       while (resultSet.next()) {
@@ -152,7 +153,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testToString() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
 
     JsonStringArrayList<Object> array = new JsonStringArrayList<>();
     array.addAll(Arrays.asList((Object[]) arrowFlightJdbcArray.getArray()));
@@ -163,7 +164,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetResultSetWithMapNotBeSupported() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     HashMap<String, Class<?>> map = new HashMap<>();
     assertThrows(
         SQLFeatureNotSupportedException.class, () -> arrowFlightJdbcArray.getResultSet(map));
@@ -172,7 +173,7 @@ public class ArrowFlightJdbcArrayTest {
   @Test
   public void testShouldGetResultSetWithOffsetsAndMapNotBeSupported() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
-        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
+        new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount(), Calendar.getInstance());
     HashMap<String, Class<?>> map = new HashMap<>();
     assertThrows(
         SQLFeatureNotSupportedException.class, () -> arrowFlightJdbcArray.getResultSet(0, 5, map));

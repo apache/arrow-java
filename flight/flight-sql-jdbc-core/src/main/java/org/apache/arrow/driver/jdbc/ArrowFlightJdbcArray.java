@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Map;
 import org.apache.arrow.driver.jdbc.accessor.impl.complex.AbstractArrowFlightJdbcListVectorAccessor;
 import org.apache.arrow.driver.jdbc.utils.SqlTypes;
@@ -42,6 +43,7 @@ public class ArrowFlightJdbcArray implements Array {
   private final FieldVector dataVector;
   private final long startOffset;
   private final long valuesCount;
+  private final Calendar localCalendar;
 
   /**
    * Instantiate an {@link Array} backed up by given {@link FieldVector}, limited by a start offset
@@ -51,10 +53,12 @@ public class ArrowFlightJdbcArray implements Array {
    * @param startOffset offset from FieldVector pointing to this Array's first value.
    * @param valuesCount how many items this Array contains.
    */
-  public ArrowFlightJdbcArray(FieldVector dataVector, long startOffset, long valuesCount) {
+  public ArrowFlightJdbcArray(
+      FieldVector dataVector, long startOffset, long valuesCount, Calendar localCalendar) {
     this.dataVector = dataVector;
     this.startOffset = startOffset;
     this.valuesCount = valuesCount;
+    this.localCalendar = localCalendar;
   }
 
   @Override
@@ -125,7 +129,8 @@ public class ArrowFlightJdbcArray implements Array {
       throw new SQLFeatureNotSupportedException();
     }
 
-    return getResultSetNoBoundariesCheck(this.dataVector, this.startOffset, this.valuesCount);
+    return getResultSetNoBoundariesCheck(
+        this.dataVector, this.startOffset, this.valuesCount, this.localCalendar);
   }
 
   @Override
@@ -134,14 +139,15 @@ public class ArrowFlightJdbcArray implements Array {
   }
 
   private static ResultSet getResultSetNoBoundariesCheck(
-      ValueVector dataVector, long start, long count) throws SQLException {
+      ValueVector dataVector, long start, long count, Calendar localCalendar) throws SQLException {
     TransferPair transferPair = dataVector.getTransferPair(dataVector.getAllocator());
     transferPair.splitAndTransfer(
         LargeMemoryUtil.checkedCastToInt(start), LargeMemoryUtil.checkedCastToInt(count));
     FieldVector vectorSlice = (FieldVector) transferPair.getTo();
 
     VectorSchemaRoot vectorSchemaRoot = VectorSchemaRoot.of(vectorSlice);
-    return ArrowFlightJdbcVectorSchemaRootResultSet.fromVectorSchemaRoot(vectorSchemaRoot);
+    return ArrowFlightJdbcVectorSchemaRootResultSet.fromVectorSchemaRoot(
+        vectorSchemaRoot, localCalendar);
   }
 
   @Override
@@ -153,7 +159,10 @@ public class ArrowFlightJdbcArray implements Array {
 
     checkBoundaries(index, count);
     return getResultSetNoBoundariesCheck(
-        this.dataVector, LargeMemoryUtil.checkedCastToInt(this.startOffset + index), count);
+        this.dataVector,
+        LargeMemoryUtil.checkedCastToInt(this.startOffset + index),
+        count,
+        this.localCalendar);
   }
 
   @Override

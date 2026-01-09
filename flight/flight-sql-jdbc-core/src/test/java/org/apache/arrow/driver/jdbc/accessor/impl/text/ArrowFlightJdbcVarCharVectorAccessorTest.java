@@ -656,7 +656,7 @@ public class ArrowFlightJdbcVarCharVectorAccessorTest {
         rootAllocatorTestExtension.createTimeStampMilliVector()) {
       ArrowFlightJdbcTimeStampVectorAccessor timeStampVectorAccessor =
           new ArrowFlightJdbcTimeStampVectorAccessor(
-              timeStampVector, () -> 0, (boolean wasNull) -> {});
+              timeStampVector, () -> 0, (boolean wasNull) -> {}, Calendar.getInstance());
 
       Text value = new Text(timeStampVectorAccessor.getString());
       when(getter.get(0)).thenReturn(value.copyBytes());
