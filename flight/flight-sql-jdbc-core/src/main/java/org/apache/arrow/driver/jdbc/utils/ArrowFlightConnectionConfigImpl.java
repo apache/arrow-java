@@ -281,7 +281,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     OAUTH_EXCHANGE_SUBJECT_TOKEN_TYPE("oauth.exchange.subjectTokenType", null, Type.STRING, false),
     OAUTH_EXCHANGE_ACTOR_TOKEN("oauth.exchange.actorToken", null, Type.STRING, false),
     OAUTH_EXCHANGE_ACTOR_TOKEN_TYPE("oauth.exchange.actorTokenType", null, Type.STRING, false),
-    OAUTH_EXCHANGE_AUDIENCE("oauth.exchange.audience", null, Type.STRING, false),
+    OAUTH_EXCHANGE_AUDIENCE("oauth.exchange.aud", null, Type.STRING, false),
     OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE(
         "oauth.exchange.requestedTokenType", null, Type.STRING, false),
     ;
