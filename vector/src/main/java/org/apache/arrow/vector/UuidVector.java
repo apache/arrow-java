@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector;
 
+import static org.apache.arrow.memory.util.MemoryUtil.LITTLE_ENDIAN;
 import static org.apache.arrow.vector.extension.UuidType.UUID_BYTE_WIDTH;
 
 import java.nio.ByteBuffer;
@@ -156,13 +157,17 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    */
   public void get(int index, UuidHolder holder) {
     Preconditions.checkArgument(index >= 0, "Cannot get negative index in UUID vector.");
-    if (NullCheckingForGet.NULL_CHECKING_ENABLED && this.isSet(index) == 0) {
-      holder.isSet = 0;
+    final ArrowBuf dataBuffer = getUnderlyingVector().getDataBuffer();
+    final long start = (long) index * UUID_BYTE_WIDTH;
+    final long next = start + Long.BYTES;
+    // UUIDs are stored in big-endian byte order in Arrow buffers.
+    // ArrowBuf.getLong() reads in native byte order, so we need to reverse bytes on LE systems.
+    if (LITTLE_ENDIAN) {
+      holder.mostSigBits = Long.reverseBytes(dataBuffer.getLong(start));
+      holder.leastSigBits = Long.reverseBytes(dataBuffer.getLong(next));
     } else {
-      holder.isSet = 1;
-      final ByteBuffer bb = ByteBuffer.wrap(getUnderlyingVector().getObject(index));
-      holder.mostSigBits = bb.getLong();
-      holder.leastSigBits = bb.getLong();
+      holder.mostSigBits = dataBuffer.getLong(start);
+      holder.leastSigBits = dataBuffer.getLong(next);
     }
   }
 
@@ -178,9 +183,17 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
       holder.isSet = 0;
     } else {
       holder.isSet = 1;
-      final ByteBuffer bb = ByteBuffer.wrap(getUnderlyingVector().getObject(index));
-      holder.mostSigBits = bb.getLong();
-      holder.leastSigBits = bb.getLong();
+      final ArrowBuf dataBuffer = getUnderlyingVector().getDataBuffer();
+      final long offset = (long) index * UUID_BYTE_WIDTH;
+      // UUIDs are stored in big-endian byte order in Arrow buffers.
+      // ArrowBuf.getLong() reads in native byte order, so we need to reverse bytes on LE systems.
+      if (LITTLE_ENDIAN) {
+        holder.mostSigBits = Long.reverseBytes(dataBuffer.getLong(offset));
+        holder.leastSigBits = Long.reverseBytes(dataBuffer.getLong(offset + Long.BYTES));
+      } else {
+        holder.mostSigBits = dataBuffer.getLong(offset);
+        holder.leastSigBits = dataBuffer.getLong(offset + Long.BYTES);
+      }
     }
   }
 
@@ -244,8 +257,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
 
     BitVectorHelper.setBit(getUnderlyingVector().getValidityBuffer(), index);
     getUnderlyingVector()
-            .getDataBuffer()
-            .setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
+        .getDataBuffer()
+        .setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
   }
 
   /**

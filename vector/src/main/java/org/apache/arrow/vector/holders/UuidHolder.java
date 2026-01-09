@@ -39,6 +39,11 @@ public class UuidHolder extends ExtensionHolder {
     this.isSet = 1;
   }
 
+  /**
+   * Converts the holder's two longs to a UUID object.
+   *
+   * @return the UUID represented by this holder
+   */
   public UUID getUuid() {
     return new UUID(mostSigBits, leastSigBits);
   }

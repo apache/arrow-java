@@ -16,7 +16,6 @@
  */
 package org.apache.arrow.vector.complex.impl;
 
-import java.util.UUID;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
@@ -107,4 +106,3 @@ public class NullableUuidHolderReaderImpl extends AbstractFieldReader {
     return holder.getUuid();
   }
 }
-

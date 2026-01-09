@@ -36,8 +36,13 @@ public class NullableUuidHolder extends ExtensionHolder {
   /** The least significant 64 bits of the UUID. */
   public long leastSigBits;
 
+  /**
+   * Converts the holder's two longs to a UUID object.
+   *
+   * @return the UUID represented by this holder, or null if isSet is 0
+   */
   public UUID getUuid() {
-    if(this.isSet == 0) {
+    if (this.isSet == 0) {
       return null;
     }
     return new UUID(mostSigBits, leastSigBits);
