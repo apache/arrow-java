@@ -57,6 +57,10 @@ import org.apache.arrow.vector.complex.impl.UnionLargeListViewWriter;
 import org.apache.arrow.vector.complex.impl.UnionListViewWriter;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.holders.NullableIntHolder;
+import org.apache.arrow.vector.holders.NullableTimeStampMicroTZHolder;
+import org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder;
+import org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder;
+import org.apache.arrow.vector.holders.NullableTimeStampSecTZHolder;
 import org.apache.arrow.vector.holders.NullableUInt4Holder;
 import org.apache.arrow.vector.holders.NullableVarBinaryHolder;
 import org.apache.arrow.vector.holders.NullableVarCharHolder;
@@ -2564,6 +2568,195 @@ public class TestValueVector {
       assertTrue(vector.isNull(1));
 
       buf.close();
+    }
+  }
+
+  @Test
+  public void testTimeStampTZVectorSetSafeUnset() {
+    // reproduction of https://github.com/apache/arrow/issues/45084
+    try (TimeStampMicroTZVector vector = new TimeStampMicroTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+      // Set a valid value
+      NullableTimeStampMicroTZHolder validHolder = new NullableTimeStampMicroTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      // Unset the value using a holder with default (null) timezone
+      // The bug used to throw IllegalArgumentException because holder.timezone (null) !=
+      // vector.timezone ("UTC")
+      // The correct behaviour is to not throw an exception and to unset the value.
+      NullableTimeStampMicroTZHolder unsetHolder = new NullableTimeStampMicroTZHolder();
+      unsetHolder.isSet = 0;
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testTimeStampMilliTZVectorSetSafeUnset() {
+    // reproduction of https://github.com/apache/arrow/issues/45084
+    try (TimeStampMilliTZVector vector = new TimeStampMilliTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+
+      NullableTimeStampMilliTZHolder validHolder = new NullableTimeStampMilliTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      NullableTimeStampMilliTZHolder unsetHolder = new NullableTimeStampMilliTZHolder();
+      unsetHolder.isSet = 0;
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testTimeStampNanoTZVectorSetSafeUnset() {
+    // reproduction of https://github.com/apache/arrow/issues/45084
+    try (TimeStampNanoTZVector vector = new TimeStampNanoTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+
+      NullableTimeStampNanoTZHolder validHolder = new NullableTimeStampNanoTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      NullableTimeStampNanoTZHolder unsetHolder = new NullableTimeStampNanoTZHolder();
+      unsetHolder.isSet = 0;
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testTimeStampSecTZVectorSetSafeUnset() {
+    // reproduction of https://github.com/apache/arrow/issues/45084
+    try (TimeStampSecTZVector vector = new TimeStampSecTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+
+      NullableTimeStampSecTZHolder validHolder = new NullableTimeStampSecTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      NullableTimeStampSecTZHolder unsetHolder = new NullableTimeStampSecTZHolder();
+      unsetHolder.isSet = 0;
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testTimeStampMicroTZVectorSetSafeUnsetExplicitTimezone() {
+    // Test to ensure fix added for https://github.com/apache/arrow/issues/45084 does not break
+    // workaround.
+    try (TimeStampMicroTZVector vector = new TimeStampMicroTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+
+      NullableTimeStampMicroTZHolder validHolder = new NullableTimeStampMicroTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      NullableTimeStampMicroTZHolder unsetHolder = new NullableTimeStampMicroTZHolder();
+      unsetHolder.isSet = 0;
+      unsetHolder.timezone = "UTC";
+
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testTimeStampMilliTZVectorSetSafeUnsetExplicitTimezone() {
+    // Test to ensure fix added for https://github.com/apache/arrow/issues/45084 does not break
+    // workaround.
+    try (TimeStampMilliTZVector vector = new TimeStampMilliTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+
+      NullableTimeStampMilliTZHolder validHolder = new NullableTimeStampMilliTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      NullableTimeStampMilliTZHolder unsetHolder = new NullableTimeStampMilliTZHolder();
+      unsetHolder.isSet = 0;
+      unsetHolder.timezone = "UTC";
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testTimeStampNanoTZVectorSetSafeUnsetExplicitTimezone() {
+    // Test to ensure fix added for https://github.com/apache/arrow/issues/45084 does not break
+    // workaround.
+    try (TimeStampNanoTZVector vector = new TimeStampNanoTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+
+      NullableTimeStampNanoTZHolder validHolder = new NullableTimeStampNanoTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      NullableTimeStampNanoTZHolder unsetHolder = new NullableTimeStampNanoTZHolder();
+      unsetHolder.isSet = 0;
+      unsetHolder.timezone = "UTC";
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testTimeStampSecTZVectorSetSafeUnsetExplicitTimezone() {
+    // Test to ensure fix added for https://github.com/apache/arrow/issues/45084 does not break
+    // workaround.
+    try (TimeStampSecTZVector vector = new TimeStampSecTZVector("vector", allocator, "UTC")) {
+      vector.allocateNew();
+
+      NullableTimeStampSecTZHolder validHolder = new NullableTimeStampSecTZHolder();
+      validHolder.isSet = 1;
+      validHolder.value = 1000L;
+      validHolder.timezone = "UTC";
+      vector.setSafe(0, validHolder);
+
+      assertEquals(1000L, vector.get(0));
+
+      NullableTimeStampSecTZHolder unsetHolder = new NullableTimeStampSecTZHolder();
+      unsetHolder.isSet = 0;
+      unsetHolder.timezone = "UTC";
+      vector.setSafe(0, unsetHolder);
+
+      assertNull(vector.getObject(0));
     }
   }
 
