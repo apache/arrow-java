@@ -104,7 +104,7 @@ public class NullableUuidHolderReaderImpl extends AbstractFieldReader {
       return null;
     }
     // Convert UUID longs to Java UUID object
-    return new UUID(holder.mostSigBits, holder.leastSigBits);
+    return holder.getUuid();
   }
 }
 

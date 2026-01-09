@@ -16,6 +16,8 @@
  */
 package org.apache.arrow.vector.holders;
 
+import java.util.UUID;
+
 /**
  * Value holder for non-nullable UUID values.
  *
@@ -35,5 +37,9 @@ public class UuidHolder extends ExtensionHolder {
   /** Constructs a UuidHolder with isSet = 1. */
   public UuidHolder() {
     this.isSet = 1;
+  }
+
+  public UUID getUuid() {
+    return new UUID(mostSigBits, leastSigBits);
   }
 }

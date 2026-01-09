@@ -1258,12 +1258,12 @@ public class TestListVector {
       FieldReader uuidReader = reader.reader();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(u1, actualUuid);
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      actualUuid = holder.getUuid();
       assertEquals(u2, actualUuid);
     }
   }
@@ -1299,12 +1299,12 @@ public class TestListVector {
       FieldReader uuidReader = reader.reader();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(u1, actualUuid);
       reader.next();
       uuidReader = reader.reader();
       uuidReader.read(holder);
-      actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      actualUuid = holder.getUuid();
       assertEquals(u2, actualUuid);
     }
   }

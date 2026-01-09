@@ -16,6 +16,8 @@
  */
 package org.apache.arrow.vector.holders;
 
+import java.util.UUID;
+
 /**
  * Value holder for nullable UUID values.
  *
@@ -33,4 +35,11 @@ public class NullableUuidHolder extends ExtensionHolder {
 
   /** The least significant 64 bits of the UUID. */
   public long leastSigBits;
+
+  public UUID getUuid() {
+    if(this.isSet == 0) {
+      return null;
+    }
+    return new UUID(mostSigBits, leastSigBits);
+  }
 }

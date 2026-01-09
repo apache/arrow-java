@@ -1303,12 +1303,12 @@ public class TestMapVector {
       FieldReader uuidReader = mapReader.value();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(u1, actualUuid);
       mapReader.next();
       uuidReader = mapReader.value();
       uuidReader.read(holder);
-      actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      actualUuid = holder.getUuid();
       assertEquals(u2, actualUuid);
     }
   }
@@ -1348,12 +1348,12 @@ public class TestMapVector {
       FieldReader uuidReader = mapReader.value();
       UuidHolder holder = new UuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(u1, actualUuid);
       mapReader.next();
       uuidReader = mapReader.value();
       uuidReader.read(holder);
-      actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      actualUuid = holder.getUuid();
       assertEquals(u2, actualUuid);
     }
   }

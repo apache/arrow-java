@@ -225,7 +225,7 @@ class TestUuidVector {
       UuidReaderImpl reader2 = (UuidReaderImpl) vector.getReader();
       UuidHolder holder = new UuidHolder();
       reader2.read(0, holder);
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(uuid, actualUuid);
     }
   }
@@ -243,7 +243,7 @@ class TestUuidVector {
       UuidHolder holder = new UuidHolder();
       reader.read(holder);
 
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(uuid, actualUuid);
       assertEquals(1, holder.isSet);
     }
@@ -262,7 +262,7 @@ class TestUuidVector {
       NullableUuidHolder holder = new NullableUuidHolder();
       reader.read(holder);
 
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(uuid, actualUuid);
       assertEquals(1, holder.isSet);
     }
@@ -301,7 +301,7 @@ class TestUuidVector {
       UuidHolder holder = new UuidHolder();
       reader.read(1, holder);
 
-      UUID actualUuid = new UUID(holder.mostSigBits, holder.leastSigBits);
+      UUID actualUuid = holder.getUuid();
       assertEquals(uuid2, actualUuid);
       assertEquals(1, holder.isSet);
     }
@@ -322,7 +322,7 @@ class TestUuidVector {
 
       NullableUuidHolder holder1 = new NullableUuidHolder();
       reader.read(0, holder1);
-      assertEquals(uuid1, new UUID(holder1.mostSigBits, holder1.leastSigBits));
+      assertEquals(uuid1, holder1.getUuid());
       assertEquals(1, holder1.isSet);
 
       NullableUuidHolder holder2 = new NullableUuidHolder();
@@ -331,7 +331,7 @@ class TestUuidVector {
 
       NullableUuidHolder holder3 = new NullableUuidHolder();
       reader.read(2, holder3);
-      assertEquals(uuid2, new UUID(holder3.mostSigBits, holder3.leastSigBits));
+      assertEquals(uuid2, holder3.getUuid());
       assertEquals(1, holder3.isSet);
     }
   }
@@ -451,17 +451,15 @@ class TestUuidVector {
       vector.setValueCount(3);
 
       // Test UuidHolder with different indices
-      UuidHolder holder1 = new UuidHolder();
-      vector.get(0, holder1);
-      assertEquals(uuid1, new UUID(holder1.mostSigBits, holder1.leastSigBits));
+      UuidHolder holder = new UuidHolder();
+      vector.get(0, holder);
+      assertEquals(uuid1, holder.getUuid());
 
-      UuidHolder holder2 = new UuidHolder();
-      vector.get(1, holder2);
-      assertEquals(uuid2, new UUID(holder2.mostSigBits, holder2.leastSigBits));
+      vector.get(1, holder);
+      assertEquals(uuid2, holder.getUuid());
 
-      UuidHolder holder3 = new UuidHolder();
-      vector.get(2, holder3);
-      assertEquals(uuid3, new UUID(holder3.mostSigBits, holder3.leastSigBits));
+      vector.get(2, holder);
+      assertEquals(uuid3, holder.getUuid());
     }
   }
 
@@ -477,19 +475,17 @@ class TestUuidVector {
       vector.setValueCount(3);
 
       // Test NullableUuidHolder with different indices
-      NullableUuidHolder holder1 = new NullableUuidHolder();
-      vector.get(0, holder1);
-      assertEquals(1, holder1.isSet);
-      assertEquals(uuid1, new UUID(holder1.mostSigBits, holder1.leastSigBits));
+      NullableUuidHolder holder = new NullableUuidHolder();
+      vector.get(0, holder);
+      assertEquals(1, holder.isSet);
+      assertEquals(uuid1, holder.getUuid());
 
-      NullableUuidHolder holder2 = new NullableUuidHolder();
-      vector.get(1, holder2);
-      assertEquals(0, holder2.isSet);
+      vector.get(1, holder);
+      assertEquals(0, holder.isSet);
 
-      NullableUuidHolder holder3 = new NullableUuidHolder();
-      vector.get(2, holder3);
-      assertEquals(1, holder3.isSet);
-      assertEquals(uuid2, new UUID(holder3.mostSigBits, holder3.leastSigBits));
+      vector.get(2, holder);
+      assertEquals(1, holder.isSet);
+      assertEquals(uuid2, holder.getUuid());
     }
   }
 
@@ -585,13 +581,13 @@ class TestUuidVector {
 
       // Read from different positions
       reader.read(0, holder);
-      assertEquals(uuid1, new UUID(holder.mostSigBits, holder.leastSigBits));
+      assertEquals(uuid1, holder.getUuid());
 
       reader.read(1, holder);
-      assertEquals(uuid2, new UUID(holder.mostSigBits, holder.leastSigBits));
+      assertEquals(uuid2, holder.getUuid());
 
       reader.read(2, holder);
-      assertEquals(uuid3, new UUID(holder.mostSigBits, holder.leastSigBits));
+      assertEquals(uuid3, holder.getUuid());
     }
   }
 
@@ -637,7 +633,7 @@ class TestUuidVector {
       NullableUuidHolder targetHolder = new NullableUuidHolder();
       reader.read(targetHolder);
       assertEquals(1, targetHolder.isSet);
-      assertEquals(uuid, new UUID(targetHolder.mostSigBits, targetHolder.leastSigBits));
+      assertEquals(uuid, targetHolder.getUuid());
     }
   }
 
@@ -681,7 +677,7 @@ class TestUuidVector {
       // Read into UuidHolder (non-nullable)
       UuidHolder targetHolder = new UuidHolder();
       reader.read(targetHolder);
-      assertEquals(uuid, new UUID(targetHolder.mostSigBits, targetHolder.leastSigBits));
+      assertEquals(uuid, targetHolder.getUuid());
     }
   }
 
@@ -706,7 +702,7 @@ class TestUuidVector {
       // Read into another holder
       NullableUuidHolder targetHolder = new NullableUuidHolder();
       reader.read(targetHolder);
-      assertEquals(uuid2, new UUID(targetHolder.mostSigBits, targetHolder.leastSigBits));
+      assertEquals(uuid2, targetHolder.getUuid());
     }
   }
 }

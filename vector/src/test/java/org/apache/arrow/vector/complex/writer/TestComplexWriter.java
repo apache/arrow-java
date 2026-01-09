@@ -2521,7 +2521,7 @@ public class TestComplexWriter {
         uuidReader.setPosition(0);
         UuidHolder uuidHolder = new UuidHolder();
         uuidReader.read(uuidHolder);
-        UUID actualUuid = new UUID(uuidHolder.mostSigBits, uuidHolder.leastSigBits);
+        UUID actualUuid = uuidHolder.getUuid();
         assertEquals(u1, actualUuid);
         assertTrue(uuidReader.isSet());
         assertEquals(uuidReader.getMinorType(), MinorType.EXTENSIONTYPE);
