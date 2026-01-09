@@ -20,6 +20,7 @@ import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl
 
 import io.netty.util.concurrent.DefaultThreadFactory;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -180,19 +181,39 @@ public final class ArrowFlightConnection extends AvaticaConnection {
 
   @Override
   public void close() throws SQLException {
-    clientHandler.close();
-    if (executorService != null) {
-      executorService.shutdown();
-    }
-
+    Exception topLevelException = null;
     try {
-      AutoCloseables.close(clientHandler);
-      allocator.getChildAllocators().forEach(AutoCloseables::closeNoChecked);
-      AutoCloseables.close(allocator);
-
+      if (executorService != null) {
+        executorService.shutdown();
+      }
+    } catch (final Exception e) {
+      topLevelException = e;
+    }
+    ArrayList<AutoCloseable> closeables = new ArrayList<>(statementMap.values());
+    closeables.add(clientHandler);
+    closeables.addAll(allocator.getChildAllocators());
+    closeables.add(allocator);
+    try {
+      AutoCloseables.close(closeables);
+    } catch (final Exception e) {
+      if (topLevelException == null) {
+        topLevelException = e;
+      } else {
+        topLevelException.addSuppressed(e);
+      }
+    }
+    try {
       super.close();
     } catch (final Exception e) {
-      throw AvaticaConnection.HELPER.createException(e.getMessage(), e);
+      if (topLevelException == null) {
+        topLevelException = e;
+      } else {
+        topLevelException.addSuppressed(e);
+      }
+    }
+    if (topLevelException != null) {
+      throw AvaticaConnection.HELPER.createException(
+          topLevelException.getMessage(), topLevelException);
     }
   }
 
