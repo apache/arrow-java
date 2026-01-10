@@ -22,7 +22,9 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.WireFormat;
+import io.grpc.Detachable;
 import io.grpc.Drainable;
+import io.grpc.HasByteBuffer;
 import io.grpc.KnownLength;
 import io.grpc.MethodDescriptor.Marshaller;
 import io.grpc.protobuf.ProtoUtils;
@@ -41,11 +43,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.flight.grpc.AddWritableBuffer;
-import org.apache.arrow.flight.grpc.GetReadableBuffer;
 import org.apache.arrow.flight.impl.Flight.FlightData;
 import org.apache.arrow.flight.impl.Flight.FlightDescriptor;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.ForeignAllocation;
+import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.ipc.message.ArrowDictionaryBatch;
@@ -55,9 +58,13 @@ import org.apache.arrow.vector.ipc.message.MessageMetadataResult;
 import org.apache.arrow.vector.ipc.message.MessageSerializer;
 import org.apache.arrow.vector.types.MetadataVersion;
 import org.apache.arrow.vector.types.pojo.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The in-memory representation of FlightData used to manage a stream of Arrow messages. */
 class ArrowMessage implements AutoCloseable {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ArrowMessage.class);
 
   // If true, deserialize Arrow data by giving Arrow a reference to the underlying gRPC buffer
   // instead of copying the data. Defaults to true.
@@ -390,8 +397,11 @@ class ArrowMessage implements AutoCloseable {
     if (size < 0) {
       throw new IOException("Malformed FlightData frame: negative field length " + size);
     }
-    if (stream instanceof KnownLength && size > stream.available()) {
-      throw fieldTooLong(size, stream.available());
+    if (stream instanceof KnownLength) {
+      final int remaining = stream.available();
+      if (size > remaining) {
+        throw fieldTooLong(size, remaining);
+      }
     }
     return size;
   }
@@ -414,22 +424,7 @@ class ArrowMessage implements AutoCloseable {
   /** Read a length-delimited field into a new buffer. The caller must release the buffer. */
   private static ArrowBuf readFieldBuffer(BufferAllocator allocator, InputStream stream)
       throws IOException {
-    if (!(stream instanceof KnownLength)) {
-      // The length can't be checked up front, so only allocate once the bytes have arrived.
-      final byte[] bytes = readFieldBytes(stream);
-      final ArrowBuf buf = allocator.buffer(bytes.length);
-      buf.writeBytes(bytes);
-      return buf;
-    }
-    final int size = readFieldLength(stream);
-    final ArrowBuf buf = allocator.buffer(size);
-    try {
-      GetReadableBuffer.readIntoBuffer(stream, buf, size, ENABLE_ZERO_COPY_READ);
-    } catch (IOException | RuntimeException e) {
-      buf.close();
-      throw e;
-    }
-    return buf;
+    return readBuffer(allocator, stream, readFieldLength(stream));
   }
 
   private static IOException fieldTooLong(int size, int remaining) {
@@ -439,6 +434,125 @@ class ArrowMessage implements AutoCloseable {
             + " exceeds "
             + remaining
             + " bytes remaining in the message");
+  }
+
+  /**
+   * Read a field into an ArrowBuf, transferring a gRPC buffer when possible.
+   *
+   * <p>The caller must validate the field length first, before passing it here.
+   */
+  private static ArrowBuf readBuffer(BufferAllocator allocator, InputStream stream, int size)
+      throws IOException {
+    if (ENABLE_ZERO_COPY_READ) {
+      ArrowBuf zeroCopyBuf = wrapGrpcBuffer(stream, allocator, size);
+      if (zeroCopyBuf != null) {
+        return zeroCopyBuf;
+      }
+    }
+
+    if (!(stream instanceof KnownLength)) {
+      final byte[] bytes = stream.readNBytes(size);
+      if (bytes.length != size) {
+        throw fieldTooLong(size, bytes.length);
+      }
+      final ArrowBuf buf = allocator.buffer(size);
+      buf.writeBytes(bytes);
+      return buf;
+    }
+
+    final ArrowBuf buf = allocator.buffer(size);
+    try {
+      final byte[] bytes = stream.readNBytes(size);
+      if (bytes.length != size) {
+        throw fieldTooLong(size, bytes.length);
+      }
+      buf.writeBytes(bytes);
+      return buf;
+    } catch (IOException | RuntimeException e) {
+      buf.close();
+      throw e;
+    }
+  }
+
+  /**
+   * Attempts to wrap gRPC's buffer as an ArrowBuf without copying.
+   *
+   * <p>This method takes ownership of gRPC's underlying buffer via {@link Detachable#detach()} and
+   * wraps it as an ArrowBuf using {@link BufferAllocator#wrapForeignAllocation}. The gRPC buffer
+   * will be released when the ArrowBuf is closed.
+   *
+   * @param stream The gRPC-provided InputStream
+   * @param allocator The allocator to use for wrapping the foreign allocation
+   * @param size The number of bytes to wrap
+   * @return An ArrowBuf wrapping gRPC's buffer, or {@code null} if zero-copy is not possible
+   */
+  static ArrowBuf wrapGrpcBuffer(
+      final InputStream stream, final BufferAllocator allocator, final int size) {
+
+    if (!(stream instanceof Detachable) || !(stream instanceof HasByteBuffer)) {
+      return null;
+    }
+
+    HasByteBuffer hasByteBuffer = (HasByteBuffer) stream;
+    if (!hasByteBuffer.byteBufferSupported()) {
+      return null;
+    }
+
+    ByteBuffer peekBuffer = hasByteBuffer.getByteBuffer();
+    if (peekBuffer == null) {
+      return null;
+    }
+    if (!peekBuffer.isDirect()) {
+      return null;
+    }
+    if (peekBuffer.remaining() < size) {
+      // Data is fragmented across multiple buffers; zero-copy not possible
+      return null;
+    }
+
+    // Take ownership
+    Detachable detachable = (Detachable) stream;
+    InputStream detachedStream = detachable.detach();
+
+    // Get buffer from detached stream
+    HasByteBuffer detachedHasByteBuffer = (HasByteBuffer) detachedStream;
+    ByteBuffer detachedByteBuffer = detachedHasByteBuffer.getByteBuffer();
+
+    if (detachedByteBuffer == null || !detachedByteBuffer.isDirect()) {
+      closeQuietly(detachedStream);
+      return null;
+    }
+
+    // Calculate memory address accounting for buffer position
+    long baseAddress = MemoryUtil.getByteBufferAddress(detachedByteBuffer);
+    long dataAddress = baseAddress + detachedByteBuffer.position();
+
+    // Create ForeignAllocation with proper cleanup
+    ForeignAllocation foreignAllocation =
+        new ForeignAllocation(size, dataAddress) {
+          @Override
+          protected void release0() {
+            closeQuietly(detachedStream);
+          }
+        };
+
+    try {
+      return allocator.wrapForeignAllocation(foreignAllocation);
+    } catch (Throwable t) {
+      // If it fails, clean up the detached stream and propagate
+      closeQuietly(detachedStream);
+      throw t;
+    }
+  }
+
+  private static void closeQuietly(InputStream stream) {
+    if (stream != null) {
+      try {
+        stream.close();
+      } catch (IOException e) {
+        LOG.debug("Error closing detached gRPC stream", e);
+      }
+    }
   }
 
   /**
