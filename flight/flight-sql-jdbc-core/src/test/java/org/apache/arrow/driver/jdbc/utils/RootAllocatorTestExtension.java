@@ -19,6 +19,7 @@ package org.apache.arrow.driver.jdbc.utils;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 import org.apache.arrow.memory.BufferAllocator;
@@ -53,6 +54,7 @@ import org.apache.arrow.vector.UInt1Vector;
 import org.apache.arrow.vector.UInt2Vector;
 import org.apache.arrow.vector.UInt4Vector;
 import org.apache.arrow.vector.UInt8Vector;
+import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
@@ -60,6 +62,7 @@ import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.impl.UnionFixedSizeListWriter;
 import org.apache.arrow.vector.complex.impl.UnionLargeListWriter;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
+import org.apache.arrow.vector.util.UuidUtility;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -808,6 +811,25 @@ public class RootAllocatorTestExtension
         });
 
     valueVector.setValueCount(MAX_VALUE);
+
+    return valueVector;
+  }
+
+  /**
+   * Create a UuidVector to be used in the accessor tests.
+   *
+   * @return UuidVector
+   */
+  public UuidVector createUuidVector() {
+    UuidVector valueVector = new UuidVector("", this.getRootAllocator());
+    valueVector.allocateNew(3);
+    valueVector.setSafe(
+        0, UuidUtility.getBytesFromUUID(UUID.fromString("550e8400-e29b-41d4-a716-446655440000")));
+    valueVector.setSafe(
+        1, UuidUtility.getBytesFromUUID(UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8")));
+    valueVector.setSafe(
+        2, UuidUtility.getBytesFromUUID(UUID.fromString("f47ac10b-58cc-4372-a567-0e02b2c3d479")));
+    valueVector.setValueCount(3);
 
     return valueVector;
   }
