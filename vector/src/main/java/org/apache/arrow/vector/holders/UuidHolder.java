@@ -16,23 +16,35 @@
  */
 package org.apache.arrow.vector.holders;
 
-import org.apache.arrow.memory.ArrowBuf;
+import java.util.UUID;
 
 /**
  * Value holder for non-nullable UUID values.
  *
- * <p>Contains a 16-byte UUID in {@code buffer} with {@code isSet} always 1.
+ * <p>Contains a 16-byte UUID represented as two longs with {@code isSet} always 1.
  *
  * @see NullableUuidHolder
  * @see org.apache.arrow.vector.UuidVector
  * @see org.apache.arrow.vector.extension.UuidType
  */
 public class UuidHolder extends ExtensionHolder {
-  /** Buffer containing 16-byte UUID data. */
-  public ArrowBuf buffer;
+  /** The most significant 64 bits of the UUID. */
+  public long mostSigBits;
+
+  /** The least significant 64 bits of the UUID. */
+  public long leastSigBits;
 
   /** Constructs a UuidHolder with isSet = 1. */
   public UuidHolder() {
     this.isSet = 1;
+  }
+
+  /**
+   * Converts the holder's two longs to a UUID object.
+   *
+   * @return the UUID represented by this holder
+   */
+  public UUID getUuid() {
+    return new UUID(mostSigBits, leastSigBits);
   }
 }
