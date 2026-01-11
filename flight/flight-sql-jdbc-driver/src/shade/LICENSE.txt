@@ -345,6 +345,14 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
 
+This binary artifact contains Nimbus OAuth 2.0 SDK with OpenID Connect extensions 11.20.1.
+
+Copyright: Copyright 2012-2024 Connect2id Ltd.
+Home page: https://connect2id.com/products/nimbus-oauth-openid-connect-sdk
+License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
 This binary artifact contains Bouncycastle 1.80.
 
 Copyright: Copyright (c) 2000-2024 The Legion of the Bouncy Castle Inc. (https://www.bouncycastle.org).
