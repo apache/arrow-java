@@ -160,17 +160,23 @@ public class TestStructVector {
       UnionVector unionVector = vector.addOrGetUnion("union");
       unionVector.addVector(new BigIntVector("bigInt", allocator));
       unionVector.addVector(new SmallIntVector("smallInt", allocator));
+      unionVector.addVector(new UuidVector("uuid", allocator));
 
       // add varchar vector
       vector.addOrGet(
           "varchar", FieldType.nullable(MinorType.VARCHAR.getType()), VarCharVector.class);
 
+      // add extension vector
+      vector.addOrGet("extension", FieldType.nullable(UuidType.INSTANCE), UuidVector.class);
+
       List<ValueVector> primitiveVectors = vector.getPrimitiveVectors();
-      assertEquals(4, primitiveVectors.size());
+      assertEquals(6, primitiveVectors.size());
       assertEquals(MinorType.INT, primitiveVectors.get(0).getMinorType());
       assertEquals(MinorType.BIGINT, primitiveVectors.get(1).getMinorType());
       assertEquals(MinorType.SMALLINT, primitiveVectors.get(2).getMinorType());
-      assertEquals(MinorType.VARCHAR, primitiveVectors.get(3).getMinorType());
+      assertEquals(MinorType.EXTENSIONTYPE, primitiveVectors.get(3).getMinorType());
+      assertEquals(MinorType.VARCHAR, primitiveVectors.get(4).getMinorType());
+      assertEquals(MinorType.EXTENSIONTYPE, primitiveVectors.get(5).getMinorType());
     }
   }
 

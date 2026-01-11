@@ -54,10 +54,12 @@ import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.TimeStampNanoVector;
 import org.apache.arrow.vector.TimeStampSecTZVector;
 import org.apache.arrow.vector.TimeStampSecVector;
+import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.ViewVarBinaryVector;
 import org.apache.arrow.vector.ViewVarCharVector;
+import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
@@ -175,6 +177,11 @@ public class OpaqueType extends ArrowType.ExtensionType {
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), storageType, typeName, vendorName);
+  }
+
+  @Override
+  public FieldWriter getNewFieldWriter(ValueVector vector) {
+    throw new UnsupportedOperationException("WriterImpl not yet implemented.");
   }
 
   @Override

@@ -105,8 +105,4 @@ public class UnionLargeListReader extends AbstractFieldReader {
   public void copyAsValue(UnionLargeListWriter writer) {
     ComplexCopier.copy(this, (FieldWriter) writer);
   }
-
-  public void copyAsValue(UnionLargeListWriter writer, ExtensionTypeWriterFactory writerFactory) {
-    ComplexCopier.copy(this, (FieldWriter) writer, writerFactory);
-  }
 }
