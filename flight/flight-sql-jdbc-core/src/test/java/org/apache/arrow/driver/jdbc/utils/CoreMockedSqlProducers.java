@@ -17,7 +17,6 @@
 package org.apache.arrow.driver.jdbc.utils;
 
 import static java.lang.String.format;
-import java.util.Arrays;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -69,8 +69,10 @@ public final class CoreMockedSqlProducers {
   public static final String LEGACY_REGULAR_WITH_EMPTY_SQL_CMD = "SELECT * FROM TEST_EMPTIES";
 
   public static final String UUID_SQL_CMD = "SELECT * FROM UUID_TABLE";
-  public static final String UUID_PREPARED_SELECT_SQL_CMD = "SELECT * FROM UUID_TABLE WHERE uuid_col = ?";
-  public static final String UUID_PREPARED_UPDATE_SQL_CMD = "UPDATE UUID_TABLE SET uuid_col = ? WHERE id = ?";
+  public static final String UUID_PREPARED_SELECT_SQL_CMD =
+      "SELECT * FROM UUID_TABLE WHERE uuid_col = ?";
+  public static final String UUID_PREPARED_UPDATE_SQL_CMD =
+      "UPDATE UUID_TABLE SET uuid_col = ? WHERE id = ?";
 
   public static final UUID UUID_1 = UUID.fromString("550e8400-e29b-41d4-a716-446655440000");
   public static final UUID UUID_2 = UUID.fromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8");
@@ -114,6 +116,7 @@ public final class CoreMockedSqlProducers {
     addUuidSqlCmdSupport(producer);
     return producer;
   }
+
   private static void addUuidPreparedUpdateSqlCmdSupport(final MockFlightSqlProducer producer) {
     final String query = "UPDATE UUID_TABLE SET uuid_col = ? WHERE id = ?";
     final Schema parameterSchema =

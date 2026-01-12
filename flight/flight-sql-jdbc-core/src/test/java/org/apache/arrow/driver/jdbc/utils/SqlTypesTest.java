@@ -87,7 +87,7 @@ public class SqlTypesTest {
 
     assertEquals(Types.NULL, getSqlTypeIdFromArrowType(new ArrowType.Null()));
 
-    assertEquals(Types.OTHER, getSqlTypeIdFromArrowType(new UuidType()));
+    assertEquals(Types.OTHER, getSqlTypeIdFromArrowType(UuidType.INSTANCE));
   }
 
   @Test
@@ -144,6 +144,6 @@ public class SqlTypesTest {
 
     assertEquals("NULL", getSqlTypeNameFromArrowType(new ArrowType.Null()));
 
-    assertEquals("OTHER", getSqlTypeNameFromArrowType(new UuidType()));
+    assertEquals("OTHER", getSqlTypeNameFromArrowType(UuidType.INSTANCE));
   }
 }
