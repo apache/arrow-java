@@ -21,6 +21,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Array;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -191,7 +192,12 @@ public class AbstractArrowFlightJdbcListAccessorTest {
           try (ResultSet rs = array.getResultSet()) {
             int count = 0;
             while (rs.next()) {
-              final int value = rs.getInt(1);
+              // Column 1: 1-based index (per JDBC spec)
+              final int index = rs.getInt(1);
+              assertThat(index, equalTo(count + 1));
+
+              // Column 2: actual value (per JDBC spec)
+              final int value = rs.getInt(2);
               assertThat(value, equalTo(currentRow * count));
               count++;
             }

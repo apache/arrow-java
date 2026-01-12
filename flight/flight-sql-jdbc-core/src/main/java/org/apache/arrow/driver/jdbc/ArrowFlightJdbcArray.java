@@ -26,6 +26,7 @@ import org.apache.arrow.driver.jdbc.accessor.impl.complex.AbstractArrowFlightJdb
 import org.apache.arrow.driver.jdbc.utils.SqlTypes;
 import org.apache.arrow.memory.util.LargeMemoryUtil;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -135,12 +136,22 @@ public class ArrowFlightJdbcArray implements Array {
 
   private static ResultSet getResultSetNoBoundariesCheck(
       ValueVector dataVector, long start, long count) throws SQLException {
-    TransferPair transferPair = dataVector.getTransferPair(dataVector.getAllocator());
-    transferPair.splitAndTransfer(
-        LargeMemoryUtil.checkedCastToInt(start), LargeMemoryUtil.checkedCastToInt(count));
-    FieldVector vectorSlice = (FieldVector) transferPair.getTo();
+    int intStart = LargeMemoryUtil.checkedCastToInt(start);
+    int intCount = LargeMemoryUtil.checkedCastToInt(count);
 
-    VectorSchemaRoot vectorSchemaRoot = VectorSchemaRoot.of(vectorSlice);
+    // Create an index vector with 1-based indices (per JDBC spec) to return with value vector
+    IntVector indexVector = new IntVector("INDEX", dataVector.getAllocator());
+    indexVector.allocateNew(intCount);
+    for (int i = 0; i < intCount; i++) {
+      indexVector.set(i, i + 1);
+    }
+    indexVector.setValueCount(intCount);
+
+    TransferPair transferPair = dataVector.getTransferPair(dataVector.getAllocator());
+    transferPair.splitAndTransfer(intStart, intCount);
+    FieldVector valueVector = (FieldVector) transferPair.getTo();
+
+    VectorSchemaRoot vectorSchemaRoot = VectorSchemaRoot.of(indexVector, valueVector);
     return ArrowFlightJdbcVectorSchemaRootResultSet.fromVectorSchemaRoot(vectorSchemaRoot);
   }
 
