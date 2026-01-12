@@ -806,18 +806,18 @@ public class ResultSetTest {
   public void testSelectQueryWithUuidColumn() throws SQLException {
     // Expectations
     final int expectedRowCount = 4;
-    final UUID[] expectedUuids = new UUID[] {
-        CoreMockedSqlProducers.UUID_1,
-        CoreMockedSqlProducers.UUID_2,
-        CoreMockedSqlProducers.UUID_3,
-        null
-    };
+    final UUID[] expectedUuids =
+        new UUID[] {
+          CoreMockedSqlProducers.UUID_1,
+          CoreMockedSqlProducers.UUID_2,
+          CoreMockedSqlProducers.UUID_3,
+          null
+        };
 
     final Integer[] expectedIds = new Integer[] {1, 2, 3, 4};
 
     final List<UUID> actualUuids = new ArrayList<>(expectedRowCount);
     final List<Integer> actualIds = new ArrayList<>(expectedRowCount);
-
 
     // Query
     int actualRowCount = 0;
@@ -951,7 +951,8 @@ public class ResultSetTest {
 
   @Test
   public void testPreparedStatementWithUuidStringParameter() throws SQLException {
-    try (PreparedStatement pstmt = connection.prepareStatement(CoreMockedSqlProducers.UUID_PREPARED_SELECT_SQL_CMD)) {
+    try (PreparedStatement pstmt =
+        connection.prepareStatement(CoreMockedSqlProducers.UUID_PREPARED_SELECT_SQL_CMD)) {
       pstmt.setString(1, CoreMockedSqlProducers.UUID_1.toString());
       try (ResultSet rs = pstmt.executeQuery()) {
         rs.next();
@@ -962,7 +963,8 @@ public class ResultSetTest {
 
   @Test
   public void testPreparedStatementUpdateWithUuid() throws SQLException {
-    try (PreparedStatement pstmt = connection.prepareStatement(CoreMockedSqlProducers.UUID_PREPARED_UPDATE_SQL_CMD)) {
+    try (PreparedStatement pstmt =
+        connection.prepareStatement(CoreMockedSqlProducers.UUID_PREPARED_UPDATE_SQL_CMD)) {
       pstmt.setObject(1, CoreMockedSqlProducers.UUID_3);
       pstmt.setInt(2, 1);
       int updated = pstmt.executeUpdate();
