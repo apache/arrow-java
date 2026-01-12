@@ -42,7 +42,7 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
-import org.apache.arrow.vector.holders.UuidHolder;
+import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -1299,7 +1299,7 @@ public class TestMapVector {
       mapReader.setPosition(0);
       mapReader.next();
       FieldReader uuidReader = mapReader.value();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       uuidReader.read(holder);
       UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);
@@ -1341,7 +1341,7 @@ public class TestMapVector {
       mapReader.setPosition(0);
       mapReader.next();
       FieldReader uuidReader = mapReader.value();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       uuidReader.read(holder);
       UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);

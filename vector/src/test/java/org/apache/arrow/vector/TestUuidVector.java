@@ -236,7 +236,7 @@ class TestUuidVector {
       UuidReaderImpl reader = (UuidReaderImpl) vectorForRead.getReader();
       reader.copyAsValue(writer);
       UuidReaderImpl reader2 = (UuidReaderImpl) vector.getReader();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       reader2.read(0, holder);
       UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(uuid, actualUuid);
@@ -253,7 +253,7 @@ class TestUuidVector {
       UuidReaderImpl reader = (UuidReaderImpl) vector.getReader();
       reader.setPosition(0);
 
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       reader.read(holder);
 
       UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
@@ -311,7 +311,7 @@ class TestUuidVector {
 
       UuidReaderImpl reader = (UuidReaderImpl) vector.getReader();
 
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       reader.read(1, holder);
 
       UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
@@ -370,31 +370,6 @@ class TestUuidVector {
 
       IllegalArgumentException exception =
           assertThrows(IllegalArgumentException.class, () -> reader.read(unsupportedHolder));
-
-      assertTrue(exception.getMessage().contains("Unsupported holder type for UuidReader"));
-    }
-  }
-
-  @Test
-  void testReaderReadWithArrayIndexUnsupportedHolder() throws Exception {
-    try (UuidVector vector = new UuidVector("test", allocator)) {
-      UUID uuid = UUID.randomUUID();
-      vector.setSafe(0, uuid);
-      vector.setValueCount(1);
-
-      UuidReaderImpl reader = (UuidReaderImpl) vector.getReader();
-
-      // Create a mock unsupported holder
-      ExtensionHolder unsupportedHolder =
-          new ExtensionHolder() {
-            @Override
-            public ArrowType type() {
-              return null;
-            }
-          };
-
-      IllegalArgumentException exception =
-          assertThrows(IllegalArgumentException.class, () -> reader.read(0, unsupportedHolder));
 
       assertTrue(exception.getMessage().contains("Unsupported holder type for UuidReader"));
     }
@@ -476,24 +451,18 @@ class TestUuidVector {
       vector.setValueCount(3);
 
       // Test UuidHolder with different indices
-      UuidHolder holder1 = new UuidHolder();
-      vector.get(0, holder1);
-      assertEquals(0, holder1.start);
-      assertEquals(uuid1, UuidUtility.uuidFromArrowBuf(holder1.buffer, holder1.start));
+      NullableUuidHolder holder = new NullableUuidHolder();
+      vector.get(0, holder);
+      assertEquals(0, holder.start);
+      assertEquals(uuid1, UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start));
 
-      UuidHolder holder2 = new UuidHolder();
-      vector.get(1, holder2);
-      assertEquals(16, holder2.start); // UUID_BYTE_WIDTH = 16
-      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder2.buffer, holder2.start));
+      vector.get(1, holder);
+      assertEquals(16, holder.start); // UUID_BYTE_WIDTH = 16
+      assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start));
 
-      UuidHolder holder3 = new UuidHolder();
-      vector.get(2, holder3);
-      assertEquals(32, holder3.start); // 2 * UUID_BYTE_WIDTH = 32
-      assertEquals(uuid3, UuidUtility.uuidFromArrowBuf(holder3.buffer, holder3.start));
-
-      // Verify all holders share the same buffer
-      assertEquals(holder1.buffer, holder2.buffer);
-      assertEquals(holder2.buffer, holder3.buffer);
+      vector.get(2, holder);
+      assertEquals(32, holder.start); // 2 * UUID_BYTE_WIDTH = 32
+      assertEquals(uuid3, UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start));
     }
   }
 
@@ -517,7 +486,6 @@ class TestUuidVector {
 
       NullableUuidHolder holder2 = new NullableUuidHolder();
       vector.get(1, holder2);
-      assertEquals(16, holder2.start); // UUID_BYTE_WIDTH = 16
       assertEquals(0, holder2.isSet);
 
       NullableUuidHolder holder3 = new NullableUuidHolder();
@@ -527,8 +495,7 @@ class TestUuidVector {
       assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(holder3.buffer, holder3.start));
 
       // Verify all holders share the same buffer
-      assertEquals(holder1.buffer, holder2.buffer);
-      assertEquals(holder2.buffer, holder3.buffer);
+      assertEquals(holder1.buffer, holder3.buffer);
     }
   }
 
@@ -538,15 +505,13 @@ class TestUuidVector {
         UuidVector targetVector = new UuidVector("target", allocator)) {
       UUID uuid1 = UUID.randomUUID();
       UUID uuid2 = UUID.randomUUID();
-      UUID uuid3 = UUID.randomUUID();
 
       sourceVector.setSafe(0, uuid1);
       sourceVector.setSafe(1, uuid2);
-      sourceVector.setSafe(2, uuid3);
       sourceVector.setValueCount(3);
 
       // Get holder from index 1 (should have start = 16)
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       sourceVector.get(1, holder);
       assertEquals(16, holder.start);
 
@@ -587,7 +552,6 @@ class TestUuidVector {
       // Test with null holder
       NullableUuidHolder nullHolder = new NullableUuidHolder();
       sourceVector.get(1, nullHolder);
-      assertEquals(16, nullHolder.start);
       assertEquals(0, nullHolder.isSet);
 
       targetVector.setSafe(1, nullHolder);
@@ -623,7 +587,7 @@ class TestUuidVector {
       vector.setValueCount(3);
 
       UuidReaderImpl reader = (UuidReaderImpl) vector.getReader();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
 
       // Read from different positions and verify start offset
       reader.read(0, holder);
@@ -649,7 +613,7 @@ class TestUuidVector {
       sourceVector.setValueCount(1);
 
       // Get holder from source
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       sourceVector.get(0, holder);
 
       // Write using UuidWriterImpl with ExtensionHolder

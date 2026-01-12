@@ -40,8 +40,8 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
+import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
-import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -1254,7 +1254,7 @@ public class TestListVector {
       reader.setPosition(0);
       reader.next();
       FieldReader uuidReader = reader.reader();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       uuidReader.read(holder);
       UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);
@@ -1294,7 +1294,7 @@ public class TestListVector {
       reader.setPosition(0);
       reader.next();
       FieldReader uuidReader = reader.reader();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       uuidReader.read(holder);
       UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);

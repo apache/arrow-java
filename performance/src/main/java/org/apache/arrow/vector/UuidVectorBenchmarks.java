@@ -22,7 +22,6 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.complex.impl.UuidWriterImpl;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
-import org.apache.arrow.vector.holders.UuidHolder;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
@@ -75,26 +74,10 @@ public class UuidVectorBenchmarks {
   @Benchmark
   @BenchmarkMode(Mode.AverageTime)
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
-  public void setWithUuidHolder() {
-    UuidHolder holder = new UuidHolder();
-    for (int i = 0; i < VECTOR_LENGTH; i++) {
-      // Old version: get the holder populated with buffer reference, then set it back
-      vector.get(i, holder);
-      vector.setSafe(i, holder);
-    }
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.AverageTime)
-  @OutputTimeUnit(TimeUnit.MICROSECONDS)
-  public void setWithNullableUuidHolder() {
+  public void setWithHolder() {
     NullableUuidHolder holder = new NullableUuidHolder();
     for (int i = 0; i < VECTOR_LENGTH; i++) {
-      // Old version: get the holder populated with buffer reference, then set it back
-      holder.isSet = i % 3 == 0 ? 0 : 1;
-      if (holder.isSet == 1) {
-        vector.get(i, holder);
-      }
+      vector.get(i, holder);
       vector.setSafe(i, holder);
     }
   }
@@ -114,9 +97,7 @@ public class UuidVectorBenchmarks {
   public void setWithWriter() {
     UuidWriterImpl writer = new UuidWriterImpl(vector);
     for (int i = 0; i < VECTOR_LENGTH; i++) {
-      if (i % 3 != 0) {
-        writer.writeExtension(testUuids[i]);
-      }
+      writer.writeExtension(testUuids[i]);
     }
   }
 
@@ -124,16 +105,6 @@ public class UuidVectorBenchmarks {
   @BenchmarkMode(Mode.AverageTime)
   @OutputTimeUnit(TimeUnit.MICROSECONDS)
   public void getWithUuidHolder() {
-    UuidHolder holder = new UuidHolder();
-    for (int i = 0; i < VECTOR_LENGTH; i++) {
-      vector.get(i, holder);
-    }
-  }
-
-  @Benchmark
-  @BenchmarkMode(Mode.AverageTime)
-  @OutputTimeUnit(TimeUnit.MICROSECONDS)
-  public void getWithNullableUuidHolder() {
     NullableUuidHolder holder = new NullableUuidHolder();
     for (int i = 0; i < VECTOR_LENGTH; i++) {
       vector.get(i, holder);
@@ -151,11 +122,11 @@ public class UuidVectorBenchmarks {
 
   public static void main(String[] args) throws RunnerException {
     Options opt =
-      new OptionsBuilder()
-        .include(UuidVectorBenchmarks.class.getSimpleName())
-        .forks(1)
-        .addProfiler(GCProfiler.class)
-        .build();
+        new OptionsBuilder()
+            .include(UuidVectorBenchmarks.class.getSimpleName())
+            .forks(1)
+            .addProfiler(GCProfiler.class)
+            .build();
 
     new Runner(opt).run();
   }

@@ -88,7 +88,6 @@ import org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
-import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -2536,7 +2535,7 @@ public class TestComplexWriter {
       {
         FieldReader uuidReader = rootReader.reader("uuid1");
         uuidReader.setPosition(0);
-        UuidHolder uuidHolder = new UuidHolder();
+        NullableUuidHolder uuidHolder = new NullableUuidHolder();
         uuidReader.read(uuidHolder);
         UUID actualUuid = UuidUtility.uuidFromArrowBuf(uuidHolder.buffer, 0);
         assertEquals(u1, actualUuid);

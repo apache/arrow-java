@@ -29,7 +29,6 @@ import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.extension.UuidType;
-import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -150,23 +149,6 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
   }
 
   /**
-   * Reads the UUID value at the given index into a UuidHolder.
-   *
-   * @param index the index to read from
-   * @param holder the holder to populate with the UUID data
-   */
-  public void get(int index, UuidHolder holder) {
-    Preconditions.checkArgument(index >= 0, "Cannot get negative index in UUID vector.");
-    if (NullCheckingForGet.NULL_CHECKING_ENABLED && this.isSet(index) == 0) {
-      holder.isSet = 0;
-    } else {
-      holder.isSet = 1;
-      holder.buffer = getDataBuffer();
-      holder.start = getStartOffset(index);
-    }
-  }
-
-  /**
    * Reads the UUID value at the given index into a NullableUuidHolder.
    *
    * @param index the index to read from
@@ -174,13 +156,13 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    */
   public void get(int index, NullableUuidHolder holder) {
     Preconditions.checkArgument(index >= 0, "Cannot get negative index in UUID vector.");
-    if (NullCheckingForGet.NULL_CHECKING_ENABLED && this.isSet(index) == 0) {
+    if (isSet(index) == 0) {
       holder.isSet = 0;
-    } else {
-      holder.isSet = 1;
-      holder.buffer = getDataBuffer();
-      holder.start = getStartOffset(index);
+      return;
     }
+    holder.isSet = 1;
+    holder.buffer = getDataBuffer();
+    holder.start = getStartOffset(index);
   }
 
   /**
@@ -243,8 +225,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
 
     BitVectorHelper.setBit(getUnderlyingVector().getValidityBuffer(), index);
     getUnderlyingVector()
-            .getDataBuffer()
-            .setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
+        .getDataBuffer()
+        .setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
   }
 
   /**
