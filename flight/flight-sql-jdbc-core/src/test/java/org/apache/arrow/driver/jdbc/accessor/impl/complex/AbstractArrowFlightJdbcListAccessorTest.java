@@ -21,7 +21,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Array;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;

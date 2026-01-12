@@ -153,15 +153,15 @@ public class ArrowFlightJdbcMapVectorAccessorTest {
 
     try (ResultSet resultSet = array.getResultSet()) {
       assertTrue(resultSet.next());
-      Map<?, ?> entry = resultSet.getObject(1, Map.class);
+      Map<?, ?> entry = resultSet.getObject(2, Map.class);
       assertEquals(1, entry.get("key"));
       assertEquals(11, entry.get("value"));
       assertTrue(resultSet.next());
-      entry = resultSet.getObject(1, Map.class);
+      entry = resultSet.getObject(2, Map.class);
       assertEquals(2, entry.get("key"));
       assertEquals(22, entry.get("value"));
       assertTrue(resultSet.next());
-      entry = resultSet.getObject(1, Map.class);
+      entry = resultSet.getObject(2, Map.class);
       assertEquals(3, entry.get("key"));
       assertEquals(33, entry.get("value"));
       assertFalse(resultSet.next());
@@ -173,7 +173,7 @@ public class ArrowFlightJdbcMapVectorAccessorTest {
     assertFalse(accessor.wasNull());
     try (ResultSet resultSet = array.getResultSet()) {
       assertTrue(resultSet.next());
-      Map<?, ?> entry = resultSet.getObject(1, Map.class);
+      Map<?, ?> entry = resultSet.getObject(2, Map.class);
       assertEquals(2, entry.get("key"));
       assertNull(entry.get("value"));
       assertFalse(resultSet.next());
@@ -185,19 +185,19 @@ public class ArrowFlightJdbcMapVectorAccessorTest {
     assertFalse(accessor.wasNull());
     try (ResultSet resultSet = array.getResultSet()) {
       assertTrue(resultSet.next());
-      Map<?, ?> entry = resultSet.getObject(1, Map.class);
+      Map<?, ?> entry = resultSet.getObject(2, Map.class);
       assertEquals(0, entry.get("key"));
       assertEquals(2000, entry.get("value"));
       assertTrue(resultSet.next());
-      entry = resultSet.getObject(1, Map.class);
+      entry = resultSet.getObject(2, Map.class);
       assertEquals(1, entry.get("key"));
       assertEquals(2001, entry.get("value"));
       assertTrue(resultSet.next());
-      entry = resultSet.getObject(1, Map.class);
+      entry = resultSet.getObject(2, Map.class);
       assertEquals(2, entry.get("key"));
       assertEquals(2002, entry.get("value"));
       assertTrue(resultSet.next());
-      entry = resultSet.getObject(1, Map.class);
+      entry = resultSet.getObject(2, Map.class);
       assertEquals(3, entry.get("key"));
       assertEquals(2003, entry.get("value"));
       assertFalse(resultSet.next());

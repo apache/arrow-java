@@ -129,7 +129,7 @@ public class ArrowFlightJdbcArrayTest {
     try (ResultSet resultSet = arrowFlightJdbcArray.getResultSet()) {
       int count = 0;
       while (resultSet.next()) {
-        assertEquals((Object) resultSet.getInt(1), dataVector.getObject(count));
+        assertEquals((Object) resultSet.getInt(2), dataVector.getObject(count));
         count++;
       }
     }
@@ -142,7 +142,7 @@ public class ArrowFlightJdbcArrayTest {
     try (ResultSet resultSet = arrowFlightJdbcArray.getResultSet(3, 5)) {
       int count = 0;
       while (resultSet.next()) {
-        assertEquals((Object) resultSet.getInt(1), dataVector.getObject(count + 3));
+        assertEquals((Object) resultSet.getInt(2), dataVector.getObject(count + 3));
         count++;
       }
       assertEquals(5, count);
