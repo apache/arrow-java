@@ -20,6 +20,7 @@ import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.Types;
+import org.apache.arrow.vector.util.UuidUtility;
 
 /**
  * Reader implementation for reading UUID values from a {@link NullableUuidHolder}.
@@ -80,13 +81,13 @@ public class NullableUuidHolderReaderImpl extends AbstractFieldReader {
   public void read(ExtensionHolder h) {
     if (h instanceof NullableUuidHolder) {
       NullableUuidHolder nullableHolder = (NullableUuidHolder) h;
-      nullableHolder.mostSigBits = this.holder.mostSigBits;
-      nullableHolder.leastSigBits = this.holder.leastSigBits;
+      nullableHolder.buffer = this.holder.buffer;
       nullableHolder.isSet = this.holder.isSet;
+      nullableHolder.start = this.holder.start;
     } else if (h instanceof UuidHolder) {
       UuidHolder uuidHolder = (UuidHolder) h;
-      uuidHolder.mostSigBits = this.holder.mostSigBits;
-      uuidHolder.leastSigBits = this.holder.leastSigBits;
+      uuidHolder.buffer = this.holder.buffer;
+      uuidHolder.start = this.holder.start;
     } else {
       throw new IllegalArgumentException(
           "Unsupported holder type: "
@@ -102,7 +103,22 @@ public class NullableUuidHolderReaderImpl extends AbstractFieldReader {
     if (!isSet()) {
       return null;
     }
-    // Convert UUID longs to Java UUID object
-    return holder.getUuid();
+    // Convert UUID bytes to Java UUID object
+    try {
+      return UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
+    } catch (Exception e) {
+      throw new RuntimeException(
+          String.format(
+              "Failed to read UUID from buffer. Invalid Arrow buffer state: "
+                  + "capacity=%d, readableBytes=%d, readerIndex=%d, writerIndex=%d, refCnt=%d. "
+                  + "The buffer must contain exactly 16 bytes of valid UUID data.",
+              holder.buffer.capacity(),
+              holder.buffer.readableBytes(),
+              holder.buffer.readerIndex(),
+              holder.buffer.writerIndex(),
+              holder.buffer.refCnt()),
+          e);
+    }
   }
 }
+

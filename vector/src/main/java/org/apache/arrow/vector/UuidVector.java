@@ -16,7 +16,6 @@
  */
 package org.apache.arrow.vector;
 
-import static org.apache.arrow.memory.util.MemoryUtil.LITTLE_ENDIAN;
 import static org.apache.arrow.vector.extension.UuidType.UUID_BYTE_WIDTH;
 
 import java.nio.ByteBuffer;
@@ -30,6 +29,7 @@ import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.complex.impl.UuidReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.extension.UuidType;
+import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -157,17 +157,12 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    */
   public void get(int index, UuidHolder holder) {
     Preconditions.checkArgument(index >= 0, "Cannot get negative index in UUID vector.");
-    final ArrowBuf dataBuffer = getUnderlyingVector().getDataBuffer();
-    final long start = (long) index * UUID_BYTE_WIDTH;
-    final long next = start + Long.BYTES;
-    // UUIDs are stored in big-endian byte order in Arrow buffers.
-    // ArrowBuf.getLong() reads in native byte order, so we need to reverse bytes on LE systems.
-    if (LITTLE_ENDIAN) {
-      holder.mostSigBits = Long.reverseBytes(dataBuffer.getLong(start));
-      holder.leastSigBits = Long.reverseBytes(dataBuffer.getLong(next));
+    if (NullCheckingForGet.NULL_CHECKING_ENABLED && this.isSet(index) == 0) {
+      holder.isSet = 0;
     } else {
-      holder.mostSigBits = dataBuffer.getLong(start);
-      holder.leastSigBits = dataBuffer.getLong(next);
+      holder.isSet = 1;
+      holder.buffer = getDataBuffer();
+      holder.start = getStartOffset(index);
     }
   }
 
@@ -183,17 +178,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
       holder.isSet = 0;
     } else {
       holder.isSet = 1;
-      final ArrowBuf dataBuffer = getUnderlyingVector().getDataBuffer();
-      final long offset = (long) index * UUID_BYTE_WIDTH;
-      // UUIDs are stored in big-endian byte order in Arrow buffers.
-      // ArrowBuf.getLong() reads in native byte order, so we need to reverse bytes on LE systems.
-      if (LITTLE_ENDIAN) {
-        holder.mostSigBits = Long.reverseBytes(dataBuffer.getLong(offset));
-        holder.leastSigBits = Long.reverseBytes(dataBuffer.getLong(offset + Long.BYTES));
-      } else {
-        holder.mostSigBits = dataBuffer.getLong(offset);
-        holder.leastSigBits = dataBuffer.getLong(offset + Long.BYTES);
-      }
+      holder.buffer = getDataBuffer();
+      holder.start = getStartOffset(index);
     }
   }
 
@@ -228,7 +214,7 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder containing the UUID data
    */
   public void set(int index, UuidHolder holder) {
-    set(index, holder.getUuid());
+    this.set(index, holder.buffer, holder.start);
   }
 
   /**
@@ -241,7 +227,7 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     if (holder.isSet == 0) {
       getUnderlyingVector().setNull(index);
     } else {
-      set(index, holder.getUuid());
+      this.set(index, holder.buffer, holder.start);
     }
   }
 
@@ -257,8 +243,8 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
 
     BitVectorHelper.setBit(getUnderlyingVector().getValidityBuffer(), index);
     getUnderlyingVector()
-        .getDataBuffer()
-        .setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
+            .getDataBuffer()
+            .setBytes((long) index * UUID_BYTE_WIDTH, source, sourceOffset, UUID_BYTE_WIDTH);
   }
 
   /**
@@ -295,7 +281,7 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
     if (holder == null || holder.isSet == 0) {
       getUnderlyingVector().setNull(index);
     } else {
-      setSafe(index, holder.getUuid());
+      this.setSafe(index, holder.buffer, holder.start);
     }
   }
 
@@ -306,7 +292,7 @@ public class UuidVector extends ExtensionTypeVector<FixedSizeBinaryVector>
    * @param holder the holder containing the UUID data
    */
   public void setSafe(int index, UuidHolder holder) {
-    setSafe(index, holder.getUuid());
+    this.setSafe(index, holder.buffer, holder.start);
   }
 
   /**

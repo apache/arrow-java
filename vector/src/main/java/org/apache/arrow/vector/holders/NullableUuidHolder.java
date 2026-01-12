@@ -18,37 +18,24 @@ package org.apache.arrow.vector.holders;
 
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
-import java.util.UUID;
+import org.apache.arrow.memory.ArrowBuf;
 
 /**
  * Value holder for nullable UUID values.
  *
  * <p>The {@code isSet} field controls nullability: when {@code isSet = 1}, the holder contains a
- * valid UUID represented as two longs; when {@code isSet = 0}, the holder represents a null value
- * and the long fields should not be accessed.
+ * valid UUID in {@code buffer}; when {@code isSet = 0}, the holder represents a null value and
+ * {@code buffer} should not be accessed.
  *
  * @see UuidHolder
  * @see org.apache.arrow.vector.UuidVector
  * @see org.apache.arrow.vector.extension.UuidType
  */
 public class NullableUuidHolder extends ExtensionHolder {
-  /** The most significant 64 bits of the UUID. */
-  public long mostSigBits;
-
-  /** The least significant 64 bits of the UUID. */
-  public long leastSigBits;
-
-  /**
-   * Converts the holder's two longs to a UUID object.
-   *
-   * @return the UUID represented by this holder, or null if isSet is 0
-   */
-  public UUID getUuid() {
-    if (this.isSet == 0) {
-      return null;
-    }
-    return new UUID(mostSigBits, leastSigBits);
-  }
+  /** Buffer containing 16-byte UUID data. */
+  public ArrowBuf buffer;
+  /** Offset in the buffer where the UUID data starts. */
+  public int start = 0;
 
   @Override
   public ArrowType type() {
