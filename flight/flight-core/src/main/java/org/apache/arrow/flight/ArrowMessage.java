@@ -408,12 +408,12 @@ class ArrowMessage implements AutoCloseable {
     }
 
     // Fall back to allocating and copying
-     ArrowBuf buf = allocator.buffer(size);
-     byte[] heapBytes = new byte[size];
-     ByteStreams.readFully(stream, heapBytes);
-     buf.writeBytes(heapBytes);
-     buf.writerIndex(size);
-     return buf;
+    ArrowBuf buf = allocator.buffer(size);
+    byte[] heapBytes = new byte[size];
+    ByteStreams.readFully(stream, heapBytes);
+    buf.writeBytes(heapBytes);
+    buf.writerIndex(size);
+    return buf;
   }
 
   /**
@@ -453,17 +453,10 @@ class ArrowMessage implements AutoCloseable {
     }
 
     // Take ownership
-    Detachable detachable = (Detachable) stream;
-    InputStream detachedStream = detachable.detach();
+    InputStream detachedStream = ((Detachable) stream).detach();
 
     // Get buffer from detached stream
-    HasByteBuffer detachedHasByteBuffer = (HasByteBuffer) detachedStream;
-    ByteBuffer detachedByteBuffer = detachedHasByteBuffer.getByteBuffer();
-
-    if (detachedByteBuffer == null || !detachedByteBuffer.isDirect()) {
-      closeQuietly(detachedStream);
-      return null;
-    }
+    ByteBuffer detachedByteBuffer = ((HasByteBuffer) detachedStream).getByteBuffer();
 
     // Calculate memory address accounting for buffer position
     long baseAddress = MemoryUtil.getByteBufferAddress(detachedByteBuffer);
