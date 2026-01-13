@@ -2510,7 +2510,7 @@ public class TestComplexWriter {
       StructWriter rootWriter = writer.rootAsStruct();
 
       {
-        ExtensionWriter extensionWriter = rootWriter.extension("uuid1", new UuidType());
+        ExtensionWriter extensionWriter = rootWriter.extension("uuid1", UuidType.INSTANCE);
         extensionWriter.setPosition(0);
         extensionWriter.addExtensionTypeWriterFactory(new UuidWriterFactory());
         extensionWriter.writeExtension(u1);

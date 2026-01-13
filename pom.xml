@@ -97,8 +97,8 @@ under the License.
     <dep.junit.jupiter.version>5.12.2</dep.junit.jupiter.version>
     <dep.slf4j.version>2.0.17</dep.slf4j.version>
     <dep.guava-bom.version>33.4.8-jre</dep.guava-bom.version>
-    <dep.netty-bom.version>4.1.127.Final</dep.netty-bom.version>
-    <dep.grpc-bom.version>1.73.0</dep.grpc-bom.version>
+    <dep.netty-bom.version>4.2.9.Final</dep.netty-bom.version>
+    <dep.grpc-bom.version>1.78.0</dep.grpc-bom.version>
     <dep.protobuf-bom.version>4.33.1</dep.protobuf-bom.version>
     <dep.jackson-bom.version>2.18.3</dep.jackson-bom.version>
     <dep.hadoop.version>3.4.2</dep.hadoop.version>
@@ -110,8 +110,8 @@ under the License.
     <checkstyle.version>10.23.0</checkstyle.version>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.42.0</error_prone_core.version>
-    <checker.framework.version>3.52.0</checker.framework.version>
-    <logback.version>1.5.21</logback.version>
+    <checker.framework.version>3.53.0</checker.framework.version>
+    <logback.version>1.5.24</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
     <!-- List of add-opens arg line arguments for tests -->
@@ -181,7 +181,7 @@ under the License.
       <dependency>
         <groupId>org.immutables</groupId>
         <artifactId>value-annotations</artifactId>
-        <version>2.10.1</version>
+        <version>2.12.1</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
@@ -312,7 +312,7 @@ under the License.
               <path>
                 <groupId>org.immutables</groupId>
                 <artifactId>value</artifactId>
-                <version>2.10.1</version>
+                <version>2.12.1</version>
               </path>
             </annotationProcessorPaths>
           </configuration>
@@ -350,7 +350,7 @@ under the License.
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.8.13</version>
+          <version>0.8.14</version>
         </plugin>
 
         <!--This plugin's configuration is used to store Eclipse m2e settings
@@ -505,7 +505,7 @@ under the License.
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>3.5.0</version>
+          <version>3.6.3</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>

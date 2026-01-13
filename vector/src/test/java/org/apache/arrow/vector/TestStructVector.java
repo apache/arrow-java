@@ -341,7 +341,7 @@ public class TestStructVector {
 
   @Test
   public void testStructVectorWithExtensionTypes() {
-    UuidType uuidType = new UuidType();
+    UuidType uuidType = UuidType.INSTANCE;
     Field uuidField = new Field("struct_child", FieldType.nullable(uuidType), null);
     Field structField =
         new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(uuidField));
@@ -353,7 +353,7 @@ public class TestStructVector {
 
   @Test
   public void testStructVectorTransferPairWithExtensionType() {
-    UuidType uuidType = new UuidType();
+    UuidType uuidType = UuidType.INSTANCE;
     Field uuidField = new Field("uuid_child", FieldType.nullable(uuidType), null);
     Field structField =
         new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(uuidField));
