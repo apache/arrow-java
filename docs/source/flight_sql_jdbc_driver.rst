@@ -173,3 +173,126 @@ DriverManager#getConnection()
 <https://docs.oracle.com/javase/8/docs/api/java/sql/DriverManager.html#getConnection-java.lang.String-java.lang.String-java.lang.String->`_,
 the username and password supplied on the URI supercede the username and
 password arguments to the function call.
+
+OAuth 2.0 Authentication
+========================
+
+The driver supports OAuth 2.0 authentication for obtaining access tokens
+from an authorization server. Two OAuth flows are currently supported:
+
+* **Client Credentials** - For service-to-service authentication where no
+  user interaction is required. The application authenticates using its own
+  credentials (client ID and client secret).
+
+* **Token Exchange** (RFC 8693) - For exchanging one token for another,
+  commonly used for federated authentication, delegation, or impersonation
+  scenarios.
+
+OAuth Connection Properties
+---------------------------
+
+The following properties configure OAuth authentication. These properties
+should be provided via the ``Properties`` object when connecting, as they
+may contain special characters that are difficult to encode in a URI.
+
+**Common OAuth Properties**
+
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Type
+     - Required
+     - Default
+     - Description
+
+   * - oauth.flow
+     - String
+     - Yes (to enable OAuth)
+     - null
+     - The OAuth grant type. Supported values: ``client_credentials``,
+       ``token_exchange``
+
+   * - oauth.tokenUri
+     - String
+     - Yes
+     - null
+     - The OAuth 2.0 token endpoint URL (e.g.,
+       ``https://auth.example.com/oauth/token``)
+
+   * - oauth.clientId
+     - String
+     - Conditional
+     - null
+     - The OAuth 2.0 client ID. Required for ``client_credentials`` flow,
+       optional for ``token_exchange``
+
+   * - oauth.clientSecret
+     - String
+     - Conditional
+     - null
+     - The OAuth 2.0 client secret. Required for ``client_credentials`` flow,
+       optional for ``token_exchange``
+
+   * - oauth.scope
+     - String
+     - No
+     - null
+     - Space-separated list of OAuth scopes to request
+
+   * - oauth.resource
+     - String
+     - No
+     - null
+     - The resource indicator for the token request (RFC 8707)
+
+**Token Exchange Properties**
+
+These properties are specific to the ``token_exchange`` flow:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Parameter
+     - Type
+     - Required
+     - Default
+     - Description
+
+   * - oauth.exchange.subjectToken
+     - String
+     - Yes
+     - null
+     - The subject token to exchange (e.g., a JWT from an identity provider)
+
+   * - oauth.exchange.subjectTokenType
+     - String
+     - Yes
+     - null
+     - The token type URI of the subject token. Common values:
+       ``urn:ietf:params:oauth:token-type:access_token``,
+       ``urn:ietf:params:oauth:token-type:jwt``
+
+   * - oauth.exchange.actorToken
+     - String
+     - No
+     - null
+     - The actor token for delegation/impersonation scenarios
+
+   * - oauth.exchange.actorTokenType
+     - String
+     - No
+     - null
+     - The token type URI of the actor token
+
+   * - oauth.exchange.aud
+     - String
+     - No
+     - null
+     - The target audience for the exchanged token
+
+   * - oauth.exchange.requestedTokenType
+     - String
+     - No
+     - null
+     - The desired token type for the exchanged token

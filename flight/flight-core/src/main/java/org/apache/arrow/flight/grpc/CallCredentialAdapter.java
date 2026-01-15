@@ -18,6 +18,7 @@ package org.apache.arrow.flight.grpc;
 
 import io.grpc.CallCredentials;
 import io.grpc.Metadata;
+import io.grpc.Status;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import org.apache.arrow.flight.CallHeaders;
@@ -36,9 +37,14 @@ public class CallCredentialAdapter extends CallCredentials {
       RequestInfo requestInfo, Executor executor, MetadataApplier metadataApplier) {
     executor.execute(
         () -> {
-          final Metadata headers = new Metadata();
-          credentialWriter.accept(new MetadataAdapter(headers));
-          metadataApplier.apply(headers);
+          try {
+            final Metadata headers = new Metadata();
+            credentialWriter.accept(new MetadataAdapter(headers));
+            metadataApplier.apply(headers);
+          } catch (Throwable t) {
+            metadataApplier.fail(
+                Status.UNAUTHENTICATED.withCause(t).withDescription(t.getMessage()));
+          }
         });
   }
 
