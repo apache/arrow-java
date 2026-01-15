@@ -18,14 +18,10 @@ package org.apache.arrow.flight;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.io.ByteStreams;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.WireFormat;
-import io.grpc.Detachable;
 import io.grpc.Drainable;
-import io.grpc.HasByteBuffer;
 import io.grpc.MethodDescriptor.Marshaller;
 import io.grpc.protobuf.ProtoUtils;
 import io.netty.buffer.ByteBuf;
@@ -42,13 +38,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.apache.arrow.flight.FlightDataParser.ArrowBufReader;
+import org.apache.arrow.flight.FlightDataParser.FlightDataReader;
+import org.apache.arrow.flight.FlightDataParser.InputStreamReader;
 import org.apache.arrow.flight.grpc.AddWritableBuffer;
 import org.apache.arrow.flight.impl.Flight.FlightData;
 import org.apache.arrow.flight.impl.Flight.FlightDescriptor;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
-import org.apache.arrow.memory.ForeignAllocation;
-import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.ipc.message.ArrowDictionaryBatch;
@@ -82,18 +79,9 @@ class ArrowMessage implements AutoCloseable {
     if (zeroCopyWriteFlag == null) {
       zeroCopyWriteFlag = System.getenv("ARROW_FLIGHT_ENABLE_ZERO_COPY_WRITE");
     }
-    ENABLE_ZERO_COPY_READ = !"false".equalsIgnoreCase(zeroCopyReadFlag);
+    ENABLE_ZERO_COPY_READ = true; // !"false".equalsIgnoreCase(zeroCopyReadFlag);
     ENABLE_ZERO_COPY_WRITE = "true".equalsIgnoreCase(zeroCopyWriteFlag);
   }
-
-  private static final int DESCRIPTOR_TAG =
-      (FlightData.FLIGHT_DESCRIPTOR_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-  private static final int BODY_TAG =
-      (FlightData.DATA_BODY_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-  private static final int HEADER_TAG =
-      (FlightData.DATA_HEADER_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-  private static final int APP_METADATA_TAG =
-      (FlightData.APP_METADATA_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
 
   private static final Marshaller<FlightData> NO_BODY_MARSHALLER =
       ProtoUtils.marshaller(FlightData.getDefaultInstance());
@@ -219,7 +207,7 @@ class ArrowMessage implements AutoCloseable {
     this.tryZeroCopyWrite = false;
   }
 
-  private ArrowMessage(
+  ArrowMessage(
       FlightDescriptor descriptor,
       MessageMetadataResult message,
       ArrowBuf appMetadata,
@@ -287,207 +275,16 @@ class ArrowMessage implements AutoCloseable {
   }
 
   private static ArrowMessage frame(BufferAllocator allocator, final InputStream stream) {
-
-    try {
-      FlightDescriptor descriptor = null;
-      MessageMetadataResult header = null;
-      ArrowBuf body = null;
-      ArrowBuf appMetadata = null;
-      while (stream.available() > 0) {
-        final int tagFirstByte = stream.read();
-        if (tagFirstByte == -1) {
-          break;
-        }
-        int tag = readRawVarint32(tagFirstByte, stream);
-        switch (tag) {
-          case DESCRIPTOR_TAG:
-            {
-              int size = readRawVarint32(stream);
-              byte[] bytes = new byte[size];
-              ByteStreams.readFully(stream, bytes);
-              descriptor = FlightDescriptor.parseFrom(bytes);
-              break;
-            }
-          case HEADER_TAG:
-            {
-              int size = readRawVarint32(stream);
-              byte[] bytes = new byte[size];
-              ByteStreams.readFully(stream, bytes);
-              header = MessageMetadataResult.create(ByteBuffer.wrap(bytes), size);
-              break;
-            }
-          case APP_METADATA_TAG:
-            {
-              int size = readRawVarint32(stream);
-              appMetadata = readBuffer(allocator, stream, size);
-              break;
-            }
-          case BODY_TAG:
-            if (body != null) {
-              // only read last body.
-              body.getReferenceManager().release();
-              body = null;
-            }
-            int size = readRawVarint32(stream);
-            body = readBuffer(allocator, stream, size);
-            break;
-
-          default:
-            // ignore unknown fields.
-        }
-      }
-      // Protobuf implementations can omit empty fields, such as body; for some message types, like
-      // RecordBatch,
-      // this will fail later as we still expect an empty buffer. In those cases only, fill in an
-      // empty buffer here -
-      // in other cases, like Schema, having an unexpected empty buffer will also cause failures.
-      // We don't fill in defaults for fields like header, for which there is no reasonable default,
-      // or for appMetadata
-      // or descriptor, which are intended to be empty in some cases.
-      if (header != null) {
-        switch (HeaderType.getHeader(header.headerType())) {
-          case SCHEMA:
-            // Ignore 0-length buffers in case a Protobuf implementation wrote it out
-            if (body != null && body.capacity() == 0) {
-              body.close();
-              body = null;
-            }
-            break;
-          case DICTIONARY_BATCH:
-          case RECORD_BATCH:
-            // A Protobuf implementation can skip 0-length bodies, so ensure we fill it in here
-            if (body == null) {
-              body = allocator.getEmpty();
-            }
-            break;
-          case NONE:
-          case TENSOR:
-          default:
-            // Do nothing
-            break;
-        }
-      }
-      return new ArrowMessage(descriptor, header, appMetadata, body);
-    } catch (Exception ioe) {
-      throw new RuntimeException(ioe);
-    }
-  }
-
-  private static int readRawVarint32(InputStream is) throws IOException {
-    int firstByte = is.read();
-    return readRawVarint32(firstByte, is);
-  }
-
-  private static int readRawVarint32(int firstByte, InputStream is) throws IOException {
-    return CodedInputStream.readRawVarint32(firstByte, is);
-  }
-
-  /**
-   * Reads data from the stream into an ArrowBuf, without copying data when possible.
-   *
-   * <p>First attempts to transfer ownership of the gRPC buffer to Arrow via {@link
-   * #wrapGrpcBuffer}. This avoids any memory copy when the gRPC transport provides a direct
-   * ByteBuffer (e.g., Netty).
-   *
-   * <p>If not possible (e.g., heap buffer, fragmented data, or unsupported transport), falls back
-   * to allocating a new buffer and copying data into it.
-   *
-   * @param allocator The allocator to use for buffer allocation
-   * @param stream The input stream to read from
-   * @param size The number of bytes to read
-   * @return An ArrowBuf containing the data
-   * @throws IOException if there is an error reading from the stream
-   */
-  private static ArrowBuf readBuffer(BufferAllocator allocator, InputStream stream, int size)
-      throws IOException {
+    FlightDataReader reader;
     if (ENABLE_ZERO_COPY_READ) {
-      ArrowBuf zeroCopyBuf = wrapGrpcBuffer(stream, allocator, size);
-      if (zeroCopyBuf != null) {
-        return zeroCopyBuf;
+      reader = ArrowBufReader.tryArrowBufReader(allocator, stream);
+      if (reader != null) {
+        return reader.toMessage();
       }
     }
 
-    // Fall back to allocating and copying
-    ArrowBuf buf = allocator.buffer(size);
-    byte[] heapBytes = new byte[size];
-    ByteStreams.readFully(stream, heapBytes);
-    buf.writeBytes(heapBytes);
-    buf.writerIndex(size);
-    return buf;
-  }
-
-  /**
-   * Attempts to wrap gRPC's buffer as an ArrowBuf without copying.
-   *
-   * <p>This method takes ownership of gRPC's underlying buffer via {@link Detachable#detach()} and
-   * wraps it as an ArrowBuf using {@link BufferAllocator#wrapForeignAllocation}. The gRPC buffer
-   * will be released when the ArrowBuf is closed.
-   *
-   * @param stream The gRPC-provided InputStream
-   * @param allocator The allocator to use for wrapping the foreign allocation
-   * @param size The number of bytes to wrap
-   * @return An ArrowBuf wrapping gRPC's buffer, or {@code null} if zero-copy is not possible
-   */
-  static ArrowBuf wrapGrpcBuffer(
-      final InputStream stream, final BufferAllocator allocator, final int size) {
-
-    if (!(stream instanceof Detachable) || !(stream instanceof HasByteBuffer)) {
-      return null;
-    }
-
-    HasByteBuffer hasByteBuffer = (HasByteBuffer) stream;
-    if (!hasByteBuffer.byteBufferSupported()) {
-      return null;
-    }
-
-    ByteBuffer peekBuffer = hasByteBuffer.getByteBuffer();
-    if (peekBuffer == null) {
-      return null;
-    }
-    if (!peekBuffer.isDirect()) {
-      return null;
-    }
-    if (peekBuffer.remaining() < size) {
-      // Data is fragmented across multiple buffers; zero-copy not possible
-      return null;
-    }
-
-    // Take ownership
-    InputStream detachedStream = ((Detachable) stream).detach();
-
-    // Get buffer from detached stream
-    ByteBuffer detachedByteBuffer = ((HasByteBuffer) detachedStream).getByteBuffer();
-
-    // Calculate memory address accounting for buffer position
-    long baseAddress = MemoryUtil.getByteBufferAddress(detachedByteBuffer);
-    long dataAddress = baseAddress + detachedByteBuffer.position();
-
-    // Create ForeignAllocation with proper cleanup
-    ForeignAllocation foreignAllocation =
-        new ForeignAllocation(size, dataAddress) {
-          @Override
-          protected void release0() {
-            closeQuietly(detachedStream);
-          }
-        };
-
-    try {
-      return allocator.wrapForeignAllocation(foreignAllocation);
-    } catch (Throwable t) {
-      // If it fails, clean up the detached stream and propagate
-      closeQuietly(detachedStream);
-      throw t;
-    }
-  }
-
-  private static void closeQuietly(InputStream stream) {
-    if (stream != null) {
-      try {
-        stream.close();
-      } catch (IOException e) {
-        LOG.debug("Error closing detached gRPC stream", e);
-      }
-    }
+    reader = new InputStreamReader(allocator, stream);
+    return reader.toMessage();
   }
 
   /**
