@@ -18,19 +18,18 @@ package org.apache.arrow.flight;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.common.collect.Iterables;
+import com.google.common.io.ByteStreams;
+import com.google.protobuf.ByteString;
 import io.grpc.Detachable;
 import io.grpc.HasByteBuffer;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+import io.grpc.protobuf.ProtoUtils;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Random;
+import org.apache.arrow.flight.impl.Flight.FlightData;
+import org.apache.arrow.flight.impl.Flight.FlightDescriptor;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -38,6 +37,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+/** Tests for zero-copy buffer handling in ArrowMessage parsing. */
 public class TestArrowMessageZeroCopy {
 
   private BufferAllocator allocator;
@@ -53,123 +53,72 @@ public class TestArrowMessageZeroCopy {
   }
 
   @Test
-  public void testWrapGrpcBufferReturnsNullForRegularInputStream() throws IOException {
-    byte[] testData = new byte[] {1, 2, 3, 4, 5};
-    InputStream stream = new ByteArrayInputStream(testData);
+  public void testParseUsesDetachedBuffer() throws Exception {
+    byte[] appMetadataBytes = new byte[] {1, 2, 3};
+    byte[] bodyBytes = new byte[] {4, 5, 6, 7};
+    FlightDescriptor descriptor =
+        FlightDescriptor.newBuilder()
+            .setType(FlightDescriptor.DescriptorType.PATH)
+            .addPath("path")
+            .build();
+    FlightData flightData =
+        FlightData.newBuilder()
+            .setFlightDescriptor(descriptor)
+            .setAppMetadata(ByteString.copyFrom(appMetadataBytes))
+            .setDataBody(ByteString.copyFrom(bodyBytes))
+            .build();
 
-    // ByteArrayInputStream doesn't implement Detachable or HasByteBuffer
-    ArrowBuf result = ArrowMessage.wrapGrpcBuffer(stream, allocator, testData.length);
-    assertNull(result, "Should return null for streams not implementing required interfaces");
-  }
+    byte[] serialized;
+    try (InputStream grpcStream =
+        ProtoUtils.marshaller(FlightData.getDefaultInstance()).stream(flightData)) {
+      serialized = ByteStreams.toByteArray(grpcStream);
+    }
 
-  @Test
-  public void testWrapGrpcBufferSucceedsForDirectBuffer() throws IOException {
-    byte[] testData = new byte[] {11, 22, 33, 44, 55};
-    InputStream stream = MockGrpcInputStream.ofDirectBuffer(testData);
+    InputStream stream = MockGrpcInputStream.ofDirectBuffer(serialized);
 
-    assertInstanceOf(Detachable.class, stream, "Real gRPC stream should implement Detachable");
-    assertInstanceOf(
-        HasByteBuffer.class, stream, "Real gRPC stream should implement HasByteBuffer");
-    assertTrue(
-        ((HasByteBuffer) stream).byteBufferSupported(),
-        "Direct buffer stream should support ByteBuffer");
-    assertTrue(
-        ((HasByteBuffer) stream).getByteBuffer().isDirect(),
-        "Should have direct ByteBuffer backing");
+    try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
+      assertEquals(descriptor, message.getDescriptor());
 
-    try (ArrowBuf result = ArrowMessage.wrapGrpcBuffer(stream, allocator, testData.length)) {
-      assertNotNull(result, "Should succeed for gRPC stream with direct buffer");
-      assertEquals(testData.length, result.capacity());
+      ArrowBuf appMetadata = message.getApplicationMetadata();
+      assertNotNull(appMetadata);
+      byte[] appMetadataRead = new byte[appMetadataBytes.length];
+      appMetadata.getBytes(0, appMetadataRead);
+      assertArrayEquals(appMetadataBytes, appMetadataRead);
 
-      // Check received data is the same
-      byte[] readData = new byte[testData.length];
-      result.getBytes(0, readData);
-      assertArrayEquals(testData, readData);
+      ArrowBuf body = Iterables.getOnlyElement(message.getBufs());
+      byte[] bodyRead = new byte[bodyBytes.length];
+      body.getBytes(0, bodyRead);
+      assertArrayEquals(bodyBytes, bodyRead);
     }
   }
 
   @Test
-  public void testWrapGrpcBufferReturnsNullForRealGrpcHeapByteBuffer() throws IOException {
-    byte[] testData = new byte[] {1, 2, 3, 4, 5};
-    InputStream stream = MockGrpcInputStream.ofHeapBuffer(testData);
+  public void testFallbackDoesNotDetachStream() throws Exception {
+    byte[] appMetadataBytes = new byte[] {8, 9};
+    byte[] bodyBytes = new byte[] {10, 11, 12};
+    FlightDescriptor descriptor =
+        FlightDescriptor.newBuilder()
+            .setType(FlightDescriptor.DescriptorType.PATH)
+            .addPath("fallback")
+            .build();
+    FlightData flightData =
+        FlightData.newBuilder()
+            .setFlightDescriptor(descriptor)
+            .setAppMetadata(ByteString.copyFrom(appMetadataBytes))
+            .setDataBody(ByteString.copyFrom(bodyBytes))
+            .build();
 
-    assertInstanceOf(Detachable.class, stream, "Real gRPC stream should implement Detachable");
-    assertInstanceOf(
-        HasByteBuffer.class, stream, "Real gRPC stream should implement HasByteBuffer");
-    assertTrue(
-        ((HasByteBuffer) stream).byteBufferSupported(),
-        "Heap ByteBuffer stream should support ByteBuffer");
-    assertFalse(
-        ((HasByteBuffer) stream).getByteBuffer().isDirect(), "Should have heap ByteBuffer backing");
+    byte[] serialized;
+    try (InputStream grpcStream =
+        ProtoUtils.marshaller(FlightData.getDefaultInstance()).stream(flightData)) {
+      serialized = ByteStreams.toByteArray(grpcStream);
+    }
 
-    // Zero-copy should return null for heap buffer (not direct)
-    ArrowBuf result = ArrowMessage.wrapGrpcBuffer(stream, allocator, testData.length);
-    assertNull(result, "Should return null for gRPC stream with heap buffer");
-  }
+    MockGrpcInputStream stream = MockGrpcInputStream.ofHeapBuffer(serialized);
 
-  @Test
-  public void testWrapGrpcBufferReturnsNullWhenByteBufferNotSupported() throws IOException {
-    byte[] testData = new byte[] {1, 2, 3, 4, 5};
-    InputStream stream = MockGrpcInputStream.withoutByteBufferSupport(testData);
-
-    // Verify the stream has the expected gRPC interfaces
-    assertInstanceOf(Detachable.class, stream, "Real gRPC stream should implement Detachable");
-    assertInstanceOf(
-        HasByteBuffer.class, stream, "Real gRPC stream should implement HasByteBuffer");
-    // Byte array backed streams don't support ByteBuffer access
-    assertFalse(
-        ((HasByteBuffer) stream).byteBufferSupported(),
-        "Byte array stream should not support ByteBuffer");
-
-    // Zero-copy should return null when byteBufferSupported() is false
-    ArrowBuf result = ArrowMessage.wrapGrpcBuffer(stream, allocator, testData.length);
-    assertNull(result, "Should return null for gRPC stream without ByteBuffer support");
-  }
-
-  @Test
-  public void testWrapGrpcBufferMemoryAccounting() throws IOException {
-    byte[] testData = new byte[1024];
-    new Random(42).nextBytes(testData);
-    InputStream stream = MockGrpcInputStream.ofDirectBuffer(testData);
-
-    assertEquals(0, allocator.getAllocatedMemory());
-
-    ArrowBuf result = ArrowMessage.wrapGrpcBuffer(stream, allocator, testData.length);
-    assertNotNull(result, "Should succeed for gRPC stream with direct buffer");
-    assertEquals(testData.length, allocator.getAllocatedMemory());
-
-    byte[] readData = new byte[testData.length];
-    result.getBytes(0, readData);
-    assertArrayEquals(testData, readData);
-
-    result.close();
-    assertEquals(0, allocator.getAllocatedMemory());
-  }
-
-  @Test
-  public void testWrapGrpcBufferReturnsNullForInsufficientData() throws IOException {
-    byte[] testData = new byte[] {1, 2, 3};
-    InputStream stream = MockGrpcInputStream.ofDirectBuffer(testData);
-
-    // Request more data than available
-    ArrowBuf result = ArrowMessage.wrapGrpcBuffer(stream, allocator, 10);
-    assertNull(result, "Should return null when buffer has insufficient data");
-  }
-
-  @Test
-  public void testWrapGrpcBufferLargeData() throws IOException {
-    byte[] testData = new byte[64 * 1024];
-    new Random(42).nextBytes(testData);
-    InputStream stream = MockGrpcInputStream.ofDirectBuffer(testData);
-
-    try (ArrowBuf result = ArrowMessage.wrapGrpcBuffer(stream, allocator, testData.length)) {
-      assertNotNull(result, "Should succeed for large data with real gRPC stream");
-      assertEquals(testData.length, result.capacity());
-
-      // Verify data integrity
-      byte[] readData = new byte[testData.length];
-      result.getBytes(0, readData);
-      assertArrayEquals(testData, readData);
+    try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
+      assertEquals(descriptor, message.getDescriptor());
+      assertEquals(0, stream.getDetachCount());
     }
   }
 
@@ -178,6 +127,7 @@ public class TestArrowMessageZeroCopy {
       implements Detachable, HasByteBuffer {
     private ByteBuffer buffer;
     private final boolean byteBufferSupported;
+    private int detachCount;
 
     private MockGrpcInputStream(ByteBuffer buffer, boolean byteBufferSupported) {
       this.buffer = buffer;
@@ -194,10 +144,6 @@ public class TestArrowMessageZeroCopy {
       return new MockGrpcInputStream(ByteBuffer.wrap(data), true);
     }
 
-    static MockGrpcInputStream withoutByteBufferSupport(byte[] data) {
-      return new MockGrpcInputStream(ByteBuffer.wrap(data), false);
-    }
-
     @Override
     public boolean byteBufferSupported() {
       return byteBufferSupported;
@@ -210,14 +156,24 @@ public class TestArrowMessageZeroCopy {
 
     @Override
     public InputStream detach() {
+      detachCount++;
       ByteBuffer detached = this.buffer;
       this.buffer = null;
       return new MockGrpcInputStream(detached, byteBufferSupported);
     }
 
+    int getDetachCount() {
+      return detachCount;
+    }
+
     @Override
     public int read() {
       return (buffer != null && buffer.hasRemaining()) ? (buffer.get() & 0xFF) : -1;
+    }
+
+    @Override
+    public int available() {
+      return buffer == null ? 0 : buffer.remaining();
     }
 
     @Override
