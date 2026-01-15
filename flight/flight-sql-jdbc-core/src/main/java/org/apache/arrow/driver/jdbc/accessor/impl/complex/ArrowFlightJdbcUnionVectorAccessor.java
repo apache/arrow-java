@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.accessor.impl.complex;
 
+import java.util.Calendar;
 import java.util.function.IntSupplier;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessor;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
@@ -37,15 +38,16 @@ public class ArrowFlightJdbcUnionVectorAccessor extends AbstractArrowFlightJdbcU
   public ArrowFlightJdbcUnionVectorAccessor(
       UnionVector vector,
       IntSupplier currentRowSupplier,
-      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
-    super(currentRowSupplier, setCursorWasNull);
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull,
+      Calendar localCalendar) {
+    super(currentRowSupplier, setCursorWasNull, localCalendar);
     this.vector = vector;
   }
 
   @Override
   protected ArrowFlightJdbcAccessor createAccessorForVector(ValueVector vector) {
     return ArrowFlightJdbcAccessorFactory.createAccessor(
-        vector, this::getCurrentRow, (boolean wasNull) -> {});
+        vector, this::getCurrentRow, (boolean wasNull) -> {}, localCalendar);
   }
 
   @Override

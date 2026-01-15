@@ -238,7 +238,7 @@ public class AbstractArrowFlightJdbcUnionVectorAccessorTest {
   private static class AbstractArrowFlightJdbcUnionVectorAccessorMock
       extends AbstractArrowFlightJdbcUnionVectorAccessor {
     protected AbstractArrowFlightJdbcUnionVectorAccessorMock() {
-      super(() -> 0, (boolean wasNull) -> {});
+      super(() -> 0, (boolean wasNull) -> {}, Calendar.getInstance());
     }
 
     @Override

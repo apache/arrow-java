@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import org.apache.arrow.driver.jdbc.utils.AccessorTestUtils;
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
@@ -52,7 +53,8 @@ public class ArrowFlightJdbcDenseUnionVectorAccessorTest {
                   getCurrentRow,
                   (boolean wasNull) -> {
                     // No Operation
-                  });
+                  },
+                  Calendar.getInstance());
 
   private final AccessorTestUtils.AccessorIterator<ArrowFlightJdbcDenseUnionVectorAccessor>
       accessorIterator = new AccessorTestUtils.AccessorIterator<>(accessorSupplier);

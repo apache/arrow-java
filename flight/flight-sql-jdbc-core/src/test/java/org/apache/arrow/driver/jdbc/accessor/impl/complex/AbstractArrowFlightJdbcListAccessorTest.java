@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.sql.Array;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -54,13 +55,19 @@ public class AbstractArrowFlightJdbcListAccessorTest {
                 (boolean wasNull) -> {};
             if (vector instanceof ListVector) {
               return new ArrowFlightJdbcListVectorAccessor(
-                  (ListVector) vector, getCurrentRow, noOpWasNullConsumer);
+                  (ListVector) vector, getCurrentRow, noOpWasNullConsumer, Calendar.getInstance());
             } else if (vector instanceof LargeListVector) {
               return new ArrowFlightJdbcLargeListVectorAccessor(
-                  (LargeListVector) vector, getCurrentRow, noOpWasNullConsumer);
+                  (LargeListVector) vector,
+                  getCurrentRow,
+                  noOpWasNullConsumer,
+                  Calendar.getInstance());
             } else if (vector instanceof FixedSizeListVector) {
               return new ArrowFlightJdbcFixedSizeListVectorAccessor(
-                  (FixedSizeListVector) vector, getCurrentRow, noOpWasNullConsumer);
+                  (FixedSizeListVector) vector,
+                  getCurrentRow,
+                  noOpWasNullConsumer,
+                  Calendar.getInstance());
             }
             return null;
           };

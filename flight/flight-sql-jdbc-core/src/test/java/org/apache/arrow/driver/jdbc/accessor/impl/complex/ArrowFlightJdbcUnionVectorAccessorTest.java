@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import org.apache.arrow.driver.jdbc.utils.AccessorTestUtils;
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
@@ -47,7 +48,10 @@ public class ArrowFlightJdbcUnionVectorAccessorTest {
       accessorSupplier =
           (vector, getCurrentRow) ->
               new ArrowFlightJdbcUnionVectorAccessor(
-                  (UnionVector) vector, getCurrentRow, (boolean wasNull) -> {});
+                  (UnionVector) vector,
+                  getCurrentRow,
+                  (boolean wasNull) -> {},
+                  Calendar.getInstance());
 
   private final AccessorTestUtils.AccessorIterator<ArrowFlightJdbcUnionVectorAccessor>
       accessorIterator = new AccessorTestUtils.AccessorIterator<>(accessorSupplier);

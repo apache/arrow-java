@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.accessor.impl.complex;
 
+import java.util.Calendar;
 import java.util.Map;
 import java.util.function.IntSupplier;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
@@ -33,8 +34,9 @@ public class ArrowFlightJdbcMapVectorAccessor extends AbstractArrowFlightJdbcLis
   public ArrowFlightJdbcMapVectorAccessor(
       MapVector vector,
       IntSupplier currentRowSupplier,
-      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
-    super(currentRowSupplier, setCursorWasNull);
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull,
+      Calendar localCalendar) {
+    super(currentRowSupplier, setCursorWasNull, localCalendar);
     this.vector = vector;
   }
 
