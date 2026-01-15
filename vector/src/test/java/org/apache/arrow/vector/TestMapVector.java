@@ -1626,9 +1626,9 @@ public class TestMapVector {
       // Read first entry
       mapReader.next();
       FieldReader keyReader = mapReader.key();
-      UuidHolder keyHolder = new UuidHolder();
+      NullableUuidHolder keyHolder = new NullableUuidHolder();
       keyReader.read(keyHolder);
-      UUID actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, 0);
+      UUID actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, keyHolder.start);
       assertEquals(key1, actualKey);
 
       FieldReader valueReader = mapReader.value();
@@ -1648,7 +1648,7 @@ public class TestMapVector {
       mapReader.next();
       keyReader = mapReader.key();
       keyReader.read(keyHolder);
-      actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, 0);
+      actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, keyHolder.start);
       assertEquals(key2, actualKey);
 
       valueReader = mapReader.value();

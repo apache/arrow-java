@@ -88,6 +88,7 @@ import org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
+import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -1168,7 +1169,7 @@ public class TestComplexWriter {
       } else if (i % 5 == 4) {
         NullableUuidHolder holder = new NullableUuidHolder();
         unionReader.read(holder);
-        assertEquals(UuidUtility.uuidFromArrowBuf(holder.buffer, 0), uuid);
+        assertEquals(UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start), uuid);
       } else {
         assertEquals((float) i, unionReader.readFloat(), 1e-12);
       }
