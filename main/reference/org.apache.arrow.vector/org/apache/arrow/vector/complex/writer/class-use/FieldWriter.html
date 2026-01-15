@@ -60,7 +60,11 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
@@ -90,17 +94,6 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="org.apache.arrow.vector.complex.impl">
 <h2>Uses of <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a> in <a href="../../impl/package-summary.html">org.apache.arrow.vector.complex.impl</a></h2>
-<div class="caption"><span>Classes in <a href="../../impl/package-summary.html">org.apache.arrow.vector.complex.impl</a> with type parameters of type <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Interface</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>interface&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../impl/ExtensionTypeWriterFactory.html" class="type-name-link" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&lt;T extends <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&gt;</code></div>
-<div class="col-last even-row-color">
-<div class="block">A factory interface for creating instances of <a href="../../impl/AbstractExtensionTypeWriter.html" title="class in org.apache.arrow.vector.complex.impl"><code>AbstractExtensionTypeWriter</code></a>.</div>
-</div>
-</div>
 <div class="caption"><span>Classes in <a href="../../impl/package-summary.html">org.apache.arrow.vector.complex.impl</a> that implement <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></span></div>
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
@@ -331,133 +324,145 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>static void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ComplexCopier.</span><code><a href="../../impl/ComplexCopier.html#copy(org.apache.arrow.vector.complex.reader.FieldReader,org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copy</a><wbr>(<a href="../../reader/FieldReader.html" title="interface in org.apache.arrow.vector.complex.reader">FieldReader</a>&nbsp;input,
- <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;output)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ComplexCopier.</span><code><a href="../../impl/ComplexCopier.html#copy(org.apache.arrow.vector.complex.reader.FieldReader,org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copy</a><wbr>(<a href="../../reader/FieldReader.html" title="interface in org.apache.arrow.vector.complex.reader">FieldReader</a>&nbsp;reader,
+ <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;writer)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Do a deep copy of the value in input into output</div>
 </div>
-<div class="col-first odd-row-color"><code>static void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ComplexCopier.</span><code><a href="../../impl/ComplexCopier.html#copy(org.apache.arrow.vector.complex.reader.FieldReader,org.apache.arrow.vector.complex.writer.FieldWriter,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copy</a><wbr>(<a href="../../reader/FieldReader.html" title="interface in org.apache.arrow.vector.complex.reader">FieldReader</a>&nbsp;input,
- <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;output,
- <a href="../../impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;extensionTypeWriterFactory)</code></div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BigIntReaderImpl.</span><code><a href="../../impl/BigIntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BigIntReaderImpl.</span><code><a href="../../impl/BigIntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BitReaderImpl.</span><code><a href="../../impl/BitReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BitReaderImpl.</span><code><a href="../../impl/BitReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DateDayReaderImpl.</span><code><a href="../../impl/DateDayReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DateDayReaderImpl.</span><code><a href="../../impl/DateDayReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DateMilliReaderImpl.</span><code><a href="../../impl/DateMilliReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DateMilliReaderImpl.</span><code><a href="../../impl/DateMilliReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Decimal256ReaderImpl.</span><code><a href="../../impl/Decimal256ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Decimal256ReaderImpl.</span><code><a href="../../impl/Decimal256ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DecimalReaderImpl.</span><code><a href="../../impl/DecimalReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalReaderImpl.</span><code><a href="../../impl/DecimalReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DurationReaderImpl.</span><code><a href="../../impl/DurationReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DurationReaderImpl.</span><code><a href="../../impl/DurationReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryReaderImpl.</span><code><a href="../../impl/FixedSizeBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryReaderImpl.</span><code><a href="../../impl/FixedSizeBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float2ReaderImpl.</span><code><a href="../../impl/Float2ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float2ReaderImpl.</span><code><a href="../../impl/Float2ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Float4ReaderImpl.</span><code><a href="../../impl/Float4ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Float4ReaderImpl.</span><code><a href="../../impl/Float4ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float8ReaderImpl.</span><code><a href="../../impl/Float8ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float8ReaderImpl.</span><code><a href="../../impl/Float8ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalDayReaderImpl.</span><code><a href="../../impl/IntervalDayReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayReaderImpl.</span><code><a href="../../impl/IntervalDayReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoReaderImpl.</span><code><a href="../../impl/IntervalMonthDayNanoReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoReaderImpl.</span><code><a href="../../impl/IntervalMonthDayNanoReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalYearReaderImpl.</span><code><a href="../../impl/IntervalYearReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalYearReaderImpl.</span><code><a href="../../impl/IntervalYearReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntReaderImpl.</span><code><a href="../../impl/IntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntReaderImpl.</span><code><a href="../../impl/IntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">LargeVarBinaryReaderImpl.</span><code><a href="../../impl/LargeVarBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">LargeVarBinaryReaderImpl.</span><code><a href="../../impl/LargeVarBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">LargeVarCharReaderImpl.</span><code><a href="../../impl/LargeVarCharReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LargeVarCharReaderImpl.</span><code><a href="../../impl/LargeVarCharReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SmallIntReaderImpl.</span><code><a href="../../impl/SmallIntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">SmallIntReaderImpl.</span><code><a href="../../impl/SmallIntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeMicroReaderImpl.</span><code><a href="../../impl/TimeMicroReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeMicroReaderImpl.</span><code><a href="../../impl/TimeMicroReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeMilliReaderImpl.</span><code><a href="../../impl/TimeMilliReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeMilliReaderImpl.</span><code><a href="../../impl/TimeMilliReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeNanoReaderImpl.</span><code><a href="../../impl/TimeNanoReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeNanoReaderImpl.</span><code><a href="../../impl/TimeNanoReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeSecReaderImpl.</span><code><a href="../../impl/TimeSecReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeSecReaderImpl.</span><code><a href="../../impl/TimeSecReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroReaderImpl.</span><code><a href="../../impl/TimeStampMicroReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroReaderImpl.</span><code><a href="../../impl/TimeStampMicroReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroTZReaderImpl.</span><code><a href="../../impl/TimeStampMicroTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroTZReaderImpl.</span><code><a href="../../impl/TimeStampMicroTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliReaderImpl.</span><code><a href="../../impl/TimeStampMilliReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliReaderImpl.</span><code><a href="../../impl/TimeStampMilliReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliTZReaderImpl.</span><code><a href="../../impl/TimeStampMilliTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliTZReaderImpl.</span><code><a href="../../impl/TimeStampMilliTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoReaderImpl.</span><code><a href="../../impl/TimeStampNanoReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoReaderImpl.</span><code><a href="../../impl/TimeStampNanoReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoTZReaderImpl.</span><code><a href="../../impl/TimeStampNanoTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoTZReaderImpl.</span><code><a href="../../impl/TimeStampNanoTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecReaderImpl.</span><code><a href="../../impl/TimeStampSecReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecReaderImpl.</span><code><a href="../../impl/TimeStampSecReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecTZReaderImpl.</span><code><a href="../../impl/TimeStampSecTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecTZReaderImpl.</span><code><a href="../../impl/TimeStampSecTZReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TinyIntReaderImpl.</span><code><a href="../../impl/TinyIntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TinyIntReaderImpl.</span><code><a href="../../impl/TinyIntReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt1ReaderImpl.</span><code><a href="../../impl/UInt1ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt1ReaderImpl.</span><code><a href="../../impl/UInt1ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt2ReaderImpl.</span><code><a href="../../impl/UInt2ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt2ReaderImpl.</span><code><a href="../../impl/UInt2ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt4ReaderImpl.</span><code><a href="../../impl/UInt4ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt4ReaderImpl.</span><code><a href="../../impl/UInt4ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt8ReaderImpl.</span><code><a href="../../impl/UInt8ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt8ReaderImpl.</span><code><a href="../../impl/UInt8ReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VarBinaryReaderImpl.</span><code><a href="../../impl/VarBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryReaderImpl.</span><code><a href="../../impl/VarBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VarCharReaderImpl.</span><code><a href="../../impl/VarCharReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarCharReaderImpl.</span><code><a href="../../impl/VarCharReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryReaderImpl.</span><code><a href="../../impl/ViewVarBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryReaderImpl.</span><code><a href="../../impl/ViewVarBinaryReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharReaderImpl.</span><code><a href="../../impl/ViewVarCharReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharReaderImpl.</span><code><a href="../../impl/ViewVarCharReaderImpl.html#copyValue(org.apache.arrow.vector.complex.writer.FieldWriter)" class="member-name-link">copyValue</a><wbr>(<a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a>&nbsp;w)</code></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.vector.extension">
+<h2>Uses of <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a> in <a href="../../../extension/package-summary.html">org.apache.arrow.vector.extension</a></h2>
+<div class="caption"><span>Methods in <a href="../../../extension/package-summary.html">org.apache.arrow.vector.extension</a> that return <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../../../extension/OpaqueType.html#getNewFieldWriter(org.apache.arrow.vector.ValueVector)" class="member-name-link">getNewFieldWriter</a><wbr>(<a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;vector)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidType.</span><code><a href="../../../extension/UuidType.html#getNewFieldWriter(org.apache.arrow.vector.ValueVector)" class="member-name-link">getNewFieldWriter</a><wbr>(<a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;vector)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -471,6 +476,20 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>abstract <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">Types.MinorType.</span><code><a href="../../../types/Types.MinorType.html#getNewFieldWriter(org.apache.arrow.vector.ValueVector)" class="member-name-link">getNewFieldWriter</a><wbr>(<a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;vector)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.vector.types.pojo">
+<h2>Uses of <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a> in <a href="../../../types/pojo/package-summary.html">org.apache.arrow.vector.types.pojo</a></h2>
+<div class="caption"><span>Methods in <a href="../../../types/pojo/package-summary.html">org.apache.arrow.vector.types.pojo</a> that return <a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ArrowType.ExtensionType.</span><code><a href="../../../types/pojo/ArrowType.ExtensionType.html#getNewFieldWriter(org.apache.arrow.vector.ValueVector)" class="member-name-link">getNewFieldWriter</a><wbr>(<a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;vector)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>

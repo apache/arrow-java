@@ -266,15 +266,6 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Adds the given extension type factory.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory,
- <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#allocate()" class="member-name-link">allocate</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../writer/BigIntWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BigIntWriter</a></code></div>
@@ -705,7 +696,7 @@ loadScripts(document, 'script');</script>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(org.apache.arrow.vector.holders.DurationHolder)" class="member-name-link">write</a><wbr>(<a href="../../holders/DurationHolder.html" title="class in org.apache.arrow.vector.holders">DurationHolder</a>&nbsp;holder)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;var1)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Writes value from the given extension holder.</div>
 </div>
@@ -872,212 +863,218 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeExtension(java.lang.Object)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeExtension(java.lang.Object)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;var1)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Writes the given extension type value.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeFixedSizeBinary(org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeFixedSizeBinary</a><wbr>(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Writes the given extension type value.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeFixedSizeBinary(org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeFixedSizeBinary</a><wbr>(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">If you experience errors with using this version of the method, switch to the holder version.</div>
 </div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeFloat2(short)" class="member-name-link">writeFloat2</a><wbr>(short&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeFloat4(float)" class="member-name-link">writeFloat4</a><wbr>(float&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeFloat2(short)" class="member-name-link">writeFloat2</a><wbr>(short&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeFloat8(double)" class="member-name-link">writeFloat8</a><wbr>(double&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeFloat4(float)" class="member-name-link">writeFloat4</a><wbr>(float&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeInt(int)" class="member-name-link">writeInt</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeFloat8(double)" class="member-name-link">writeFloat8</a><wbr>(double&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeIntervalDay(int,int)" class="member-name-link">writeIntervalDay</a><wbr>(int&nbsp;days,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeInt(int)" class="member-name-link">writeInt</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeIntervalDay(int,int)" class="member-name-link">writeIntervalDay</a><wbr>(int&nbsp;days,
  int&nbsp;milliseconds)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeIntervalMonthDayNano(int,int,long)" class="member-name-link">writeIntervalMonthDayNano</a><wbr>(int&nbsp;months,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeIntervalMonthDayNano(int,int,long)" class="member-name-link">writeIntervalMonthDayNano</a><wbr>(int&nbsp;months,
  int&nbsp;days,
  long&nbsp;nanoseconds)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeIntervalYear(int)" class="member-name-link">writeIntervalYear</a><wbr>(int&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(byte%5B%5D)" class="member-name-link">writeLargeVarBinary</a><wbr>(byte[]&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeIntervalYear(int)" class="member-name-link">writeIntervalYear</a><wbr>(int&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(byte%5B%5D,int,int)" class="member-name-link">writeLargeVarBinary</a><wbr>(byte[]&nbsp;value,
- int&nbsp;offset,
- int&nbsp;length)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(byte%5B%5D)" class="member-name-link">writeLargeVarBinary</a><wbr>(byte[]&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeLargeVarBinary</a><wbr>(long&nbsp;start,
- long&nbsp;end,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(java.nio.ByteBuffer)" class="member-name-link">writeLargeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(java.nio.ByteBuffer,int,int)" class="member-name-link">writeLargeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(byte%5B%5D,int,int)" class="member-name-link">writeLargeVarBinary</a><wbr>(byte[]&nbsp;value,
  int&nbsp;offset,
  int&nbsp;length)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarChar(long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeLargeVarChar</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeLargeVarBinary</a><wbr>(long&nbsp;start,
  long&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarChar(java.lang.String)" class="member-name-link">writeLargeVarChar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(java.nio.ByteBuffer)" class="member-name-link">writeLargeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarChar(org.apache.arrow.vector.util.Text)" class="member-name-link">writeLargeVarChar</a><wbr>(<a href="../../util/Text.html" title="class in org.apache.arrow.vector.util">Text</a>&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarBinary(java.nio.ByteBuffer,int,int)" class="member-name-link">writeLargeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
+ int&nbsp;offset,
+ int&nbsp;length)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeNull()" class="member-name-link">writeNull</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarChar(long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeLargeVarChar</a><wbr>(long&nbsp;start,
+ long&nbsp;end,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarChar(java.lang.String)" class="member-name-link">writeLargeVarChar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeLargeVarChar(org.apache.arrow.vector.util.Text)" class="member-name-link">writeLargeVarChar</a><wbr>(<a href="../../util/Text.html" title="class in org.apache.arrow.vector.util">Text</a>&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeNull()" class="member-name-link">writeNull</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Writes a null value.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeSmallInt(short)" class="member-name-link">writeSmallInt</a><wbr>(short&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeMicro(long)" class="member-name-link">writeTimeMicro</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeSmallInt(short)" class="member-name-link">writeSmallInt</a><wbr>(short&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeMilli(int)" class="member-name-link">writeTimeMilli</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeMicro(long)" class="member-name-link">writeTimeMicro</a><wbr>(long&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeNano(long)" class="member-name-link">writeTimeNano</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeMilli(int)" class="member-name-link">writeTimeMilli</a><wbr>(int&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeSec(int)" class="member-name-link">writeTimeSec</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeNano(long)" class="member-name-link">writeTimeNano</a><wbr>(long&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampMicro(long)" class="member-name-link">writeTimeStampMicro</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeSec(int)" class="member-name-link">writeTimeSec</a><wbr>(int&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampMicroTZ(long)" class="member-name-link">writeTimeStampMicroTZ</a><wbr>(long&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampMicro(long)" class="member-name-link">writeTimeStampMicro</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampMicroTZ(long)" class="member-name-link">writeTimeStampMicroTZ</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">The holder version should be used instead otherwise the timezone will default to UTC.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampMilli(long)" class="member-name-link">writeTimeStampMilli</a><wbr>(long&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampMilliTZ(long)" class="member-name-link">writeTimeStampMilliTZ</a><wbr>(long&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampMilli(long)" class="member-name-link">writeTimeStampMilli</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampMilliTZ(long)" class="member-name-link">writeTimeStampMilliTZ</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">The holder version should be used instead otherwise the timezone will default to UTC.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampNano(long)" class="member-name-link">writeTimeStampNano</a><wbr>(long&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampNanoTZ(long)" class="member-name-link">writeTimeStampNanoTZ</a><wbr>(long&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampNano(long)" class="member-name-link">writeTimeStampNano</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampNanoTZ(long)" class="member-name-link">writeTimeStampNanoTZ</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">The holder version should be used instead otherwise the timezone will default to UTC.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampSec(long)" class="member-name-link">writeTimeStampSec</a><wbr>(long&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampSecTZ(long)" class="member-name-link">writeTimeStampSecTZ</a><wbr>(long&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTimeStampSec(long)" class="member-name-link">writeTimeStampSec</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#writeTimeStampSecTZ(long)" class="member-name-link">writeTimeStampSecTZ</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">The holder version should be used instead otherwise the timezone will default to UTC.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTinyInt(byte)" class="member-name-link">writeTinyInt</a><wbr>(byte&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt1(byte)" class="member-name-link">writeUInt1</a><wbr>(byte&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeTinyInt(byte)" class="member-name-link">writeTinyInt</a><wbr>(byte&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt2(char)" class="member-name-link">writeUInt2</a><wbr>(char&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt1(byte)" class="member-name-link">writeUInt1</a><wbr>(byte&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt4(int)" class="member-name-link">writeUInt4</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt2(char)" class="member-name-link">writeUInt2</a><wbr>(char&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt8(long)" class="member-name-link">writeUInt8</a><wbr>(long&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt4(int)" class="member-name-link">writeUInt4</a><wbr>(int&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(byte%5B%5D)" class="member-name-link">writeVarBinary</a><wbr>(byte[]&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeUInt8(long)" class="member-name-link">writeUInt8</a><wbr>(long&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(byte%5B%5D,int,int)" class="member-name-link">writeVarBinary</a><wbr>(byte[]&nbsp;value,
- int&nbsp;offset,
- int&nbsp;length)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(byte%5B%5D)" class="member-name-link">writeVarBinary</a><wbr>(byte[]&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeVarBinary</a><wbr>(int&nbsp;start,
- int&nbsp;end,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(java.nio.ByteBuffer)" class="member-name-link">writeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(java.nio.ByteBuffer,int,int)" class="member-name-link">writeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(byte%5B%5D,int,int)" class="member-name-link">writeVarBinary</a><wbr>(byte[]&nbsp;value,
  int&nbsp;offset,
  int&nbsp;length)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarChar(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeVarChar</a><wbr>(int&nbsp;start,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeVarBinary</a><wbr>(int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarChar(java.lang.String)" class="member-name-link">writeVarChar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(java.nio.ByteBuffer)" class="member-name-link">writeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarChar(org.apache.arrow.vector.util.Text)" class="member-name-link">writeVarChar</a><wbr>(<a href="../../util/Text.html" title="class in org.apache.arrow.vector.util">Text</a>&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(byte%5B%5D)" class="member-name-link">writeViewVarBinary</a><wbr>(byte[]&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(byte%5B%5D,int,int)" class="member-name-link">writeViewVarBinary</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarBinary(java.nio.ByteBuffer,int,int)" class="member-name-link">writeVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
  int&nbsp;offset,
  int&nbsp;length)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeViewVarBinary</a><wbr>(int&nbsp;start,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarChar(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeVarChar</a><wbr>(int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(java.nio.ByteBuffer)" class="member-name-link">writeViewVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarChar(java.lang.String)" class="member-name-link">writeVarChar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;value)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(java.nio.ByteBuffer,int,int)" class="member-name-link">writeViewVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeVarChar(org.apache.arrow.vector.util.Text)" class="member-name-link">writeVarChar</a><wbr>(<a href="../../util/Text.html" title="class in org.apache.arrow.vector.util">Text</a>&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(byte%5B%5D)" class="member-name-link">writeViewVarBinary</a><wbr>(byte[]&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(byte%5B%5D,int,int)" class="member-name-link">writeViewVarBinary</a><wbr>(byte[]&nbsp;value,
  int&nbsp;offset,
  int&nbsp;length)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarChar(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeViewVarChar</a><wbr>(int&nbsp;start,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeViewVarBinary</a><wbr>(int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarChar(java.lang.String)" class="member-name-link">writeViewVarChar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(java.nio.ByteBuffer)" class="member-name-link">writeViewVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarChar(org.apache.arrow.vector.util.Text)" class="member-name-link">writeViewVarChar</a><wbr>(<a href="../../util/Text.html" title="class in org.apache.arrow.vector.util">Text</a>&nbsp;value)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarBinary(java.nio.ByteBuffer,int,int)" class="member-name-link">writeViewVarBinary</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
+ int&nbsp;offset,
+ int&nbsp;length)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarChar(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">writeViewVarChar</a><wbr>(int&nbsp;start,
+ int&nbsp;end,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarChar(java.lang.String)" class="member-name-link">writeViewVarChar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#writeViewVarChar(org.apache.arrow.vector.util.Text)" class="member-name-link">writeViewVarChar</a><wbr>(<a href="../../util/Text.html" title="class in org.apache.arrow.vector.util">Text</a>&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -1697,38 +1694,33 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="writeExtension(java.lang.Object)">
+<section class="detail" id="writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)">
 <h3>writeExtension</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeExtension</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html#writeExtension(java.lang.Object)">BaseWriter.ExtensionWriter</a></code></span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeExtension</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)">BaseWriter.ExtensionWriter</a></code></span></div>
 <div class="block">Writes the given extension type value.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ExtensionWriter.html#writeExtension(java.lang.Object)">writeExtension</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></dd>
+<dd><code><a href="../writer/BaseWriter.ExtensionWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)">writeExtension</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></dd>
 <dt>Parameters:</dt>
 <dd><code>value</code> - the extension type value to write</dd>
+<dd><code>arrowType</code> - of the extension</dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)">
-<h3>addExtensionTypeWriterFactory</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addExtensionTypeWriterFactory</span><wbr><span class="parameters">(<a href="ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)">BaseWriter.ExtensionWriter</a></code></span></div>
-<div class="block">Adds the given extension type factory. This factory allows configuring writer implementations for specific ExtensionTypeVector.</div>
+<section class="detail" id="write(org.apache.arrow.vector.holders.ExtensionHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html#write(org.apache.arrow.vector.holders.ExtensionHolder)">BaseWriter.ExtensionWriter</a></code></span></div>
+<div class="block">Writes value from the given extension holder.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ExtensionWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)">addExtensionTypeWriterFactory</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></dd>
+<dd><code><a href="../writer/BaseWriter.ExtensionWriter.html#write(org.apache.arrow.vector.holders.ExtensionHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>factory</code> - the extension type factory to add</dd>
+<dd><code>holder</code> - the extension holder to write</dd>
 </dl>
-</section>
-</li>
-<li>
-<section class="detail" id="addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory,org.apache.arrow.vector.types.pojo.ArrowType)">
-<h3>addExtensionTypeWriterFactory</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addExtensionTypeWriterFactory</span><wbr><span class="parameters">(<a href="ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory,
- <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
 </section>
 </li>
 <li>
@@ -3873,16 +3865,16 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.ExtensionHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;var1)</span></div>
-<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html#write(org.apache.arrow.vector.holders.ExtensionHolder)">BaseWriter.ExtensionWriter</a></code></span></div>
-<div class="block">Writes value from the given extension holder.</div>
+<section class="detail" id="writeExtension(java.lang.Object)">
+<h3>writeExtension</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeExtension</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;var1)</span></div>
+<div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html#writeExtension(java.lang.Object)">BaseWriter.ExtensionWriter</a></code></span></div>
+<div class="block">Writes the given extension type value.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ExtensionWriter.html#write(org.apache.arrow.vector.holders.ExtensionHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></dd>
+<dd><code><a href="../writer/BaseWriter.ExtensionWriter.html#writeExtension(java.lang.Object)">writeExtension</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></dd>
 <dt>Parameters:</dt>
-<dd><code>var1</code> - the extension holder to write</dd>
+<dd><code>var1</code> - the extension type value to write</dd>
 </dl>
 </section>
 </li>

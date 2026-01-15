@@ -168,27 +168,9 @@ IN&gt;&nbsp;OUT</code></div>
  vector.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
- <a href="complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Copy a cell value from a particular index in source vector to a particular position in this
- vector.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
  int&nbsp;thisIndex,
  <a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Same as <a href="#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
- capacity of the vector needs to be expanded before copy.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
- <a href="complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Same as <a href="#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
  capacity of the vector needs to be expanded before copy.</div>
@@ -760,42 +742,6 @@ IN&gt;&nbsp;OUT</code></div>
 <dd><code>fromIndex</code> - position to copy from in source vector</dd>
 <dd><code>thisIndex</code> - position to copy to in this vector</dd>
 <dd><code>from</code> - source vector</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="copyFrom(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)">
-<h3>copyFrom</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">copyFrom</span><wbr><span class="parameters">(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
- <a href="complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</span></div>
-<div class="block">Copy a cell value from a particular index in source vector to a particular position in this
- vector.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>fromIndex</code> - position to copy from in source vector</dd>
-<dd><code>thisIndex</code> - position to copy to in this vector</dd>
-<dd><code>from</code> - source vector</dd>
-<dd><code>writerFactory</code> - the extension type writer factory to use for copying extension type values</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="copyFromSafe(int,int,org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)">
-<h3>copyFromSafe</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">copyFromSafe</span><wbr><span class="parameters">(int&nbsp;fromIndex,
- int&nbsp;thisIndex,
- <a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from,
- <a href="complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;writerFactory)</span></div>
-<div class="block">Same as <a href="#copyFrom(int,int,org.apache.arrow.vector.ValueVector)"><code>copyFrom(int, int, ValueVector)</code></a> except that it handles the case when the
- capacity of the vector needs to be expanded before copy.</div>
-<dl class="notes">
-<dt>Parameters:</dt>
-<dd><code>fromIndex</code> - position to copy from in source vector</dd>
-<dd><code>thisIndex</code> - position to copy to in this vector</dd>
-<dd><code>from</code> - source vector</dd>
-<dd><code>writerFactory</code> - the extension type writer factory to use for copying extension type values</dd>
 </dl>
 </section>
 </li>

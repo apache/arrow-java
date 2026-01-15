@@ -74,10 +74,12 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.holders">org.apache.arrow.vector.holders</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -302,101 +304,104 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color"><code><a href="../../../DurationVector.html" title="class in org.apache.arrow.vector">DurationVector</a></code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getDurationVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getDurationVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../FixedSizeBinaryVector.html" title="class in org.apache.arrow.vector">FixedSizeBinaryVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getFixedSizeBinaryVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getFixedSizeBinaryVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first even-row-color"><code><a href="../../../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getExtension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getExtension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../FixedSizeBinaryVector.html" title="class in org.apache.arrow.vector">FixedSizeBinaryVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getFixedSizeBinaryVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getFixedSizeBinaryVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/MapVector.html" title="class in org.apache.arrow.vector.complex">MapVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getMap(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getMap</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getFixedSizeBinaryVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getFixedSizeBinaryVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../FixedSizeBinaryVector.html" title="class in org.apache.arrow.vector">FixedSizeBinaryVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getFixedSizeBinaryVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getFixedSizeBinaryVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/MapVector.html" title="class in org.apache.arrow.vector.complex">MapVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getMap(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getMap</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../TimeStampMicroTZVector.html" title="class in org.apache.arrow.vector">TimeStampMicroTZVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMicroTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMicroTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getMap(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getMap</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../complex/MapVector.html" title="class in org.apache.arrow.vector.complex">MapVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getMap(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getMap</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../TimeStampMicroTZVector.html" title="class in org.apache.arrow.vector">TimeStampMicroTZVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMicroTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMicroTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../TimeStampMilliTZVector.html" title="class in org.apache.arrow.vector">TimeStampMilliTZVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMilliTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMilliTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMicroTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMicroTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../TimeStampMicroTZVector.html" title="class in org.apache.arrow.vector">TimeStampMicroTZVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMicroTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMicroTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../TimeStampMilliTZVector.html" title="class in org.apache.arrow.vector">TimeStampMilliTZVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMilliTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMilliTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../TimeStampNanoTZVector.html" title="class in org.apache.arrow.vector">TimeStampNanoTZVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampNanoTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampNanoTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMilliTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMilliTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../TimeStampMilliTZVector.html" title="class in org.apache.arrow.vector">TimeStampMilliTZVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampMilliTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampMilliTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../TimeStampNanoTZVector.html" title="class in org.apache.arrow.vector">TimeStampNanoTZVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampNanoTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampNanoTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../TimeStampSecTZVector.html" title="class in org.apache.arrow.vector">TimeStampSecTZVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampSecTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampSecTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampNanoTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampNanoTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../TimeStampNanoTZVector.html" title="class in org.apache.arrow.vector">TimeStampNanoTZVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampNanoTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampNanoTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../TimeStampSecTZVector.html" title="class in org.apache.arrow.vector">TimeStampSecTZVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampSecTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampSecTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getVector(int,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getVector</a><wbr>(int&nbsp;index,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampSecTZVector(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampSecTZVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../TimeStampSecTZVector.html" title="class in org.apache.arrow.vector">TimeStampSecTZVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getTimeStampSecTZVector(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getTimeStampSecTZVector</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getVectorByType(int,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getVectorByType</a><wbr>(int&nbsp;typeId,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getVector(int,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getVector</a><wbr>(int&nbsp;index,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableDecimal256Holder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code><a href="../../../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#getVectorByType(int,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getVectorByType</a><wbr>(int&nbsp;typeId,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableDecimal256Holder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../../../holders/NullableDecimal256Holder.html" title="class in org.apache.arrow.vector.holders">NullableDecimal256Holder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableDecimalHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableDecimalHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../../../holders/NullableDecimalHolder.html" title="class in org.apache.arrow.vector.holders">NullableDecimalHolder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableDurationHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableDurationHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../../../holders/NullableDurationHolder.html" title="class in org.apache.arrow.vector.holders">NullableDurationHolder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableFixedSizeBinaryHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableFixedSizeBinaryHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../../../holders/NullableFixedSizeBinaryHolder.html" title="class in org.apache.arrow.vector.holders">NullableFixedSizeBinaryHolder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampMicroTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampMicroTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../../../holders/NullableTimeStampMicroTZHolder.html" title="class in org.apache.arrow.vector.holders">NullableTimeStampMicroTZHolder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampMilliTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../../../holders/NullableTimeStampMilliTZHolder.html" title="class in org.apache.arrow.vector.holders">NullableTimeStampMilliTZHolder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ <a href="../../../holders/NullableTimeStampNanoTZHolder.html" title="class in org.apache.arrow.vector.holders">NullableTimeStampNanoTZHolder</a>&nbsp;holder,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
- <a href="../../../holders/NullableTimeStampNanoTZHolder.html" title="class in org.apache.arrow.vector.holders">NullableTimeStampNanoTZHolder</a>&nbsp;holder,
+<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampSecTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ <a href="../../../holders/NullableTimeStampSecTZHolder.html" title="class in org.apache.arrow.vector.holders">NullableTimeStampSecTZHolder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.NullableTimeStampSecTZHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
- <a href="../../../holders/NullableTimeStampSecTZHolder.html" title="class in org.apache.arrow.vector.holders">NullableTimeStampSecTZHolder</a>&nbsp;holder,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.UnionHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionVector.</span><code><a href="../../../complex/UnionVector.html#setSafe(int,org.apache.arrow.vector.holders.UnionHolder,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../../../holders/UnionHolder.html" title="class in org.apache.arrow.vector.holders">UnionHolder</a>&nbsp;holder,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -408,288 +413,312 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../../../complex/impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asDecimal(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asDecimal(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asDecimal(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asDecimal256(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal256</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asDecimal(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../../../complex/writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asDecimal256(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal256</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asDecimal256(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal256</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asDuration(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDuration</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asDecimal256(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDecimal256</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../../../complex/writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asDuration(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDuration</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asDuration(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDuration</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asFixedSizeBinary(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asFixedSizeBinary</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asDuration(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asDuration</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../../../complex/writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asFixedSizeBinary(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asFixedSizeBinary</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asFixedSizeBinary(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asFixedSizeBinary</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.MapWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.MapWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asMap(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asMap</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asFixedSizeBinary(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asFixedSizeBinary</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampMicroTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMicroTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.MapWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.MapWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asMap(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asMap</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampMicroTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMicroTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampMicroTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMicroTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampMilliTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMilliTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampMicroTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMicroTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampMilliTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMilliTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampMilliTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMilliTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampNanoTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampNanoTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampMilliTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampMilliTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampNanoTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampNanoTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampNanoTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampNanoTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampSecTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampSecTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampNanoTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampNanoTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampSecTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampSecTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#asTimeStampSecTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampSecTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#asTimeStampSecTZ(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">asTimeStampSecTZ</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NullableStructWriter.</span><code><a href="../../../complex/impl/NullableStructWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">NullableStructWriter.</span><code><a href="../../../complex/impl/NullableStructWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second even-row-color"><span class="type-name-label">SingleStructWriter.</span><code><a href="../../../complex/impl/SingleStructWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">SingleStructWriter.</span><code><a href="../../../complex/impl/SingleStructWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionMapWriter.</span><code><a href="../../../complex/impl/UnionMapWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionMapWriter.</span><code><a href="../../../complex/impl/UnionMapWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#extension(java.lang.String,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>protected <a href="../../../complex/writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PromotableViewWriter.</span><code><a href="../../../complex/impl/PromotableViewWriter.html#getWriter(org.apache.arrow.vector.types.Types.MinorType,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getWriter</a><wbr>(<a href="../../Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a>&nbsp;type,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">extension</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected <a href="../../../complex/writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#getWriter(org.apache.arrow.vector.types.Types.MinorType,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getWriter</a><wbr>(<a href="../../Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a>&nbsp;type,
+<div class="col-second even-row-color"><span class="type-name-label">PromotableViewWriter.</span><code><a href="../../../complex/impl/PromotableViewWriter.html#getWriter(org.apache.arrow.vector.types.Types.MinorType,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getWriter</a><wbr>(<a href="../../Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a>&nbsp;type,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalWriterImpl.</span><code><a href="../../../complex/impl/DecimalWriterImpl.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-first odd-row-color"><code>protected <a href="../../../complex/writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#getWriter(org.apache.arrow.vector.types.Types.MinorType,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">getWriter</a><wbr>(<a href="../../Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a>&nbsp;type,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">DecimalWriterImpl.</span><code><a href="../../../complex/impl/DecimalWriterImpl.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Decimal256WriterImpl.</span><code><a href="../../../complex/impl/Decimal256WriterImpl.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">Decimal256WriterImpl.</span><code><a href="../../../complex/impl/Decimal256WriterImpl.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalWriterImpl.</span><code><a href="../../../complex/impl/DecimalWriterImpl.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeBigEndianBytesToDecimal256</a><wbr>(byte[]&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DecimalWriterImpl.</span><code><a href="../../../complex/impl/DecimalWriterImpl.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DenseUnionWriter.</span><code><a href="../../../complex/impl/DenseUnionWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,byte,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DenseUnionWriter.</span><code><a href="../../../complex/impl/DenseUnionWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,byte,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  byte&nbsp;typeId,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
- <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256WriterImpl.</span><code><a href="../../../complex/impl/Decimal256WriterImpl.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DenseUnionWriter.</span><code><a href="../../../complex/impl/DenseUnionWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,byte,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256WriterImpl.</span><code><a href="../../../complex/impl/Decimal256WriterImpl.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DenseUnionWriter.</span><code><a href="../../../complex/impl/DenseUnionWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,byte,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  byte&nbsp;typeId,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
- <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+<div class="col-second even-row-color"><span class="type-name-label">UnionViewWriter.</span><code><a href="../../../complex/impl/UnionViewWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeDecimal256</a><wbr>(long&nbsp;start,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidWriterImpl.</span><code><a href="../../../complex/impl/UuidWriterImpl.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
@@ -727,6 +756,12 @@ loadScripts(document, 'script');</script>
  <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseWriter.ExtensionWriter.</span><code><a href="../../../complex/writer/BaseWriter.ExtensionWriter.html#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Writes the given extension type value.</div>
+</div>
 </div>
 </section>
 </li>
@@ -821,6 +856,26 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Create a new type instance.</div>
 </div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.vector.holders">
+<h2>Uses of <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a> in <a href="../../../holders/package-summary.html">org.apache.arrow.vector.holders</a></h2>
+<div class="caption"><span>Methods in <a href="../../../holders/package-summary.html">org.apache.arrow.vector.holders</a> that return <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>abstract <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ExtensionHolder.</span><code><a href="../../../holders/ExtensionHolder.html#type()" class="member-name-link">type</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NullableUuidHolder.</span><code><a href="../../../holders/NullableUuidHolder.html#type()" class="member-name-link">type</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidHolder.</span><code><a href="../../../holders/UuidHolder.html#type()" class="member-name-link">type</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

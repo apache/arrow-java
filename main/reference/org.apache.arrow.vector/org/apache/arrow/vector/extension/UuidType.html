@@ -192,24 +192,27 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The name of this user-defined type.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../complex/writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNewFieldWriter(org.apache.arrow.vector.ValueVector)" class="member-name-link">getNewFieldWriter</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;vector)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../types/pojo/FieldType.html" title="class in org.apache.arrow.vector.types.pojo">FieldType</a>&nbsp;fieldType,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Construct a vector for the user type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isComplex()" class="member-name-link">isComplex</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#serialize()" class="member-name-link">serialize</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isComplex()" class="member-name-link">isComplex</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#serialize()" class="member-name-link">serialize</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Save any metadata for this type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#storageType()" class="member-name-link">storageType</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#storageType()" class="member-name-link">storageType</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The on-wire type for this user-defined type.</div>
 </div>
 </div>
@@ -384,6 +387,16 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../types/pojo/ArrowType.ExtensionType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)">getNewVector</a></code>&nbsp;in class&nbsp;<code><a href="../types/pojo/ArrowType.ExtensionType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType.ExtensionType</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getNewFieldWriter(org.apache.arrow.vector.ValueVector)">
+<h3>getNewFieldWriter</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../complex/writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></span>&nbsp;<span class="element-name">getNewFieldWriter</span><wbr><span class="parameters">(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;vector)</span></div>
+<dl class="notes">
+<dt>Overrides:</dt>
+<dd><code><a href="../types/pojo/ArrowType.ExtensionType.html#getNewFieldWriter(org.apache.arrow.vector.ValueVector)">getNewFieldWriter</a></code>&nbsp;in class&nbsp;<code><a href="../types/pojo/ArrowType.ExtensionType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType.ExtensionType</a></code></dd>
 </dl>
 </section>
 </li>

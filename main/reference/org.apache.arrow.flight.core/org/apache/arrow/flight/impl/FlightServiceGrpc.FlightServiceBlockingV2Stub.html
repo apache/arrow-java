@@ -256,7 +256,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getFlightInfo(org.apache.arrow.flight.impl.Flight.FlightDescriptor)">
 <h3>getFlightInfo</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Flight.FlightInfo.html" title="class in org.apache.arrow.flight.impl">Flight.FlightInfo</a></span>&nbsp;<span class="element-name">getFlightInfo</span><wbr><span class="parameters">(<a href="Flight.FlightDescriptor.html" title="class in org.apache.arrow.flight.impl">Flight.FlightDescriptor</a>&nbsp;request)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Flight.FlightInfo.html" title="class in org.apache.arrow.flight.impl">Flight.FlightInfo</a></span>&nbsp;<span class="element-name">getFlightInfo</span><wbr><span class="parameters">(<a href="Flight.FlightDescriptor.html" title="class in org.apache.arrow.flight.impl">Flight.FlightDescriptor</a>&nbsp;request)</span>
+                                throws <span class="exceptions">io.grpc.StatusException</span></div>
 <div class="block"><pre>
  For a given FlightDescriptor, get information about how the flight can be
  consumed. This is a useful interface if the consumer of the interface
@@ -269,12 +270,17 @@ loadScripts(document, 'script');</script>
  available for consumption for the duration defined by the specific flight
  service.
  </pre></div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code>io.grpc.StatusException</code></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="pollFlightInfo(org.apache.arrow.flight.impl.Flight.FlightDescriptor)">
 <h3>pollFlightInfo</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Flight.PollInfo.html" title="class in org.apache.arrow.flight.impl">Flight.PollInfo</a></span>&nbsp;<span class="element-name">pollFlightInfo</span><wbr><span class="parameters">(<a href="Flight.FlightDescriptor.html" title="class in org.apache.arrow.flight.impl">Flight.FlightDescriptor</a>&nbsp;request)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Flight.PollInfo.html" title="class in org.apache.arrow.flight.impl">Flight.PollInfo</a></span>&nbsp;<span class="element-name">pollFlightInfo</span><wbr><span class="parameters">(<a href="Flight.FlightDescriptor.html" title="class in org.apache.arrow.flight.impl">Flight.FlightDescriptor</a>&nbsp;request)</span>
+                               throws <span class="exceptions">io.grpc.StatusException</span></div>
 <div class="block"><pre>
  For a given FlightDescriptor, start a query and get information
  to poll its execution status. This is a useful interface if the
@@ -295,18 +301,27 @@ loadScripts(document, 'script');</script>
  A client may use the CancelFlightInfo action with
  PollInfo.info to cancel the running query.
  </pre></div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code>io.grpc.StatusException</code></dd>
+</dl>
 </section>
 </li>
 <li>
 <section class="detail" id="getSchema(org.apache.arrow.flight.impl.Flight.FlightDescriptor)">
 <h3>getSchema</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Flight.SchemaResult.html" title="class in org.apache.arrow.flight.impl">Flight.SchemaResult</a></span>&nbsp;<span class="element-name">getSchema</span><wbr><span class="parameters">(<a href="Flight.FlightDescriptor.html" title="class in org.apache.arrow.flight.impl">Flight.FlightDescriptor</a>&nbsp;request)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="Flight.SchemaResult.html" title="class in org.apache.arrow.flight.impl">Flight.SchemaResult</a></span>&nbsp;<span class="element-name">getSchema</span><wbr><span class="parameters">(<a href="Flight.FlightDescriptor.html" title="class in org.apache.arrow.flight.impl">Flight.FlightDescriptor</a>&nbsp;request)</span>
+                              throws <span class="exceptions">io.grpc.StatusException</span></div>
 <div class="block"><pre>
  For a given FlightDescriptor, get the Schema as described in Schema.fbs::Schema
  This is used when a consumer needs the Schema of flight stream. Similar to
  GetFlightInfo this interface may generate a new flight that was not previously
  available in ListFlights.
  </pre></div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code>io.grpc.StatusException</code></dd>
+</dl>
 </section>
 </li>
 <li>

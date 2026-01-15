@@ -118,17 +118,18 @@ extends <a href="BaseWriter.html" title="interface in org.apache.arrow.vector.co
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)" class="member-name-link">addExtensionTypeWriterFactory</a><wbr>(<a href="../impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Adds the given extension type factory.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#write(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">write</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Writes value from the given extension holder.</div>
 </div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#writeExtension(java.lang.Object)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Writes the given extension type value.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#writeExtension(java.lang.Object)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">writeExtension</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Writes the given extension type value.</div>
 </div>
@@ -194,13 +195,15 @@ extends <a href="BaseWriter.html" title="interface in org.apache.arrow.vector.co
 </section>
 </li>
 <li>
-<section class="detail" id="addExtensionTypeWriterFactory(org.apache.arrow.vector.complex.impl.ExtensionTypeWriterFactory)">
-<h3>addExtensionTypeWriterFactory</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">addExtensionTypeWriterFactory</span><wbr><span class="parameters">(<a href="../impl/ExtensionTypeWriterFactory.html" title="interface in org.apache.arrow.vector.complex.impl">ExtensionTypeWriterFactory</a>&nbsp;factory)</span></div>
-<div class="block">Adds the given extension type factory. This factory allows configuring writer implementations for specific ExtensionTypeVector.</div>
+<section class="detail" id="writeExtension(java.lang.Object,org.apache.arrow.vector.types.pojo.ArrowType)">
+<h3>writeExtension</h3>
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">writeExtension</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;value,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;type)</span></div>
+<div class="block">Writes the given extension type value.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>factory</code> - the extension type factory to add</dd>
+<dd><code>value</code> - the extension type value to write</dd>
+<dd><code>type</code> - of the extension</dd>
 </dl>
 </section>
 </li>
