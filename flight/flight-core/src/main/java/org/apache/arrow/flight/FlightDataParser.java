@@ -24,6 +24,7 @@ import io.grpc.HasByteBuffer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 import org.apache.arrow.flight.impl.Flight.FlightData;
 import org.apache.arrow.flight.impl.Flight.FlightDescriptor;
 import org.apache.arrow.memory.ArrowBuf;
@@ -274,19 +275,10 @@ final class FlightDataParser {
       }
 
       InputStream detachedStream = ((Detachable) stream).detach();
-      if (!(detachedStream instanceof HasByteBuffer)) {
-        closeQuietly(detachedStream);
-        return null;
-      }
-
       ByteBuffer detachedBuffer = ((HasByteBuffer) detachedStream).getByteBuffer();
-      if (detachedBuffer == null || !detachedBuffer.isDirect()) {
-        closeQuietly(detachedStream);
-        return null;
-      }
 
       long bufferAddress = MemoryUtil.getByteBufferAddress(detachedBuffer);
-      int bufferSize = detachedBuffer.remaining();
+      int bufferSize = Objects.requireNonNull(detachedBuffer).remaining();
 
       ForeignAllocation foreignAllocation =
           new ForeignAllocation(bufferSize, bufferAddress + detachedBuffer.position()) {
