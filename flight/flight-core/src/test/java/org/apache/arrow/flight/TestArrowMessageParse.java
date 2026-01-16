@@ -275,6 +275,39 @@ public class TestArrowMessageParse {
     }
   }
 
+  /** Verifies fallback to InputStream path when getByteBuffer() returns null. */
+  @Test
+  public void testNullByteBufferFallbackToInputStream() throws Exception {
+    byte[] appMetadataBytes = new byte[] {20, 21, 22};
+    byte[] bodyBytes = new byte[] {30, 31, 32, 33};
+    FlightDescriptor expectedDescriptor = createTestDescriptor();
+
+    byte[] serialized = buildFlightDataWithBothFields(appMetadataBytes, bodyBytes);
+    MockGrpcInputStream stream =
+        new MockGrpcInputStream(
+            ByteBuffer.wrap(serialized),
+            false);
+
+    try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
+      assertEquals(expectedDescriptor, message.getDescriptor());
+
+      ArrowBuf appMetadata = message.getApplicationMetadata();
+      assertNotNull(appMetadata);
+      byte[] actualAppMetadata = new byte[appMetadataBytes.length];
+      appMetadata.getBytes(0, actualAppMetadata);
+      assertArrayEquals(appMetadataBytes, actualAppMetadata);
+
+      ArrowBuf body = Iterables.getOnlyElement(message.getBufs());
+      assertNotNull(body);
+      byte[] actualBody = new byte[bodyBytes.length];
+      body.getBytes(0, actualBody);
+      assertArrayEquals(bodyBytes, actualBody);
+
+      assertEquals(0, stream.getDetachCount());
+    }
+    assertEquals(0, allocator.getAllocatedMemory());
+  }
+
   // Helper methods to build complete FlightData messages
 
   private FlightDescriptor createTestDescriptor() {
