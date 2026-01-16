@@ -116,31 +116,32 @@ final class FlightDataParser {
         if (tag == -1) {
           break;
         }
+        int size = readLength();
         switch (tag) {
           case DESCRIPTOR_TAG:
             {
-              int size = readLength();
               byte[] bytes = readBytes(size);
               descriptor = FlightDescriptor.parseFrom(bytes);
               break;
             }
           case HEADER_TAG:
             {
-              int size = readLength();
               byte[] bytes = readBytes(size);
               header = MessageMetadataResult.create(ByteBuffer.wrap(bytes), size);
               break;
             }
           case APP_METADATA_TAG:
             {
-              int size = readLength();
+              // Called before reading a new value to handle duplicate protobuf fields
+              // (last occurrence wins per spec) and prevent memory leaks.
               closeAppMetadata();
               appMetadata = readBuffer(size);
               break;
             }
           case BODY_TAG:
             {
-              int size = readLength();
+              // Called before reading a new value to handle duplicate protobuf fields
+              // (last occurrence wins per spec) and prevent memory leaks.
               closeBody();
               body = readBuffer(size);
               break;
@@ -239,12 +240,13 @@ final class FlightDataParser {
     private static final Logger LOG = LoggerFactory.getLogger(ArrowBufReader.class);
 
     private final ArrowBuf backingBuffer;
-    private final ByteBuffer buffer;
+    private final CodedInputStream codedInput;
 
     ArrowBufReader(BufferAllocator allocator, ArrowBuf backingBuffer) {
       super(allocator);
       this.backingBuffer = backingBuffer;
-      this.buffer = backingBuffer.nioBuffer(0, (int) backingBuffer.capacity());
+      ByteBuffer buffer = backingBuffer.nioBuffer(0, (int) backingBuffer.capacity());
+      this.codedInput = CodedInputStream.newInstance(buffer);
     }
 
     static ArrowBufReader tryArrowBufReader(BufferAllocator allocator, InputStream stream) {
@@ -320,89 +322,32 @@ final class FlightDataParser {
     }
 
     @Override
-    protected boolean hasRemaining() {
-      return buffer.hasRemaining();
+    protected boolean hasRemaining() throws IOException {
+      return !codedInput.isAtEnd();
     }
 
     @Override
     protected int readTag() throws IOException {
-      if (!buffer.hasRemaining()) {
-        return -1;
-      }
-      int tagFirstByte = buffer.get() & 0xFF;
-      return readRawVarint32(tagFirstByte);
+      int tag = codedInput.readTag();
+      return tag == 0 ? -1 : tag;
     }
 
     @Override
     protected int readLength() throws IOException {
-      if (!buffer.hasRemaining()) {
-        throw new IOException("Unexpected end of buffer");
-      }
-      int firstByte = buffer.get() & 0xFF;
-      return readRawVarint32(firstByte);
-    }
-
-    /**
-     * Decodes a Base 128 Varint from the ByteBuffer.
-     *
-     * <p>This is a manual implementation because CodedInputStream only provides a static helper for
-     * InputStream, not ByteBuffer. We need direct ByteBuffer access to track positions for
-     * zero-copy slicing in {@link #readBuffer(int)}.
-     *
-     * <p>Varints are a variable-length encoding for integers used by Protocol Buffers. Each byte
-     * uses 7 bits for data and 1 bit (MSB) as a continuation flag:
-     *
-     * <ul>
-     *   <li>MSB = 1: more bytes follow
-     *   <li>MSB = 0: this is the last byte
-     * </ul>
-     *
-     * <p>Bytes are stored in little-endian order (least significant group first).
-     *
-     * @see <a href="https://protobuf.dev/programming-guides/encoding/#varints">Protocol Buffers
-     *     Encoding: Varints</a>
-     */
-    private int readRawVarint32(int firstByte) throws IOException {
-      // Check MSB: if 0, this single byte contains the entire value (0-127)
-      if ((firstByte & 0x80) == 0) {
-        return firstByte;
-      }
-      // Extract lower 7 bits of first byte as the starting result
-      int result = firstByte & 0x7F;
-      // Process continuation bytes, shifting each 7-bit group into position
-      for (int shift = 7; shift < 32; shift += 7) {
-        if (!buffer.hasRemaining()) {
-          throw new IOException("Unexpected end of buffer");
-        }
-        int b = buffer.get() & 0xFF;
-        // OR the 7 data bits into the result at the current shift position
-        result |= (b & 0x7F) << shift;
-        // If MSB is 0, we've reached the last byte
-        if ((b & 0x80) == 0) {
-          return result;
-        }
-      }
-      // A valid 32-bit varint uses at most 5 bytes (5 * 7 = 35 bits > 32 bits)
-      throw new IOException("Malformed varint");
+      return codedInput.readRawVarint32();
     }
 
     @Override
     protected byte[] readBytes(int size) throws IOException {
-      if (buffer.remaining() < size) {
-        throw new IOException("Unexpected end of buffer");
-      }
-      byte[] bytes = new byte[size];
-      buffer.get(bytes);
-      return bytes;
+      // Reads size bytes and creates a copy
+      return codedInput.readRawBytes(size);
     }
 
     @Override
     protected ArrowBuf readBuffer(int size) throws IOException {
-      if (buffer.remaining() < size) {
-        throw new IOException("Unexpected end of buffer");
-      }
-      int offset = buffer.position();
-      buffer.position(offset + size);
+      // CodedInputStream advances the shared ByteBuffer; use its read count for zero-copy slicing.
+      int offset = codedInput.getTotalBytesRead();
+      codedInput.skipRawBytes(size);
       backingBuffer.getReferenceManager().retain();
       return backingBuffer.slice(offset, size);
     }
