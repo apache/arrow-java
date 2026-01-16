@@ -283,10 +283,7 @@ public class TestArrowMessageParse {
     FlightDescriptor expectedDescriptor = createTestDescriptor();
 
     byte[] serialized = buildFlightDataWithBothFields(appMetadataBytes, bodyBytes);
-    MockGrpcInputStream stream =
-        new MockGrpcInputStream(
-            ByteBuffer.wrap(serialized),
-            false);
+    MockGrpcInputStream stream = new MockGrpcInputStream(ByteBuffer.wrap(serialized), false);
 
     try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
       assertEquals(expectedDescriptor, message.getDescriptor());
