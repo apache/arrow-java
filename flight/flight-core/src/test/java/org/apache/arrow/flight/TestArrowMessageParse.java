@@ -50,11 +50,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests FlightData parsing for duplicate field handling and well-formed messages. Covers both
- * InputStream (with copying) and ArrowBuf (zero-copy) parsing paths. Verifies that duplicate
- * protobuf fields use last-occurrence-wins semantics without memory leaks.
+ * Tests FlightData parsing including duplicate field handling, well-formed messages, and zero-copy
+ * behavior. Covers both InputStream (with copying) and ArrowBuf (zero-copy) parsing paths. Verifies
+ * that duplicate protobuf fields use last-occurrence-wins semantics without memory leaks.
  */
-public class TestFlightDataParserDuplicateFields {
+public class TestArrowMessageParse {
 
   private BufferAllocator allocator;
 
@@ -110,7 +110,7 @@ public class TestFlightDataParserDuplicateFields {
             List.of(
                 Pair.of(FlightData.APP_METADATA_FIELD_NUMBER, firstAppMetadata),
                 Pair.of(FlightData.APP_METADATA_FIELD_NUMBER, secondAppMetadata)));
-    InputStream stream = new DetachableDirectBufferInputStream(serialized);
+    InputStream stream = MockGrpcInputStream.ofDirectBuffer(serialized);
 
     try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
       ArrowBuf appMetadata = message.getApplicationMetadata();
@@ -166,7 +166,7 @@ public class TestFlightDataParserDuplicateFields {
             List.of(
                 Pair.of(FlightData.DATA_BODY_FIELD_NUMBER, firstBody),
                 Pair.of(FlightData.DATA_BODY_FIELD_NUMBER, secondBody)));
-    InputStream stream = new DetachableDirectBufferInputStream(serialized);
+    InputStream stream = MockGrpcInputStream.ofDirectBuffer(serialized);
 
     try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
       ArrowBuf body = Iterables.getOnlyElement(message.getBufs());
@@ -229,7 +229,7 @@ public class TestFlightDataParserDuplicateFields {
     assertEquals(0, allocator.getAllocatedMemory());
 
     byte[] serialized = buildFlightDataWithBothFields(appMetadataBytes, bodyBytes);
-    InputStream stream = new DetachableDirectBufferInputStream(serialized);
+    InputStream stream = MockGrpcInputStream.ofDirectBuffer(serialized);
 
     try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
       // Verify descriptor
@@ -258,6 +258,21 @@ public class TestFlightDataParserDuplicateFields {
       assertEquals(serialized.length, allocator.getAllocatedMemory());
     }
     assertEquals(0, allocator.getAllocatedMemory());
+  }
+
+  /** Verifies that heap buffers fall back to InputStream path without calling detach(). */
+  @Test
+  public void testHeapBufferFallbackDoesNotDetach() throws Exception {
+    byte[] appMetadataBytes = new byte[] {8, 9};
+    byte[] bodyBytes = new byte[] {10, 11, 12};
+
+    byte[] serialized = buildFlightDataWithBothFields(appMetadataBytes, bodyBytes);
+    MockGrpcInputStream stream = MockGrpcInputStream.ofHeapBuffer(serialized);
+
+    try (ArrowMessage message = ArrowMessage.createMarshaller(allocator).parse(stream)) {
+      assertNotNull(message.getDescriptor());
+      assertEquals(0, stream.getDetachCount());
+    }
   }
 
   // Helper methods to build complete FlightData messages
@@ -298,7 +313,8 @@ public class TestFlightDataParserDuplicateFields {
 
   // Helper methods to build FlightData messages with duplicate fields
 
-  private byte[] buildFlightDataDescriptors(List<Pair<Integer, byte[]>> descriptors) throws IOException {
+  private byte[] buildFlightDataDescriptors(List<Pair<Integer, byte[]>> descriptors)
+      throws IOException {
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     CodedOutputStream cos = CodedOutputStream.newInstance(baos);
@@ -311,34 +327,47 @@ public class TestFlightDataParserDuplicateFields {
   }
 
   /** Mock InputStream implementing gRPC's Detachable and HasByteBuffer for testing zero-copy. */
-  private static class DetachableDirectBufferInputStream extends InputStream
+  private static class MockGrpcInputStream extends InputStream
       implements Detachable, HasByteBuffer {
     private ByteBuffer buffer;
+    private final boolean byteBufferSupported;
+    private int detachCount;
 
-    DetachableDirectBufferInputStream(byte[] data) {
-      this.buffer = ByteBuffer.allocateDirect(data.length);
-      this.buffer.put(data).flip();
+    private MockGrpcInputStream(ByteBuffer buffer, boolean byteBufferSupported) {
+      this.buffer = buffer;
+      this.byteBufferSupported = byteBufferSupported;
     }
 
-    private DetachableDirectBufferInputStream(ByteBuffer buffer) {
-      this.buffer = buffer;
+    static MockGrpcInputStream ofDirectBuffer(byte[] data) {
+      ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
+      buf.put(data).flip();
+      return new MockGrpcInputStream(buf, true);
+    }
+
+    static MockGrpcInputStream ofHeapBuffer(byte[] data) {
+      return new MockGrpcInputStream(ByteBuffer.wrap(data), true);
     }
 
     @Override
     public boolean byteBufferSupported() {
-      return true;
+      return byteBufferSupported;
     }
 
     @Override
     public ByteBuffer getByteBuffer() {
-      return buffer;
+      return byteBufferSupported ? buffer : null;
     }
 
     @Override
     public InputStream detach() {
+      detachCount++;
       ByteBuffer detached = this.buffer;
       this.buffer = null;
-      return new DetachableDirectBufferInputStream(detached);
+      return new MockGrpcInputStream(detached, byteBufferSupported);
+    }
+
+    int getDetachCount() {
+      return detachCount;
     }
 
     @Override
