@@ -41,10 +41,14 @@ import org.apache.arrow.driver.jdbc.converter.impl.TimestampAvaticaParameterConv
 import org.apache.arrow.driver.jdbc.converter.impl.UnionAvaticaParameterConverter;
 import org.apache.arrow.driver.jdbc.converter.impl.Utf8AvaticaParameterConverter;
 import org.apache.arrow.driver.jdbc.converter.impl.Utf8ViewAvaticaParameterConverter;
+import org.apache.arrow.driver.jdbc.converter.impl.UuidAvaticaParameterConverter;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.ArrowType.ArrowTypeVisitor;
+import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 import org.apache.calcite.avatica.remote.TypedValue;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -289,6 +293,16 @@ public class AvaticaParameterBinder {
     public Boolean visit(ArrowType.RunEndEncoded type) {
       throw new UnsupportedOperationException(
           "No Avatica parameter binder implemented for type " + type);
+    }
+
+    @Override
+    public Boolean visit(ExtensionType type) {
+      if (type instanceof UuidType) {
+        return new UuidAvaticaParameterConverter().bindParameter(vector, typedValue, index);
+      }
+
+      // fallback to default implementation
+      return ArrowTypeVisitor.super.visit(type);
     }
   }
 }

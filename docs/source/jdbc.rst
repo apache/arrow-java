@@ -213,7 +213,8 @@ Type Mapping
 ------------
 
 The Arrow to JDBC type mapping can be obtained at runtime via
-a method on ColumnBinder.
+a method on ColumnBinder. The Flight SQL JDBC driver follows the same
+mapping, with additional support for the UUID extension type noted below.
 
 +----------------------------+----------------------------+-------+
 | Arrow Type                 | JDBC Type                  | Notes |
@@ -231,6 +232,8 @@ a method on ColumnBinder.
 | Decimal256                 | DECIMAL (setBigDecimal)    |       |
 +----------------------------+----------------------------+-------+
 | FixedSizeBinary            | BINARY (setBytes)          |       |
++----------------------------+----------------------------+-------+
+| Uuid (extension)           | OTHER (setObject)          | \(3)  |
 +----------------------------+----------------------------+-------+
 | Float32                    | REAL (setFloat)            |       |
 +----------------------------+----------------------------+-------+
@@ -276,3 +279,6 @@ a method on ColumnBinder.
   <https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html#setTimestamp(int,java.sql.Timestamp)>`_,
   which will lead to the driver using the "default timezone" (that of
   the Java VM).
+* \(3) For the Flight SQL JDBC driver, the Arrow UUID extension type
+  (``arrow.uuid``) maps to JDBC ``OTHER`` and is surfaced as
+  ``java.util.UUID`` values.

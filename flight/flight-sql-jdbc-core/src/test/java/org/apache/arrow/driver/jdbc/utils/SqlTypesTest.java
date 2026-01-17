@@ -21,6 +21,7 @@ import static org.apache.arrow.driver.jdbc.utils.SqlTypes.getSqlTypeNameFromArro
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.sql.Types;
+import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.IntervalUnit;
@@ -85,6 +86,8 @@ public class SqlTypesTest {
     assertEquals(Types.JAVA_OBJECT, getSqlTypeIdFromArrowType(new ArrowType.Map(true)));
 
     assertEquals(Types.NULL, getSqlTypeIdFromArrowType(new ArrowType.Null()));
+
+    assertEquals(Types.OTHER, getSqlTypeIdFromArrowType(UuidType.INSTANCE));
   }
 
   @Test
@@ -140,5 +143,7 @@ public class SqlTypesTest {
     assertEquals("JAVA_OBJECT", getSqlTypeNameFromArrowType(new ArrowType.Map(true)));
 
     assertEquals("NULL", getSqlTypeNameFromArrowType(new ArrowType.Null()));
+
+    assertEquals("OTHER", getSqlTypeNameFromArrowType(UuidType.INSTANCE));
   }
 }
