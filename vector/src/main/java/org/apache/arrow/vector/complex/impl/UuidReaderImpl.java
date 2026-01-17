@@ -63,9 +63,7 @@ public class UuidReaderImpl extends AbstractFieldReader {
 
   @Override
   public void read(ExtensionHolder holder) {
-    if (holder instanceof UuidHolder) {
-      vector.get(idx(), (UuidHolder) holder);
-    } else if (holder instanceof NullableUuidHolder) {
+    if (holder instanceof NullableUuidHolder) {
       vector.get(idx(), (NullableUuidHolder) holder);
     } else {
       throw new IllegalArgumentException(
@@ -75,9 +73,7 @@ public class UuidReaderImpl extends AbstractFieldReader {
 
   @Override
   public void read(int arrayIndex, ExtensionHolder holder) {
-    if (holder instanceof UuidHolder) {
-      vector.get(arrayIndex, (UuidHolder) holder);
-    } else if (holder instanceof NullableUuidHolder) {
+    if (holder instanceof NullableUuidHolder) {
       vector.get(arrayIndex, (NullableUuidHolder) holder);
     } else {
       throw new IllegalArgumentException(

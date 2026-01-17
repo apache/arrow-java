@@ -42,7 +42,7 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
-import org.apache.arrow.vector.holders.UuidHolder;
+import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -1299,14 +1299,14 @@ public class TestMapVector {
       mapReader.setPosition(0);
       mapReader.next();
       FieldReader uuidReader = mapReader.value();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);
       mapReader.next();
       uuidReader = mapReader.value();
       uuidReader.read(holder);
-      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u2, actualUuid);
     }
   }
@@ -1341,14 +1341,14 @@ public class TestMapVector {
       mapReader.setPosition(0);
       mapReader.next();
       FieldReader uuidReader = mapReader.value();
-      UuidHolder holder = new UuidHolder();
+      NullableUuidHolder holder = new NullableUuidHolder();
       uuidReader.read(holder);
-      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      UUID actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u1, actualUuid);
       mapReader.next();
       uuidReader = mapReader.value();
       uuidReader.read(holder);
-      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, 0);
+      actualUuid = UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start);
       assertEquals(u2, actualUuid);
     }
   }
@@ -1626,9 +1626,9 @@ public class TestMapVector {
       // Read first entry
       mapReader.next();
       FieldReader keyReader = mapReader.key();
-      UuidHolder keyHolder = new UuidHolder();
+      NullableUuidHolder keyHolder = new NullableUuidHolder();
       keyReader.read(keyHolder);
-      UUID actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, 0);
+      UUID actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, keyHolder.start);
       assertEquals(key1, actualKey);
 
       FieldReader valueReader = mapReader.value();
@@ -1648,7 +1648,7 @@ public class TestMapVector {
       mapReader.next();
       keyReader = mapReader.key();
       keyReader.read(keyHolder);
-      actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, 0);
+      actualKey = UuidUtility.uuidFromArrowBuf(keyHolder.buffer, keyHolder.start);
       assertEquals(key2, actualKey);
 
       valueReader = mapReader.value();

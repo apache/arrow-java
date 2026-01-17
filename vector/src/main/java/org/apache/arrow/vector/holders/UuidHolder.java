@@ -33,6 +33,9 @@ public class UuidHolder extends ExtensionHolder {
   /** Buffer containing 16-byte UUID data. */
   public ArrowBuf buffer;
 
+  /** Offset in the buffer where the UUID data starts. */
+  public int start = 0;
+
   /** Constructs a UuidHolder with isSet = 1. */
   public UuidHolder() {
     this.isSet = 1;

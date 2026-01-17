@@ -1169,7 +1169,7 @@ public class TestComplexWriter {
       } else if (i % 5 == 4) {
         NullableUuidHolder holder = new NullableUuidHolder();
         unionReader.read(holder);
-        assertEquals(UuidUtility.uuidFromArrowBuf(holder.buffer, 0), uuid);
+        assertEquals(UuidUtility.uuidFromArrowBuf(holder.buffer, holder.start), uuid);
       } else {
         assertEquals((float) i, unionReader.readFloat(), 1e-12);
       }
@@ -2536,7 +2536,7 @@ public class TestComplexWriter {
       {
         FieldReader uuidReader = rootReader.reader("uuid1");
         uuidReader.setPosition(0);
-        UuidHolder uuidHolder = new UuidHolder();
+        NullableUuidHolder uuidHolder = new NullableUuidHolder();
         uuidReader.read(uuidHolder);
         UUID actualUuid = UuidUtility.uuidFromArrowBuf(uuidHolder.buffer, 0);
         assertEquals(u1, actualUuid);
