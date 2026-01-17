@@ -1100,6 +1100,36 @@ public class TestLargeListVector {
     }
   }
 
+  @Test
+  public void testNestedEmptyLargeListOffsetBuffer() {
+    // Test that nested LargeListVector properly allocates offset buffer
+    // even when nested writers are never invoked. According to Arrow spec,
+    // offset buffer must have N+1 entries. Even when N=0, it should contain [0].
+    try (LargeListVector outerList = LargeListVector.empty("outer", allocator)) {
+      // Setup LargeList<LargeList<Int>>
+      outerList.addOrGetVector(FieldType.nullable(MinorType.LARGELIST.getType()));
+      LargeListVector innerList = (LargeListVector) outerList.getDataVector();
+      innerList.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+
+      // Allocate outer only - simulates case where inner is never written to
+      outerList.allocateNew();
+      outerList.setValueCount(0);
+
+      // Get field buffers - this is what IPC serialization uses
+      List<ArrowBuf> innerBuffers = innerList.getFieldBuffers();
+
+      // Verify inner list offset buffer has at least OFFSET_WIDTH (8) bytes
+      assertTrue(
+          innerBuffers.get(1).readableBytes() >= LargeListVector.OFFSET_WIDTH,
+          "Inner LargeList offset buffer should have at least "
+              + LargeListVector.OFFSET_WIDTH
+              + " bytes for offset[0]");
+
+      // Verify offset[0] = 0
+      assertEquals(0L, innerList.getOffsetBuffer().getLong(0));
+    }
+  }
+
   private void writeIntValues(UnionLargeListWriter writer, int[] values) {
     writer.startList();
     for (int v : values) {

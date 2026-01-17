@@ -1379,6 +1379,45 @@ public class TestListVector {
     }
   }
 
+  @Test
+  public void testNestedEmptyListOffsetBuffer() {
+    // Test that 3-level nested ListVector properly allocates offset buffers
+    // even when nested writers are never invoked. According to Arrow spec,
+    // offset buffer must have N+1 entries. Even when N=0, it should contain [0].
+    try (ListVector level0 = ListVector.empty("level0", allocator)) {
+      // Setup List<List<List<Int>>> - 3 levels
+      level0.addOrGetVector(FieldType.nullable(MinorType.LIST.getType()));
+      ListVector level1 = (ListVector) level0.getDataVector();
+      level1.addOrGetVector(FieldType.nullable(MinorType.LIST.getType()));
+      ListVector level2 = (ListVector) level1.getDataVector();
+      level2.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+
+      // Only allocate level0 - simulates case where all nested levels are empty
+      level0.allocateNew();
+      level0.setValueCount(0);
+
+      // Verify all levels have properly allocated offset buffers
+      List<ArrowBuf> level1Buffers = level1.getFieldBuffers();
+      List<ArrowBuf> level2Buffers = level2.getFieldBuffers();
+
+      assertTrue(
+          level1Buffers.get(1).readableBytes() >= BaseRepeatedValueVector.OFFSET_WIDTH,
+          "Level1 offset buffer should have at least "
+              + BaseRepeatedValueVector.OFFSET_WIDTH
+              + " bytes for offset[0]");
+
+      assertTrue(
+          level2Buffers.get(1).readableBytes() >= BaseRepeatedValueVector.OFFSET_WIDTH,
+          "Level2 offset buffer should have at least "
+              + BaseRepeatedValueVector.OFFSET_WIDTH
+              + " bytes for offset[0]");
+
+      // Verify offset[0] = 0 for all levels
+      assertEquals(0, level1.getOffsetBuffer().getInt(0));
+      assertEquals(0, level2.getOffsetBuffer().getInt(0));
+    }
+  }
+
   private void writeIntValues(UnionListWriter writer, int[] values) {
     writer.startList();
     for (int v : values) {
