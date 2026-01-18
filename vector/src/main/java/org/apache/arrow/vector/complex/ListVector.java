@@ -233,6 +233,14 @@ public class ListVector extends BaseRepeatedValueVector
   @Override
   public List<ArrowBuf> getFieldBuffers() {
     List<ArrowBuf> result = new ArrayList<>(2);
+
+    // Ensure offset buffer has at least one entry for offset[0].
+    // According to Arrow specification, offset buffer must have N+1 entries,
+    // even when N=0, it should contain [0].
+    if (offsetBuffer.capacity() == 0) {
+      offsetBuffer = allocateOffsetBuffer(OFFSET_WIDTH);
+    }
+
     setReaderAndWriterIndex();
     result.add(validityBuffer);
     result.add(offsetBuffer);
@@ -267,7 +275,8 @@ public class ListVector extends BaseRepeatedValueVector
     offsetBuffer.readerIndex(0);
     if (valueCount == 0) {
       validityBuffer.writerIndex(0);
-      offsetBuffer.writerIndex(0);
+      // Even when valueCount is 0, offset buffer should have offset[0] per Arrow spec
+      offsetBuffer.writerIndex(Math.min(OFFSET_WIDTH, offsetBuffer.capacity()));
     } else {
       validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
       offsetBuffer.writerIndex((valueCount + 1) * OFFSET_WIDTH);
