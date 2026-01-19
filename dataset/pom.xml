@@ -32,7 +32,7 @@ under the License.
 
   <properties>
     <arrow.cpp.build.dir>../../../cpp/release-build/</arrow.cpp.build.dir>
-    <parquet.version>1.16.0</parquet.version>
+    <parquet.version>1.17.0</parquet.version>
     <avro.version>1.12.1</avro.version>
   </properties>
 
