@@ -94,7 +94,7 @@ under the License.
     <project.build.outputTimestamp>1695310533</project.build.outputTimestamp>
     <target.gen.source.path>${project.build.directory}/generated-sources</target.gen.source.path>
     <dep.junit.platform.version>1.9.0</dep.junit.platform.version>
-    <dep.junit.jupiter.version>5.12.2</dep.junit.jupiter.version>
+    <dep.junit.jupiter.version>6.0.2</dep.junit.jupiter.version>
     <dep.slf4j.version>2.0.17</dep.slf4j.version>
     <dep.guava-bom.version>33.4.8-jre</dep.guava-bom.version>
     <dep.netty-bom.version>4.2.9.Final</dep.netty-bom.version>
