@@ -28,9 +28,10 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import mockwebserver3.RecordedRequest;
+import mockwebserver3.junit5.StartStop;
 import org.apache.arrow.driver.jdbc.authentication.TokenAuthentication;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
@@ -75,7 +76,7 @@ public class OAuthIntegrationTest {
             .build();
   }
 
-  private MockWebServer oauthServer;
+  @StartStop private final MockWebServer oauthServer = new MockWebServer();
   private URI tokenEndpoint;
 
   @BeforeAll
@@ -121,15 +122,13 @@ public class OAuthIntegrationTest {
   }
 
   @BeforeEach
-  public void setUp() throws Exception {
-    oauthServer = new MockWebServer();
-    oauthServer.start();
+  public void setUp() {
     tokenEndpoint = oauthServer.url("/oauth/token").uri();
   }
 
   @AfterEach
-  public void tearDown() throws Exception {
-    oauthServer.shutdown();
+  public void tearDown() {
+    oauthServer.close();
   }
 
   // Helper methods for mock OAuth responses
@@ -144,20 +143,22 @@ public class OAuthIntegrationTest {
             "{\"access_token\":\"%s\",\"token_type\":\"Bearer\",\"expires_in\":%d}",
             token, expiresIn);
     oauthServer.enqueue(
-        new MockResponse()
-            .setResponseCode(200)
+        new MockResponse.Builder()
+            .code(200)
             .setHeader("Content-Type", "application/json")
-            .setBody(body));
+            .body(body)
+            .build());
   }
 
   private void enqueueErrorResponse(String error, String description) {
     String body =
         String.format("{\"error\":\"%s\",\"error_description\":\"%s\"}", error, description);
     oauthServer.enqueue(
-        new MockResponse()
-            .setResponseCode(400)
+        new MockResponse.Builder()
+            .code(400)
             .setHeader("Content-Type", "application/json")
-            .setBody(body));
+            .body(body)
+            .build());
   }
 
   private Properties createBaseProperties() {
@@ -197,7 +198,7 @@ public class OAuthIntegrationTest {
     RecordedRequest oauthRequest = oauthServer.takeRequest(5, TimeUnit.SECONDS);
     assertNotNull(oauthRequest, "OAuth request should have been made");
     assertEquals("POST", oauthRequest.getMethod());
-    String body = oauthRequest.getBody().readUtf8();
+    String body = oauthRequest.getBody().utf8();
     assertTrue(body.contains("grant_type=client_credentials"));
     assertTrue(body.contains("scope=" + TEST_SCOPE));
   }
@@ -280,7 +281,7 @@ public class OAuthIntegrationTest {
 
     RecordedRequest oauthRequest = oauthServer.takeRequest(5, TimeUnit.SECONDS);
     assertNotNull(oauthRequest, "OAuth request should have been made");
-    String body = oauthRequest.getBody().readUtf8();
+    String body = oauthRequest.getBody().utf8();
     assertTrue(
         body.contains("grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Atoken-exchange"),
         "Should contain token exchange grant type");
@@ -323,7 +324,7 @@ public class OAuthIntegrationTest {
 
     RecordedRequest oauthRequest = oauthServer.takeRequest(5, TimeUnit.SECONDS);
     assertNotNull(oauthRequest, "OAuth request should have been made");
-    String body = oauthRequest.getBody().readUtf8();
+    String body = oauthRequest.getBody().utf8();
     assertTrue(body.contains("subject_token=" + SUBJECT_TOKEN));
     assertTrue(body.contains("actor_token=" + actorToken));
   }
@@ -349,7 +350,7 @@ public class OAuthIntegrationTest {
 
     RecordedRequest oauthRequest = oauthServer.takeRequest(5, TimeUnit.SECONDS);
     assertNotNull(oauthRequest, "OAuth request should have been made");
-    String authHeader = oauthRequest.getHeader("Authorization");
+    String authHeader = oauthRequest.getHeaders().get("Authorization");
     assertNotNull(authHeader, "Should have Basic auth header for client authentication");
     assertTrue(authHeader.startsWith("Basic "));
   }
