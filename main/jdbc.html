@@ -502,7 +502,8 @@ converters, and the type conversions themselves can all be customized:</p>
 <section id="id1">
 <h3>Type Mapping<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>The Arrow to JDBC type mapping can be obtained at runtime via
-a method on ColumnBinder.</p>
+a method on ColumnBinder. The Flight SQL JDBC driver follows the same
+mapping, with additional support for the UUID extension type noted below.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -540,67 +541,71 @@ a method on ColumnBinder.</p>
 <td><p>BINARY (setBytes)</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Float32</p></td>
+<tr class="row-odd"><td><p>Uuid (extension)</p></td>
+<td><p>OTHER (setObject)</p></td>
+<td><p>(3)</p></td>
+</tr>
+<tr class="row-even"><td><p>Float32</p></td>
 <td><p>REAL (setFloat)</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Int8</p></td>
+<tr class="row-odd"><td><p>Int8</p></td>
 <td><p>TINYINT (setByte)</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Int16</p></td>
+<tr class="row-even"><td><p>Int16</p></td>
 <td><p>SMALLINT (setShort)</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Int32</p></td>
+<tr class="row-odd"><td><p>Int32</p></td>
 <td><p>INTEGER (setInt)</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Int64</p></td>
+<tr class="row-even"><td><p>Int64</p></td>
 <td><p>BIGINT (setLong)</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>LargeBinary</p></td>
+<tr class="row-odd"><td><p>LargeBinary</p></td>
 <td><p>LONGVARBINARY (setBytes)</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>LargeUtf8</p></td>
+<tr class="row-even"><td><p>LargeUtf8</p></td>
 <td><p>LONGVARCHAR (setString)</p></td>
 <td><p>(1)</p></td>
 </tr>
-<tr class="row-even"><td><p>Time[s]</p></td>
+<tr class="row-odd"><td><p>Time[s]</p></td>
 <td><p>TIME (setTime)</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Time[ms]</p></td>
+<tr class="row-even"><td><p>Time[ms]</p></td>
 <td><p>TIME (setTime)</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Time[us]</p></td>
+<tr class="row-odd"><td><p>Time[us]</p></td>
 <td><p>TIME (setTime)</p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p>Time[ns]</p></td>
+<tr class="row-even"><td><p>Time[ns]</p></td>
 <td><p>TIME (setTime)</p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p>Timestamp[s]</p></td>
+<tr class="row-odd"><td><p>Timestamp[s]</p></td>
 <td><p>TIMESTAMP (setTimestamp)</p></td>
 <td><p>(2)</p></td>
 </tr>
-<tr class="row-odd"><td><p>Timestamp[ms]</p></td>
+<tr class="row-even"><td><p>Timestamp[ms]</p></td>
 <td><p>TIMESTAMP (setTimestamp)</p></td>
 <td><p>(2)</p></td>
 </tr>
-<tr class="row-even"><td><p>Timestamp[us]</p></td>
+<tr class="row-odd"><td><p>Timestamp[us]</p></td>
 <td><p>TIMESTAMP (setTimestamp)</p></td>
 <td><p>(2)</p></td>
 </tr>
-<tr class="row-odd"><td><p>Timestamp[ns]</p></td>
+<tr class="row-even"><td><p>Timestamp[ns]</p></td>
 <td><p>TIMESTAMP (setTimestamp)</p></td>
 <td><p>(2)</p></td>
 </tr>
-<tr class="row-even"><td><p>Utf8</p></td>
+<tr class="row-odd"><td><p>Utf8</p></td>
 <td><p>VARCHAR (setString)</p></td>
 <td></td>
 </tr>
@@ -618,6 +623,9 @@ timezone information.  In this case, the default binder will call
 <a class="reference external" href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html#setTimestamp(int,java.sql.Timestamp)">setTimestamp(int, Timestamp)</a>,
 which will lead to the driver using the “default timezone” (that of
 the Java VM).</p></li>
+<li><p>(3) For the Flight SQL JDBC driver, the Arrow UUID extension type
+(<code class="docutils literal notranslate"><span class="pre">arrow.uuid</span></code>) maps to JDBC <code class="docutils literal notranslate"><span class="pre">OTHER</span></code> and is surfaced as
+<code class="docutils literal notranslate"><span class="pre">java.util.UUID</span></code> values.</p></li>
 </ul>
 </section>
 </section>
