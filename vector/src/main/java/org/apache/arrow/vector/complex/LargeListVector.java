@@ -280,7 +280,10 @@ public class LargeListVector extends BaseValueVector
     // According to Arrow specification, offset buffer must have N+1 entries,
     // even when N=0, it should contain [0].
     if (offsetBuffer.capacity() == 0) {
+      // Save and restore offsetAllocationSizeInBytes to avoid affecting subsequent allocateNew()
+      long savedOffsetAllocationSize = offsetAllocationSizeInBytes;
       offsetBuffer = allocateOffsetBuffer(OFFSET_WIDTH);
+      offsetAllocationSizeInBytes = savedOffsetAllocationSize;
     }
 
     setReaderAndWriterIndex();
