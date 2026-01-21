@@ -233,21 +233,9 @@ public class ListVector extends BaseRepeatedValueVector
   @Override
   public List<ArrowBuf> getFieldBuffers() {
     List<ArrowBuf> result = new ArrayList<>(2);
-
-    // Ensure offset buffer has at least one entry for offset[0].
-    // According to Arrow specification, offset buffer must have N+1 entries,
-    // even when N=0, it should contain [0].
-    if (offsetBuffer.capacity() == 0) {
-      // Save and restore offsetAllocationSizeInBytes to avoid affecting subsequent allocateNew()
-      long savedOffsetAllocationSize = offsetAllocationSizeInBytes;
-      offsetBuffer = allocateOffsetBuffer(OFFSET_WIDTH);
-      offsetAllocationSizeInBytes = savedOffsetAllocationSize;
-    }
-
     setReaderAndWriterIndex();
     result.add(validityBuffer);
     result.add(offsetBuffer);
-
     return result;
   }
 
@@ -276,14 +264,12 @@ public class ListVector extends BaseRepeatedValueVector
   private void setReaderAndWriterIndex() {
     validityBuffer.readerIndex(0);
     offsetBuffer.readerIndex(0);
-    if (valueCount == 0) {
-      validityBuffer.writerIndex(0);
-      // Even when valueCount is 0, offset buffer should have offset[0] per Arrow spec
-      offsetBuffer.writerIndex(Math.min(OFFSET_WIDTH, offsetBuffer.capacity()));
-    } else {
-      validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
-      offsetBuffer.writerIndex((valueCount + 1) * OFFSET_WIDTH);
-    }
+    validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
+    // IPC serializer will determine readable bytes based on `readerIndex` and `writerIndex`.
+    // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
+    // in other libraries. According to Arrow spec, we should still output the offset buffer which
+    // is [0].
+    offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
   }
 
   /**
