@@ -278,6 +278,7 @@ public class LargeListVector extends BaseValueVector
     setReaderAndWriterIndex();
     result.add(validityBuffer);
     result.add(offsetBuffer);
+
     return result;
   }
 
@@ -306,7 +307,11 @@ public class LargeListVector extends BaseValueVector
   private void setReaderAndWriterIndex() {
     validityBuffer.readerIndex(0);
     offsetBuffer.readerIndex(0);
-    validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
+    if (valueCount == 0) {
+      validityBuffer.writerIndex(0);
+    } else {
+      validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
+    }
     // IPC serializer will determine readable bytes based on `readerIndex` and `writerIndex`.
     // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
     // in other libraries. According to Arrow spec, we should still output the offset buffer which
