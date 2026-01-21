@@ -1111,9 +1111,11 @@ public class TestLargeListVector {
       LargeListVector innerList = (LargeListVector) outerList.getDataVector();
       innerList.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
 
-      // Allocate outer only - simulates case where inner is never written to
+      // Allocate both outer and inner - simulates case where inner is never written to
       outerList.allocateNew();
+      innerList.allocateNew();
       outerList.setValueCount(0);
+      innerList.setValueCount(0);
 
       // Get field buffers - this is what IPC serialization uses
       List<ArrowBuf> innerBuffers = innerList.getFieldBuffers();

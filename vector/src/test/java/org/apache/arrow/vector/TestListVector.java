@@ -1392,9 +1392,13 @@ public class TestListVector {
       ListVector level2 = (ListVector) level1.getDataVector();
       level2.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
 
-      // Only allocate level0 - simulates case where all nested levels are empty
+      // Allocate all levels - simulates case where nested levels are never written to
       level0.allocateNew();
+      level1.allocateNew();
+      level2.allocateNew();
       level0.setValueCount(0);
+      level1.setValueCount(0);
+      level2.setValueCount(0);
 
       // Verify all levels have properly allocated offset buffers
       List<ArrowBuf> level1Buffers = level1.getFieldBuffers();
