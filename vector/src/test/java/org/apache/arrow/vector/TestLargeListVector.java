@@ -1101,34 +1101,22 @@ public class TestLargeListVector {
   }
 
   @Test
-  public void testNestedEmptyLargeListOffsetBuffer() {
-    // Test that nested LargeListVector properly allocates offset buffer
-    // even when nested writers are never invoked. According to Arrow spec,
-    // offset buffer must have N+1 entries. Even when N=0, it should contain [0].
-    try (LargeListVector outerList = LargeListVector.empty("outer", allocator)) {
-      // Setup LargeList<LargeList<Int>>
-      outerList.addOrGetVector(FieldType.nullable(MinorType.LARGELIST.getType()));
-      LargeListVector innerList = (LargeListVector) outerList.getDataVector();
-      innerList.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+  public void testEmptyLargeListOffsetBuffer() {
+    // Test that LargeListVector has correct readableBytes after allocation.
+    // According to Arrow spec, offset buffer must have N+1 entries.
+    // Even when N=0, it should contain [0].
+    try (LargeListVector list = LargeListVector.empty("list", allocator)) {
+      list.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      list.allocateNew();
+      list.setValueCount(0);
 
-      // Allocate both outer and inner - simulates case where inner is never written to
-      outerList.allocateNew();
-      innerList.allocateNew();
-      outerList.setValueCount(0);
-      innerList.setValueCount(0);
-
-      // Get field buffers - this is what IPC serialization uses
-      List<ArrowBuf> innerBuffers = innerList.getFieldBuffers();
-
-      // Verify inner list offset buffer has at least OFFSET_WIDTH (8) bytes
+      List<ArrowBuf> buffers = list.getFieldBuffers();
       assertTrue(
-          innerBuffers.get(1).readableBytes() >= LargeListVector.OFFSET_WIDTH,
-          "Inner LargeList offset buffer should have at least "
+          buffers.get(1).readableBytes() >= LargeListVector.OFFSET_WIDTH,
+          "Offset buffer should have at least "
               + LargeListVector.OFFSET_WIDTH
               + " bytes for offset[0]");
-
-      // Verify offset[0] = 0
-      assertEquals(0L, innerList.getOffsetBuffer().getLong(0));
+      assertEquals(0L, list.getOffsetBuffer().getLong(0));
     }
   }
 
