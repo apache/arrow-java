@@ -412,6 +412,134 @@ DriverManager#getConnection()</a>,
 the username and password supplied on the URI supercede the username and
 password arguments to the function call.</p>
 </section>
+<section id="oauth-2-0-authentication">
+<h2>OAuth 2.0 Authentication<a class="headerlink" href="#oauth-2-0-authentication" title="Link to this heading">¶</a></h2>
+<p>The driver supports OAuth 2.0 authentication for obtaining access tokens
+from an authorization server. Two OAuth flows are currently supported:</p>
+<ul class="simple">
+<li><p><strong>Client Credentials</strong> - For service-to-service authentication where no
+user interaction is required. The application authenticates using its own
+credentials (client ID and client secret).</p></li>
+<li><p><strong>Token Exchange</strong> (RFC 8693) - For exchanging one token for another,
+commonly used for federated authentication, delegation, or impersonation
+scenarios.</p></li>
+</ul>
+<section id="oauth-connection-properties">
+<h3>OAuth Connection Properties<a class="headerlink" href="#oauth-connection-properties" title="Link to this heading">¶</a></h3>
+<p>The following properties configure OAuth authentication. These properties
+should be provided via the <code class="docutils literal notranslate"><span class="pre">Properties</span></code> object when connecting, as they
+may contain special characters that are difficult to encode in a URI.</p>
+<p><strong>Common OAuth Properties</strong></p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>oauth.flow</p></td>
+<td><p>String</p></td>
+<td><p>Yes (to enable OAuth)</p></td>
+<td><p>null</p></td>
+<td><p>The OAuth grant type. Supported values: <code class="docutils literal notranslate"><span class="pre">client_credentials</span></code>,
+<code class="docutils literal notranslate"><span class="pre">token_exchange</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>oauth.tokenUri</p></td>
+<td><p>String</p></td>
+<td><p>Yes</p></td>
+<td><p>null</p></td>
+<td><p>The OAuth 2.0 token endpoint URL (e.g.,
+<code class="docutils literal notranslate"><span class="pre">https://auth.example.com/oauth/token</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>oauth.clientId</p></td>
+<td><p>String</p></td>
+<td><p>Conditional</p></td>
+<td><p>null</p></td>
+<td><p>The OAuth 2.0 client ID. Required for <code class="docutils literal notranslate"><span class="pre">client_credentials</span></code> flow,
+optional for <code class="docutils literal notranslate"><span class="pre">token_exchange</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>oauth.clientSecret</p></td>
+<td><p>String</p></td>
+<td><p>Conditional</p></td>
+<td><p>null</p></td>
+<td><p>The OAuth 2.0 client secret. Required for <code class="docutils literal notranslate"><span class="pre">client_credentials</span></code> flow,
+optional for <code class="docutils literal notranslate"><span class="pre">token_exchange</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>oauth.scope</p></td>
+<td><p>String</p></td>
+<td><p>No</p></td>
+<td><p>null</p></td>
+<td><p>Space-separated list of OAuth scopes to request</p></td>
+</tr>
+<tr class="row-odd"><td><p>oauth.resource</p></td>
+<td><p>String</p></td>
+<td><p>No</p></td>
+<td><p>null</p></td>
+<td><p>The resource indicator for the token request (RFC 8707)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Token Exchange Properties</strong></p>
+<p>These properties are specific to the <code class="docutils literal notranslate"><span class="pre">token_exchange</span></code> flow:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>oauth.exchange.subjectToken</p></td>
+<td><p>String</p></td>
+<td><p>Yes</p></td>
+<td><p>null</p></td>
+<td><p>The subject token to exchange (e.g., a JWT from an identity provider)</p></td>
+</tr>
+<tr class="row-odd"><td><p>oauth.exchange.subjectTokenType</p></td>
+<td><p>String</p></td>
+<td><p>Yes</p></td>
+<td><p>null</p></td>
+<td><p>The token type URI of the subject token. Common values:
+<code class="docutils literal notranslate"><span class="pre">urn:ietf:params:oauth:token-type:access_token</span></code>,
+<code class="docutils literal notranslate"><span class="pre">urn:ietf:params:oauth:token-type:jwt</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>oauth.exchange.actorToken</p></td>
+<td><p>String</p></td>
+<td><p>No</p></td>
+<td><p>null</p></td>
+<td><p>The actor token for delegation/impersonation scenarios</p></td>
+</tr>
+<tr class="row-odd"><td><p>oauth.exchange.actorTokenType</p></td>
+<td><p>String</p></td>
+<td><p>No</p></td>
+<td><p>null</p></td>
+<td><p>The token type URI of the actor token</p></td>
+</tr>
+<tr class="row-even"><td><p>oauth.exchange.aud</p></td>
+<td><p>String</p></td>
+<td><p>No</p></td>
+<td><p>null</p></td>
+<td><p>The target audience for the exchanged token</p></td>
+</tr>
+<tr class="row-odd"><td><p>oauth.exchange.requestedTokenType</p></td>
+<td><p>String</p></td>
+<td><p>No</p></td>
+<td><p>null</p></td>
+<td><p>The desired token type for the exchanged token</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
 </section>
 
         </article>
@@ -472,6 +600,10 @@ password arguments to the function call.</p>
 <li><a class="reference internal" href="#">Arrow Flight SQL JDBC Driver</a><ul>
 <li><a class="reference internal" href="#installation-and-requirements">Installation and Requirements</a></li>
 <li><a class="reference internal" href="#connecting-to-a-database">Connecting to a Database</a></li>
+<li><a class="reference internal" href="#oauth-2-0-authentication">OAuth 2.0 Authentication</a><ul>
+<li><a class="reference internal" href="#oauth-connection-properties">OAuth Connection Properties</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
