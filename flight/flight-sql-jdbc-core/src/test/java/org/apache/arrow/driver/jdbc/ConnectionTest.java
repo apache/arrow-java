@@ -16,6 +16,8 @@
  */
 package org.apache.arrow.driver.jdbc;
 
+import static java.lang.String.format;
+import static java.util.stream.IntStream.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -23,24 +25,33 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import com.google.protobuf.Message;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
 import org.apache.arrow.flight.FlightMethod;
+import org.apache.arrow.flight.FlightProducer.ServerStreamListener;
 import org.apache.arrow.flight.NoOpSessionOptionValueVisitor;
 import org.apache.arrow.flight.SessionOptionValue;
+import org.apache.arrow.flight.sql.FlightSqlProducer.Schemas;
+import org.apache.arrow.flight.sql.impl.FlightSql.CommandGetTableTypes;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
+import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.util.Text;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -696,6 +707,65 @@ public class ConnectionTest {
     // assert the statements are closed
     for (int i = 0; i < numStatements; i++) {
       assertTrue(statements[i].isClosed());
+    }
+  }
+
+  @Test
+  public void testResultSetsFromDatabaseMetadataClosedOnConnectionClose() throws Exception {
+    // set up the FlightProducer to respond to metadata queries
+    // getTableTypes() is being used, but any other method would work
+    int rowCount = 3;
+    final Message commandGetTableTypes = CommandGetTableTypes.getDefaultInstance();
+    final Consumer<ServerStreamListener> commandGetTableTypesResultProducer =
+        listener -> {
+          try (final BufferAllocator allocator = new RootAllocator();
+              final VectorSchemaRoot root =
+                  VectorSchemaRoot.create(Schemas.GET_TABLE_TYPES_SCHEMA, allocator)) {
+            final VarCharVector tableType = (VarCharVector) root.getVector("table_type");
+            range(0, rowCount)
+                .forEach(i -> tableType.setSafe(i, new Text(format("table_type #%d", i))));
+            root.setRowCount(rowCount);
+            listener.start(root);
+            listener.putNext();
+          } catch (final Throwable throwable) {
+            listener.error(throwable);
+          } finally {
+            listener.completed();
+          }
+        };
+    PRODUCER.addCatalogQuery(commandGetTableTypes, commandGetTableTypesResultProducer);
+
+    // create a connection
+    final Properties properties = new Properties();
+    properties.put(ArrowFlightConnectionProperty.HOST.camelName(), "localhost");
+    properties.put(
+        ArrowFlightConnectionProperty.PORT.camelName(), FLIGHT_SERVER_TEST_EXTENSION.getPort());
+    properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+    properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+    properties.put("useEncryption", false);
+
+    Connection connection =
+        DriverManager.getConnection(
+            "jdbc:arrow-flight-sql://"
+                + FLIGHT_SERVER_TEST_EXTENSION.getHost()
+                + ":"
+                + FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+            properties);
+
+    // create ResultSets from DatabaseMetadata
+    int numResultSets = 3;
+    ResultSet[] resultSets = new ResultSet[numResultSets];
+    for (int i = 0; i < numResultSets; i++) {
+      resultSets[i] = connection.getMetaData().getTableTypes();
+      assertFalse(resultSets[i].isClosed());
+    }
+
+    // close the connection
+    connection.close();
+
+    // assert the ResultSets are closed
+    for (int i = 0; i < numResultSets; i++) {
+      assertTrue(resultSets[i].isClosed());
     }
   }
 }
