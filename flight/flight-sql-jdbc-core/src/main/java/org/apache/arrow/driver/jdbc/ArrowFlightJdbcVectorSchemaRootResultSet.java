@@ -22,7 +22,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
 import org.apache.arrow.driver.jdbc.utils.ConvertUtils;
@@ -159,12 +158,10 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
     } catch (final Exception e) {
       exceptions.add(e);
     }
-    if (!Objects.isNull(statement)) {
-      try {
-        super.close();
-      } catch (final Exception e) {
-        exceptions.add(e);
-      }
+    try {
+      super.close();
+    } catch (final Exception e) {
+      exceptions.add(e);
     }
     exceptions.parallelStream().forEach(e -> LOGGER.error(e.getMessage(), e));
     exceptions.stream()
