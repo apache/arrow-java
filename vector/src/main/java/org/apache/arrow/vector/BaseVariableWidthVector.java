@@ -395,8 +395,10 @@ public abstract class BaseVariableWidthVector extends BaseValueVector
       validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
       valueBuffer.writerIndex(lastDataOffset);
     }
-    // Per Arrow spec, offset buffer always has (valueCount + 1) entries including offset[0]=0.
-    // This ensures IPC serialization includes the offset buffer even when valueCount is 0.
+    // IPC serializer will determine readable bytes based on `readerIndex` and `writerIndex`.
+    // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
+    // in other libraries. According to Arrow spec, we should still output the offset buffer which
+    // is [0].
     offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
   }
 
