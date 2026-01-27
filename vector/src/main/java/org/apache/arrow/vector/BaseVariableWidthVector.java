@@ -389,14 +389,15 @@ public abstract class BaseVariableWidthVector extends BaseValueVector
     valueBuffer.readerIndex(0);
     if (valueCount == 0) {
       validityBuffer.writerIndex(0);
-      offsetBuffer.writerIndex(0);
       valueBuffer.writerIndex(0);
     } else {
       final int lastDataOffset = getStartOffset(valueCount);
       validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
-      offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
       valueBuffer.writerIndex(lastDataOffset);
     }
+    // Per Arrow spec, offset buffer always has (valueCount + 1) entries including offset[0]=0.
+    // This ensures IPC serialization includes the offset buffer even when valueCount is 0.
+    offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
   }
 
   /** Same as {@link #allocateNewSafe()}. */
