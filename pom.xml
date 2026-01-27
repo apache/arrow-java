@@ -99,7 +99,7 @@ under the License.
     <dep.guava-bom.version>33.4.8-jre</dep.guava-bom.version>
     <dep.netty-bom.version>4.2.9.Final</dep.netty-bom.version>
     <dep.grpc-bom.version>1.78.0</dep.grpc-bom.version>
-    <dep.protobuf-bom.version>4.33.1</dep.protobuf-bom.version>
+    <dep.protobuf-bom.version>4.33.4</dep.protobuf-bom.version>
     <dep.jackson-bom.version>2.21.0</dep.jackson-bom.version>
     <dep.hadoop.version>3.4.2</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
@@ -111,7 +111,7 @@ under the License.
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.42.0</error_prone_core.version>
     <checker.framework.version>3.53.0</checker.framework.version>
-    <logback.version>1.5.25</logback.version>
+    <logback.version>1.5.26</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
     <!-- List of add-opens arg line arguments for tests -->
@@ -175,7 +175,7 @@ under the License.
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
-        <version>3.27.3</version>
+        <version>3.27.7</version>
         <scope>test</scope>
       </dependency>
       <dependency>
