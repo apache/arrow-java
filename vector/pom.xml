@@ -38,6 +38,17 @@ under the License.
       <artifactId>arrow-memory-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-variant</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-variant</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.immutables</groupId>
       <artifactId>value-annotations</artifactId>
     </dependency>
