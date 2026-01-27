@@ -83,8 +83,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
     super(null, state, signature, resultSetMetaData, timeZone, firstFrame);
     this.connection = connection;
     this.flightInfo = flightInfo;
-    this.id = connection.metadataResultSetCount++;
-    connection.metadataResultSetMap.put(id, this);
+    this.id = connection.getNewMetadataResultSetId(this);
   }
 
   /**
@@ -242,9 +241,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
       if (isClosed()) {
         return;
       }
-      if (id != null) { // id is only set for metadata result sets
-        this.connection.metadataResultSetMap.remove(id);
-      }
+      this.connection.onResultSetClose(id);
       if (flightEndpointDataQueue != null) {
         // flightStreamQueue should close currentFlightStream internally
         flightEndpointDataQueue.close();

@@ -44,8 +44,8 @@ public final class ArrowFlightConnection extends AvaticaConnection {
   private final ArrowFlightSqlClientHandler clientHandler;
   private final ArrowFlightConnectionConfigImpl config;
   private ExecutorService executorService;
-  int metadataResultSetCount;
-  Map<Integer, ArrowFlightJdbcFlightStreamResultSet> metadataResultSetMap = new HashMap<>();
+  private int metadataResultSetCount;
+  private Map<Integer, ArrowFlightJdbcFlightStreamResultSet> metadataResultSetMap = new HashMap<>();
 
   /**
    * Creates a new {@link ArrowFlightConnection}.
@@ -176,6 +176,31 @@ public final class ArrowFlightConnection extends AvaticaConnection {
             ? Executors.newFixedThreadPool(
                 config.threadPoolSize(), new DefaultThreadFactory(getClass().getSimpleName()))
             : executorService;
+  }
+
+  /**
+   * Registers a new metadata ResultSet and assigns it a unique ID. Metadata ResultSets are those
+   * created without an associated Statement.
+   *
+   * @param resultSet the ResultSet to register
+   * @return the assigned ID
+   */
+  int getNewMetadataResultSetId(ArrowFlightJdbcFlightStreamResultSet resultSet) {
+    metadataResultSetMap.put(metadataResultSetCount, resultSet);
+    return metadataResultSetCount++;
+  }
+
+  /**
+   * Unregisters a metadata ResultSet when it is closed. This method is called by metadata
+   * ResultSets during their close operation to remove themselves from the tracking map.
+   *
+   * @param id the ID of the ResultSet to unregister, or null if not a metadata ResultSet
+   */
+  void onResultSetClose(Integer id) {
+    if (id == null) {
+      return;
+    }
+    metadataResultSetMap.remove(id);
   }
 
   @Override
