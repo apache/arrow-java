@@ -71,7 +71,9 @@ public abstract class BaseLargeVariableWidthVector extends BaseValueVector
     lastValueCapacity = INITIAL_VALUE_ALLOCATION - 1;
     valueCount = 0;
     lastSet = -1;
-    offsetBuffer = allocator.getEmpty();
+    // Allocate offset buffer with at least OFFSET_WIDTH capacity to ensure
+    // offset[0] is always available according to Arrow spec.
+    offsetBuffer = allocateOffsetBuffer(OFFSET_WIDTH);
     validityBuffer = allocator.getEmpty();
     valueBuffer = allocator.getEmpty();
   }
@@ -383,7 +385,19 @@ public abstract class BaseLargeVariableWidthVector extends BaseValueVector
     // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
     // in other libraries. According to Arrow spec, we should still output the offset buffer which
     // is [0].
-    offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
+    final long requiredOffsetBufferSize = (long) (valueCount + 1) * OFFSET_WIDTH;
+    if (offsetBuffer.capacity() < requiredOffsetBufferSize) {
+      // Allocate a new buffer with sufficient capacity. This can happen when vector
+      // was loaded via loadFieldBuffers() with an empty offset buffer.
+      ArrowBuf newOffsetBuffer = allocateOffsetBuffer(requiredOffsetBufferSize);
+      // Copy existing data if any
+      if (offsetBuffer.capacity() > 0) {
+        newOffsetBuffer.setBytes(0, offsetBuffer, 0, offsetBuffer.capacity());
+      }
+      offsetBuffer.getReferenceManager().release();
+      offsetBuffer = newOffsetBuffer;
+    }
+    offsetBuffer.writerIndex(requiredOffsetBufferSize);
   }
 
   /** Same as {@link #allocateNewSafe()}. */
@@ -495,7 +509,9 @@ public abstract class BaseLargeVariableWidthVector extends BaseValueVector
 
   /* allocate offset buffer */
   private ArrowBuf allocateOffsetBuffer(final long size) {
-    ArrowBuf offsetBuffer = allocator.buffer(size);
+    // Ensure at least OFFSET_WIDTH capacity according to Arrow spec
+    final long curSize = Math.max(size, OFFSET_WIDTH);
+    ArrowBuf offsetBuffer = allocator.buffer(curSize);
     offsetBuffer.readerIndex(0);
     offsetBuffer.setZero(0, offsetBuffer.capacity());
     return offsetBuffer;
