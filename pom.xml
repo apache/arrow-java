@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>35</version>
+    <version>37</version>
   </parent>
 
   <groupId>org.apache.arrow</groupId>
@@ -118,16 +118,7 @@ under the License.
     <surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</surefire.add-opens.argLine>
     <!-- org.apache:apache overrides -->
     <minimalJavaBuildVersion>11</minimalJavaBuildVersion>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.release>11</maven.compiler.release>
-    <!--
-      Downgrade maven-jar-plugin until https://github.com/codehaus-plexus/plexus-archiver/issues/332
-      is addressed
-      maven-jar-plugin 4.0.0-beta-2-SNAPSHOT upgraded to plexus-archive 4.10.2 fixing the issue.
-      We have to wait new maven-jar-plugin release, and a new Apache POM release providing it
-    -->
-    <version.maven-jar-plugin>3.2.2</version.maven-jar-plugin>
+    <javaVersion>11</javaVersion>
   </properties>
 
   <dependencyManagement>
