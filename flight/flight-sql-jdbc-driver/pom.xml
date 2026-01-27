@@ -93,6 +93,11 @@ under the License.
                   <exclude>com.google.errorprone:error_prone_annotations</exclude>
                   <exclude>com.google.code.findbugs:jsr305</exclude>
                   <exclude>com.google.j2objc:j2objc-annotations</exclude>
+                  <!-- Parquet transitive dependencies (from arrow-variant) that contain pre-shaded classes -->
+                  <exclude>org.apache.parquet:parquet-common</exclude>
+                  <exclude>org.apache.parquet:parquet-column</exclude>
+                  <exclude>org.apache.parquet:parquet-encoding</exclude>
+                  <exclude>org.apache.parquet:parquet-format-structures</exclude>
                 </excludes>
               </artifactSet>
               <relocations>

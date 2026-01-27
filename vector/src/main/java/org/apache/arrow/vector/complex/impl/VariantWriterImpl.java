@@ -16,10 +16,13 @@
  */
 package org.apache.arrow.vector.complex.impl;
 
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.vector.extension.VariantVector;
 import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableVariantHolder;
 import org.apache.arrow.vector.holders.VariantHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.variant.Variant;
 
 /**
  * Writer implementation for VARIANT extension type vectors.
@@ -42,22 +45,52 @@ public class VariantWriterImpl extends AbstractExtensionTypeWriter<VariantVector
   }
 
   /**
-   * Writes an extension type value to the vector.
+   * Writes an extension type or variant value to the vector.
    *
-   * <p>This method validates that the object is an {@link ExtensionHolder} and delegates to {@link
-   * #write(ExtensionHolder)}.
+   * <p>This method handles {@link ExtensionHolder} by delegating to {@link #write(ExtensionHolder)}
+   * and {@link Variant} by delegating to {@link #writeVariant(Variant)}.
    *
-   * @param object the object to write, must be an {@link ExtensionHolder}
-   * @throws IllegalArgumentException if the object is not an {@link ExtensionHolder}
+   * @param object the object to write, must be an {@link ExtensionHolder} or {@link Variant}
+   * @throws IllegalArgumentException if the object is not an {@link ExtensionHolder} or {@link
+   *     Variant}
    */
   @Override
   public void writeExtension(Object object) {
     if (object instanceof ExtensionHolder) {
       write((ExtensionHolder) object);
+    } else if (object instanceof Variant) {
+      writeVariant((Variant) object);
     } else {
       throw new IllegalArgumentException(
           String.format(UNSUPPORTED_TYPE_TEMPLATE, object.getClass().getName()));
     }
+  }
+
+  private void writeVariant(Variant variant) {
+    java.nio.ByteBuffer metadataBuffer = variant.getMetadataBuffer();
+    java.nio.ByteBuffer valueBuffer = variant.getValueBuffer();
+    int metadataLength = metadataBuffer.remaining();
+    int valueLength = valueBuffer.remaining();
+    try (ArrowBuf metadataBuf = vector.getAllocator().buffer(metadataLength);
+        ArrowBuf valueBuf = vector.getAllocator().buffer(valueLength)) {
+      metadataBuf.setBytes(0, metadataBuffer.duplicate());
+      valueBuf.setBytes(0, valueBuffer.duplicate());
+      NullableVariantHolder holder = new NullableVariantHolder();
+      holder.isSet = 1;
+      holder.metadataBuffer = metadataBuf;
+      holder.metadataStart = 0;
+      holder.metadataEnd = metadataLength;
+      holder.valueBuffer = valueBuf;
+      holder.valueStart = 0;
+      holder.valueEnd = valueLength;
+      vector.setSafe(getPosition(), holder);
+      vector.setValueCount(getPosition() + 1);
+    }
+  }
+
+  @Override
+  public void writeExtension(Object value, ArrowType type) {
+    writeExtension(value);
   }
 
   /**

@@ -46,6 +46,7 @@ module org.apache.arrow.vector {
   requires jdk.unsupported;
   requires org.apache.arrow.format;
   requires org.apache.arrow.memory.core;
+  requires org.apache.arrow.variant;
   requires org.apache.commons.codec;
   requires org.slf4j;
 

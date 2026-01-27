@@ -16,7 +16,9 @@
  */
 package org.apache.arrow.vector.extension;
 
+import java.nio.ByteBuffer;
 import java.util.List;
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.BitVectorHelper;
@@ -35,6 +37,7 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.CallBack;
 import org.apache.arrow.vector.util.TransferPair;
+import org.apache.arrow.vector.variant.Variant;
 
 public class VariantVector extends ExtensionTypeVector<StructVector> {
 
@@ -147,7 +150,24 @@ public class VariantVector extends ExtensionTypeVector<StructVector> {
 
   @Override
   public Object getObject(int index) {
-    return getUnderlyingVector().getObject(index);
+    if (isNull(index)) {
+      return null;
+    }
+    VarBinaryVector metadataVector = getMetadataVector();
+    VarBinaryVector valueVector = getValueVector();
+
+    int metadataStart = metadataVector.getStartOffset(index);
+    int metadataEnd = metadataVector.getEndOffset(index);
+    int valueStart = valueVector.getStartOffset(index);
+    int valueEnd = valueVector.getEndOffset(index);
+
+    return new Variant(
+        metadataVector.getDataBuffer(),
+        metadataStart,
+        metadataEnd,
+        valueVector.getDataBuffer(),
+        valueStart,
+        valueEnd);
   }
 
   /**
@@ -251,6 +271,22 @@ public class VariantVector extends ExtensionTypeVector<StructVector> {
     getMetadataVector()
         .setSafe(index, 1, holder.metadataStart, holder.metadataEnd, holder.metadataBuffer);
     getValueVector().setSafe(index, 1, holder.valueStart, holder.valueEnd, holder.valueBuffer);
+  }
+
+  /** Sets the value at the given index from the provided Variant. */
+  public void setSafe(int index, Variant variant) {
+    ByteBuffer metadataBuffer = variant.getMetadataBuffer();
+    ByteBuffer valueBuffer = variant.getValueBuffer();
+    int metadataLength = metadataBuffer.remaining();
+    int valueLength = valueBuffer.remaining();
+    try (ArrowBuf metaBuf = getAllocator().buffer(metadataLength);
+        ArrowBuf valBuf = getAllocator().buffer(valueLength)) {
+      metaBuf.setBytes(0, metadataBuffer.duplicate());
+      valBuf.setBytes(0, valueBuffer.duplicate());
+      getUnderlyingVector().setIndexDefined(index);
+      getMetadataVector().setSafe(index, 1, 0, metadataLength, metaBuf);
+      getValueVector().setSafe(index, 1, 0, valueLength, valBuf);
+    }
   }
 
   @Override

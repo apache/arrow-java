@@ -35,6 +35,7 @@ import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableVariantHolder;
 import org.apache.arrow.vector.holders.VariantHolder;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.variant.Variant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -782,6 +783,8 @@ class TestVariantVector {
 
       Object obj = vector.getObject(0);
       assertNotNull(obj);
+      assertTrue(obj instanceof Variant);
+      assertEquals(new Variant(metadata, value), obj);
     }
   }
 
