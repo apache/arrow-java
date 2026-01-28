@@ -37,8 +37,8 @@ main() {
     local -r milestone=$(
       gh api "/repos/${repo}/milestones" |
         jq --raw-output '.[] | .title' |
-        grep -E '^[0-9]+\.[0-9]+\.[0-9]+$'
-      head -n1
+        grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' |
+        head -n1
     )
 
     echo "Assigning milestone: ${milestone}"
