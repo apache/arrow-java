@@ -38,11 +38,9 @@ import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.complex.writer.BaseWriter.ExtensionWriter;
 import org.apache.arrow.vector.extension.UuidType;
-import org.apache.arrow.vector.extension.VariantType;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
-import org.apache.arrow.vector.holders.NullableVariantHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
@@ -51,8 +49,6 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.TransferPair;
 import org.apache.arrow.vector.util.UuidUtility;
-import org.apache.arrow.vector.variant.TestVariant;
-import org.apache.arrow.vector.variant.Variant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,16 +56,6 @@ import org.junit.jupiter.api.Test;
 public class TestListVector {
 
   private BufferAllocator allocator;
-
-  private static Variant toVariant(NullableVariantHolder holder) {
-    return new Variant(
-        holder.metadataBuffer,
-        holder.metadataStart,
-        holder.metadataEnd,
-        holder.valueBuffer,
-        holder.valueStart,
-        holder.valueEnd);
-  }
 
   @BeforeEach
   public void init() {
@@ -1390,156 +1376,6 @@ public class TestListVector {
       reader.next();
       uuidReader = reader.reader();
       assertFalse(uuidReader.isSet(), "third element should be null");
-    }
-  }
-
-  @Test
-  public void testListVectorWithVariantExtensionType() {
-    final FieldType type = FieldType.nullable(VariantType.INSTANCE);
-    try (ListVector inVector = new ListVector("input", allocator, type, null)) {
-      Variant variant1 = TestVariant.variantString("hello");
-      Variant variant2 = TestVariant.variantString("bye");
-
-      UnionListWriter writer = inVector.getWriter();
-      writer.allocate();
-
-      writer.setPosition(0);
-      writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(VariantType.INSTANCE);
-      extensionWriter.writeExtension(variant1);
-      extensionWriter.writeExtension(variant2);
-      writer.endList();
-      inVector.setValueCount(1);
-
-      ArrayList<Variant> resultSet = (ArrayList<Variant>) inVector.getObject(0);
-      assertEquals(2, resultSet.size());
-      assertEquals(variant1, resultSet.get(0));
-      assertEquals(variant2, resultSet.get(1));
-    }
-  }
-
-  @Test
-  public void testListVectorReaderForVariantExtensionType() {
-    try (ListVector inVector = ListVector.empty("input", allocator)) {
-      Variant variant1 = TestVariant.variantString("hello");
-      Variant variant2 = TestVariant.variantString("bye");
-
-      UnionListWriter writer = inVector.getWriter();
-      writer.allocate();
-
-      writer.setPosition(0);
-      writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(VariantType.INSTANCE);
-      extensionWriter.writeExtension(variant1);
-      writer.endList();
-
-      writer.setPosition(1);
-      writer.startList();
-      extensionWriter.writeExtension(variant2);
-      extensionWriter.writeExtension(variant2);
-      writer.endList();
-
-      inVector.setValueCount(2);
-
-      UnionListReader reader = inVector.getReader();
-      reader.setPosition(0);
-      assertTrue(reader.next());
-      FieldReader variantReader = reader.reader();
-      NullableVariantHolder resultHolder = new NullableVariantHolder();
-      variantReader.read(resultHolder);
-      assertEquals(variant1, toVariant(resultHolder));
-
-      reader.setPosition(1);
-      assertTrue(reader.next());
-      variantReader = reader.reader();
-      variantReader.read(resultHolder);
-      assertEquals(variant2, toVariant(resultHolder));
-
-      assertTrue(reader.next());
-      variantReader = reader.reader();
-      variantReader.read(resultHolder);
-      assertEquals(variant2, toVariant(resultHolder));
-    }
-  }
-
-  @Test
-  public void testCopyFromForVariantExtensionType() {
-    try (ListVector inVector = ListVector.empty("input", allocator);
-        ListVector outVector = ListVector.empty("output", allocator)) {
-      Variant variant1 = TestVariant.variantString("hello");
-      Variant variant2 = TestVariant.variantString("bye");
-
-      UnionListWriter writer = inVector.getWriter();
-      writer.allocate();
-
-      writer.setPosition(0);
-      writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(VariantType.INSTANCE);
-      extensionWriter.writeExtension(variant1);
-      writer.endList();
-
-      writer.setPosition(1);
-      writer.startList();
-      extensionWriter.writeExtension(variant2);
-      extensionWriter.writeExtension(variant2);
-      writer.endList();
-
-      inVector.setValueCount(2);
-
-      outVector.allocateNew();
-      outVector.copyFrom(0, 0, inVector);
-      outVector.copyFrom(1, 1, inVector);
-      outVector.setValueCount(2);
-
-      ArrayList<Variant> resultSet0 = (ArrayList<Variant>) outVector.getObject(0);
-      assertEquals(1, resultSet0.size());
-      assertEquals(variant1, resultSet0.get(0));
-
-      ArrayList<Variant> resultSet1 = (ArrayList<Variant>) outVector.getObject(1);
-      assertEquals(2, resultSet1.size());
-      assertEquals(variant2, resultSet1.get(0));
-      assertEquals(variant2, resultSet1.get(1));
-    }
-  }
-
-  @Test
-  public void testCopyValueSafeForVariantExtensionType() {
-    try (ListVector inVector = ListVector.empty("input", allocator)) {
-      Variant variant1 = TestVariant.variantString("hello");
-      Variant variant2 = TestVariant.variantString("bye");
-
-      UnionListWriter writer = inVector.getWriter();
-      writer.allocate();
-
-      writer.setPosition(0);
-      writer.startList();
-      ExtensionWriter extensionWriter = writer.extension(VariantType.INSTANCE);
-      extensionWriter.writeExtension(variant1);
-      writer.endList();
-
-      writer.setPosition(1);
-      writer.startList();
-      extensionWriter.writeExtension(variant2);
-      extensionWriter.writeExtension(variant2);
-      writer.endList();
-
-      inVector.setValueCount(2);
-
-      try (ListVector outVector = (ListVector) inVector.getTransferPair(allocator).getTo()) {
-        TransferPair tp = inVector.makeTransferPair(outVector);
-        tp.copyValueSafe(0, 0);
-        tp.copyValueSafe(1, 1);
-        outVector.setValueCount(2);
-
-        ArrayList<Variant> resultSet0 = (ArrayList<Variant>) outVector.getObject(0);
-        assertEquals(1, resultSet0.size());
-        assertEquals(variant1, resultSet0.get(0));
-
-        ArrayList<Variant> resultSet1 = (ArrayList<Variant>) outVector.getObject(1);
-        assertEquals(2, resultSet1.size());
-        assertEquals(variant2, resultSet1.get(0));
-        assertEquals(variant2, resultSet1.get(1));
-      }
     }
   }
 

@@ -29,9 +29,9 @@ package org.apache.arrow.vector.complex.impl;
  * Source code generated using FreeMarker template ${.template_name}
  */
 @SuppressWarnings("unused")
-abstract class AbstractFieldReader extends AbstractBaseReader implements FieldReader{
+public abstract class AbstractFieldReader extends AbstractBaseReader implements FieldReader{
 
-  AbstractFieldReader(){
+  protected AbstractFieldReader(){
     super();
   }
 

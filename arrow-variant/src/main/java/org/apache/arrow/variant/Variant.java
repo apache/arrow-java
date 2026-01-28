@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.variant;
+package org.apache.arrow.variant;
 
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
+import org.apache.arrow.variant.holders.NullableVariantHolder;
 
 /**
  * Wrapper around parquet-variant's Variant implementation.
@@ -56,6 +57,16 @@ public class Variant {
 
   private Variant(org.apache.parquet.variant.Variant delegate) {
     this.delegate = delegate;
+  }
+
+  public Variant(NullableVariantHolder holder) {
+    this(
+        holder.metadataBuffer,
+        holder.metadataStart,
+        holder.metadataEnd,
+        holder.valueBuffer,
+        holder.valueStart,
+        holder.valueEnd);
   }
 
   public ByteBuffer getValueBuffer() {

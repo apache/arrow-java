@@ -243,11 +243,6 @@ under the License.
         <artifactId>logback-core</artifactId>
         <version>${logback.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.apache.parquet</groupId>
-        <artifactId>parquet-variant</artifactId>
-        <version>${dep.parquet.version}</version>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 

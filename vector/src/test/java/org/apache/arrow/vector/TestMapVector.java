@@ -41,10 +41,8 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
-import org.apache.arrow.vector.extension.VariantType;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
-import org.apache.arrow.vector.holders.NullableVariantHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -52,8 +50,6 @@ import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.TransferPair;
 import org.apache.arrow.vector.util.UuidUtility;
-import org.apache.arrow.vector.variant.TestVariant;
-import org.apache.arrow.vector.variant.Variant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -1672,93 +1668,5 @@ public class TestMapVector {
       UUID actualValue2c = (UUID) listValue.get(2);
       assertEquals(value2c, actualValue2c);
     }
-  }
-
-  @Test
-  public void testMapVectorWithVariantExtensionType() throws Exception {
-    Variant variant1 = TestVariant.variantString("hello");
-    Variant variant2 = TestVariant.variantString("world");
-    try (final MapVector inVector = MapVector.empty("map", allocator, false)) {
-      inVector.allocateNew();
-      UnionMapWriter writer = inVector.getWriter();
-      writer.setPosition(0);
-
-      writer.startMap();
-      writer.startEntry();
-      writer.key().bigInt().writeBigInt(0);
-      writer.value().extension(VariantType.INSTANCE).writeExtension(variant1, VariantType.INSTANCE);
-      writer.endEntry();
-      writer.startEntry();
-      writer.key().bigInt().writeBigInt(1);
-      writer.value().extension(VariantType.INSTANCE).writeExtension(variant2, VariantType.INSTANCE);
-      writer.endEntry();
-      writer.endMap();
-
-      writer.setValueCount(1);
-
-      UnionMapReader mapReader = inVector.getReader();
-      mapReader.setPosition(0);
-      mapReader.next();
-      FieldReader variantReader = mapReader.value();
-      NullableVariantHolder holder = new NullableVariantHolder();
-      variantReader.read(holder);
-      assertEquals(variant1, toVariant(holder));
-
-      mapReader.next();
-      variantReader = mapReader.value();
-      variantReader.read(holder);
-      assertEquals(variant2, toVariant(holder));
-    }
-  }
-
-  @Test
-  public void testCopyFromForVariantExtensionType() throws Exception {
-    Variant variant1 = TestVariant.variantString("hello");
-    Variant variant2 = TestVariant.variantString("world");
-    try (final MapVector inVector = MapVector.empty("in", allocator, false);
-        final MapVector outVector = MapVector.empty("out", allocator, false)) {
-      inVector.allocateNew();
-      UnionMapWriter writer = inVector.getWriter();
-      writer.setPosition(0);
-
-      writer.startMap();
-      writer.startEntry();
-      writer.key().bigInt().writeBigInt(0);
-      writer.value().extension(VariantType.INSTANCE).writeExtension(variant1, VariantType.INSTANCE);
-      writer.endEntry();
-      writer.startEntry();
-      writer.key().bigInt().writeBigInt(1);
-      writer.value().extension(VariantType.INSTANCE).writeExtension(variant2, VariantType.INSTANCE);
-      writer.endEntry();
-      writer.endMap();
-
-      writer.setValueCount(1);
-      outVector.allocateNew();
-      outVector.copyFrom(0, 0, inVector);
-      outVector.setValueCount(1);
-
-      UnionMapReader mapReader = outVector.getReader();
-      mapReader.setPosition(0);
-      mapReader.next();
-      FieldReader variantReader = mapReader.value();
-      NullableVariantHolder holder = new NullableVariantHolder();
-      variantReader.read(holder);
-      assertEquals(variant1, toVariant(holder));
-
-      mapReader.next();
-      variantReader = mapReader.value();
-      variantReader.read(holder);
-      assertEquals(variant2, toVariant(holder));
-    }
-  }
-
-  private static Variant toVariant(NullableVariantHolder holder) {
-    return new Variant(
-        holder.metadataBuffer,
-        holder.metadataStart,
-        holder.metadataEnd,
-        holder.valueBuffer,
-        holder.valueStart,
-        holder.valueEnd);
   }
 }
