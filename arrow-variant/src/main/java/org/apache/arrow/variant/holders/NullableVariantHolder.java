@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.holders;
+package org.apache.arrow.variant.holders;
 
 import org.apache.arrow.memory.ArrowBuf;
-import org.apache.arrow.vector.extension.VariantType;
+import org.apache.arrow.variant.extension.VariantType;
+import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 
 @SuppressWarnings("checkstyle:VisibilityModifier")

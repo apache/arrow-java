@@ -14,13 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.extension;
+package org.apache.arrow.variant.extension;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
+import org.apache.arrow.variant.Variant;
+import org.apache.arrow.variant.holders.NullableVariantHolder;
+import org.apache.arrow.variant.holders.VariantHolder;
 import org.apache.arrow.vector.BitVectorHelper;
 import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
@@ -29,16 +32,19 @@ import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.complex.AbstractStructVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.reader.FieldReader;
-import org.apache.arrow.vector.holders.NullableVariantHolder;
-import org.apache.arrow.vector.holders.VariantHolder;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.Binary;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.CallBack;
 import org.apache.arrow.vector.util.TransferPair;
-import org.apache.arrow.vector.variant.Variant;
 
+/**
+ * Arrow vector for storing {@link VariantType} values.
+ *
+ * <p>Stores semi-structured data (like JSON) as metadata + value binary pairs, allowing
+ * type-flexible columnar storage within Arrow's type system.
+ */
 public class VariantVector extends ExtensionTypeVector<StructVector> {
 
   public static final String METADATA_VECTOR_NAME = "metadata";
@@ -291,7 +297,7 @@ public class VariantVector extends ExtensionTypeVector<StructVector> {
 
   @Override
   protected FieldReader getReaderImpl() {
-    return new org.apache.arrow.vector.complex.impl.VariantReaderImpl(this);
+    return new org.apache.arrow.variant.impl.VariantReaderImpl(this);
   }
 
   @Override

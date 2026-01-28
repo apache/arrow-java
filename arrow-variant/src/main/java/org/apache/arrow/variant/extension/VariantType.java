@@ -14,18 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.extension;
+package org.apache.arrow.variant.extension;
 
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.variant.impl.VariantWriterImpl;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.ValueVector;
-import org.apache.arrow.vector.complex.impl.VariantWriterImpl;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.FieldType;
 
+/**
+ * Arrow extension type for <a href="https://github.com/apache/parquet-format/blob/master/VariantEncoding.md">
+ * Parquet Variant</a> binary encoding. The type itself does not support shredded variant data.
+ */
 public final class VariantType extends ExtensionType {
 
   public static final VariantType INSTANCE = new VariantType();

@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.complex.impl;
+package org.apache.arrow.variant.impl;
 
 import org.apache.arrow.memory.ArrowBuf;
-import org.apache.arrow.vector.extension.VariantVector;
+import org.apache.arrow.variant.Variant;
+import org.apache.arrow.variant.extension.VariantVector;
+import org.apache.arrow.variant.holders.NullableVariantHolder;
+import org.apache.arrow.variant.holders.VariantHolder;
+import org.apache.arrow.vector.complex.impl.AbstractExtensionTypeWriter;
 import org.apache.arrow.vector.holders.ExtensionHolder;
-import org.apache.arrow.vector.holders.NullableVariantHolder;
-import org.apache.arrow.vector.holders.VariantHolder;
 import org.apache.arrow.vector.types.pojo.ArrowType;
-import org.apache.arrow.vector.variant.Variant;
 
 /**
  * Writer implementation for VARIANT extension type vectors.

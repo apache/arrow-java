@@ -14,12 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector.complex.impl;
+package org.apache.arrow.variant.impl;
 
-import org.apache.arrow.vector.extension.VariantVector;
+import org.apache.arrow.variant.extension.VariantVector;
+import org.apache.arrow.variant.holders.NullableVariantHolder;
+import org.apache.arrow.variant.holders.VariantHolder;
+import org.apache.arrow.vector.complex.impl.AbstractFieldReader;
 import org.apache.arrow.vector.holders.ExtensionHolder;
-import org.apache.arrow.vector.holders.NullableVariantHolder;
-import org.apache.arrow.vector.holders.VariantHolder;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.Field;
 

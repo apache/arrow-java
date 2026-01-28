@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.arrow.vector;
+package org.apache.arrow.variant.extension;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,15 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
-import org.apache.arrow.vector.complex.impl.VariantReaderImpl;
-import org.apache.arrow.vector.complex.impl.VariantWriterImpl;
-import org.apache.arrow.vector.extension.VariantType;
-import org.apache.arrow.vector.extension.VariantVector;
+import org.apache.arrow.variant.Variant;
+import org.apache.arrow.variant.holders.NullableVariantHolder;
+import org.apache.arrow.variant.holders.VariantHolder;
+import org.apache.arrow.variant.impl.VariantReaderImpl;
+import org.apache.arrow.variant.impl.VariantWriterImpl;
 import org.apache.arrow.vector.holders.ExtensionHolder;
-import org.apache.arrow.vector.holders.NullableVariantHolder;
-import org.apache.arrow.vector.holders.VariantHolder;
 import org.apache.arrow.vector.types.pojo.ArrowType;
-import org.apache.arrow.vector.variant.Variant;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

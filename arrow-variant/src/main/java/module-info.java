@@ -17,8 +17,12 @@
 
 @SuppressWarnings("requires-automatic")
 module org.apache.arrow.variant {
-  exports org.apache.arrow.vector.variant;
+  exports org.apache.arrow.variant;
+  exports org.apache.arrow.variant.extension;
+  exports org.apache.arrow.variant.impl;
+  exports org.apache.arrow.variant.holders;
 
   requires org.apache.arrow.memory.core;
+  requires org.apache.arrow.vector;
   requires parquet.variant;
 }
