@@ -59,6 +59,7 @@ public class Variant {
     this.delegate = delegate;
   }
 
+  /** Constructs a Variant from a NullableVariantHolder. */
   public Variant(NullableVariantHolder holder) {
     this(
         holder.metadataBuffer,

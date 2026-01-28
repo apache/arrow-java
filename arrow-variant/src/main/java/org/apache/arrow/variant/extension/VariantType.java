@@ -27,8 +27,9 @@ import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.FieldType;
 
 /**
- * Arrow extension type for <a href="https://github.com/apache/parquet-format/blob/master/VariantEncoding.md">
- * Parquet Variant</a> binary encoding. The type itself does not support shredded variant data.
+ * Arrow extension type for <a
+ * href="https://github.com/apache/parquet-format/blob/master/VariantEncoding.md">Parquet
+ * Variant</a> binary encoding. The type itself does not support shredded variant data.
  */
 public final class VariantType extends ExtensionType {
 
