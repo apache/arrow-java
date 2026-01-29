@@ -68,6 +68,7 @@ under the License.
     <module>bom</module>
     <module>format</module>
     <module>memory</module>
+    <module>arrow-variant</module>
     <module>vector</module>
     <module>tools</module>
     <module>adapter/jdbc</module>
@@ -104,6 +105,7 @@ under the License.
     <dep.hadoop.version>3.4.2</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
     <dep.avro.version>1.12.1</dep.avro.version>
+    <dep.parquet.version>1.17.0</dep.parquet.version>
     <dep.mockito-bom.version>5.17.0</dep.mockito-bom.version>
     <arrow.vector.classifier></arrow.vector.classifier>
     <forkCount>2</forkCount>
