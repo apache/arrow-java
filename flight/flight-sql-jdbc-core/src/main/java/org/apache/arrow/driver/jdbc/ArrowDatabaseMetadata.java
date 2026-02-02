@@ -87,9 +87,12 @@ import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Text;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaDatabaseMetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Arrow Flight JDBC's implementation of {@link DatabaseMetaData}. */
 public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ArrowDatabaseMetadata.class);
   private static final String JAVA_REGEX_SPECIALS = "[]()|^-+*?{}$\\.";
   private static final Charset CHARSET = StandardCharsets.UTF_8;
   private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
@@ -779,6 +782,11 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
     if (value != null) {
       return value;
     }
+    LOGGER.debug(
+        "SqlInfo {} not provided by server, returning default for type {}",
+        sqlInfoCommand.name(),
+        desiredType.getSimpleName());
+
     // Return sensible defaults when SqlInfo is unavailable
     if (desiredType == Long.class) {
       return desiredType.cast(0L);
