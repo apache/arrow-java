@@ -45,6 +45,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -774,7 +775,29 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
         }
       }
     }
-    return desiredType.cast(cachedSqlInfo.get(sqlInfoCommand));
+    T value = desiredType.cast(cachedSqlInfo.get(sqlInfoCommand));
+    if (value != null) {
+      return value;
+    }
+    // Return sensible defaults when SqlInfo is unavailable
+    if (desiredType == Long.class) {
+      return desiredType.cast(0L);
+    } else if (desiredType == Integer.class) {
+      return desiredType.cast(0);
+    } else if (desiredType == Boolean.class) {
+      return desiredType.cast(Boolean.FALSE);
+    } else if (desiredType == String.class) {
+      return desiredType.cast("");
+    } else if (desiredType == Map.class) {
+      return desiredType.cast(Collections.emptyMap());
+    } else if (desiredType == List.class) {
+      return desiredType.cast(Collections.emptyList());
+    }
+
+    throw new SQLException(
+        String.format(
+            "The value of the SqlInfo %s is null and it could not be cast to %s.",
+            sqlInfoCommand.name(), desiredType.getName()));
   }
 
   private Optional<String> convertListSqlInfoToString(final List<?> sqlInfoList) {
