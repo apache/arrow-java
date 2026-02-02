@@ -793,7 +793,7 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
     } else if (desiredType == Integer.class) {
       return desiredType.cast(0);
     } else if (desiredType == Boolean.class) {
-      return desiredType.cast(Boolean.FALSE);
+      return desiredType.cast(false);
     } else if (desiredType == String.class) {
       return desiredType.cast("");
     } else if (desiredType == Map.class) {
