@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 public class TestOpens {
-  /** Instantiating the RootAllocator should poke MemoryUtil and fail. */
+  /** Accessing MemoryUtil.directBuffer should fail as add-opens is not configured */
   @Test
   @EnabledForJreRange(min = JAVA_16)
   public void testMemoryUtilFailsLoudly() {
