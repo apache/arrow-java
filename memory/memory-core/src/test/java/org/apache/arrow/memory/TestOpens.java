@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.condition.JRE.JAVA_16;
 
+import org.apache.arrow.memory.util.MemoryUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 
@@ -34,18 +35,15 @@ public class TestOpens {
     Throwable e =
         assertThrows(
             Throwable.class,
-            () -> {
-              BufferAllocator allocator = new RootAllocator();
-              allocator.close();
-            });
+            () -> MemoryUtil.directBuffer(0, 10));
     boolean found = false;
     while (e != null) {
-      e = e.getCause();
-      if (e instanceof RuntimeException
-          && e.getMessage().contains("Failed to initialize MemoryUtil")) {
+      if (e instanceof UnsupportedOperationException
+          && e.getMessage().contains("java.nio.DirectByteBuffer.<init>(long, int) not available")) {
         found = true;
         break;
       }
+      e = e.getCause();
     }
     assertTrue(found, "Expected exception was not thrown");
   }

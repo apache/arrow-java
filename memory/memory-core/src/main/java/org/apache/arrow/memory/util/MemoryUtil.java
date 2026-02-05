@@ -87,12 +87,13 @@ public class MemoryUtil {
       try {
         addressField.setAccessible(true);
         maybeOffset = UNSAFE.objectFieldOffset(addressField);
-      } catch (InaccessibleObjectException e){
+      } catch (InaccessibleObjectException e) {
         maybeOffset = -1;
-        logger.debug("Cannot access the address field of java.nio.Buffer. DirectBuffer operations wont be available", e);
+        logger.debug(
+            "Cannot access the address field of java.nio.Buffer. DirectBuffer operations wont be available",
+            e);
       }
       BYTE_BUFFER_ADDRESS_OFFSET = maybeOffset;
-
 
       Constructor<?> directBufferConstructor;
       long address = -1;
@@ -168,7 +169,7 @@ public class MemoryUtil {
    * @return address of the underlying memory.
    */
   public static long getByteBufferAddress(ByteBuffer buf) {
-    if(BYTE_BUFFER_ADDRESS_OFFSET != -1) {
+    if (BYTE_BUFFER_ADDRESS_OFFSET != -1) {
       return UNSAFE.getLong(buf, BYTE_BUFFER_ADDRESS_OFFSET);
     }
     throw new UnsupportedOperationException(
