@@ -82,9 +82,17 @@ public class MemoryUtil {
       BYTE_ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
 
       // get the offset of the address field in a java.nio.Buffer object
+      long maybeOffset;
       Field addressField = java.nio.Buffer.class.getDeclaredField("address");
-      addressField.setAccessible(true);
-      BYTE_BUFFER_ADDRESS_OFFSET = UNSAFE.objectFieldOffset(addressField);
+      try {
+        addressField.setAccessible(true);
+        maybeOffset = UNSAFE.objectFieldOffset(addressField);
+      } catch (InaccessibleObjectException e){
+        maybeOffset = -1;
+        logger.debug("Cannot access the address field of java.nio.Buffer. DirectBuffer operations wont be available", e);
+      }
+      BYTE_BUFFER_ADDRESS_OFFSET = maybeOffset;
+
 
       Constructor<?> directBufferConstructor;
       long address = -1;
@@ -160,7 +168,11 @@ public class MemoryUtil {
    * @return address of the underlying memory.
    */
   public static long getByteBufferAddress(ByteBuffer buf) {
-    return UNSAFE.getLong(buf, BYTE_BUFFER_ADDRESS_OFFSET);
+    if(BYTE_BUFFER_ADDRESS_OFFSET != -1) {
+      return UNSAFE.getLong(buf, BYTE_BUFFER_ADDRESS_OFFSET);
+    }
+    throw new UnsupportedOperationException(
+        "Byte buffer address cannot be obtained because sun.misc.Unsafe or java.nio.DirectByteBuffer.<init>(long, int) is not available");
   }
 
   private MemoryUtil() {}
