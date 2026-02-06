@@ -25,17 +25,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 
 public class TestOpens {
-  /** Accessing MemoryUtil.directBuffer should fail as add-opens is not configured */
+  /** Accessing MemoryUtil.directBuffer should fail as add-opens is not configured. */
   @Test
   @EnabledForJreRange(min = JAVA_16)
   public void testMemoryUtilFailsLoudly() {
     // This test is configured by Maven to run WITHOUT add-opens. So this should fail on JDK16+
     // (where JEP396 means that add-opens is required to access JDK internals).
     // The test will likely fail in your IDE if it doesn't correctly pick this up.
-    Throwable e =
-        assertThrows(
-            Throwable.class,
-            () -> MemoryUtil.directBuffer(0, 10));
+    Throwable e = assertThrows(Throwable.class, () -> MemoryUtil.directBuffer(0, 10));
     boolean found = false;
     while (e != null) {
       if (e instanceof UnsupportedOperationException
