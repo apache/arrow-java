@@ -25,9 +25,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public interface BufferAllocator extends AutoCloseable {
 
   /**
-   * Allocate a new or reused buffer of the provided size. Note that the buffer may technically be
-   * larger than the requested size for rounding purposes. However, the buffer's capacity will be
-   * set to the configured size.
+   * Allocate a new or reused buffer of the provided size. The buffer may be larger than the
+   * requested size for rounding purposes (e.g. to a power of two), and the buffer's capacity will
+   * reflect the actual allocated size. Use {@link ArrowBuf#capacity(long)} to set the capacity to
+   * the requested size if needed.
    *
    * @param size The size in bytes.
    * @return a new ArrowBuf, or null if the request can't be satisfied
@@ -36,9 +37,10 @@ public interface BufferAllocator extends AutoCloseable {
   ArrowBuf buffer(long size);
 
   /**
-   * Allocate a new or reused buffer of the provided size. Note that the buffer may technically be
-   * larger than the requested size for rounding purposes. However, the buffer's capacity will be
-   * set to the configured size.
+   * Allocate a new or reused buffer of the provided size. The buffer may be larger than the
+   * requested size for rounding purposes (e.g. to a power of two), and the buffer's capacity will
+   * reflect the actual allocated size. Use {@link ArrowBuf#capacity(long)} to set the capacity to
+   * the requested size if needed.
    *
    * @param size The size in bytes.
    * @param manager A buffer manager to manage reallocation.
