@@ -199,13 +199,18 @@ public class VectorSchemaRoot implements AutoCloseable {
    */
   public VectorSchemaRoot addVector(int index, FieldVector vector) {
     Preconditions.checkNotNull(vector);
-    Preconditions.checkArgument(index >= 0 && index < fieldVectors.size());
+    Preconditions.checkArgument(index >= 0 && index <= fieldVectors.size());
     List<FieldVector> newVectors = new ArrayList<>();
-    for (int i = 0; i < fieldVectors.size(); i++) {
-      if (i == index) {
-        newVectors.add(vector);
+    if (index == fieldVectors.size()) {
+      newVectors.addAll(fieldVectors);
+      newVectors.add(vector);
+    } else {
+      for (int i = 0; i < fieldVectors.size(); i++) {
+        if (i == index) {
+          newVectors.add(vector);
+        }
+        newVectors.add(fieldVectors.get(i));
       }
-      newVectors.add(fieldVectors.get(i));
     }
     return new VectorSchemaRoot(newVectors);
   }
