@@ -23,11 +23,11 @@
 
 The following guides explain the fundamental data structures used in the Java implementation of Apache Arrow.
 
-- [ValueVector](https://arrow.apache.org/docs/java/vector.html) is an abstraction that is used to store a sequence of values having the same type in an individual column.
-- [VectorSchemaRoot](https://arrow.apache.org/docs/java/vector_schema_root.html) is a container that can hold multiple vectors based on a schema.
-- The [Reading/Writing IPC formats](https://arrow.apache.org/docs/java/ipc.html) guide explains how to stream record batches as well as serializing record batches to files.
+- [ValueVector](https://arrow.apache.org/java/current/vector.html) is an abstraction that is used to store a sequence of values having the same type in an individual column.
+- [VectorSchemaRoot](https://arrow.apache.org/java/current/vector_schema_root.html#vectorschemaroot) is a container that can hold multiple vectors based on a schema.
+- The [Reading/Writing IPC formats](https://arrow.apache.org/java/current/ipc.html) guide explains how to stream record batches as well as serializing record batches to files.
 
-Generated javadoc documentation is available [here](https://arrow.apache.org/docs/java/).
+Generated javadoc documentation is available [here](https://arrow.apache.org/java/current/).
 
 ## Building from source
 
@@ -93,7 +93,7 @@ conflicting or duplicate fields set this JVM flag or use the correct static cons
 
 ## Java Code Style Guide
 
-Arrow Java follows the Google style guide [here][3] with the following
+Arrow Java follows the [Google Java Style Guide](http://google.github.io/styleguide/javaguide.html) with the following
 differences:
 
 * Imports are grouped, from top to bottom, in this order: static imports,
@@ -119,12 +119,12 @@ following command run in the project root directory:
 mvn -Dlogback.configurationFile=file:<path-of-logback-file>
 ```
 
-See [Logback Configuration][1] for more details.
+See [Logback Configuration](https://logback.qos.ch/manual/configuration.html) for more details.
 
 ## Integration Tests
 
 Integration tests which require more time or more memory can be run by activating
-the `integration-tests` profile. This activates the [maven failsafe][4] plugin
+the `integration-tests` profile. This activates the [Maven Failsafe](https://maven.apache.org/surefire/maven-failsafe-plugin/) plugin
 and any class prefixed with `IT` will be run during the testing phase. The integration
 tests currently require a larger amount of memory (>4GB) and time to complete. To activate
 the profile:
@@ -133,7 +133,3 @@ the profile:
 mvn -Pintegration-tests <rest of mvn arguments>
 ```
 
-[1]: https://logback.qos.ch/manual/configuration.html
-[2]: https://github.com/apache/arrow/blob/main/cpp/README.md
-[3]: http://google.github.io/styleguide/javaguide.html
-[4]: https://maven.apache.org/surefire/maven-failsafe-plugin/
