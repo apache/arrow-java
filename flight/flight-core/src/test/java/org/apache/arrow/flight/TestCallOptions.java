@@ -21,6 +21,7 @@ import static org.apache.arrow.flight.Location.forGrpcInsecure;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -108,6 +109,16 @@ public class TestCallOptions {
     headers.insert("key", "value");
     headers.insert("key3-bin", "ëfßæ".getBytes(StandardCharsets.UTF_8));
     testHeaders(headers);
+  }
+
+  @Test
+  public void getAllReturnsEmptyIterableForMissingKey() {
+    FlightCallHeaders headers = new FlightCallHeaders();
+
+    assertNotNull(headers.getAll("missing"));
+    assertFalse(headers.getAll("missing").iterator().hasNext());
+    assertNotNull(headers.getAllByte("missing-bin"));
+    assertFalse(headers.getAllByte("missing-bin").iterator().hasNext());
   }
 
   private void testHeaders(CallHeaders headers) {
