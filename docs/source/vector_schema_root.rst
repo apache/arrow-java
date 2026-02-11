@@ -153,11 +153,11 @@ A `Table`_ is an immutable tabular data structure, very similar to VectorSchemaR
 
 See the :doc:`table` documentation for more information.
 
-.. _`ArrowRecordBatch`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/ipc/message/ArrowRecordBatch.html
-.. _`Field`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/types/pojo/Field.html
-.. _`Flight`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/package-summary.html
-.. _`Schema`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/types/pojo/Schema.html
-.. _`Table`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/table/Table.html
-.. _`VectorLoader`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/VectorLoader.html
-.. _`VectorSchemaRoot`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/VectorSchemaRoot.html
-.. _`VectorUnloader`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/VectorUnloader.html
+.. _`ArrowRecordBatch`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowRecordBatch.html
+.. _`Field`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html
+.. _`Flight`: https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/package-summary.html
+.. _`Schema`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Schema.html
+.. _`Table`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/table/Table.html
+.. _`VectorLoader`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/VectorLoader.html
+.. _`VectorSchemaRoot`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/VectorSchemaRoot.html
+.. _`VectorUnloader`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/VectorUnloader.html

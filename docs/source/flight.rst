@@ -232,8 +232,8 @@ Servers can add other gRPC services. For example, to add the `Health Check servi
 See the :external+arrow:ref:`best practices for C++ <flight-best-practices>`.
 
 
-.. _`FlightClient`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/FlightClient.html
-.. _`FlightProducer`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/FlightProducer.html
-.. _`FlightServer`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/FlightServer.html
-.. _`NoOpFlightProducer`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/NoOpFlightProducer.html
-.. _`Location`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/Location.html
+.. _`FlightClient`: https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/FlightClient.html
+.. _`FlightProducer`: https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/FlightProducer.html
+.. _`FlightServer`: https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/FlightServer.html
+.. _`NoOpFlightProducer`: https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/NoOpFlightProducer.html
+.. _`Location`: https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/Location.html
