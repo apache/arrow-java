@@ -3940,4 +3940,42 @@ public class TestValueVector {
       }
     }
   }
+
+  @Test
+  public void testEmptyVarCharOffsetBuffer() {
+    // Validates that offset buffer has at least OFFSET_WIDTH bytes (for offset[0]=0)
+    // even when valueCount is 0, per Arrow specification.
+    try (VarCharVector vector = newVarCharVector("varchar", allocator)) {
+      vector.allocateNew();
+      vector.setValueCount(0);
+
+      List<ArrowBuf> buffers = vector.getFieldBuffers();
+      // buffers: [validity, offset, data]
+      assertTrue(
+          buffers.get(1).readableBytes() >= BaseVariableWidthVector.OFFSET_WIDTH,
+          "Offset buffer should have at least "
+              + BaseVariableWidthVector.OFFSET_WIDTH
+              + " bytes for offset[0]");
+      assertEquals(0, vector.getOffsetBuffer().getInt(0));
+    }
+  }
+
+  @Test
+  public void testEmptyLargeVarCharOffsetBuffer() {
+    // Validates that offset buffer has at least OFFSET_WIDTH bytes (for offset[0]=0)
+    // even when valueCount is 0, per Arrow specification.
+    try (LargeVarCharVector vector = new LargeVarCharVector("largevarchar", allocator)) {
+      vector.allocateNew();
+      vector.setValueCount(0);
+
+      List<ArrowBuf> buffers = vector.getFieldBuffers();
+      // buffers: [validity, offset, data]
+      assertTrue(
+          buffers.get(1).readableBytes() >= BaseLargeVariableWidthVector.OFFSET_WIDTH,
+          "Offset buffer should have at least "
+              + BaseLargeVariableWidthVector.OFFSET_WIDTH
+              + " bytes for offset[0]");
+      assertEquals(0, vector.getOffsetBuffer().getLong(0));
+    }
+  }
 }
