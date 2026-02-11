@@ -202,6 +202,30 @@ public class ArrowFlightJdbcDriverTest {
   }
 
   /**
+   * Tests whether the {@link ArrowFlightJdbcDriver} can establish a successful connection to the
+   * Arrow Flight client when provided with null properties.
+   */
+  @Test
+  public void testConnectWithNullProperties() throws Exception {
+    final Driver driver = new ArrowFlightJdbcDriver();
+    try (Connection connection =
+        driver.connect(
+            "jdbc:arrow-flight://"
+                + dataSource.getConfig().getHost()
+                + ":"
+                + dataSource.getConfig().getPort()
+                + "?"
+                + "useEncryption=false"
+                + "&user="
+                + dataSource.getConfig().getUser()
+                + "&password="
+                + dataSource.getConfig().getPassword(),
+            null)) {
+      assertTrue(connection.isValid(300));
+    }
+  }
+
+  /**
    * Tests whether an exception is thrown upon attempting to connect to a malformed URI.
    *
    * @throws SQLException If an error occurs.
