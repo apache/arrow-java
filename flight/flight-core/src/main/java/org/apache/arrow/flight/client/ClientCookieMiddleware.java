@@ -100,10 +100,7 @@ public class ClientCookieMiddleware implements FlightClientMiddleware {
 
   @Override
   public void onHeadersReceived(CallHeaders incomingHeaders) {
-    final Iterable<String> setCookieHeaders = incomingHeaders.getAll(SET_COOKIE_HEADER);
-    if (setCookieHeaders != null) {
-      factory.updateCookies(setCookieHeaders);
-    }
+    factory.updateCookies(incomingHeaders.getAll(SET_COOKIE_HEADER));
   }
 
   @Override

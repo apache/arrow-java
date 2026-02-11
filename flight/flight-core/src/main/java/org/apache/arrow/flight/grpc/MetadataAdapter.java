@@ -18,6 +18,7 @@ package org.apache.arrow.flight.grpc;
 
 import io.grpc.Metadata;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,13 +54,15 @@ public class MetadataAdapter implements CallHeaders {
 
   @Override
   public Iterable<String> getAll(String key) {
-    return this.metadata.getAll(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER));
+    final Iterable<String> all = this.metadata.getAll(Metadata.Key.of(key, Metadata.ASCII_STRING_MARSHALLER));
+    return all != null ? all : Collections.emptyList();
   }
 
   @Override
   public Iterable<byte[]> getAllByte(String key) {
     if (key.endsWith(Metadata.BINARY_HEADER_SUFFIX)) {
-      return this.metadata.getAll(Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER));
+      final Iterable<byte[]> all = this.metadata.getAll(Metadata.Key.of(key, Metadata.BINARY_BYTE_MARSHALLER));
+      return all != null ? all : Collections.emptyList();
     }
     return StreamSupport.stream(getAll(key).spliterator(), false)
         .map(String::getBytes)

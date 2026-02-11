@@ -20,6 +20,7 @@ import static org.apache.arrow.flight.FlightTestUtil.LOCALHOST;
 import static org.apache.arrow.flight.Location.forGrpcInsecure;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -117,6 +118,16 @@ public class TestErrorMetadata {
       assertEquals("foo", metadata.get("x-foo"));
       assertArrayEquals(new byte[] {1}, metadata.getByte("x-bar-bin"));
     }
+  }
+
+  @Test
+  public void getAllReturnsEmptyIterableForMissingKey() {
+    ErrorFlightMetadata metadata = new ErrorFlightMetadata();
+
+    assertNotNull(metadata.getAll("missing"));
+    assertFalse(metadata.getAll("missing").iterator().hasNext());
+    assertNotNull(metadata.getAllByte("missing-bin"));
+    assertFalse(metadata.getAllByte("missing-bin").iterator().hasNext());
   }
 
   private static class StatusRuntimeExceptionProducer extends NoOpFlightProducer {
