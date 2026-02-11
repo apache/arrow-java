@@ -172,6 +172,7 @@ under the License.
         <directory>${arrow.cpp.build.dir}</directory>
         <includes>
           <include>**/*arrow_dataset_jni.*</include>
+          <include>**/*arrow_cdata_jni.*</include>
         </includes>
       </resource>
     </resources>
