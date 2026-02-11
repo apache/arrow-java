@@ -2224,4 +2224,31 @@ public class TestListViewVector {
     }
     writer.endListView();
   }
+
+  @Test
+  public void testGetElementEndIndex() {
+    try (ListViewVector vector = ListViewVector.empty("list", allocator)) {
+      vector.allocateNew();
+
+      UnionListViewWriter writer = vector.getWriter();
+
+      writer.setPosition(0);
+      writer.startListView();
+      writer.integer().writeInt(1);
+      writer.integer().writeInt(2);
+      writer.endListView();
+
+      writer.setPosition(1);
+      writer.startListView();
+      writer.integer().writeInt(3);
+      writer.integer().writeInt(4);
+      writer.integer().writeInt(5);
+      writer.endListView();
+
+      vector.setValueCount(2);
+
+      assertEquals(2, vector.getElementEndIndex(0));
+      assertEquals(5, vector.getElementEndIndex(1));
+    }
+  }
 }
