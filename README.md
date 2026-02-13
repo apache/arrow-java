@@ -132,4 +132,3 @@ the profile:
 ```bash
 mvn -Pintegration-tests <rest of mvn arguments>
 ```
-
