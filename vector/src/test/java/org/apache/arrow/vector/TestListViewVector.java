@@ -1550,55 +1550,7 @@ public class TestListViewVector {
   public void testOutOfOrderOffset1() {
     // [[12, -7, 25], null, [0, -127, 127, 50], [], [50, 12]]
     try (ListViewVector listViewVector = ListViewVector.empty("listview", allocator)) {
-      // Allocate buffers in listViewVector by calling `allocateNew` method.
-      listViewVector.allocateNew();
-
-      // Initialize the child vector using `initializeChildrenFromFields` method.
-
-      FieldType fieldType = new FieldType(true, new ArrowType.Int(16, true), null, null);
-      Field field = new Field("child-vector", fieldType, null);
-      listViewVector.initializeChildrenFromFields(Collections.singletonList(field));
-
-      // Set values in the child vector.
-      FieldVector fieldVector = listViewVector.getDataVector();
-      fieldVector.clear();
-
-      SmallIntVector childVector = (SmallIntVector) fieldVector;
-
-      childVector.allocateNew(7);
-
-      childVector.set(0, 0);
-      childVector.set(1, -127);
-      childVector.set(2, 127);
-      childVector.set(3, 50);
-      childVector.set(4, 12);
-      childVector.set(5, -7);
-      childVector.set(6, 25);
-
-      childVector.setValueCount(7);
-
-      // Set validity, offset and size buffers using `setValidity`,
-      //  `setOffset` and `setSize` methods.
-      listViewVector.setValidity(0, 1);
-      listViewVector.setValidity(1, 0);
-      listViewVector.setValidity(2, 1);
-      listViewVector.setValidity(3, 1);
-      listViewVector.setValidity(4, 1);
-
-      listViewVector.setOffset(0, 4);
-      listViewVector.setOffset(1, 7);
-      listViewVector.setOffset(2, 0);
-      listViewVector.setOffset(3, 0);
-      listViewVector.setOffset(4, 3);
-
-      listViewVector.setSize(0, 3);
-      listViewVector.setSize(1, 0);
-      listViewVector.setSize(2, 4);
-      listViewVector.setSize(3, 0);
-      listViewVector.setSize(4, 2);
-
-      // Set value count using `setValueCount` method.
-      listViewVector.setValueCount(5);
+      initializeListViewVectorAsInSpecification(listViewVector);
 
       final ArrowBuf offSetBuffer = listViewVector.getOffsetBuffer();
       final ArrowBuf sizeBuffer = listViewVector.getSizeBuffer();
@@ -2217,11 +2169,176 @@ public class TestListViewVector {
     }
   }
 
+  @Test
+  public void testGetElementStartIndexAndEndIndexOrderedOffsetsNoIntersection() {
+    /*
+    values = [10, 20, 30, 40, 50]
+    offsets = [0, 3]
+    sizes = [3, 2]
+    vector: [[10, 20, 30], [40, 50]]
+    */
+    try (ListViewVector listViewVector = ListViewVector.empty("sourceVector", allocator)) {
+      initializeListViewVector(
+          listViewVector, List.of(10, 20, 30, 40, 50), List.of(1, 1), List.of(0, 3), List.of(3, 2));
+
+      assertEquals(0, listViewVector.getElementStartIndex(0));
+      assertEquals(3, listViewVector.getElementEndIndex(0));
+      assertEquals(3, listViewVector.getElementStartIndex(1));
+      assertEquals(5, listViewVector.getElementEndIndex(1));
+
+      final FieldVector dataVec = listViewVector.getDataVector();
+      int elemIndex = 0;
+      int start = listViewVector.getElementStartIndex(elemIndex);
+      int end = listViewVector.getElementEndIndex(elemIndex);
+      List<?> list = listViewVector.getObject(elemIndex);
+      assertEquals(end - start, list.size());
+      for (int j = 0; j < list.size(); j++) {
+        assertEquals(((SmallIntVector) dataVec).get(start + j), list.get(j));
+      }
+    }
+  }
+
+  @Test
+  public void testGetElementStartIndexAndEndIndexNotOrderedOffsetsNoIntersection() {
+    /*
+    values = [1, 2, 3, 4, 5, 6]
+    validity = [1, 1, 1]
+    offsets = [4, 2, 0]
+    sizes = [2, 2, 2]
+    vector: [[5, 6], [3, 4], [1, 2]]
+    */
+    try (ListViewVector listViewVector = ListViewVector.empty("sourceVector", allocator)) {
+      initializeListViewVector(
+          listViewVector,
+          List.of(1, 2, 3, 4, 5, 6),
+          List.of(1, 1, 1),
+          List.of(4, 2, 0),
+          List.of(2, 2, 2));
+
+      assertEquals(4, listViewVector.getElementStartIndex(0));
+      assertEquals(6, listViewVector.getElementEndIndex(0));
+      assertEquals(2, listViewVector.getElementStartIndex(1));
+      assertEquals(4, listViewVector.getElementEndIndex(1));
+      assertEquals(0, listViewVector.getElementStartIndex(2));
+      assertEquals(2, listViewVector.getElementEndIndex(2));
+    }
+  }
+
+  @Test
+  public void testGetElementStartIndexAndEndIndexOrderedOffsetsWithIntersection() {
+    /*
+    values = [1, 2, 3, 4, 5]
+    validity = [1, 1, 1]
+    offsets = [0, 1, 4]
+    sizes = [2, 3, 1]
+    vector: [[1, 2], [2, 3, 4], [5]]
+    */
+    try (ListViewVector listViewVector = ListViewVector.empty("sourceVector", allocator)) {
+      initializeListViewVector(
+          listViewVector,
+          List.of(1, 2, 3, 4, 5),
+          List.of(1, 1, 1),
+          List.of(0, 1, 4),
+          List.of(2, 3, 1));
+
+      assertEquals(0, listViewVector.getElementStartIndex(0));
+      assertEquals(2, listViewVector.getElementEndIndex(0));
+      assertEquals(1, listViewVector.getElementStartIndex(1));
+      assertEquals(4, listViewVector.getElementEndIndex(1));
+      assertEquals(4, listViewVector.getElementStartIndex(2));
+      assertEquals(5, listViewVector.getElementEndIndex(2));
+    }
+  }
+
+  @Test
+  public void testGetElementStartIndexAndEndIndexOrderedOffsetsAsInSpecification() {
+    try (ListViewVector listViewVector = ListViewVector.empty("sourceVector", allocator)) {
+      initializeListViewVectorAsInSpecification(listViewVector);
+
+      assertEquals(4, listViewVector.getElementStartIndex(0));
+      assertEquals(7, listViewVector.getElementEndIndex(0));
+      assertEquals(7, listViewVector.getElementStartIndex(1));
+      assertEquals(7, listViewVector.getElementEndIndex(1));
+      assertEquals(0, listViewVector.getElementStartIndex(2));
+      assertEquals(4, listViewVector.getElementEndIndex(2));
+      assertEquals(0, listViewVector.getElementStartIndex(3));
+      assertEquals(0, listViewVector.getElementEndIndex(3));
+      assertEquals(3, listViewVector.getElementStartIndex(4));
+      assertEquals(5, listViewVector.getElementEndIndex(4));
+    }
+  }
+
   private void writeIntValues(UnionListViewWriter writer, int[] values) {
     writer.startListView();
     for (int v : values) {
       writer.integer().writeInt(v);
     }
     writer.endListView();
+  }
+
+  /**
+   * ListViewVector from the <a
+   * href="https://arrow.apache.org/docs/format/Intro.html#list-view">specification</a>.
+   */
+  private void initializeListViewVectorAsInSpecification(ListViewVector listViewVector) {
+    /*
+    values = [0, -127, 127, 50, 12, -7, 25]
+    validity = [1, 1, 1, 0, 1] (reversed)
+    offsets = [4, 7, 0, 0, 3]
+    sizes = [3, 0, 4, 0, 2]
+    vector: [[12, -7, 25], null, [0, -127, 127, 50], [], [50, 12]]
+    */
+    initializeListViewVector(
+        listViewVector,
+        List.of(0, -127, 127, 50, 12, -7, 25),
+        List.of(1, 1, 1, 0, 1),
+        List.of(4, 7, 0, 0, 3),
+        List.of(3, 0, 4, 0, 2));
+  }
+
+  private void initializeListViewVector(
+      ListViewVector listViewVector,
+      List<Integer> values,
+      List<Integer> validity,
+      List<Integer> offsets,
+      List<Integer> sizes) {
+    // Allocate buffers in listViewVector by calling `allocateNew` method.
+    assert offsets.size() == sizes.size();
+    listViewVector.allocateNew();
+
+    // Initialize the child vector using `initializeChildrenFromFields` method.
+    FieldType fieldType = new FieldType(true, new ArrowType.Int(16, true), null, null);
+    Field field = new Field("child-vector", fieldType, null);
+    listViewVector.initializeChildrenFromFields(Collections.singletonList(field));
+
+    // Set values in the child vector.
+    FieldVector fieldVector = listViewVector.getDataVector();
+    fieldVector.clear();
+
+    SmallIntVector childVector = (SmallIntVector) fieldVector;
+    childVector.allocateNew(values.size());
+    for (int i = 0; i < values.size(); i++) {
+      childVector.set(i, values.get(i));
+    }
+    childVector.setValueCount(values.size());
+
+    // Set validity, offset and size buffers using `setValidity`,
+    //  `setOffset` and `setSize` methods.
+    List<Integer> reversedValidity = new ArrayList<>(validity);
+    Collections.reverse(reversedValidity);
+    for (int i = 0; i < reversedValidity.size(); i++) {
+      listViewVector.setValidity(i, reversedValidity.get(i));
+    }
+
+    for (int i = 0; i < offsets.size(); i++) {
+      listViewVector.setOffset(i, offsets.get(i));
+    }
+
+    for (int i = 0; i < sizes.size(); i++) {
+      listViewVector.setSize(i, sizes.get(i));
+    }
+
+    // Set value count using `setValueCount` method.
+    listViewVector.setValueCount(offsets.size());
   }
 }
