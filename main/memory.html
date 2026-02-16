@@ -270,8 +270,8 @@ The first part, <em>Memory Basics</em>, provides a high-level introduction. The 
 <h2>Memory Basics<a class="headerlink" href="#memory-basics" title="Link to this heading">¶</a></h2>
 <p>This section will introduce you to the major concepts in Java’s memory management:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ArrowBuf.html">ArrowBuf</a></p></li>
-<li><p><a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/BufferAllocator.html">BufferAllocator</a></p></li>
+<li><p><a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html">ArrowBuf</a></p></li>
+<li><p><a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html">BufferAllocator</a></p></li>
 <li><p>Reference counting</p></li>
 </ul>
 <p>It also provides some guidelines for working with memory in Arrow, and describes how to debug memory issues when they arise.</p>
@@ -304,7 +304,7 @@ and provides low-level interfaces for working with the contents, similar to Byte
 </section>
 <section id="bufferallocator">
 <h3>BufferAllocator<a class="headerlink" href="#bufferallocator" title="Link to this heading">¶</a></h3>
-<p>The <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/BufferAllocator.html">BufferAllocator</a> is primarily an arena or nursery used for accounting of buffers (ArrowBuf instances).
+<p>The <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html">BufferAllocator</a> is primarily an arena or nursery used for accounting of buffers (ArrowBuf instances).
 As the name suggests, it can allocate new buffers associated with itself, but it can also
 handle the accounting for buffers allocated elsewhere. For example, it handles the Java-side accounting for
 memory allocated in C++ and shared with Java using the C-Data Interface. In the code below it performs an allocation:</p>
@@ -322,12 +322,12 @@ memory allocated in C++ and shared with Java using the C-Data Interface. In the 
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ArrowBuf<span class="o">[</span><span class="m">2</span><span class="o">]</span>,<span class="w"> </span>address:140363641651200,<span class="w"> </span>length:4096
 </pre></div>
 </div>
-<p>The concrete implementation of the BufferAllocator interface is <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/RootAllocator.html">RootAllocator</a>. Applications should generally create
+<p>The concrete implementation of the BufferAllocator interface is <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/RootAllocator.html">RootAllocator</a>. Applications should generally create
 one RootAllocator at the start of the program, and use it through the BufferAllocator interface. Allocators implement
 AutoCloseable and must be closed after the application is done with them; this will check that all outstanding memory
 has been freed (see the next section).</p>
 <p>Arrow provides a tree-based model for memory allocation. The RootAllocator is created first, then more allocators
-are created as children of an existing allocator via <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/RootAllocator.html#newChildAllocator-java.lang.String-org.apache.arrow.memory.AllocationListener-long-long-">newChildAllocator</a>. When creating a RootAllocator or a child
+are created as children of an existing allocator via <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/RootAllocator.html#newChildAllocator-java.lang.String-org.apache.arrow.memory.AllocationListener-long-long-">newChildAllocator</a>. When creating a RootAllocator or a child
 allocator, a memory limit is provided, and when allocating memory, the limit is checked. Furthermore, when allocating
 memory from a child allocator, those allocations are also reflected in all parent allocators. Hence, the RootAllocator
 effectively sets the program-wide memory limit, and serves as the master bookkeeper for all memory allocations.</p>
@@ -342,9 +342,9 @@ Child allocators can also be named, which makes it easier to tell where an Arrow
 deterministically, we use manual reference counting instead of the garbage collector.
 This simply means that each buffer has a counter keeping track of the number of references to
 the buffer, and the user is responsible for properly incrementing/decrementing the counter as the buffer is used.</p>
-<p>In Arrow, each ArrowBuf has an associated <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ReferenceManager.html">ReferenceManager</a> that tracks the reference count. You can retrieve
-it with ArrowBuf.getReferenceManager(). The reference count is updated using <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ReferenceManager.html#release--">ReferenceManager.release</a> to decrement the count,
-and <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ReferenceManager.html#retain--">ReferenceManager.retain</a> to increment it.</p>
+<p>In Arrow, each ArrowBuf has an associated <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html">ReferenceManager</a> that tracks the reference count. You can retrieve
+it with ArrowBuf.getReferenceManager(). The reference count is updated using <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html#release--">ReferenceManager.release</a> to decrement the count,
+and <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html#retain--">ReferenceManager.retain</a> to increment it.</p>
 <p>Of course, this is tedious and error-prone, so instead of directly working with buffers, we typically use
 higher-level APIs like ValueVector. Such classes generally implement Closeable/AutoCloseable and will automatically
 decrement the reference count when closed.</p>
@@ -400,7 +400,7 @@ Allocator<span class="o">(</span>ROOT<span class="o">)</span><span class="w"> </
 <span class="w">  </span>reservations:<span class="w"> </span><span class="m">0</span>
 </pre></div>
 </div>
-<p>Additionally, in debug mode, <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ArrowBuf.html#print-java.lang.StringBuilder-int-org.apache.arrow.memory.BaseAllocator.Verbosity-">ArrowBuf.print()</a> can be used to obtain a debug string.
+<p>Additionally, in debug mode, <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html#print-java.lang.StringBuilder-int-org.apache.arrow.memory.BaseAllocator.Verbosity-">ArrowBuf.print()</a> can be used to obtain a debug string.
 This will include information about allocation operations on the buffer with stack traces, such as when/where the buffer was allocated.</p>
 <div class="highlight-java notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.arrow.memory.ArrowBuf</span><span class="p">;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.arrow.memory.BufferAllocator</span><span class="p">;</span>
@@ -586,7 +586,7 @@ particular request.</p></li>
 </section>
 <section id="reference-counting-details">
 <h3>Reference Counting Details<a class="headerlink" href="#reference-counting-details" title="Link to this heading">¶</a></h3>
-<p>Typically, the ReferenceManager implementation used is an instance of <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/BufferLedger.html">BufferLedger</a>.
+<p>Typically, the ReferenceManager implementation used is an instance of <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/BufferLedger.html">BufferLedger</a>.
 A BufferLedger is a ReferenceManager that also maintains the relationship between an <code class="docutils literal notranslate"><span class="pre">AllocationManager</span></code>,
 a <code class="docutils literal notranslate"><span class="pre">BufferAllocator</span></code> and one or more individual <code class="docutils literal notranslate"><span class="pre">ArrowBuf</span></code>s</p>
 <p>All ArrowBufs (direct or sliced) related to a single BufferLedger/BufferAllocator combination

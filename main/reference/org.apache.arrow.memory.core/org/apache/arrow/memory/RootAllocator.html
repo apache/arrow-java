@@ -563,9 +563,10 @@ loadScripts(document, 'script');</script>
 <h3>buffer</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></span>&nbsp;<span class="element-name">buffer</span><wbr><span class="parameters">(long&nbsp;initialRequestSize)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="BufferAllocator.html#buffer(long)">BufferAllocator</a></code></span></div>
-<div class="block">Allocate a new or reused buffer of the provided size. Note that the buffer may technically be
- larger than the requested size for rounding purposes. However, the buffer's capacity will be
- set to the configured size.</div>
+<div class="block">Allocate a new or reused buffer of the provided size. The buffer may be larger than the
+ requested size for rounding purposes (e.g. to a power of two), and the buffer's capacity will
+ reflect the actual allocated size. Use <a href="ArrowBuf.html#capacity(long)"><code>ArrowBuf.capacity(long)</code></a> to set the capacity to
+ the requested size if needed.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BufferAllocator.html#buffer(long)">buffer</a></code>&nbsp;in interface&nbsp;<code><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></code></dd>
@@ -582,9 +583,10 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></span>&nbsp;<span class="element-name">buffer</span><wbr><span class="parameters">(long&nbsp;initialRequestSize,
  @Nullable <a href="BufferManager.html" title="interface in org.apache.arrow.memory">BufferManager</a>&nbsp;manager)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="BufferAllocator.html#buffer(long,org.apache.arrow.memory.BufferManager)">BufferAllocator</a></code></span></div>
-<div class="block">Allocate a new or reused buffer of the provided size. Note that the buffer may technically be
- larger than the requested size for rounding purposes. However, the buffer's capacity will be
- set to the configured size.</div>
+<div class="block">Allocate a new or reused buffer of the provided size. The buffer may be larger than the
+ requested size for rounding purposes (e.g. to a power of two), and the buffer's capacity will
+ reflect the actual allocated size. Use <a href="ArrowBuf.html#capacity(long)"><code>ArrowBuf.capacity(long)</code></a> to set the capacity to
+ the requested size if needed.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="BufferAllocator.html#buffer(long,org.apache.arrow.memory.BufferManager)">buffer</a></code>&nbsp;in interface&nbsp;<code><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></code></dd>

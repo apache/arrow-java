@@ -328,7 +328,7 @@ to define a conversion for an unsupported type.</p>
 <section id="type-mapping">
 <h3>Type Mapping<a class="headerlink" href="#type-mapping" title="Link to this heading">¶</a></h3>
 <p>The JDBC to Arrow type mapping can be obtained at runtime from
-<a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowUtils.html#getArrowTypeFromJdbcType-org.apache.arrow.adapter.jdbc.JdbcFieldInfo-java.util.Calendar-">JdbcToArrowUtils.getArrowTypeFromJdbcType</a>.</p>
+<a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowUtils.html#getArrowTypeFromJdbcType-org.apache.arrow.adapter.jdbc.JdbcFieldInfo-java.util.Calendar-">JdbcToArrowUtils.getArrowTypeFromJdbcType</a>.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <thead>
@@ -455,8 +455,8 @@ to define a conversion for an unsupported type.</p>
 </div>
 <ul class="simple">
 <li><p>(1) The list value type must be explicitly configured and cannot be
-inferred. Use <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnIndexMap-java.util.Map-">setArraySubTypeByColumnIndexMap</a> or
-<a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnNameMap-java.util.Map-">setArraySubTypeByColumnNameMap</a>.</p></li>
+inferred. Use <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnIndexMap-java.util.Map-">setArraySubTypeByColumnIndexMap</a> or
+<a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnNameMap-java.util.Map-">setArraySubTypeByColumnNameMap</a>.</p></li>
 <li><p>(2) By default, the scale of decimal values must match the scale in
 the type exactly; precision is allowed to be any value greater or
 equal to the type precision.  If there is a mismatch, by default, an

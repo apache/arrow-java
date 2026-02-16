@@ -278,8 +278,8 @@ Flight conceptually.</p>
 </div>
 <section id="writing-a-flight-service">
 <h2>Writing a Flight Service<a class="headerlink" href="#writing-a-flight-service" title="Link to this heading">¶</a></h2>
-<p>Flight servers implement the <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/FlightProducer.html">FlightProducer</a> interface. For convenience,
-they can subclass <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/NoOpFlightProducer.html">NoOpFlightProducer</a> instead, which offers default
+<p>Flight servers implement the <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/FlightProducer.html">FlightProducer</a> interface. For convenience,
+they can subclass <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/NoOpFlightProducer.html">NoOpFlightProducer</a> instead, which offers default
 implementations of all the RPC methods.</p>
 <div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">TutorialFlightProducer</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">FlightProducer</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nd">@Override</span>
@@ -309,8 +309,8 @@ exception.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>To start a server, create a <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/Location.html">Location</a> to specify where to listen, and then create
-a <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/FlightServer.html">FlightServer</a> with an instance of a producer. This will start the server, but
+<p>To start a server, create a <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/Location.html">Location</a> to specify where to listen, and then create
+a <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/FlightServer.html">FlightServer</a> with an instance of a producer. This will start the server, but
 won’t block the rest of the program. Call <code class="docutils literal notranslate"><span class="pre">FlightServer.awaitTermination</span></code>
 to block until the server stops.</p>
 <div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="kd">class</span> <span class="nc">TutorialFlightProducer</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">FlightProducer</span><span class="w"> </span><span class="p">{</span>
@@ -341,7 +341,7 @@ to block until the server stops.</p>
 </section>
 <section id="using-the-flight-client">
 <h2>Using the Flight Client<a class="headerlink" href="#using-the-flight-client" title="Link to this heading">¶</a></h2>
-<p>To connect to a Flight service, create a <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/FlightClient.html">FlightClient</a> with a location.</p>
+<p>To connect to a Flight service, create a <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/FlightClient.html">FlightClient</a> with a location.</p>
 <div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="n">Location</span><span class="w"> </span><span class="n">location</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Location</span><span class="p">.</span><span class="na">forGrpcInsecure</span><span class="p">(</span><span class="s">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">58104</span><span class="p">);</span>
 
 <span class="k">try</span><span class="p">(</span><span class="n">BufferAllocator</span><span class="w"> </span><span class="n">allocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RootAllocator</span><span class="p">();</span>

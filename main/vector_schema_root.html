@@ -271,7 +271,7 @@ several abstractions to handle such data conveniently and efficiently.</p>
 <section id="fields">
 <h2>Fields<a class="headerlink" href="#fields" title="Link to this heading">¶</a></h2>
 <p>Fields are used to denote the particular columns of tabular data.
-A field, i.e. an instance of <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/types/pojo/Field.html">Field</a>, holds together a field name, a data
+A field, i.e. an instance of <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html">Field</a>, holds together a field name, a data
 type, and some optional key-value metadata.</p>
 <div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a column &quot;document&quot; of string type with metadata</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.apache.arrow.vector.types.pojo.ArrowType</span><span class="p">;</span>
@@ -288,7 +288,7 @@ type, and some optional key-value metadata.</p>
 </section>
 <section id="schemas">
 <h2>Schemas<a class="headerlink" href="#schemas" title="Link to this heading">¶</a></h2>
-<p>A <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/types/pojo/Schema.html">Schema</a> describes the overall structure consisting of any number of columns. It holds a sequence of fields together
+<p>A <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Schema.html">Schema</a> describes the overall structure consisting of any number of columns. It holds a sequence of fields together
 with some optional schema-wide metadata (in addition to per-field metadata).</p>
 <div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a schema describing datasets with two columns:</span>
 <span class="c1">// a int32 column &quot;A&quot; and a utf8-encoded string column &quot;B&quot;</span>
@@ -309,7 +309,7 @@ with some optional schema-wide metadata (in addition to per-field metadata).</p>
 </section>
 <section id="vectorschemaroot">
 <h2>VectorSchemaRoot<a class="headerlink" href="#vectorschemaroot" title="Link to this heading">¶</a></h2>
-<p>A <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/VectorSchemaRoot.html">VectorSchemaRoot</a> is a container for batches of data. Batches flow through
+<p>A <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/VectorSchemaRoot.html">VectorSchemaRoot</a> is a container for batches of data. Batches flow through
 VectorSchemaRoot as part of a pipeline.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -319,7 +319,7 @@ usage is different.</p>
 </div>
 <p>The recommended usage is to create a single VectorSchemaRoot based on a known
 schema and populate data over and over into that root in a stream of batches,
-rather than creating a new instance each time (see <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/package-summary.html">Flight</a> or
+rather than creating a new instance each time (see <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.core/org/apache/arrow/flight/package-summary.html">Flight</a> or
 <code class="docutils literal notranslate"><span class="pre">ArrowFileWriter</span></code> as examples). Thus at any one point, a VectorSchemaRoot may
 have data or may have no data (say it was transferred downstream or not yet
 populated).</p>
@@ -340,9 +340,9 @@ populated).</p>
 <span class="n">VectorSchemaRoot</span><span class="w"> </span><span class="n">vectorSchemaRoot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VectorSchemaRoot</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span><span class="w"> </span><span class="n">vectors</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>Data can be loaded into/unloaded from a VectorSchemaRoot via <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/VectorLoader.html">VectorLoader</a>
-and <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/VectorUnloader.html">VectorUnloader</a>.  They handle converting between VectorSchemaRoot and
-<a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/ipc/message/ArrowRecordBatch.html">ArrowRecordBatch</a> (a representation of a RecordBatch
+<p>Data can be loaded into/unloaded from a VectorSchemaRoot via <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/VectorLoader.html">VectorLoader</a>
+and <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/VectorUnloader.html">VectorUnloader</a>.  They handle converting between VectorSchemaRoot and
+<a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowRecordBatch.html">ArrowRecordBatch</a> (a representation of a RecordBatch
 <a class="reference external" href="https://arrow.apache.org/docs/format/Columnar.html#format-ipc" title="(in Apache Arrow v23.0.0)"><span class="xref std std-ref">IPC</span></a> message). For example:</p>
 <div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="c1">// create a VectorSchemaRoot root1 and convert its data into recordBatch</span>
 <span class="n">VectorSchemaRoot</span><span class="w"> </span><span class="n">root1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VectorSchemaRoot</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span><span class="w"> </span><span class="n">vectors</span><span class="p">);</span>
@@ -364,7 +364,7 @@ data:</p>
 </section>
 <section id="table">
 <h2>Table<a class="headerlink" href="#table" title="Link to this heading">¶</a></h2>
-<p>A <a class="reference external" href="https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/table/Table.html">Table</a> is an immutable tabular data structure, very similar to VectorSchemaRoot, in that it is also built on ValueVectors and schemas. Unlike VectorSchemaRoot, Table is not designed for batch processing. Here is a version of the example above, showing how to create a Table, rather than a VectorSchemaRoot:</p>
+<p>A <a class="reference external" href="https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/table/Table.html">Table</a> is an immutable tabular data structure, very similar to VectorSchemaRoot, in that it is also built on ValueVectors and schemas. Unlike VectorSchemaRoot, Table is not designed for batch processing. Here is a version of the example above, showing how to create a Table, rather than a VectorSchemaRoot:</p>
 <div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="n">BitVector</span><span class="w"> </span><span class="n">bitVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">BitVector</span><span class="p">(</span><span class="s">&quot;boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">allocator</span><span class="p">);</span>
 <span class="n">VarCharVector</span><span class="w"> </span><span class="n">varCharVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">VarCharVector</span><span class="p">(</span><span class="s">&quot;varchar&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">allocator</span><span class="p">);</span>
 <span class="n">bitVector</span><span class="p">.</span><span class="na">allocateNew</span><span class="p">();</span>

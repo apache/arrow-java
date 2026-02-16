@@ -251,9 +251,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <section class="detail" id="buffer(long)">
 <h3>buffer</h3>
 <div class="member-signature"><span class="return-type"><a href="ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></span>&nbsp;<span class="element-name">buffer</span><wbr><span class="parameters">(long&nbsp;size)</span></div>
-<div class="block">Allocate a new or reused buffer of the provided size. Note that the buffer may technically be
- larger than the requested size for rounding purposes. However, the buffer's capacity will be
- set to the configured size.</div>
+<div class="block">Allocate a new or reused buffer of the provided size. The buffer may be larger than the
+ requested size for rounding purposes (e.g. to a power of two), and the buffer's capacity will
+ reflect the actual allocated size. Use <a href="ArrowBuf.html#capacity(long)"><code>ArrowBuf.capacity(long)</code></a> to set the capacity to
+ the requested size if needed.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>size</code> - The size in bytes.</dd>
@@ -269,9 +270,10 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <h3>buffer</h3>
 <div class="member-signature"><span class="return-type"><a href="ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></span>&nbsp;<span class="element-name">buffer</span><wbr><span class="parameters">(long&nbsp;size,
  <a href="BufferManager.html" title="interface in org.apache.arrow.memory">BufferManager</a>&nbsp;manager)</span></div>
-<div class="block">Allocate a new or reused buffer of the provided size. Note that the buffer may technically be
- larger than the requested size for rounding purposes. However, the buffer's capacity will be
- set to the configured size.</div>
+<div class="block">Allocate a new or reused buffer of the provided size. The buffer may be larger than the
+ requested size for rounding purposes (e.g. to a power of two), and the buffer's capacity will
+ reflect the actual allocated size. Use <a href="ArrowBuf.html#capacity(long)"><code>ArrowBuf.capacity(long)</code></a> to set the capacity to
+ the requested size if needed.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>size</code> - The size in bytes.</dd>
