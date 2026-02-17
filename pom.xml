@@ -106,7 +106,7 @@ under the License.
     <dep.fbs.version>25.2.10</dep.fbs.version>
     <dep.avro.version>1.12.1</dep.avro.version>
     <dep.parquet.version>1.17.0</dep.parquet.version>
-    <dep.mockito-bom.version>5.17.0</dep.mockito-bom.version>
+    <dep.mockito-bom.version>5.21.0</dep.mockito-bom.version>
     <arrow.vector.classifier></arrow.vector.classifier>
     <forkCount>2</forkCount>
     <checkstyle.version>10.23.0</checkstyle.version>
