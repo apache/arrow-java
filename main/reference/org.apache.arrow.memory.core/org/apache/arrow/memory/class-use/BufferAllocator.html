@@ -90,26 +90,28 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first odd-row-color"><a href="#org.apache.arrow.memory.unsafe">org.apache.arrow.memory.unsafe</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.variant.extension">org.apache.arrow.variant.extension</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.compression">org.apache.arrow.vector.compression</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.compression">org.apache.arrow.vector.compression</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.ipc.message">org.apache.arrow.vector.ipc.message</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.ipc.message">org.apache.arrow.vector.ipc.message</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -950,6 +952,55 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">DefaultAllocationManagerFactory.</span><code><a href="../../../../../../org.apache.arrow.memory.unsafe/org/apache/arrow/memory/unsafe/DefaultAllocationManagerFactory.html#create(org.apache.arrow.memory.BufferAllocator,long)" class="member-name-link">create</a><wbr>(<a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;accountingAllocator,
  long&nbsp;size)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.variant.extension">
+<h2>Uses of <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a> in <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> with parameters of type <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantType.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/FieldType.html" title="class in org.apache.arrow.vector.types.pojo">FieldType</a>&nbsp;fieldType,
+ <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+ <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+<div class="caption"><span>Constructors in <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> with parameters of type <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier</div>
+<div class="table-header col-second">Constructor</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#%3Cinit%3E(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">VariantVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Constructs a new VariantVector with the given name and allocator.</div>
+</div>
 </div>
 </section>
 </li>

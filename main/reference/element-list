@@ -60,6 +60,11 @@ module:org.apache.arrow.memory.unsafe
 org.apache.arrow.memory.unsafe
 module:org.apache.arrow.tools
 org.apache.arrow.tools
+module:org.apache.arrow.variant
+org.apache.arrow.variant
+org.apache.arrow.variant.extension
+org.apache.arrow.variant.holders
+org.apache.arrow.variant.impl
 module:org.apache.arrow.vector
 org.apache.arrow.vector
 org.apache.arrow.vector.compare

@@ -98,34 +98,40 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#org.apache.arrow.memory.util.hash">org.apache.arrow.memory.util.hash</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.variant">org.apache.arrow.variant</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.variant.extension">org.apache.arrow.variant.extension</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.variant.holders">org.apache.arrow.variant.holders</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.compression">org.apache.arrow.vector.compression</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.holders">org.apache.arrow.vector.holders</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.compression">org.apache.arrow.vector.compression</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.ipc.message">org.apache.arrow.vector.ipc.message</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.holders">org.apache.arrow.vector.holders</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.ipc.message">org.apache.arrow.vector.ipc.message</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <section class="package-uses">
 <ul class="block-list">
@@ -490,6 +496,47 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><a href="class-use/ArrowBuf.html#org.apache.arrow.memory.util.hash">ArrowBuf</a></div>
+<div class="col-last even-row-color">
+<div class="block">ArrowBuf serves as a facade over underlying memory by providing several access APIs to read/write
+ data into a chunk of direct memory.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.variant">
+<div class="caption"><span>Classes in <a href="package-summary.html">org.apache.arrow.memory</a> used by <a href="../../../../../org.apache.arrow.variant/org/apache/arrow/variant/package-summary.html">org.apache.arrow.variant</a></span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><a href="class-use/ArrowBuf.html#org.apache.arrow.variant">ArrowBuf</a></div>
+<div class="col-last even-row-color">
+<div class="block">ArrowBuf serves as a facade over underlying memory by providing several access APIs to read/write
+ data into a chunk of direct memory.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.variant.extension">
+<div class="caption"><span>Classes in <a href="package-summary.html">org.apache.arrow.memory</a> used by <a href="../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a></span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><a href="class-use/BufferAllocator.html#org.apache.arrow.variant.extension">BufferAllocator</a></div>
+<div class="col-last even-row-color">
+<div class="block">Wrapper class to deal with byte buffer allocation.</div>
+</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.variant.holders">
+<div class="caption"><span>Classes in <a href="package-summary.html">org.apache.arrow.memory</a> used by <a href="../../../../../org.apache.arrow.variant/org/apache/arrow/variant/holders/package-summary.html">org.apache.arrow.variant.holders</a></span></div>
+<div class="summary-table two-column-summary">
+<div class="table-header col-first">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><a href="class-use/ArrowBuf.html#org.apache.arrow.variant.holders">ArrowBuf</a></div>
 <div class="col-last even-row-color">
 <div class="block">ArrowBuf serves as a facade over underlying memory by providing several access APIs to read/write
  data into a chunk of direct memory.</div>

@@ -70,26 +70,28 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#org.apache.arrow.gandiva.evaluator">org.apache.arrow.gandiva.evaluator</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.variant.extension">org.apache.arrow.variant.extension</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.compare">org.apache.arrow.vector.compare</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.compare">org.apache.arrow.vector.compare</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.dictionary">org.apache.arrow.vector.dictionary</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.extension">org.apache.arrow.vector.extension</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.table">org.apache.arrow.vector.table</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.types">org.apache.arrow.vector.types</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.types.pojo">org.apache.arrow.vector.types.pojo</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.util">org.apache.arrow.vector.util</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
@@ -373,6 +375,53 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Invoke this function to evaluate a set of expressions against a <a href="../ipc/message/ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message"><code>ArrowRecordBatch</code></a>.</div>
 </div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.variant.extension">
+<h2>Uses of <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a> in <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a></h2>
+<div class="caption"><span>Classes in <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> that implement <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html" class="type-name-link" title="class in org.apache.arrow.variant.extension">VariantVector</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Arrow vector for storing <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension"><code>VariantType</code></a> values.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> that return <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.VariantTransferPair.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.VariantTransferPair.html#getTo()" class="member-name-link">getTo</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> with parameters of type <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#copyFrom(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFrom</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#copyFromSafe(int,int,org.apache.arrow.vector.ValueVector)" class="member-name-link">copyFromSafe</a><wbr>(int&nbsp;fromIndex,
+ int&nbsp;thisIndex,
+ <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;from)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../complex/writer/FieldWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FieldWriter</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantType.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#getNewFieldWriter(org.apache.arrow.vector.ValueVector)" class="member-name-link">getNewFieldWriter</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;vector)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

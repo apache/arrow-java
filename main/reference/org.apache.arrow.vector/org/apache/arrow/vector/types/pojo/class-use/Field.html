@@ -64,6 +64,10 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#org.apache.arrow.gandiva.expression">org.apache.arrow.gandiva.expression</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.variant.extension">org.apache.arrow.variant.extension</a></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.variant.impl">org.apache.arrow.variant.impl</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><a href="#org.apache.arrow.vector">org.apache.arrow.vector</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex">org.apache.arrow.vector.complex</a></div>
@@ -250,6 +254,74 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Short cut to create an expression tree involving a single function, e.g. a+b+c.</div>
 </div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.variant.extension">
+<h2>Uses of <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a> in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> that return <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#createVariantField(java.lang.String)" class="member-name-link">createVariantField</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates a new VariantVector with the given name.</div>
+</div>
+<div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> that return types with arguments of type <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#createVariantChildFields()" class="member-name-link">createVariantChildFields</a>()</code></div>
+<div class="col-last even-row-color">
+<div class="block">Creates the child fields for the VariantVector.</div>
+</div>
+</div>
+<div class="caption"><span>Methods in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> with parameters of type <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../../../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../../../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="../../../util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+</div>
+<div class="caption"><span>Method parameters in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/package-summary.html">org.apache.arrow.variant.extension</a> with type arguments of type <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantVector.</span><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantVector.html#initializeChildrenFromFields(java.util.List)" class="member-name-link">initializeChildrenFromFields</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;children)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="org.apache.arrow.variant.impl">
+<h2>Uses of <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a> in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/impl/package-summary.html">org.apache.arrow.variant.impl</a></h2>
+<div class="caption"><span>Methods in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/impl/package-summary.html">org.apache.arrow.variant.impl</a> that return <a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Method</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VariantReaderImpl.</span><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/impl/VariantReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -1331,308 +1403,311 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color"><span class="type-name-label">AbstractExtensionTypeWriter.</span><code><a href="../../../complex/impl/AbstractExtensionTypeWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BigIntReaderImpl.</span><code><a href="../../../complex/impl/BigIntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">AbstractFieldReader.</span><code><a href="../../../complex/impl/AbstractFieldReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BigIntWriterImpl.</span><code><a href="../../../complex/impl/BigIntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BigIntReaderImpl.</span><code><a href="../../../complex/impl/BigIntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BitReaderImpl.</span><code><a href="../../../complex/impl/BitReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BigIntWriterImpl.</span><code><a href="../../../complex/impl/BigIntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BitWriterImpl.</span><code><a href="../../../complex/impl/BitWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BitReaderImpl.</span><code><a href="../../../complex/impl/BitReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ComplexWriterImpl.</span><code><a href="../../../complex/impl/ComplexWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BitWriterImpl.</span><code><a href="../../../complex/impl/BitWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DateDayReaderImpl.</span><code><a href="../../../complex/impl/DateDayReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ComplexWriterImpl.</span><code><a href="../../../complex/impl/ComplexWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DateDayWriterImpl.</span><code><a href="../../../complex/impl/DateDayWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DateDayReaderImpl.</span><code><a href="../../../complex/impl/DateDayReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DateMilliReaderImpl.</span><code><a href="../../../complex/impl/DateMilliReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DateDayWriterImpl.</span><code><a href="../../../complex/impl/DateDayWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DateMilliWriterImpl.</span><code><a href="../../../complex/impl/DateMilliWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DateMilliReaderImpl.</span><code><a href="../../../complex/impl/DateMilliReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Decimal256ReaderImpl.</span><code><a href="../../../complex/impl/Decimal256ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DateMilliWriterImpl.</span><code><a href="../../../complex/impl/DateMilliWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256WriterImpl.</span><code><a href="../../../complex/impl/Decimal256WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Decimal256ReaderImpl.</span><code><a href="../../../complex/impl/Decimal256ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalReaderImpl.</span><code><a href="../../../complex/impl/DecimalReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256WriterImpl.</span><code><a href="../../../complex/impl/Decimal256WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalWriterImpl.</span><code><a href="../../../complex/impl/DecimalWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalReaderImpl.</span><code><a href="../../../complex/impl/DecimalReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DenseUnionReader.</span><code><a href="../../../complex/impl/DenseUnionReader.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DecimalWriterImpl.</span><code><a href="../../../complex/impl/DecimalWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DenseUnionWriter.</span><code><a href="../../../complex/impl/DenseUnionWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DenseUnionReader.</span><code><a href="../../../complex/impl/DenseUnionReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DurationReaderImpl.</span><code><a href="../../../complex/impl/DurationReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DenseUnionWriter.</span><code><a href="../../../complex/impl/DenseUnionWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DurationWriterImpl.</span><code><a href="../../../complex/impl/DurationWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DurationReaderImpl.</span><code><a href="../../../complex/impl/DurationReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryReaderImpl.</span><code><a href="../../../complex/impl/FixedSizeBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DurationWriterImpl.</span><code><a href="../../../complex/impl/DurationWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryWriterImpl.</span><code><a href="../../../complex/impl/FixedSizeBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryReaderImpl.</span><code><a href="../../../complex/impl/FixedSizeBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float2ReaderImpl.</span><code><a href="../../../complex/impl/Float2ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryWriterImpl.</span><code><a href="../../../complex/impl/FixedSizeBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Float2WriterImpl.</span><code><a href="../../../complex/impl/Float2WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float2ReaderImpl.</span><code><a href="../../../complex/impl/Float2ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float4ReaderImpl.</span><code><a href="../../../complex/impl/Float4ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Float2WriterImpl.</span><code><a href="../../../complex/impl/Float2WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Float4WriterImpl.</span><code><a href="../../../complex/impl/Float4WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float4ReaderImpl.</span><code><a href="../../../complex/impl/Float4ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float8ReaderImpl.</span><code><a href="../../../complex/impl/Float8ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Float4WriterImpl.</span><code><a href="../../../complex/impl/Float4WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Float8WriterImpl.</span><code><a href="../../../complex/impl/Float8WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float8ReaderImpl.</span><code><a href="../../../complex/impl/Float8ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalDayReaderImpl.</span><code><a href="../../../complex/impl/IntervalDayReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Float8WriterImpl.</span><code><a href="../../../complex/impl/Float8WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayWriterImpl.</span><code><a href="../../../complex/impl/IntervalDayWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayReaderImpl.</span><code><a href="../../../complex/impl/IntervalDayReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoReaderImpl.</span><code><a href="../../../complex/impl/IntervalMonthDayNanoReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalDayWriterImpl.</span><code><a href="../../../complex/impl/IntervalDayWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoWriterImpl.</span><code><a href="../../../complex/impl/IntervalMonthDayNanoWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoReaderImpl.</span><code><a href="../../../complex/impl/IntervalMonthDayNanoReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalYearReaderImpl.</span><code><a href="../../../complex/impl/IntervalYearReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoWriterImpl.</span><code><a href="../../../complex/impl/IntervalMonthDayNanoWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalYearWriterImpl.</span><code><a href="../../../complex/impl/IntervalYearWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalYearReaderImpl.</span><code><a href="../../../complex/impl/IntervalYearReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntReaderImpl.</span><code><a href="../../../complex/impl/IntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalYearWriterImpl.</span><code><a href="../../../complex/impl/IntervalYearWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntWriterImpl.</span><code><a href="../../../complex/impl/IntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntReaderImpl.</span><code><a href="../../../complex/impl/IntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LargeVarBinaryReaderImpl.</span><code><a href="../../../complex/impl/LargeVarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntWriterImpl.</span><code><a href="../../../complex/impl/IntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">LargeVarBinaryWriterImpl.</span><code><a href="../../../complex/impl/LargeVarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">LargeVarBinaryReaderImpl.</span><code><a href="../../../complex/impl/LargeVarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">LargeVarCharReaderImpl.</span><code><a href="../../../complex/impl/LargeVarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">LargeVarBinaryWriterImpl.</span><code><a href="../../../complex/impl/LargeVarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">LargeVarCharWriterImpl.</span><code><a href="../../../complex/impl/LargeVarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">LargeVarCharReaderImpl.</span><code><a href="../../../complex/impl/LargeVarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">NullableStructReaderImpl.</span><code><a href="../../../complex/impl/NullableStructReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">LargeVarCharWriterImpl.</span><code><a href="../../../complex/impl/LargeVarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">NullableStructWriter.</span><code><a href="../../../complex/impl/NullableStructWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NullableStructReaderImpl.</span><code><a href="../../../complex/impl/NullableStructReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">NullReader.</span><code><a href="../../../complex/impl/NullReader.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NullableStructWriter.</span><code><a href="../../../complex/impl/NullableStructWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">PromotableViewWriter.</span><code><a href="../../../complex/impl/PromotableViewWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NullReader.</span><code><a href="../../../complex/impl/NullReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">PromotableViewWriter.</span><code><a href="../../../complex/impl/PromotableViewWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">SingleStructReaderImpl.</span><code><a href="../../../complex/impl/SingleStructReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">PromotableWriter.</span><code><a href="../../../complex/impl/PromotableWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">SingleStructWriter.</span><code><a href="../../../complex/impl/SingleStructWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SingleStructReaderImpl.</span><code><a href="../../../complex/impl/SingleStructReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">SmallIntReaderImpl.</span><code><a href="../../../complex/impl/SmallIntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SingleStructWriter.</span><code><a href="../../../complex/impl/SingleStructWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">SmallIntWriterImpl.</span><code><a href="../../../complex/impl/SmallIntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">SmallIntReaderImpl.</span><code><a href="../../../complex/impl/SmallIntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeMicroReaderImpl.</span><code><a href="../../../complex/impl/TimeMicroReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SmallIntWriterImpl.</span><code><a href="../../../complex/impl/SmallIntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeMicroWriterImpl.</span><code><a href="../../../complex/impl/TimeMicroWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeMicroReaderImpl.</span><code><a href="../../../complex/impl/TimeMicroReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeMilliReaderImpl.</span><code><a href="../../../complex/impl/TimeMilliReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeMicroWriterImpl.</span><code><a href="../../../complex/impl/TimeMicroWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeMilliWriterImpl.</span><code><a href="../../../complex/impl/TimeMilliWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeMilliReaderImpl.</span><code><a href="../../../complex/impl/TimeMilliReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeNanoReaderImpl.</span><code><a href="../../../complex/impl/TimeNanoReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeMilliWriterImpl.</span><code><a href="../../../complex/impl/TimeMilliWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeNanoWriterImpl.</span><code><a href="../../../complex/impl/TimeNanoWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeNanoReaderImpl.</span><code><a href="../../../complex/impl/TimeNanoReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeSecReaderImpl.</span><code><a href="../../../complex/impl/TimeSecReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeNanoWriterImpl.</span><code><a href="../../../complex/impl/TimeNanoWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeSecWriterImpl.</span><code><a href="../../../complex/impl/TimeSecWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeSecReaderImpl.</span><code><a href="../../../complex/impl/TimeSecReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMicroReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeSecWriterImpl.</span><code><a href="../../../complex/impl/TimeSecWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMicroTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMicroReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMicroTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMicroTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMicroWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMicroTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMicroTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMilliReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMicroWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMicroWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMilliTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMilliReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMilliTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampMilliTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMilliWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampMilliTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMilliTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoReaderImpl.</span><code><a href="../../../complex/impl/TimeStampNanoReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampMilliWriterImpl.</span><code><a href="../../../complex/impl/TimeStampMilliWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampNanoTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoReaderImpl.</span><code><a href="../../../complex/impl/TimeStampNanoReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampNanoTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampNanoTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoWriterImpl.</span><code><a href="../../../complex/impl/TimeStampNanoWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampNanoTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampNanoTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecReaderImpl.</span><code><a href="../../../complex/impl/TimeStampSecReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampNanoWriterImpl.</span><code><a href="../../../complex/impl/TimeStampNanoWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampSecTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecReaderImpl.</span><code><a href="../../../complex/impl/TimeStampSecReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampSecTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecTZReaderImpl.</span><code><a href="../../../complex/impl/TimeStampSecTZReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecWriterImpl.</span><code><a href="../../../complex/impl/TimeStampSecWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampSecTZWriterImpl.</span><code><a href="../../../complex/impl/TimeStampSecTZWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TinyIntReaderImpl.</span><code><a href="../../../complex/impl/TinyIntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeStampSecWriterImpl.</span><code><a href="../../../complex/impl/TimeStampSecWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TinyIntWriterImpl.</span><code><a href="../../../complex/impl/TinyIntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TinyIntReaderImpl.</span><code><a href="../../../complex/impl/TinyIntReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt1ReaderImpl.</span><code><a href="../../../complex/impl/UInt1ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TinyIntWriterImpl.</span><code><a href="../../../complex/impl/TinyIntWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt1WriterImpl.</span><code><a href="../../../complex/impl/UInt1WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt1ReaderImpl.</span><code><a href="../../../complex/impl/UInt1ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt2ReaderImpl.</span><code><a href="../../../complex/impl/UInt2ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt1WriterImpl.</span><code><a href="../../../complex/impl/UInt1WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt2WriterImpl.</span><code><a href="../../../complex/impl/UInt2WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt2ReaderImpl.</span><code><a href="../../../complex/impl/UInt2ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt4ReaderImpl.</span><code><a href="../../../complex/impl/UInt4ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt2WriterImpl.</span><code><a href="../../../complex/impl/UInt2WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt4WriterImpl.</span><code><a href="../../../complex/impl/UInt4WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt4ReaderImpl.</span><code><a href="../../../complex/impl/UInt4ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt8ReaderImpl.</span><code><a href="../../../complex/impl/UInt8ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt4WriterImpl.</span><code><a href="../../../complex/impl/UInt4WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt8WriterImpl.</span><code><a href="../../../complex/impl/UInt8WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt8ReaderImpl.</span><code><a href="../../../complex/impl/UInt8ReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionExtensionWriter.</span><code><a href="../../../complex/impl/UnionExtensionWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt8WriterImpl.</span><code><a href="../../../complex/impl/UInt8WriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionExtensionWriter.</span><code><a href="../../../complex/impl/UnionExtensionWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListReader.</span><code><a href="../../../complex/impl/UnionLargeListReader.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionFixedSizeListWriter.</span><code><a href="../../../complex/impl/UnionFixedSizeListWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewReader.</span><code><a href="../../../complex/impl/UnionLargeListViewReader.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListReader.</span><code><a href="../../../complex/impl/UnionLargeListReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListViewReader.</span><code><a href="../../../complex/impl/UnionLargeListViewReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionLargeListViewWriter.</span><code><a href="../../../complex/impl/UnionLargeListViewWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListReader.</span><code><a href="../../../complex/impl/UnionListReader.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionLargeListWriter.</span><code><a href="../../../complex/impl/UnionLargeListWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListViewReader.</span><code><a href="../../../complex/impl/UnionListViewReader.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionListReader.</span><code><a href="../../../complex/impl/UnionListReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListViewReader.</span><code><a href="../../../complex/impl/UnionListViewReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionListViewWriter.</span><code><a href="../../../complex/impl/UnionListViewWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UnionReader.</span><code><a href="../../../complex/impl/UnionReader.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionListWriter.</span><code><a href="../../../complex/impl/UnionListWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UnionReader.</span><code><a href="../../../complex/impl/UnionReader.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UuidReaderImpl.</span><code><a href="../../../complex/impl/UuidReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UnionWriter.</span><code><a href="../../../complex/impl/UnionWriter.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarBinaryReaderImpl.</span><code><a href="../../../complex/impl/VarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidReaderImpl.</span><code><a href="../../../complex/impl/UuidReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryWriterImpl.</span><code><a href="../../../complex/impl/VarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VarBinaryReaderImpl.</span><code><a href="../../../complex/impl/VarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VarCharReaderImpl.</span><code><a href="../../../complex/impl/VarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VarBinaryWriterImpl.</span><code><a href="../../../complex/impl/VarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VarCharWriterImpl.</span><code><a href="../../../complex/impl/VarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VarCharReaderImpl.</span><code><a href="../../../complex/impl/VarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryReaderImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VarCharWriterImpl.</span><code><a href="../../../complex/impl/VarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryWriterImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarBinaryReaderImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharReaderImpl.</span><code><a href="../../../complex/impl/ViewVarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarBinaryWriterImpl.</span><code><a href="../../../complex/impl/ViewVarBinaryWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharWriterImpl.</span><code><a href="../../../complex/impl/ViewVarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ViewVarCharReaderImpl.</span><code><a href="../../../complex/impl/ViewVarCharReaderImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ViewVarCharWriterImpl.</span><code><a href="../../../complex/impl/ViewVarCharWriterImpl.html#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>

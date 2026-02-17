@@ -56,15 +56,33 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Package</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.variant.impl">org.apache.arrow.variant.impl</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.reader">org.apache.arrow.vector.complex.reader</a></div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.impl">org.apache.arrow.vector.complex.impl</a></div>
 <div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
+<div class="col-first even-row-color"><a href="#org.apache.arrow.vector.complex.reader">org.apache.arrow.vector.complex.reader</a></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><a href="#org.apache.arrow.vector.complex.writer">org.apache.arrow.vector.complex.writer</a></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <section class="class-uses">
 <ul class="block-list">
+<li>
+<section class="detail" id="org.apache.arrow.variant.impl">
+<h2>Uses of <a href="../Float4Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Float4Writer</a> in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/impl/package-summary.html">org.apache.arrow.variant.impl</a></h2>
+<div class="caption"><span>Classes in <a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/impl/package-summary.html">org.apache.arrow.variant.impl</a> that implement <a href="../Float4Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Float4Writer</a></span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../../../../../../org.apache.arrow.variant/org/apache/arrow/variant/impl/VariantWriterImpl.html" class="type-name-link" title="class in org.apache.arrow.variant.impl">VariantWriterImpl</a></code></div>
+<div class="col-last even-row-color">
+<div class="block">Writer implementation for VARIANT extension type vectors.</div>
+</div>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="org.apache.arrow.vector.complex.impl">
 <h2>Uses of <a href="../Float4Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Float4Writer</a> in <a href="../../impl/package-summary.html">org.apache.arrow.vector.complex.impl</a></h2>
@@ -341,8 +359,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">NullReader.</span><code><a href="../../impl/NullReader.html#copyAsField(java.lang.String,org.apache.arrow.vector.complex.writer.Float4Writer)" class="member-name-link">copyAsField</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second even-row-color"><span class="type-name-label">AbstractFieldReader.</span><code><a href="../../impl/AbstractFieldReader.html#copyAsField(java.lang.String,org.apache.arrow.vector.complex.writer.Float4Writer)" class="member-name-link">copyAsField</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../Float4Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Float4Writer</a>&nbsp;writer)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">NullReader.</span><code><a href="../../impl/NullReader.html#copyAsField(java.lang.String,org.apache.arrow.vector.complex.writer.Float4Writer)" class="member-name-link">copyAsField</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../Float4Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Float4Writer</a>&nbsp;writer)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">AbstractFieldReader.</span><code><a href="../../impl/AbstractFieldReader.html#copyAsValue(org.apache.arrow.vector.complex.writer.Float4Writer)" class="member-name-link">copyAsValue</a><wbr>(<a href="../Float4Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Float4Writer</a>&nbsp;writer)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">DenseUnionReader.</span><code><a href="../../impl/DenseUnionReader.html#copyAsValue(org.apache.arrow.vector.complex.writer.Float4Writer)" class="member-name-link">copyAsValue</a><wbr>(<a href="../Float4Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Float4Writer</a>&nbsp;writer)</code></div>
