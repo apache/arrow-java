@@ -50,7 +50,7 @@ a version of your choosing.
 $ flatc --version
 flatc version 25.1.24
 
-$ grep "dep.fbs.version" java/pom.xml
+$ grep "dep.fbs.version" pom.xml
     <dep.fbs.version>25.1.24</dep.fbs.version>
 ```
 
@@ -60,10 +60,10 @@ $ grep "dep.fbs.version" java/pom.xml
 cd $ARROW_HOME
 
 # remove the existing files
-rm -rf java/format/src
+rm -rf format/src
 
 # regenerate from the .fbs files
-flatc --java -o java/format/src/main/java format/*.fbs
+flatc --java -o format/src/main/java arrow-format/*.fbs
 
 # prepend license header
 mvn spotless:apply -pl :arrow-format
