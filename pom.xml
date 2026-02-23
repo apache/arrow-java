@@ -109,7 +109,7 @@ under the License.
     <dep.mockito-bom.version>5.21.0</dep.mockito-bom.version>
     <arrow.vector.classifier></arrow.vector.classifier>
     <forkCount>2</forkCount>
-    <checkstyle.version>10.23.0</checkstyle.version>
+    <checkstyle.version>13.2.0</checkstyle.version>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.42.0</error_prone_core.version>
     <checker.framework.version>3.53.0</checker.framework.version>
