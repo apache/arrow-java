@@ -768,4 +768,118 @@ public class ConnectionTest {
       assertTrue(resultSets[i].isClosed());
     }
   }
+
+  /**
+   * Test that JDBC driver respects JVM proxy settings.
+   *
+   * <p>This test verifies that when JVM proxy properties are set, the Flight client attempts to
+   * connect through the proxy. This will FAIL with the current implementation and PASS when the fix
+   * is applied.
+   *
+   * @throws Exception on error.
+   */
+  @Test
+  public void testJdbcDriverRespectsProxySettings() throws Exception {
+    final int targetPort = FLIGHT_SERVER_TEST_EXTENSION.getPort();
+
+    String originalHttpsProxyHost = System.getProperty("https.proxyHost");
+    String originalHttpsProxyPort = System.getProperty("https.proxyPort");
+    String originalNonProxyHosts = System.getProperty("http.nonProxyHosts");
+
+    try (SimpleProxyDetector proxy = new SimpleProxyDetector()) {
+      proxy.start();
+
+      System.setProperty("https.proxyHost", "localhost");
+      System.setProperty("https.proxyPort", String.valueOf(proxy.getPort()));
+      // Ensure localhost is not in the non-proxy hosts list
+      System.setProperty("http.nonProxyHosts", "");
+
+      final Properties properties = new Properties();
+      properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+      properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+      properties.put("useEncryption", false);
+
+      // Use "example.com" as the target host to trigger proxy usage
+      // The proxy will receive the connection attempt, proving proxy settings are respected
+      try (Connection connection =
+          DriverManager.getConnection(
+              "jdbc:arrow-flight-sql://example.com:" + targetPort, properties)) {
+        // Connection will fail, but that's OK - we just want to see if proxy was contacted
+      } catch (Exception e) {
+        // Expected - proxy doesn't forward
+      }
+
+      assertTrue(
+          proxy.wasContacted(),
+          "JDBC driver should respect JVM proxy settings. "
+              + "The proxy did not receive a connection, indicating proxy settings are ignored.");
+
+    } finally {
+      if (originalHttpsProxyHost == null) {
+        System.clearProperty("https.proxyHost");
+      } else {
+        System.setProperty("https.proxyHost", originalHttpsProxyHost);
+      }
+      if (originalHttpsProxyPort == null) {
+        System.clearProperty("https.proxyPort");
+      } else {
+        System.setProperty("https.proxyPort", originalHttpsProxyPort);
+      }
+      if (originalNonProxyHosts == null) {
+        System.clearProperty("http.nonProxyHosts");
+      } else {
+        System.setProperty("http.nonProxyHosts", originalNonProxyHosts);
+      }
+    }
+  }
+
+  /** Simple proxy detector for testing proxy support. */
+  private static class SimpleProxyDetector implements AutoCloseable {
+    private final int port;
+    private final java.util.concurrent.atomic.AtomicBoolean contacted =
+        new java.util.concurrent.atomic.AtomicBoolean(false);
+    private final java.util.concurrent.CountDownLatch started =
+        new java.util.concurrent.CountDownLatch(1);
+    private Thread thread;
+
+    SimpleProxyDetector() throws java.io.IOException {
+      try (java.net.ServerSocket socket = new java.net.ServerSocket(0)) {
+        socket.setReuseAddress(true);
+        this.port = socket.getLocalPort();
+      }
+    }
+
+    void start() throws InterruptedException {
+      thread =
+          new Thread(
+              () -> {
+                try (java.net.ServerSocket socket = new java.net.ServerSocket(port)) {
+                  started.countDown();
+                  socket.setSoTimeout(5000);
+                  socket.accept();
+                  contacted.set(true);
+                } catch (Exception e) {
+                  // Timeout or error
+                }
+              });
+      thread.setDaemon(true);
+      thread.start();
+      started.await(5, java.util.concurrent.TimeUnit.SECONDS);
+    }
+
+    int getPort() {
+      return port;
+    }
+
+    boolean wasContacted() {
+      return contacted.get();
+    }
+
+    @Override
+    public void close() {
+      if (thread != null) {
+        thread.interrupt();
+      }
+    }
+  }
 }
