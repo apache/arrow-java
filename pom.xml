@@ -68,6 +68,7 @@ under the License.
     <module>bom</module>
     <module>format</module>
     <module>memory</module>
+    <module>arrow-variant</module>
     <module>vector</module>
     <module>tools</module>
     <module>adapter/jdbc</module>
@@ -104,14 +105,15 @@ under the License.
     <dep.hadoop.version>3.4.2</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
     <dep.avro.version>1.12.1</dep.avro.version>
-    <dep.mockito-bom.version>5.17.0</dep.mockito-bom.version>
+    <dep.parquet.version>1.17.0</dep.parquet.version>
+    <dep.mockito-bom.version>5.21.0</dep.mockito-bom.version>
     <arrow.vector.classifier></arrow.vector.classifier>
     <forkCount>2</forkCount>
     <checkstyle.version>10.23.0</checkstyle.version>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.42.0</error_prone_core.version>
     <checker.framework.version>3.53.0</checker.framework.version>
-    <logback.version>1.5.26</logback.version>
+    <logback.version>1.5.32</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
     <!-- List of add-opens arg line arguments for tests -->

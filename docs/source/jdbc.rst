@@ -95,7 +95,7 @@ Type Mapping
 The JDBC to Arrow type mapping can be obtained at runtime from
 `JdbcToArrowUtils.getArrowTypeFromJdbcType`_.
 
-.. _JdbcToArrowUtils.getArrowTypeFromJdbcType: https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowUtils.html#getArrowTypeFromJdbcType-org.apache.arrow.adapter.jdbc.JdbcFieldInfo-java.util.Calendar-
+.. _JdbcToArrowUtils.getArrowTypeFromJdbcType: https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowUtils.html#getArrowTypeFromJdbcType-org.apache.arrow.adapter.jdbc.JdbcFieldInfo-java.util.Calendar-
 
 +--------------------+--------------------+-------+
 | JDBC Type          | Arrow Type         | Notes |
@@ -171,8 +171,8 @@ The JDBC to Arrow type mapping can be obtained at runtime from
   timezone of the calendar, else it will be a timestamp without
   timezone.
 
-.. _setArraySubTypeByColumnIndexMap: https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnIndexMap-java.util.Map-
-.. _setArraySubTypeByColumnNameMap: https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnNameMap-java.util.Map-
+.. _setArraySubTypeByColumnIndexMap: https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnIndexMap-java.util.Map-
+.. _setArraySubTypeByColumnNameMap: https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnNameMap-java.util.Map-
 .. _ARROW-17006: https://issues.apache.org/jira/browse/ARROW-17006
 
 VectorSchemaRoot to PreparedStatement Parameter Conversion

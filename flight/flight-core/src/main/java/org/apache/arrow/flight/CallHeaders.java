@@ -26,10 +26,20 @@ public interface CallHeaders {
   /** Get the value of a metadata key. If multiple values are present, then get the last one. */
   byte[] getByte(String key);
 
-  /** Get all values present for the given metadata key. */
+  /**
+   * Get all values present for the given metadata key.
+   *
+   * @param key the metadata key
+   * @return an iterable of all values for the key. Returns an empty iterable if no value to return.
+   */
   Iterable<String> getAll(String key);
 
-  /** Get all values present for the given metadata key. */
+  /**
+   * Get all values present for the given metadata key.
+   *
+   * @param key the metadata key
+   * @return an iterable of all values for the key. Returns an empty iterable if no value to return.
+   */
   Iterable<byte[]> getAllByte(String key);
 
   /**

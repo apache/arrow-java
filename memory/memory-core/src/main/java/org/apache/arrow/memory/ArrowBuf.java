@@ -136,7 +136,7 @@ public final class ArrowBuf implements AutoCloseable {
   /**
    * Adjusts the capacity of this buffer. Size increases are NOT supported.
    *
-   * @param newCapacity Must be in in the range [0, length).
+   * @param newCapacity Must be in the range [0, length).
    */
   public synchronized ArrowBuf capacity(long newCapacity) {
 
