@@ -364,15 +364,15 @@ If the table contains dictionary-encoded vectors and was constructed with a ``Di
 
     Data.exportTable(bufferAllocator, table, outArrowArray);
 
-.. _`ArrowBuf`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ArrowBuf.html
-.. _`Data`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/c/Data.html
-.. _`DictionaryProvider`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/dictionary/DictionaryProvider.html
-.. _`Field`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/types/pojo/Field.html
-.. _`FieldReader`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/complex/reader/FieldReader.html
-.. _`FieldVector`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/FieldVector.html
-.. _`Row`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/table/Row.html
-.. _`Schema`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/types/pojo/Schema.html
-.. _`Table`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/table/Table.html
-.. _`ValueHolder`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/holders/ValueHolder.html
-.. _`ValueVector`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/ValueVector.html
-.. _`VectorSchemaRoot`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/vector/VectorSchemaRoot.html
+.. _`ArrowBuf`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html
+.. _`Data`: https://arrow.apache.org/java/current/reference/org.apache.arrow.c/org/apache/arrow/c/Data.html
+.. _`DictionaryProvider`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/dictionary/DictionaryProvider.html
+.. _`Field`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Field.html
+.. _`FieldReader`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/complex/reader/FieldReader.html
+.. _`FieldVector`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html
+.. _`Row`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/table/Row.html
+.. _`Schema`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Schema.html
+.. _`Table`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/table/Table.html
+.. _`ValueHolder`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/holders/ValueHolder.html
+.. _`ValueVector`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html
+.. _`VectorSchemaRoot`: https://arrow.apache.org/java/current/reference/org.apache.arrow.vector/org/apache/arrow/vector/VectorSchemaRoot.html

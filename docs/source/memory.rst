@@ -333,18 +333,18 @@ How this works:
         }
     }
 
-.. _`ArrowBuf`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ArrowBuf.html
-.. _`ArrowBuf.print()`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ArrowBuf.html#print-java.lang.StringBuilder-int-org.apache.arrow.memory.BaseAllocator.Verbosity-
-.. _`BufferAllocator`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/BufferAllocator.html
-.. _`BufferLedger`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/BufferLedger.html
-.. _`RootAllocator`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/RootAllocator.html
-.. _`newChildAllocator`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/RootAllocator.html#newChildAllocator-java.lang.String-org.apache.arrow.memory.AllocationListener-long-long-
+.. _`ArrowBuf`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html
+.. _`ArrowBuf.print()`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html#print-java.lang.StringBuilder-int-org.apache.arrow.memory.BaseAllocator.Verbosity-
+.. _`BufferAllocator`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html
+.. _`BufferLedger`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/BufferLedger.html
+.. _`RootAllocator`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/RootAllocator.html
+.. _`newChildAllocator`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/RootAllocator.html#newChildAllocator-java.lang.String-org.apache.arrow.memory.AllocationListener-long-long-
 .. _`Netty`: https://netty.io/wiki/
 .. _`sun.misc.unsafe`: https://web.archive.org/web/20210929024401/http://www.docjar.com/html/api/sun/misc/Unsafe.java.html
 .. _`Direct Memory`: https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html
-.. _`ReferenceManager`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ReferenceManager.html
-.. _`ReferenceManager.release`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ReferenceManager.html#release--
-.. _`ReferenceManager.retain`: https://arrow.apache.org/docs/java/reference/org/apache/arrow/memory/ReferenceManager.html#retain--
+.. _`ReferenceManager`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html
+.. _`ReferenceManager.release`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html#release--
+.. _`ReferenceManager.retain`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html#retain--
 
 Arrow Memory In-Depth
 =====================
