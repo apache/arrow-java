@@ -19,7 +19,9 @@ package org.apache.arrow.vector.ipc.message;
 import com.google.flatbuffers.FlatBufferBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.arrow.flatbuf.RecordBatch;
 import org.apache.arrow.memory.ArrowBuf;
@@ -52,6 +54,8 @@ public class ArrowRecordBatch implements ArrowMessage {
 
   private final List<Long> variadicBufferCounts;
 
+  private final Map<String, String> customMetadata;
+
   private boolean closed = false;
 
   public ArrowRecordBatch(int length, List<ArrowFieldNode> nodes, List<ArrowBuf> buffers) {
@@ -64,6 +68,30 @@ public class ArrowRecordBatch implements ArrowMessage {
       List<ArrowBuf> buffers,
       ArrowBodyCompression bodyCompression) {
     this(length, nodes, buffers, bodyCompression, null, true);
+  }
+
+  /**
+   * Construct a record batch from nodes with custom metadata.
+   *
+   * @param length how many rows in this batch
+   * @param nodes field level info
+   * @param buffers will be retained until this recordBatch is closed
+   * @param customMetadata custom metadata for this record batch
+   */
+  public ArrowRecordBatch(
+      int length,
+      List<ArrowFieldNode> nodes,
+      List<ArrowBuf> buffers,
+      Map<String, String> customMetadata) {
+    this(
+        length,
+        nodes,
+        buffers,
+        NoCompressionCodec.DEFAULT_BODY_COMPRESSION,
+        null,
+        true,
+        true,
+        customMetadata);
   }
 
   /**
@@ -152,6 +180,39 @@ public class ArrowRecordBatch implements ArrowMessage {
       List<Long> variadicBufferCounts,
       boolean alignBuffers,
       boolean retainBuffers) {
+    this(
+        length,
+        nodes,
+        buffers,
+        bodyCompression,
+        variadicBufferCounts,
+        alignBuffers,
+        retainBuffers,
+        null);
+  }
+
+  /**
+   * Construct a record batch from nodes.
+   *
+   * @param length how many rows in this batch
+   * @param nodes field level info
+   * @param buffers will be retained until this recordBatch is closed
+   * @param bodyCompression compression info.
+   * @param variadicBufferCounts the number of buffers in each variadic section.
+   * @param alignBuffers Whether to align buffers to an 8 byte boundary.
+   * @param retainBuffers Whether to retain() each source buffer in the constructor. If false, the
+   *     caller is responsible for retaining the buffers beforehand.
+   * @param customMetadata custom metadata for this record batch.
+   */
+  public ArrowRecordBatch(
+      int length,
+      List<ArrowFieldNode> nodes,
+      List<ArrowBuf> buffers,
+      ArrowBodyCompression bodyCompression,
+      List<Long> variadicBufferCounts,
+      boolean alignBuffers,
+      boolean retainBuffers,
+      Map<String, String> customMetadata) {
     super();
     this.length = length;
     this.nodes = nodes;
@@ -159,6 +220,10 @@ public class ArrowRecordBatch implements ArrowMessage {
     Preconditions.checkArgument(bodyCompression != null, "body compression cannot be null");
     this.bodyCompression = bodyCompression;
     this.variadicBufferCounts = variadicBufferCounts;
+    this.customMetadata =
+        customMetadata == null
+            ? Collections.emptyMap()
+            : Collections.unmodifiableMap(new HashMap<>(customMetadata));
     List<ArrowBuffer> arrowBuffers = new ArrayList<>(buffers.size());
     long offset = 0;
     for (ArrowBuf arrowBuf : buffers) {
@@ -188,13 +253,18 @@ public class ArrowRecordBatch implements ArrowMessage {
       List<ArrowFieldNode> nodes,
       List<ArrowBuf> buffers,
       ArrowBodyCompression bodyCompression,
-      List<Long> variadicBufferCounts) {
+      List<Long> variadicBufferCounts,
+      Map<String, String> customMetadata) {
     this.length = length;
     this.nodes = nodes;
     this.buffers = buffers;
     Preconditions.checkArgument(bodyCompression != null, "body compression cannot be null");
     this.bodyCompression = bodyCompression;
     this.variadicBufferCounts = variadicBufferCounts;
+    this.customMetadata =
+        customMetadata == null
+            ? Collections.emptyMap()
+            : Collections.unmodifiableMap(new HashMap<>(customMetadata));
     this.closed = false;
     List<ArrowBuffer> arrowBuffers = new ArrayList<>();
     long offset = 0;
@@ -216,6 +286,15 @@ public class ArrowRecordBatch implements ArrowMessage {
 
   public ArrowBodyCompression getBodyCompression() {
     return bodyCompression;
+  }
+
+  /**
+   * Get the custom metadata for this record batch.
+   *
+   * @return the custom metadata as an unmodifiable map
+   */
+  public Map<String, String> getCustomMetadata() {
+    return customMetadata;
   }
 
   /**
@@ -268,7 +347,7 @@ public class ArrowRecordBatch implements ArrowMessage {
             .collect(Collectors.toList());
     close();
     return new ArrowRecordBatch(
-        false, length, nodes, newBufs, bodyCompression, variadicBufferCounts);
+        false, length, nodes, newBufs, bodyCompression, variadicBufferCounts, customMetadata);
   }
 
   /**

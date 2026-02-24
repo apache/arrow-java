@@ -22,10 +22,13 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.arrow.flatbuf.Buffer;
 import org.apache.arrow.flatbuf.DictionaryBatch;
 import org.apache.arrow.flatbuf.FieldNode;
+import org.apache.arrow.flatbuf.KeyValue;
 import org.apache.arrow.flatbuf.Message;
 import org.apache.arrow.flatbuf.MessageHeader;
 import org.apache.arrow.flatbuf.MetadataVersion;
@@ -325,8 +328,17 @@ public class MessageSerializer {
   public static ByteBuffer serializeMetadata(ArrowMessage message, IpcOption writeOption) {
     FlatBufferBuilder builder = new FlatBufferBuilder();
     int batchOffset = message.writeTo(builder);
+    Map<String, String> customMetadata = null;
+    if (message instanceof ArrowRecordBatch) {
+      customMetadata = ((ArrowRecordBatch) message).getCustomMetadata();
+    }
     return serializeMessage(
-        builder, message.getMessageType(), batchOffset, message.computeBodyLength(), writeOption);
+        builder,
+        message.getMessageType(),
+        batchOffset,
+        message.computeBodyLength(),
+        writeOption,
+        customMetadata);
   }
 
   /**
@@ -340,7 +352,18 @@ public class MessageSerializer {
   public static ArrowRecordBatch deserializeRecordBatch(
       Message recordBatchMessage, ArrowBuf bodyBuffer) throws IOException {
     RecordBatch recordBatchFB = (RecordBatch) recordBatchMessage.header(new RecordBatch());
-    return deserializeRecordBatch(recordBatchFB, bodyBuffer);
+    // Extract custom metadata from the Message
+    Map<String, String> customMetadata = null;
+    if (recordBatchMessage.customMetadataLength() > 0) {
+      customMetadata = new HashMap<>();
+      for (int i = 0; i < recordBatchMessage.customMetadataLength(); i++) {
+        KeyValue kv = recordBatchMessage.customMetadata(i);
+        if (kv != null && kv.key() != null && kv.value() != null) {
+          customMetadata.put(kv.key(), kv.value());
+        }
+      }
+    }
+    return deserializeRecordBatch(recordBatchFB, bodyBuffer, customMetadata);
   }
 
   /**
@@ -395,10 +418,22 @@ public class MessageSerializer {
 
     RecordBatch recordBatchFB = (RecordBatch) messageFB.header(new RecordBatch());
 
+    // Extract custom metadata from the Message
+    Map<String, String> customMetadata = null;
+    if (messageFB.customMetadataLength() > 0) {
+      customMetadata = new HashMap<>();
+      for (int i = 0; i < messageFB.customMetadataLength(); i++) {
+        KeyValue kv = messageFB.customMetadata(i);
+        if (kv != null && kv.key() != null && kv.value() != null) {
+          customMetadata.put(kv.key(), kv.value());
+        }
+      }
+    }
+
     // Now read the body
     final ArrowBuf body =
         buffer.slice(block.getMetadataLength(), totalLen - block.getMetadataLength());
-    return deserializeRecordBatch(recordBatchFB, body);
+    return deserializeRecordBatch(recordBatchFB, body, customMetadata);
   }
 
   /**
@@ -410,6 +445,22 @@ public class MessageSerializer {
    * @throws IOException on error
    */
   public static ArrowRecordBatch deserializeRecordBatch(RecordBatch recordBatchFB, ArrowBuf body)
+      throws IOException {
+    return deserializeRecordBatch(recordBatchFB, body, null);
+  }
+
+  /**
+   * Deserializes an ArrowRecordBatch given the Flatbuffer metadata, in-memory body, and custom
+   * metadata.
+   *
+   * @param recordBatchFB Deserialized FlatBuffer record batch
+   * @param body Read body of the record batch
+   * @param customMetadata Custom metadata from the Message
+   * @return ArrowRecordBatch from metadata and in-memory body
+   * @throws IOException on error
+   */
+  public static ArrowRecordBatch deserializeRecordBatch(
+      RecordBatch recordBatchFB, ArrowBuf body, Map<String, String> customMetadata)
       throws IOException {
     // Now read the body
     int nodesLength = recordBatchFB.nodesLength();
@@ -452,7 +503,9 @@ public class MessageSerializer {
             buffers,
             bodyCompression,
             variadicBufferCounts,
-            /*alignBuffers*/ true);
+            /*alignBuffers*/ true,
+            /*retainBuffers*/ true,
+            customMetadata);
     body.getReferenceManager().release();
     return arrowRecordBatch;
   }
@@ -676,11 +729,47 @@ public class MessageSerializer {
       int headerOffset,
       long bodyLength,
       IpcOption writeOption) {
+    return serializeMessage(builder, headerType, headerOffset, bodyLength, writeOption, null);
+  }
+
+  /**
+   * Serializes an Arrow message with metadata and custom metadata into a ByteBuffer.
+   *
+   * @param builder to write the flatbuf to
+   * @param headerType the type of the header
+   * @param headerOffset the offset in the buffer where the header starts
+   * @param bodyLength the length of the body
+   * @param writeOption IPC write options
+   * @param customMetadata custom metadata to attach to the message
+   * @return the corresponding ByteBuffer
+   */
+  public static ByteBuffer serializeMessage(
+      FlatBufferBuilder builder,
+      byte headerType,
+      int headerOffset,
+      long bodyLength,
+      IpcOption writeOption,
+      Map<String, String> customMetadata) {
+    int customMetadataOffset = 0;
+    if (customMetadata != null && !customMetadata.isEmpty()) {
+      int[] metadataOffsets = new int[customMetadata.size()];
+      int i = 0;
+      for (Map.Entry<String, String> entry : customMetadata.entrySet()) {
+        int keyOffset = builder.createString(entry.getKey());
+        int valueOffset = builder.createString(entry.getValue());
+        metadataOffsets[i++] = KeyValue.createKeyValue(builder, keyOffset, valueOffset);
+      }
+      customMetadataOffset = Message.createCustomMetadataVector(builder, metadataOffsets);
+    }
+
     Message.startMessage(builder);
     Message.addHeaderType(builder, headerType);
     Message.addHeader(builder, headerOffset);
     Message.addVersion(builder, writeOption.metadataVersion.toFlatbufID());
     Message.addBodyLength(builder, bodyLength);
+    if (customMetadataOffset != 0) {
+      Message.addCustomMetadata(builder, customMetadataOffset);
+    }
     builder.finish(Message.endMessage(builder));
     return builder.dataBuffer();
   }
