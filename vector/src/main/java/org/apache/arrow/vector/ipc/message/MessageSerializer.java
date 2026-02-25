@@ -328,17 +328,13 @@ public class MessageSerializer {
   public static ByteBuffer serializeMetadata(ArrowMessage message, IpcOption writeOption) {
     FlatBufferBuilder builder = new FlatBufferBuilder();
     int batchOffset = message.writeTo(builder);
-    Map<String, String> customMetadata = null;
-    if (message instanceof ArrowRecordBatch) {
-      customMetadata = ((ArrowRecordBatch) message).getCustomMetadata();
-    }
     return serializeMessage(
         builder,
         message.getMessageType(),
         batchOffset,
         message.computeBodyLength(),
         writeOption,
-        customMetadata);
+        message.getCustomMetadata());
   }
 
   /**

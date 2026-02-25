@@ -293,6 +293,7 @@ public class ArrowRecordBatch implements ArrowMessage {
    *
    * @return the custom metadata as an unmodifiable map
    */
+  @Override
   public Map<String, String> getCustomMetadata() {
     return customMetadata;
   }
