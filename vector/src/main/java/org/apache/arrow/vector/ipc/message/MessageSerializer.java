@@ -354,9 +354,9 @@ public class MessageSerializer {
       customMetadata = new HashMap<>();
       for (int i = 0; i < recordBatchMessage.customMetadataLength(); i++) {
         KeyValue kv = recordBatchMessage.customMetadata(i);
-        if (kv != null && kv.key() != null && kv.value() != null) {
-          customMetadata.put(kv.key(), kv.value());
-        }
+        String key = kv.key();
+        String value = kv.value();
+        customMetadata.put(key == null ? "" : key, value == null ? "" : value);
       }
     }
     return deserializeRecordBatch(recordBatchFB, bodyBuffer, customMetadata);
@@ -420,9 +420,9 @@ public class MessageSerializer {
       customMetadata = new HashMap<>();
       for (int i = 0; i < messageFB.customMetadataLength(); i++) {
         KeyValue kv = messageFB.customMetadata(i);
-        if (kv != null && kv.key() != null && kv.value() != null) {
-          customMetadata.put(kv.key(), kv.value());
-        }
+        String key = kv.key();
+        String value = kv.value();
+        customMetadata.put(key == null ? "" : key, value == null ? "" : value);
       }
     }
 
