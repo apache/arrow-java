@@ -87,18 +87,30 @@ public class MemoryFootprintBenchmarks {
   }
 
   /**
-   * Cleans up resources after each trial.
+   * Cleans up buffers after each benchmark invocation.
    *
-   * <p>Closes all allocated buffers and the root allocator to prevent memory leaks and ensure
-   * accurate measurements in subsequent trials.
+   * <p>Closes all allocated buffers to prevent memory leaks and ensure each iteration starts with
+   * a clean slate. This is critical for the memory footprint benchmark which allocates many
+   * buffers that would otherwise accumulate across warmup and measurement iterations.
    */
-  @TearDown(Level.Trial)
+  @TearDown(Level.Invocation)
   public void tearDown() {
     for (int i = 0; i < NUM_BUFFERS; i++) {
       if (buffers[i] != null) {
         buffers[i].close();
+        buffers[i] = null;
       }
     }
+  }
+
+  /**
+   * Cleans up the allocator after the trial completes.
+   *
+   * <p>Closes the root allocator to release all resources after all warmup and measurement
+   * iterations are complete.
+   */
+  @TearDown(Level.Trial)
+  public void tearDownTrial() {
     allocator.close();
   }
 
