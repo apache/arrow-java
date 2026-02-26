@@ -348,18 +348,7 @@ public class MessageSerializer {
   public static ArrowRecordBatch deserializeRecordBatch(
       Message recordBatchMessage, ArrowBuf bodyBuffer) throws IOException {
     RecordBatch recordBatchFB = (RecordBatch) recordBatchMessage.header(new RecordBatch());
-    // Extract custom metadata from the Message
-    Map<String, String> customMetadata = null;
-    if (recordBatchMessage.customMetadataLength() > 0) {
-      customMetadata = new HashMap<>();
-      for (int i = 0; i < recordBatchMessage.customMetadataLength(); i++) {
-        KeyValue kv = recordBatchMessage.customMetadata(i);
-        String key = kv.key();
-        String value = kv.value();
-        customMetadata.put(key == null ? "" : key, value == null ? "" : value);
-      }
-    }
-    return deserializeRecordBatch(recordBatchFB, bodyBuffer, customMetadata);
+    return deserializeRecordBatch(recordBatchFB, bodyBuffer, getCustomMetadata(recordBatchMessage));
   }
 
   /**
@@ -414,22 +403,10 @@ public class MessageSerializer {
 
     RecordBatch recordBatchFB = (RecordBatch) messageFB.header(new RecordBatch());
 
-    // Extract custom metadata from the Message
-    Map<String, String> customMetadata = null;
-    if (messageFB.customMetadataLength() > 0) {
-      customMetadata = new HashMap<>();
-      for (int i = 0; i < messageFB.customMetadataLength(); i++) {
-        KeyValue kv = messageFB.customMetadata(i);
-        String key = kv.key();
-        String value = kv.value();
-        customMetadata.put(key == null ? "" : key, value == null ? "" : value);
-      }
-    }
-
     // Now read the body
     final ArrowBuf body =
         buffer.slice(block.getMetadataLength(), totalLen - block.getMetadataLength());
-    return deserializeRecordBatch(recordBatchFB, body, customMetadata);
+    return deserializeRecordBatch(recordBatchFB, body, getCustomMetadata(messageFB));
   }
 
   /**
@@ -838,5 +815,19 @@ public class MessageSerializer {
       throw e;
     }
     return bodyBuffer;
+  }
+
+  private static Map<String, String> getCustomMetadata(Message message) {
+    if (message.customMetadataLength() == 0) {
+      return null;
+    }
+    Map<String, String> customMetadata = new HashMap<>();
+    for (int i = 0; i < message.customMetadataLength(); i++) {
+      KeyValue kv = message.customMetadata(i);
+      String key = kv.key();
+      String value = kv.value();
+      customMetadata.put(key == null ? "" : key, value == null ? "" : value);
+    }
+    return customMetadata;
   }
 }
