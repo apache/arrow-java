@@ -24,7 +24,6 @@ module org.apache.arrow.compression {
   requires org.apache.arrow.memory.core;
   requires org.apache.arrow.vector;
   requires org.apache.commons.compress;
-  requires org.xerial.snappy;
 
   // Also defined under META-INF/services to support non-modular applications
   provides CompressionCodec.Factory with
