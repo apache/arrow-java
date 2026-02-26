@@ -217,7 +217,8 @@ public final class ArrowBuf implements AutoCloseable {
 
   @Override
   public String toString() {
-    return String.format("ArrowBuf[%d], address:%d, capacity:%d", getId(), memoryAddress(), capacity);
+    return String.format(
+        "ArrowBuf[%d], address:%d, capacity:%d", getId(), memoryAddress(), capacity);
   }
 
   @Override
@@ -1081,8 +1082,8 @@ public final class ArrowBuf implements AutoCloseable {
   /**
    * Get the id assigned to this ArrowBuf for debugging purposes.
    *
-   * <p>Returns {@link System#identityHashCode(Object)} which provides a unique identifier
-   * for this buffer without any per-instance memory overhead.
+   * <p>Returns {@link System#identityHashCode(Object)} which provides a unique identifier for this
+   * buffer without any per-instance memory overhead.
    *
    * @return the identity hash code for this buffer
    */
