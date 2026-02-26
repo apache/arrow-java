@@ -477,7 +477,6 @@ public class MessageSerializer {
             bodyCompression,
             variadicBufferCounts,
             /*alignBuffers*/ true,
-            /*retainBuffers*/ true,
             customMetadata);
     body.getReferenceManager().release();
     return arrowRecordBatch;

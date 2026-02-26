@@ -169,6 +169,36 @@ public class ArrowRecordBatch implements ArrowMessage {
    * @param bodyCompression compression info.
    * @param variadicBufferCounts the number of buffers in each variadic section.
    * @param alignBuffers Whether to align buffers to an 8 byte boundary.
+   * @param customMetadata custom metadata for this record batch.
+   */
+  public ArrowRecordBatch(
+      int length,
+      List<ArrowFieldNode> nodes,
+      List<ArrowBuf> buffers,
+      ArrowBodyCompression bodyCompression,
+      List<Long> variadicBufferCounts,
+      boolean alignBuffers,
+      Map<String, String> customMetadata) {
+    this(
+        length,
+        nodes,
+        buffers,
+        bodyCompression,
+        variadicBufferCounts,
+        alignBuffers, /*retainBuffers*/
+        true,
+        customMetadata);
+  }
+
+  /**
+   * Construct a record batch from nodes.
+   *
+   * @param length how many rows in this batch
+   * @param nodes field level info
+   * @param buffers will be retained until this recordBatch is closed
+   * @param bodyCompression compression info.
+   * @param variadicBufferCounts the number of buffers in each variadic section.
+   * @param alignBuffers Whether to align buffers to an 8 byte boundary.
    * @param retainBuffers Whether to retain() each source buffer in the constructor. If false, the
    *     caller is responsible for retaining the buffers beforehand.
    */
