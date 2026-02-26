@@ -426,6 +426,7 @@ public class ArrowRecordBatch implements ArrowMessage {
     if (variadicBufferCounts != null && !variadicBufferCounts.isEmpty()) {
       variadicBufCount = variadicBufferCounts.size();
     }
+    String meta = customMetadata.isEmpty() ? "" : "(metadata: " + customMetadata + ")";
     return "ArrowRecordBatch [length="
         + length
         + ", nodes="
@@ -438,7 +439,8 @@ public class ArrowRecordBatch implements ArrowMessage {
         + buffersLayout
         + ", closed="
         + closed
-        + "]";
+        + "]"
+        + meta;
   }
 
   /** Computes the size of the serialized body for this recordBatch. */
