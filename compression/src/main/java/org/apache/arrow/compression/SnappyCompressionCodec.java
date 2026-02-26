@@ -90,4 +90,3 @@ public class SnappyCompressionCodec extends AbstractCompressionCodec {
     return CompressionUtil.CodecType.SNAPPY;
   }
 }
-
