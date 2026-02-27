@@ -419,6 +419,7 @@ public class MessageSerializer {
    */
   public static ArrowRecordBatch deserializeRecordBatch(RecordBatch recordBatchFB, ArrowBuf body)
       throws IOException {
+    // RecordBatch is not encapsulated in a Message, so there is no custom metadata
     return deserializeRecordBatch(recordBatchFB, body, null);
   }
 
@@ -722,17 +723,7 @@ public class MessageSerializer {
       long bodyLength,
       IpcOption writeOption,
       Map<String, String> customMetadata) {
-    int customMetadataOffset = 0;
-    if (customMetadata != null && !customMetadata.isEmpty()) {
-      int[] metadataOffsets = new int[customMetadata.size()];
-      int i = 0;
-      for (Map.Entry<String, String> entry : customMetadata.entrySet()) {
-        int keyOffset = builder.createString(entry.getKey());
-        int valueOffset = builder.createString(entry.getValue());
-        metadataOffsets[i++] = KeyValue.createKeyValue(builder, keyOffset, valueOffset);
-      }
-      customMetadataOffset = Message.createCustomMetadataVector(builder, metadataOffsets);
-    }
+    int customMetadataOffset = getCustomMetadataOffset(builder, customMetadata);
 
     Message.startMessage(builder);
     Message.addHeaderType(builder, headerType);
@@ -828,5 +819,21 @@ public class MessageSerializer {
       customMetadata.put(key == null ? "" : key, value == null ? "" : value);
     }
     return customMetadata;
+  }
+
+  private static int getCustomMetadataOffset(
+      FlatBufferBuilder builder, Map<String, String> customMetadata) {
+    int customMetadataOffset = 0;
+    if (customMetadata != null && !customMetadata.isEmpty()) {
+      int[] metadataOffsets = new int[customMetadata.size()];
+      int i = 0;
+      for (Map.Entry<String, String> entry : customMetadata.entrySet()) {
+        int keyOffset = builder.createString(entry.getKey());
+        int valueOffset = builder.createString(entry.getValue());
+        metadataOffsets[i++] = KeyValue.createKeyValue(builder, keyOffset, valueOffset);
+      }
+      customMetadataOffset = Message.createCustomMetadataVector(builder, metadataOffsets);
+    }
+    return customMetadataOffset;
   }
 }
