@@ -348,7 +348,8 @@ public class MessageSerializer {
   public static ArrowRecordBatch deserializeRecordBatch(
       Message recordBatchMessage, ArrowBuf bodyBuffer) throws IOException {
     RecordBatch recordBatchFB = (RecordBatch) recordBatchMessage.header(new RecordBatch());
-    return deserializeRecordBatch(recordBatchFB, bodyBuffer, getCustomMetadata(recordBatchMessage));
+    return deserializeRecordBatch(
+        recordBatchFB, bodyBuffer, deserializeCustomMetadata(recordBatchMessage));
   }
 
   /**
@@ -406,7 +407,7 @@ public class MessageSerializer {
     // Now read the body
     final ArrowBuf body =
         buffer.slice(block.getMetadataLength(), totalLen - block.getMetadataLength());
-    return deserializeRecordBatch(recordBatchFB, body, getCustomMetadata(messageFB));
+    return deserializeRecordBatch(recordBatchFB, body, deserializeCustomMetadata(messageFB));
   }
 
   /**
@@ -807,7 +808,7 @@ public class MessageSerializer {
     return bodyBuffer;
   }
 
-  private static Map<String, String> getCustomMetadata(Message message) {
+  private static Map<String, String> deserializeCustomMetadata(Message message) {
     if (message.customMetadataLength() == 0) {
       return null;
     }
