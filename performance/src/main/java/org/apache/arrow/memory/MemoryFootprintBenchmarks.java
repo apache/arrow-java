@@ -89,9 +89,9 @@ public class MemoryFootprintBenchmarks {
   /**
    * Cleans up buffers after each benchmark invocation.
    *
-   * <p>Closes all allocated buffers to prevent memory leaks and ensure each iteration starts with
-   * a clean slate. This is critical for the memory footprint benchmark which allocates many
-   * buffers that would otherwise accumulate across warmup and measurement iterations.
+   * <p>Closes all allocated buffers to prevent memory leaks and ensure each iteration starts with a
+   * clean slate. This is critical for the memory footprint benchmark which allocates many buffers
+   * that would otherwise accumulate across warmup and measurement iterations.
    */
   @TearDown(Level.Invocation)
   public void tearDown() {
