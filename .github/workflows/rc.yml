@@ -71,7 +71,7 @@ jobs:
         run: |
           dev/release/run_rat.sh "${TAR_GZ}"
       - name: Upload source archive
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: release-source
           path: |
@@ -148,7 +148,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-linux-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: jni-linux-${{ matrix.platform.arch }}
           path: jni-linux-${{ matrix.platform.arch }}.tar.gz
@@ -278,7 +278,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: jni-macos-${{ matrix.platform.arch }}
           path: jni-macos-${{ matrix.platform.arch }}.tar.gz
@@ -356,7 +356,7 @@ jobs:
         shell: bash
         run: tar -cvzf jni-windows-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: jni-windows-${{ matrix.platform.arch }}
           path: jni-windows-${{ matrix.platform.arch }}.tar.gz
@@ -428,12 +428,12 @@ jobs:
           cp -a target/site/apidocs reference
           tar -cvzf reference.tar.gz reference
       - name: Upload binaries
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: release-binaries
           path: binaries/*
       - name: Upload docs
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: reference
           path: reference.tar.gz
@@ -471,7 +471,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf html.tar.gz -C docs/build html
       - name: Upload artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: release-html
           path: html.tar.gz
