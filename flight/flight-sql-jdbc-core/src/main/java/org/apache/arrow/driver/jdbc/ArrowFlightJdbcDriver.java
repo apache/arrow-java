@@ -75,7 +75,9 @@ public class ArrowFlightJdbcDriver extends UnregisteredDriver {
   public ArrowFlightConnection connect(final String url, final Properties info)
       throws SQLException {
     final Properties properties = new Properties(info);
-    properties.putAll(info);
+    if (info != null) {
+      properties.putAll(info);
+    }
 
     if (url != null) {
       final Optional<Map<Object, Object>> maybeProperties = getUrlsArgs(url);
