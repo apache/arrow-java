@@ -123,8 +123,6 @@ public class Union${listName}Writer extends AbstractFieldWriter {
   <#assign lowerName = minor.class?uncap_first />
   <#if lowerName == "int" ><#assign lowerName = "integer" /></#if>
   <#assign upperName = minor.class?upper_case />
-  <#assign capName = minor.class?cap_first />
-  <#assign vectName = capName />
   @Override
   public ${minor.class}Writer ${lowerName}() {
     return this;
