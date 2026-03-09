@@ -155,7 +155,7 @@ jobs:
   jni-macos:
     name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
     runs-on: ${{ matrix.platform.runs_on }}
-    timeout-minutes: 45
+    timeout-minutes: 60
     needs:
       - source
     strategy:
