@@ -13,14 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Arrow's type system has many types, and projects building operations across Arrow data
-# (comparisons, casts, aggregations) benefit from generating type-specialized code rather
-# than hand-writing implementations for each type.
-
-# The TDD files provide a machine-readable definition of Arrow's types that enables this. 
-# Including them in the distribution allows downstream projects to generate code that 
-# stays in sync as Arrow's type system evolves.
-
 data: {
     # TODO:  Rename to ~valueVectorModesAndTypes for clarity.
     vv:                       tdd(../data/ValueVectorTypes.tdd),
