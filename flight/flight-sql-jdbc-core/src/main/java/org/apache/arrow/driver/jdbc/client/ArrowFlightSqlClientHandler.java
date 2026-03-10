@@ -388,6 +388,14 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      */
     Schema getParameterSchema();
 
+    /**
+     * Gets whether this {@link PreparedStatement} is an update statement.
+     *
+     * @return {@code true} if this is an update statement, {@code false} if it's a query, or {@code
+     *     null} if the server did not provide this information.
+     */
+    Boolean isUpdate();
+
     void setParameters(VectorSchemaRoot parameters);
 
     @Override
@@ -479,6 +487,11 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       @Override
       public void setParameters(VectorSchemaRoot parameters) {
         preparedStatement.setParameters(parameters);
+      }
+
+      @Override
+      public Boolean isUpdate() {
+        return preparedStatement.isUpdate();
       }
 
       @Override
