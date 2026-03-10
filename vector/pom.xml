@@ -205,6 +205,12 @@ under the License.
             </goals>
             <phase>package</phase>
             <configuration>
+              <!-- Arrow's type system has many types, and projects building operations across Arrow data
+              (comparisons, casts, aggregations) benefit from generating type-specialized code rather
+              than hand-writing implementations for each type.
+              The TDD files provide a machine-readable definition of Arrow's types that enables this.
+              Including them in the distribution allows downstream projects to generate code that 
+              stays in sync as Arrow's type system evolves.-->
               <classifier>codegen</classifier>
               <classesDirectory>${basedir}/src/main/codegen</classesDirectory>
               <includes>

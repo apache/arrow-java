@@ -45,6 +45,9 @@ but some modules are JNI bindings to the C++ library.
    * - arrow-vector
      - An off-heap reference implementation for Arrow columnar data format.
      - Native
+   * - arrow-vector-codegen
+     - Template files for Arrow datatypes suitable for code generation.
+     - Native
    * - arrow-tools
      - Java applications for working with Arrow ValueVectors.
      - Native
