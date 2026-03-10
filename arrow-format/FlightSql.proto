@@ -1550,6 +1550,8 @@ message ActionCreatePreparedStatementResult {
   // If the query provided contained parameters, parameter_schema contains the
   // schema of the expected parameters.  It should be an IPC-encapsulated Schema, as described in Schema.fbs.
   bytes parameter_schema = 3;
+
+  optional bool is_update = 4;
 }
 
 /*
