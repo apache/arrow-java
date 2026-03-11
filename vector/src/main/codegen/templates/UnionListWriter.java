@@ -368,6 +368,7 @@ public class Union${listName}Writer extends AbstractFieldWriter {
   }
 
   <#elseif minor.class?starts_with("Decimal")>
+  @Override
   public void write${name}(long start, ArrowBuf buffer, ArrowType arrowType) {
     writer.write${name}(start, buffer, arrowType);
     writer.setPosition(writer.idx()+1);
@@ -379,11 +380,13 @@ public class Union${listName}Writer extends AbstractFieldWriter {
     writer.setPosition(writer.idx()+1);
   }
 
+  @Override
   public void write${name}(BigDecimal value) {
     writer.write${name}(value);
     writer.setPosition(writer.idx()+1);
   }
 
+  @Override
   public void writeBigEndianBytesTo${name}(byte[] value, ArrowType arrowType){
     writer.writeBigEndianBytesTo${name}(value, arrowType);
     writer.setPosition(writer.idx() + 1);
@@ -427,6 +430,7 @@ public class Union${listName}Writer extends AbstractFieldWriter {
     writer.setPosition(writer.idx() + 1);
   }
 
+  @Override
   public void write${minor.class}(String value) {
     writer.write${minor.class}(value);
     writer.setPosition(writer.idx() + 1);
