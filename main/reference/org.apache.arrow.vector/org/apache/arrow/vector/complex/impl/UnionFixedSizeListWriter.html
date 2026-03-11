@@ -1348,6 +1348,37 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="duration()">
+<h3>duration</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></span>&nbsp;<span class="element-name">duration</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#duration()">duration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="duration(java.lang.String,org.apache.arrow.vector.types.TimeUnit)">
+<h3>duration</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></span>&nbsp;<span class="element-name">duration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../../types/TimeUnit.html" title="enum in org.apache.arrow.vector.types">TimeUnit</a>&nbsp;unit)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#duration(java.lang.String,org.apache.arrow.vector.types.TimeUnit)">duration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="duration(java.lang.String)">
+<h3>duration</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></span>&nbsp;<span class="element-name">duration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#duration(java.lang.String)">duration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="timeStampSec()">
 <h3>timeStampSec</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampSecWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecWriter</a></span>&nbsp;<span class="element-name">timeStampSec</span>()</div>
@@ -1428,6 +1459,130 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="timeStampSecTZ()">
+<h3>timeStampSecTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></span>&nbsp;<span class="element-name">timeStampSecTZ</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampSecTZ()">timeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampSecTZ(java.lang.String,java.lang.String)">
+<h3>timeStampSecTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></span>&nbsp;<span class="element-name">timeStampSecTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampSecTZ(java.lang.String,java.lang.String)">timeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampSecTZ(java.lang.String)">
+<h3>timeStampSecTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></span>&nbsp;<span class="element-name">timeStampSecTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampSecTZ(java.lang.String)">timeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampMilliTZ()">
+<h3>timeStampMilliTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></span>&nbsp;<span class="element-name">timeStampMilliTZ</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampMilliTZ()">timeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampMilliTZ(java.lang.String,java.lang.String)">
+<h3>timeStampMilliTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></span>&nbsp;<span class="element-name">timeStampMilliTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMilliTZ(java.lang.String,java.lang.String)">timeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampMilliTZ(java.lang.String)">
+<h3>timeStampMilliTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></span>&nbsp;<span class="element-name">timeStampMilliTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMilliTZ(java.lang.String)">timeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampMicroTZ()">
+<h3>timeStampMicroTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></span>&nbsp;<span class="element-name">timeStampMicroTZ</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampMicroTZ()">timeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampMicroTZ(java.lang.String,java.lang.String)">
+<h3>timeStampMicroTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></span>&nbsp;<span class="element-name">timeStampMicroTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMicroTZ(java.lang.String,java.lang.String)">timeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampMicroTZ(java.lang.String)">
+<h3>timeStampMicroTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></span>&nbsp;<span class="element-name">timeStampMicroTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMicroTZ(java.lang.String)">timeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampNanoTZ()">
+<h3>timeStampNanoTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></span>&nbsp;<span class="element-name">timeStampNanoTZ</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampNanoTZ()">timeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampNanoTZ(java.lang.String,java.lang.String)">
+<h3>timeStampNanoTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></span>&nbsp;<span class="element-name">timeStampNanoTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampNanoTZ(java.lang.String,java.lang.String)">timeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="timeStampNanoTZ(java.lang.String)">
+<h3>timeStampNanoTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></span>&nbsp;<span class="element-name">timeStampNanoTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampNanoTZ(java.lang.String)">timeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="timeMicro()">
 <h3>timeMicro</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeMicroWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeMicroWriter</a></span>&nbsp;<span class="element-name">timeMicro</span>()</div>
@@ -1504,6 +1659,101 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../writer/BaseWriter.StructWriter.html#intervalMonthDayNano(java.lang.String)">intervalMonthDayNano</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="decimal256()">
+<h3>decimal256</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></span>&nbsp;<span class="element-name">decimal256</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#decimal256()">decimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="decimal256(java.lang.String,int,int)">
+<h3>decimal256</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></span>&nbsp;<span class="element-name">decimal256</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ int&nbsp;scale,
+ int&nbsp;precision)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal256(java.lang.String,int,int)">decimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="decimal256(java.lang.String)">
+<h3>decimal256</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></span>&nbsp;<span class="element-name">decimal256</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal256(java.lang.String)">decimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="decimal()">
+<h3>decimal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></span>&nbsp;<span class="element-name">decimal</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#decimal()">decimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="decimal(java.lang.String,int,int)">
+<h3>decimal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></span>&nbsp;<span class="element-name">decimal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ int&nbsp;scale,
+ int&nbsp;precision)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal(java.lang.String,int,int)">decimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="decimal(java.lang.String)">
+<h3>decimal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></span>&nbsp;<span class="element-name">decimal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal(java.lang.String)">decimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="fixedSizeBinary()">
+<h3>fixedSizeBinary</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></span>&nbsp;<span class="element-name">fixedSizeBinary</span>()</div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.ListWriter.html#fixedSizeBinary()">fixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="fixedSizeBinary(java.lang.String,int)">
+<h3>fixedSizeBinary</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></span>&nbsp;<span class="element-name">fixedSizeBinary</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ int&nbsp;byteWidth)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#fixedSizeBinary(java.lang.String,int)">fixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="fixedSizeBinary(java.lang.String)">
+<h3>fixedSizeBinary</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></span>&nbsp;<span class="element-name">fixedSizeBinary</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/BaseWriter.StructWriter.html#fixedSizeBinary(java.lang.String)">fixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -1648,70 +1898,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="decimal()">
-<h3>decimal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></span>&nbsp;<span class="element-name">decimal</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#decimal()">decimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="decimal(java.lang.String,int,int)">
-<h3>decimal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></span>&nbsp;<span class="element-name">decimal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- int&nbsp;scale,
- int&nbsp;precision)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal(java.lang.String,int,int)">decimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="decimal(java.lang.String)">
-<h3>decimal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></span>&nbsp;<span class="element-name">decimal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal(java.lang.String)">decimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="decimal256()">
-<h3>decimal256</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></span>&nbsp;<span class="element-name">decimal256</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#decimal256()">decimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="decimal256(java.lang.String,int,int)">
-<h3>decimal256</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></span>&nbsp;<span class="element-name">decimal256</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- int&nbsp;scale,
- int&nbsp;precision)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal256(java.lang.String,int,int)">decimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="decimal256(java.lang.String)">
-<h3>decimal256</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></span>&nbsp;<span class="element-name">decimal256</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#decimal256(java.lang.String)">decimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="struct()">
 <h3>struct</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></span>&nbsp;<span class="element-name">struct</span>()</div>
@@ -1833,26 +2019,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.DecimalHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/DecimalHolder.html" title="class in org.apache.arrow.vector.holders">DecimalHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/DecimalWriter.html#write(org.apache.arrow.vector.holders.DecimalHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.Decimal256Holder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/Decimal256Holder.html" title="class in org.apache.arrow.vector.holders">Decimal256Holder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/Decimal256Writer.html#write(org.apache.arrow.vector.holders.Decimal256Holder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="writeNull()">
 <h3>writeNull</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeNull</span>()</div>
@@ -1863,72 +2029,6 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="../writer/BaseWriter.html#writeNull()">writeNull</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter</a></code></dd>
 <dt>Specified by:</dt>
 <dd><code><a href="../writer/BaseWriter.ExtensionWriter.html#writeNull()">writeNull</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ExtensionWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ExtensionWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">
-<h3>writeDecimal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal</span><wbr><span class="parameters">(long&nbsp;start,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/DecimalWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">writeDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeDecimal(java.math.BigDecimal)">
-<h3>writeDecimal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/DecimalWriter.html#writeDecimal(java.math.BigDecimal)">writeDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeBigEndianBytesToDecimal(byte[],org.apache.arrow.vector.types.pojo.ArrowType)">
-<h3>writeBigEndianBytesToDecimal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeBigEndianBytesToDecimal</span><wbr><span class="parameters">(byte[]&nbsp;value,
- <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/DecimalWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)">writeBigEndianBytesToDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">
-<h3>writeDecimal256</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal256</span><wbr><span class="parameters">(long&nbsp;start,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/Decimal256Writer.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">writeDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeDecimal256(java.math.BigDecimal)">
-<h3>writeDecimal256</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal256</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/Decimal256Writer.html#writeDecimal256(java.math.BigDecimal)">writeDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeBigEndianBytesToDecimal256(byte[],org.apache.arrow.vector.types.pojo.ArrowType)">
-<h3>writeBigEndianBytesToDecimal256</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeBigEndianBytesToDecimal256</span><wbr><span class="parameters">(byte[]&nbsp;value,
- <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/Decimal256Writer.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)">writeBigEndianBytesToDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2253,6 +2353,32 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="writeDuration(long)">
+<h3>writeDuration</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDuration</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/DurationWriter.html#writeDuration(long)">writeDuration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/DurationWriter.html#write(org.apache.arrow.vector.holders.DurationHolder)"><code>DurationWriter.write(DurationHolder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.DurationHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/DurationHolder.html" title="class in org.apache.arrow.vector.holders">DurationHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/DurationWriter.html#write(org.apache.arrow.vector.holders.DurationHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="writeTimeStampSec(long)">
 <h3>writeTimeStampSec</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampSec</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
@@ -2329,6 +2455,110 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../writer/TimeStampNanoWriter.html#write(org.apache.arrow.vector.holders.TimeStampNanoHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampNanoWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeTimeStampSecTZ(long)">
+<h3>writeTimeStampSecTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampSecTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampSecTZWriter.html#writeTimeStampSecTZ(long)">writeTimeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/TimeStampSecTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampSecTZHolder)"><code>TimeStampSecTZWriter.write(TimeStampSecTZHolder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampSecTZHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampSecTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampSecTZHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampSecTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampSecTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeTimeStampMilliTZ(long)">
+<h3>writeTimeStampMilliTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampMilliTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampMilliTZWriter.html#writeTimeStampMilliTZ(long)">writeTimeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/TimeStampMilliTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMilliTZHolder)"><code>TimeStampMilliTZWriter.write(TimeStampMilliTZHolder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampMilliTZHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampMilliTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampMilliTZHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampMilliTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMilliTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeTimeStampMicroTZ(long)">
+<h3>writeTimeStampMicroTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampMicroTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampMicroTZWriter.html#writeTimeStampMicroTZ(long)">writeTimeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/TimeStampMicroTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMicroTZHolder)"><code>TimeStampMicroTZWriter.write(TimeStampMicroTZHolder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampMicroTZHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampMicroTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampMicroTZHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampMicroTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMicroTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeTimeStampNanoTZ(long)">
+<h3>writeTimeStampNanoTZ</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampNanoTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampNanoTZWriter.html#writeTimeStampNanoTZ(long)">writeTimeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/TimeStampNanoTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampNanoTZHolder)"><code>TimeStampNanoTZWriter.write(TimeStampNanoTZHolder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampNanoTZHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampNanoTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampNanoTZHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/TimeStampNanoTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampNanoTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2416,6 +2646,174 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="writeDecimal256(long,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeDecimal256</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal256</span><wbr><span class="parameters">(long&nbsp;start,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/Decimal256Writer.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf)">writeDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/Decimal256Writer.html#write(org.apache.arrow.vector.holders.Decimal256Holder)"><code>Decimal256Writer.write(Decimal256Holder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">
+<h3>writeDecimal256</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal256</span><wbr><span class="parameters">(long&nbsp;start,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/Decimal256Writer.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">writeDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.Decimal256Holder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/Decimal256Holder.html" title="class in org.apache.arrow.vector.holders">Decimal256Holder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/Decimal256Writer.html#write(org.apache.arrow.vector.holders.Decimal256Holder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeDecimal256(java.math.BigDecimal)">
+<h3>writeDecimal256</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal256</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/Decimal256Writer.html#writeDecimal256(java.math.BigDecimal)">writeDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeBigEndianBytesToDecimal256(byte[],org.apache.arrow.vector.types.pojo.ArrowType)">
+<h3>writeBigEndianBytesToDecimal256</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeBigEndianBytesToDecimal256</span><wbr><span class="parameters">(byte[]&nbsp;value,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/Decimal256Writer.html#writeBigEndianBytesToDecimal256(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)">writeBigEndianBytesToDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeDecimal(long,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeDecimal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal</span><wbr><span class="parameters">(long&nbsp;start,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/DecimalWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf)">writeDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/DecimalWriter.html#write(org.apache.arrow.vector.holders.DecimalHolder)"><code>DecimalWriter.write(DecimalHolder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">
+<h3>writeDecimal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal</span><wbr><span class="parameters">(long&nbsp;start,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/DecimalWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.vector.types.pojo.ArrowType)">writeDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.DecimalHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/DecimalHolder.html" title="class in org.apache.arrow.vector.holders">DecimalHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/DecimalWriter.html#write(org.apache.arrow.vector.holders.DecimalHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeDecimal(java.math.BigDecimal)">
+<h3>writeDecimal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/DecimalWriter.html#writeDecimal(java.math.BigDecimal)">writeDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeBigEndianBytesToDecimal(byte[],org.apache.arrow.vector.types.pojo.ArrowType)">
+<h3>writeBigEndianBytesToDecimal</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeBigEndianBytesToDecimal</span><wbr><span class="parameters">(byte[]&nbsp;value,
+ <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;arrowType)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/DecimalWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)">writeBigEndianBytesToDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeFixedSizeBinary(org.apache.arrow.memory.ArrowBuf)">
+<h3>writeFixedSizeBinary</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeFixedSizeBinary</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/FixedSizeBinaryWriter.html#writeFixedSizeBinary(org.apache.arrow.memory.ArrowBuf)">writeFixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></code></dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list-long">
+<li><a href="../writer/FixedSizeBinaryWriter.html#write(org.apache.arrow.vector.holders.FixedSizeBinaryHolder)"><code>FixedSizeBinaryWriter.write(FixedSizeBinaryHolder)</code></a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.FixedSizeBinaryHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/FixedSizeBinaryHolder.html" title="class in org.apache.arrow.vector.holders">FixedSizeBinaryHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/FixedSizeBinaryWriter.html#write(org.apache.arrow.vector.holders.FixedSizeBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="writeVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeVarBinary</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeVarBinary</span><wbr><span class="parameters">(int&nbsp;start,
+ int&nbsp;end,
+ <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/VarBinaryWriter.html#writeVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">writeVarBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarBinaryWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="write(org.apache.arrow.vector.holders.VarBinaryHolder)">
+<h3>write</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/VarBinaryHolder.html" title="class in org.apache.arrow.vector.holders">VarBinaryHolder</a>&nbsp;holder)</span></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="../writer/VarBinaryWriter.html#write(org.apache.arrow.vector.holders.VarBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarBinaryWriter</a></code></dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="writeVarBinary(byte[])">
 <h3>writeVarBinary</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeVarBinary</span><wbr><span class="parameters">(byte[]&nbsp;value)</span></div>
@@ -2460,24 +2858,24 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="writeVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeVarBinary</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeVarBinary</span><wbr><span class="parameters">(int&nbsp;start,
+<section class="detail" id="writeVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeVarChar</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeVarChar</span><wbr><span class="parameters">(int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/VarBinaryWriter.html#writeVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">writeVarBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarBinaryWriter</a></code></dd>
+<dd><code><a href="../writer/VarCharWriter.html#writeVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">writeVarChar</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarCharWriter</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.VarBinaryHolder)">
+<section class="detail" id="write(org.apache.arrow.vector.holders.VarCharHolder)">
 <h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/VarBinaryHolder.html" title="class in org.apache.arrow.vector.holders">VarBinaryHolder</a>&nbsp;holder)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/VarCharHolder.html" title="class in org.apache.arrow.vector.holders">VarCharHolder</a>&nbsp;holder)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/VarBinaryWriter.html#write(org.apache.arrow.vector.holders.VarBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarBinaryWriter</a></code></dd>
+<dd><code><a href="../writer/VarCharWriter.html#write(org.apache.arrow.vector.holders.VarCharHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarCharWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2502,24 +2900,24 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="writeVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeVarChar</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeVarChar</span><wbr><span class="parameters">(int&nbsp;start,
+<section class="detail" id="writeViewVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeViewVarBinary</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeViewVarBinary</span><wbr><span class="parameters">(int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/VarCharWriter.html#writeVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">writeVarChar</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarCharWriter</a></code></dd>
+<dd><code><a href="../writer/ViewVarBinaryWriter.html#writeViewVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">writeViewVarBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarBinaryWriter</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.VarCharHolder)">
+<section class="detail" id="write(org.apache.arrow.vector.holders.ViewVarBinaryHolder)">
 <h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/VarCharHolder.html" title="class in org.apache.arrow.vector.holders">VarCharHolder</a>&nbsp;holder)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/ViewVarBinaryHolder.html" title="class in org.apache.arrow.vector.holders">ViewVarBinaryHolder</a>&nbsp;holder)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/VarCharWriter.html#write(org.apache.arrow.vector.holders.VarCharHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/VarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">VarCharWriter</a></code></dd>
+<dd><code><a href="../writer/ViewVarBinaryWriter.html#write(org.apache.arrow.vector.holders.ViewVarBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarBinaryWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2568,24 +2966,24 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="writeViewVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeViewVarBinary</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeViewVarBinary</span><wbr><span class="parameters">(int&nbsp;start,
+<section class="detail" id="writeViewVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeViewVarChar</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeViewVarChar</span><wbr><span class="parameters">(int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/ViewVarBinaryWriter.html#writeViewVarBinary(int,int,org.apache.arrow.memory.ArrowBuf)">writeViewVarBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarBinaryWriter</a></code></dd>
+<dd><code><a href="../writer/ViewVarCharWriter.html#writeViewVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">writeViewVarChar</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarCharWriter</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.ViewVarBinaryHolder)">
+<section class="detail" id="write(org.apache.arrow.vector.holders.ViewVarCharHolder)">
 <h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/ViewVarBinaryHolder.html" title="class in org.apache.arrow.vector.holders">ViewVarBinaryHolder</a>&nbsp;holder)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/ViewVarCharHolder.html" title="class in org.apache.arrow.vector.holders">ViewVarCharHolder</a>&nbsp;holder)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/ViewVarBinaryWriter.html#write(org.apache.arrow.vector.holders.ViewVarBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarBinaryWriter</a></code></dd>
+<dd><code><a href="../writer/ViewVarCharWriter.html#write(org.apache.arrow.vector.holders.ViewVarCharHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarCharWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2610,24 +3008,24 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="writeViewVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeViewVarChar</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeViewVarChar</span><wbr><span class="parameters">(int&nbsp;start,
- int&nbsp;end,
+<section class="detail" id="writeLargeVarChar(long,long,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeLargeVarChar</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeLargeVarChar</span><wbr><span class="parameters">(long&nbsp;start,
+ long&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/ViewVarCharWriter.html#writeViewVarChar(int,int,org.apache.arrow.memory.ArrowBuf)">writeViewVarChar</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarCharWriter</a></code></dd>
+<dd><code><a href="../writer/LargeVarCharWriter.html#writeLargeVarChar(long,long,org.apache.arrow.memory.ArrowBuf)">writeLargeVarChar</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarCharWriter</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.ViewVarCharHolder)">
+<section class="detail" id="write(org.apache.arrow.vector.holders.LargeVarCharHolder)">
 <h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/ViewVarCharHolder.html" title="class in org.apache.arrow.vector.holders">ViewVarCharHolder</a>&nbsp;holder)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/LargeVarCharHolder.html" title="class in org.apache.arrow.vector.holders">LargeVarCharHolder</a>&nbsp;holder)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/ViewVarCharWriter.html#write(org.apache.arrow.vector.holders.ViewVarCharHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/ViewVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">ViewVarCharWriter</a></code></dd>
+<dd><code><a href="../writer/LargeVarCharWriter.html#write(org.apache.arrow.vector.holders.LargeVarCharHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarCharWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2652,24 +3050,24 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="writeLargeVarChar(long,long,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeLargeVarChar</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeLargeVarChar</span><wbr><span class="parameters">(long&nbsp;start,
+<section class="detail" id="writeLargeVarBinary(long,long,org.apache.arrow.memory.ArrowBuf)">
+<h3>writeLargeVarBinary</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeLargeVarBinary</span><wbr><span class="parameters">(long&nbsp;start,
  long&nbsp;end,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/LargeVarCharWriter.html#writeLargeVarChar(long,long,org.apache.arrow.memory.ArrowBuf)">writeLargeVarChar</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarCharWriter</a></code></dd>
+<dd><code><a href="../writer/LargeVarBinaryWriter.html#writeLargeVarBinary(long,long,org.apache.arrow.memory.ArrowBuf)">writeLargeVarBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarBinaryWriter</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.LargeVarCharHolder)">
+<section class="detail" id="write(org.apache.arrow.vector.holders.LargeVarBinaryHolder)">
 <h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/LargeVarCharHolder.html" title="class in org.apache.arrow.vector.holders">LargeVarCharHolder</a>&nbsp;holder)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/LargeVarBinaryHolder.html" title="class in org.apache.arrow.vector.holders">LargeVarBinaryHolder</a>&nbsp;holder)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="../writer/LargeVarCharWriter.html#write(org.apache.arrow.vector.holders.LargeVarCharHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarCharWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarCharWriter</a></code></dd>
+<dd><code><a href="../writer/LargeVarBinaryWriter.html#write(org.apache.arrow.vector.holders.LargeVarBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarBinaryWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2714,28 +3112,6 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../writer/LargeVarBinaryWriter.html#writeLargeVarBinary(java.nio.ByteBuffer,int,int)">writeLargeVarBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarBinaryWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeLargeVarBinary(long,long,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeLargeVarBinary</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeLargeVarBinary</span><wbr><span class="parameters">(long&nbsp;start,
- long&nbsp;end,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/LargeVarBinaryWriter.html#writeLargeVarBinary(long,long,org.apache.arrow.memory.ArrowBuf)">writeLargeVarBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarBinaryWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.LargeVarBinaryHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/LargeVarBinaryHolder.html" title="class in org.apache.arrow.vector.holders">LargeVarBinaryHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/LargeVarBinaryWriter.html#write(org.apache.arrow.vector.holders.LargeVarBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/LargeVarBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">LargeVarBinaryWriter</a></code></dd>
 </dl>
 </section>
 </li>
@@ -2897,153 +3273,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.DurationHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/DurationHolder.html" title="class in org.apache.arrow.vector.holders">DurationHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/DurationWriter.html#write(org.apache.arrow.vector.holders.DurationHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeDuration(long)">
-<h3>writeDuration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDuration</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/DurationWriter.html#writeDuration(long)">writeDuration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/DurationWriter.html#write(org.apache.arrow.vector.holders.DurationHolder)"><code>DurationWriter.write(DurationHolder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampSecTZHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampSecTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampSecTZHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampSecTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampSecTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeTimeStampSecTZ(long)">
-<h3>writeTimeStampSecTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampSecTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampSecTZWriter.html#writeTimeStampSecTZ(long)">writeTimeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/TimeStampSecTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampSecTZHolder)"><code>TimeStampSecTZWriter.write(TimeStampSecTZHolder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampMilliTZHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampMilliTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampMilliTZHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampMilliTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMilliTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeTimeStampMilliTZ(long)">
-<h3>writeTimeStampMilliTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampMilliTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampMilliTZWriter.html#writeTimeStampMilliTZ(long)">writeTimeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/TimeStampMilliTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMilliTZHolder)"><code>TimeStampMilliTZWriter.write(TimeStampMilliTZHolder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampMicroTZHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampMicroTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampMicroTZHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampMicroTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMicroTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeTimeStampMicroTZ(long)">
-<h3>writeTimeStampMicroTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampMicroTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampMicroTZWriter.html#writeTimeStampMicroTZ(long)">writeTimeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/TimeStampMicroTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampMicroTZHolder)"><code>TimeStampMicroTZWriter.write(TimeStampMicroTZHolder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.TimeStampNanoTZHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/TimeStampNanoTZHolder.html" title="class in org.apache.arrow.vector.holders">TimeStampNanoTZHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampNanoTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampNanoTZHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeTimeStampNanoTZ(long)">
-<h3>writeTimeStampNanoTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeTimeStampNanoTZ</span><wbr><span class="parameters">(long&nbsp;value)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/TimeStampNanoTZWriter.html#writeTimeStampNanoTZ(long)">writeTimeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/TimeStampNanoTZWriter.html#write(org.apache.arrow.vector.holders.TimeStampNanoTZHolder)"><code>TimeStampNanoTZWriter.write(TimeStampNanoTZHolder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeDecimal256(long,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeDecimal256</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal256</span><wbr><span class="parameters">(long&nbsp;start,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/Decimal256Writer.html#writeDecimal256(long,org.apache.arrow.memory.ArrowBuf)">writeDecimal256</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/Decimal256Writer.html" title="interface in org.apache.arrow.vector.complex.writer">Decimal256Writer</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/Decimal256Writer.html#write(org.apache.arrow.vector.holders.Decimal256Holder)"><code>Decimal256Writer.write(Decimal256Holder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="writeBigEndianBytesToDecimal256(byte[])">
 <h3>writeBigEndianBytesToDecimal256</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeBigEndianBytesToDecimal256</span><wbr><span class="parameters">(byte[]&nbsp;value)</span></div>
@@ -3061,23 +3290,6 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="writeDecimal(long,org.apache.arrow.memory.ArrowBuf)">
-<h3>writeDecimal</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeDecimal</span><wbr><span class="parameters">(long&nbsp;start,
- <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/DecimalWriter.html#writeDecimal(long,org.apache.arrow.memory.ArrowBuf)">writeDecimal</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/DecimalWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DecimalWriter</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/DecimalWriter.html#write(org.apache.arrow.vector.holders.DecimalHolder)"><code>DecimalWriter.write(DecimalHolder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
 <section class="detail" id="writeBigEndianBytesToDecimal(byte[])">
 <h3>writeBigEndianBytesToDecimal</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeBigEndianBytesToDecimal</span><wbr><span class="parameters">(byte[]&nbsp;value)</span></div>
@@ -3089,32 +3301,6 @@ loadScripts(document, 'script');</script>
 <ul class="see-list-long">
 <li><a href="../writer/DecimalWriter.html#writeBigEndianBytesToDecimal(byte%5B%5D,org.apache.arrow.vector.types.pojo.ArrowType)"><code>DecimalWriter.writeBigEndianBytesToDecimal(byte[], ArrowType)</code></a></li>
 <li><a href="../writer/DecimalWriter.html#write(org.apache.arrow.vector.holders.DecimalHolder)"><code>DecimalWriter.write(DecimalHolder)</code></a></li>
-</ul>
-</dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="write(org.apache.arrow.vector.holders.FixedSizeBinaryHolder)">
-<h3>write</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">write</span><wbr><span class="parameters">(<a href="../../holders/FixedSizeBinaryHolder.html" title="class in org.apache.arrow.vector.holders">FixedSizeBinaryHolder</a>&nbsp;holder)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/FixedSizeBinaryWriter.html#write(org.apache.arrow.vector.holders.FixedSizeBinaryHolder)">write</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="writeFixedSizeBinary(org.apache.arrow.memory.ArrowBuf)">
-<h3>writeFixedSizeBinary</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeFixedSizeBinary</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/FixedSizeBinaryWriter.html#writeFixedSizeBinary(org.apache.arrow.memory.ArrowBuf)">writeFixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></code></dd>
-<dt>See Also:</dt>
-<dd>
-<ul class="see-list-long">
-<li><a href="../writer/FixedSizeBinaryWriter.html#write(org.apache.arrow.vector.holders.FixedSizeBinaryHolder)"><code>FixedSizeBinaryWriter.write(FixedSizeBinaryHolder)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -3174,192 +3360,6 @@ loadScripts(document, 'script');</script>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../writer/BaseWriter.ListWriter.html#extension(org.apache.arrow.vector.types.pojo.ArrowType)">extension</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="duration(java.lang.String,org.apache.arrow.vector.types.TimeUnit)">
-<h3>duration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></span>&nbsp;<span class="element-name">duration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="../../types/TimeUnit.html" title="enum in org.apache.arrow.vector.types">TimeUnit</a>&nbsp;unit)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#duration(java.lang.String,org.apache.arrow.vector.types.TimeUnit)">duration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="duration(java.lang.String)">
-<h3>duration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></span>&nbsp;<span class="element-name">duration</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#duration(java.lang.String)">duration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="duration()">
-<h3>duration</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/DurationWriter.html" title="interface in org.apache.arrow.vector.complex.writer">DurationWriter</a></span>&nbsp;<span class="element-name">duration</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#duration()">duration</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampSecTZ(java.lang.String,java.lang.String)">
-<h3>timeStampSecTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></span>&nbsp;<span class="element-name">timeStampSecTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampSecTZ(java.lang.String,java.lang.String)">timeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampSecTZ(java.lang.String)">
-<h3>timeStampSecTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></span>&nbsp;<span class="element-name">timeStampSecTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampSecTZ(java.lang.String)">timeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampSecTZ()">
-<h3>timeStampSecTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampSecTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampSecTZWriter</a></span>&nbsp;<span class="element-name">timeStampSecTZ</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampSecTZ()">timeStampSecTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampMilliTZ(java.lang.String,java.lang.String)">
-<h3>timeStampMilliTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></span>&nbsp;<span class="element-name">timeStampMilliTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMilliTZ(java.lang.String,java.lang.String)">timeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampMilliTZ(java.lang.String)">
-<h3>timeStampMilliTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></span>&nbsp;<span class="element-name">timeStampMilliTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMilliTZ(java.lang.String)">timeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampMilliTZ()">
-<h3>timeStampMilliTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMilliTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMilliTZWriter</a></span>&nbsp;<span class="element-name">timeStampMilliTZ</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampMilliTZ()">timeStampMilliTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampMicroTZ(java.lang.String,java.lang.String)">
-<h3>timeStampMicroTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></span>&nbsp;<span class="element-name">timeStampMicroTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMicroTZ(java.lang.String,java.lang.String)">timeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampMicroTZ(java.lang.String)">
-<h3>timeStampMicroTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></span>&nbsp;<span class="element-name">timeStampMicroTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampMicroTZ(java.lang.String)">timeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampMicroTZ()">
-<h3>timeStampMicroTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampMicroTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampMicroTZWriter</a></span>&nbsp;<span class="element-name">timeStampMicroTZ</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampMicroTZ()">timeStampMicroTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampNanoTZ(java.lang.String,java.lang.String)">
-<h3>timeStampNanoTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></span>&nbsp;<span class="element-name">timeStampNanoTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;timezone)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampNanoTZ(java.lang.String,java.lang.String)">timeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampNanoTZ(java.lang.String)">
-<h3>timeStampNanoTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></span>&nbsp;<span class="element-name">timeStampNanoTZ</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#timeStampNanoTZ(java.lang.String)">timeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="timeStampNanoTZ()">
-<h3>timeStampNanoTZ</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/TimeStampNanoTZWriter.html" title="interface in org.apache.arrow.vector.complex.writer">TimeStampNanoTZWriter</a></span>&nbsp;<span class="element-name">timeStampNanoTZ</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#timeStampNanoTZ()">timeStampNanoTZ</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="fixedSizeBinary(java.lang.String,int)">
-<h3>fixedSizeBinary</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></span>&nbsp;<span class="element-name">fixedSizeBinary</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
- int&nbsp;byteWidth)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#fixedSizeBinary(java.lang.String,int)">fixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="fixedSizeBinary(java.lang.String)">
-<h3>fixedSizeBinary</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></span>&nbsp;<span class="element-name">fixedSizeBinary</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</span></div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.StructWriter.html#fixedSizeBinary(java.lang.String)">fixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></code></dd>
-</dl>
-</section>
-</li>
-<li>
-<section class="detail" id="fixedSizeBinary()">
-<h3>fixedSizeBinary</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../writer/FixedSizeBinaryWriter.html" title="interface in org.apache.arrow.vector.complex.writer">FixedSizeBinaryWriter</a></span>&nbsp;<span class="element-name">fixedSizeBinary</span>()</div>
-<dl class="notes">
-<dt>Specified by:</dt>
-<dd><code><a href="../writer/BaseWriter.ListWriter.html#fixedSizeBinary()">fixedSizeBinary</a></code>&nbsp;in interface&nbsp;<code><a href="../writer/BaseWriter.ListWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ListWriter</a></code></dd>
 </dl>
 </section>
 </li>
