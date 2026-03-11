@@ -40,6 +40,7 @@ import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
+import org.apache.arrow.vector.holders.TimeStampNanoTZHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -664,6 +665,49 @@ public class TestFixedSizeListVector {
         assertEquals((i + 2) * 1000L, reader.reader().readLong().longValue());
         assertFalse(reader.next());
       }
+    }
+  }
+
+  @Test
+  public void testWriterUsingHolderTimeStampNanoTZField() {
+    try (final FixedSizeListVector vector =
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
+      UnionFixedSizeListWriter writer = vector.getWriter();
+      writer.allocate();
+
+      TimeStampNanoTZHolder holder = new TimeStampNanoTZHolder();
+      holder.timezone = "SomeFakeTimeZone";
+      writer.startList();
+      holder.value = 12341234L;
+      writer.timeStampNanoTZ().write(holder);
+      holder.value = 55555L;
+      writer.timeStampNanoTZ().write(holder);
+
+      // Writing with a different timezone should throw
+      holder.timezone = "AsdfTimeZone";
+      holder.value = 77777;
+      IllegalArgumentException ex =
+          assertThrows(
+              IllegalArgumentException.class, () -> writer.timeStampNanoTZ().write(holder));
+      assertEquals(
+          "holder.timezone: AsdfTimeZone not equal to vector timezone: SomeFakeTimeZone",
+          ex.getMessage());
+
+      writer.endList();
+      vector.setValueCount(1);
+
+      Field expectedDataField =
+          new Field(
+              BaseRepeatedValueVector.DATA_VECTOR_NAME,
+              FieldType.nullable(new ArrowType.Timestamp(TimeUnit.NANOSECOND, "SomeFakeTimeZone")),
+              null);
+      Field expectedField =
+          new Field(
+              vector.getName(),
+              FieldType.nullable(new ArrowType.FixedSizeList(3)),
+              List.of(expectedDataField));
+
+      assertEquals(expectedField, writer.getField());
     }
   }
 
