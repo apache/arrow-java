@@ -62,6 +62,9 @@ public class ArrowFlightStatementExecuteTest {
   private static final String SAMPLE_LARGE_UPDATE_QUERY =
       "UPDATE this_large_table SET this_large_field = that_large_field FROM this_large_test WHERE this_large_condition";
   private static final long SAMPLE_LARGE_UPDATE_COUNT = Long.MAX_VALUE;
+  private static final String SAMPLE_QUERY_CMD_V2 = "SELECT * FROM this_test_v2";
+  private static final String SAMPLE_LARGE_UPDATE_QUERY_V2 =
+      "UPDATE this_large_table_v2 SET this_large_field = that_large_field FROM this_large_test WHERE this_large_condition";
   private static final MockFlightSqlProducer PRODUCER = new MockFlightSqlProducer();
 
   @RegisterExtension
@@ -96,6 +99,30 @@ public class ArrowFlightStatementExecuteTest {
             }));
     PRODUCER.addUpdateQuery(SAMPLE_UPDATE_QUERY, SAMPLE_UPDATE_COUNT);
     PRODUCER.addUpdateQuery(SAMPLE_LARGE_UPDATE_QUERY, SAMPLE_LARGE_UPDATE_COUNT);
+
+    // V2 queries with is_update field set
+    PRODUCER.addSelectQueryV2(
+        SAMPLE_QUERY_CMD_V2,
+        SAMPLE_QUERY_SCHEMA,
+        Collections.singletonList(
+            listener -> {
+              try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+                  final VectorSchemaRoot root =
+                      VectorSchemaRoot.create(SAMPLE_QUERY_SCHEMA, allocator)) {
+                final UInt1Vector vector = (UInt1Vector) root.getVector(VECTOR_NAME);
+                IntStream.range(0, SAMPLE_QUERY_ROWS)
+                    .forEach(index -> vector.setSafe(index, index));
+                vector.setValueCount(SAMPLE_QUERY_ROWS);
+                root.setRowCount(SAMPLE_QUERY_ROWS);
+                listener.start(root);
+                listener.putNext();
+              } catch (final Throwable throwable) {
+                listener.error(throwable);
+              } finally {
+                listener.completed();
+              }
+            }));
+    PRODUCER.addUpdateQueryV2(SAMPLE_LARGE_UPDATE_QUERY_V2, SAMPLE_LARGE_UPDATE_COUNT);
   }
 
   @BeforeEach
@@ -166,6 +193,44 @@ public class ArrowFlightStatementExecuteTest {
     assertThat(
         (long) statement.getUpdateCount(),
         is(allOf(equalTo(statement.getLargeUpdateCount()), equalTo(0L))));
+    assertThat(statement.getResultSet(), is(nullValue()));
+  }
+
+  @Test
+  public void testExecuteShouldRunSelectQueryV2() throws SQLException {
+    assertThat(statement.execute(SAMPLE_QUERY_CMD_V2), is(true));
+    final Set<Byte> numbers =
+        IntStream.range(0, SAMPLE_QUERY_ROWS)
+            .boxed()
+            .map(Integer::byteValue)
+            .collect(Collectors.toCollection(HashSet::new));
+    try (final ResultSet resultSet = statement.getResultSet()) {
+      final int columnCount = resultSet.getMetaData().getColumnCount();
+      assertThat(columnCount, is(1));
+      int rowCount = 0;
+      for (; resultSet.next(); rowCount++) {
+        assertThat(numbers.remove(resultSet.getByte(1)), is(true));
+      }
+      assertThat(rowCount, is(equalTo(SAMPLE_QUERY_ROWS)));
+    }
+    assertThat(numbers, is(Collections.emptySet()));
+    assertThat(
+        (long) statement.getUpdateCount(),
+        is(allOf(equalTo(statement.getLargeUpdateCount()), equalTo(-1L))));
+  }
+
+  @Test
+  public void testExecuteShouldRunUpdateQueryForLargeUpdateV2() throws SQLException {
+    assertThat(statement.execute(SAMPLE_LARGE_UPDATE_QUERY_V2), is(false)); // UPDATE query.
+    final long updateCountSmall = statement.getUpdateCount();
+    final long updateCountLarge = statement.getLargeUpdateCount();
+    assertThat(updateCountLarge, is(equalTo(SAMPLE_LARGE_UPDATE_COUNT)));
+    assertThat(
+        updateCountSmall,
+        is(
+            allOf(
+                equalTo((long) AvaticaUtils.toSaturatedInt(updateCountLarge)),
+                not(equalTo(updateCountLarge)))));
     assertThat(statement.getResultSet(), is(nullValue()));
   }
 }
