@@ -20,7 +20,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.TimeZone;
-import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaFactory;
@@ -79,20 +78,20 @@ public class ArrowFlightJdbcFactory implements AvaticaFactory {
       final Meta.Signature signature,
       final int resultType,
       final int resultSetConcurrency,
-      final int resultSetHoldability)
-      throws SQLException {
+      final int resultSetHoldability) {
     final ArrowFlightConnection flightConnection = (ArrowFlightConnection) connection;
-    ArrowFlightSqlClientHandler.PreparedStatement preparedStatement =
-        flightConnection.getMeta().getPreparedStatement(statementHandle);
+    final AvaticaStatement existingStatement =
+        flightConnection.statementMap.get(statementHandle.id);
+    if (existingStatement instanceof ArrowFlightPreparedStatement) {
+      return (ArrowFlightPreparedStatement) existingStatement;
+    }
+    if (existingStatement != null) {
+      throw new IllegalStateException(
+          "Unexpected statement type found for prepared statement handle: " + statementHandle);
+    }
 
-    return ArrowFlightPreparedStatement.newPreparedStatement(
-        flightConnection,
-        preparedStatement,
-        statementHandle,
-        signature,
-        resultType,
-        resultSetConcurrency,
-        resultSetHoldability);
+    throw new IllegalStateException(
+        "PreparedStatement was not pre-created for handle: " + statementHandle);
   }
 
   @Override
