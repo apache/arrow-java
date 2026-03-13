@@ -16,24 +16,32 @@
  */
 package org.apache.arrow.driver.jdbc;
 
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
+import org.apache.arrow.driver.jdbc.utils.AvaticaParameterBinder;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.util.Preconditions;
+import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.calcite.avatica.AvaticaPreparedStatement;
+import org.apache.calcite.avatica.Meta.ExecuteBatchResult;
+import org.apache.calcite.avatica.Meta.ExecuteResult;
+import org.apache.calcite.avatica.Meta.MetaResultSet;
+import org.apache.calcite.avatica.Meta.PrepareCallback;
 import org.apache.calcite.avatica.Meta.Signature;
 import org.apache.calcite.avatica.Meta.StatementHandle;
+import org.apache.calcite.avatica.Meta.StatementType;
+import org.apache.calcite.avatica.remote.TypedValue;
 
-/** Arrow Flight JBCS's implementation {@link PreparedStatement}. */
+/** Arrow Flight JDBC's implementation {@link java.sql.PreparedStatement}. */
 public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
     implements ArrowFlightInfoStatement {
 
-  private final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement;
+  private ArrowFlightSqlClientHandler.PreparedStatement preparedStatement;
 
   private ArrowFlightPreparedStatement(
       final ArrowFlightConnection connection,
-      final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement,
       final StatementHandle handle,
       final Signature signature,
       final int resultSetType,
@@ -41,26 +49,34 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
       final int resultSetHoldability)
       throws SQLException {
     super(connection, handle, signature, resultSetType, resultSetConcurrency, resultSetHoldability);
-    this.preparedStatement = Preconditions.checkNotNull(preparedStatement);
   }
 
-  static ArrowFlightPreparedStatement newPreparedStatement(
+  static ArrowFlightPreparedStatement createPrepared(
       final ArrowFlightConnection connection,
-      final ArrowFlightSqlClientHandler.PreparedStatement preparedStmt,
       final StatementHandle statementHandle,
-      final Signature signature,
+      final String query,
       final int resultSetType,
       final int resultSetConcurrency,
       final int resultSetHoldability)
       throws SQLException {
-    return new ArrowFlightPreparedStatement(
-        connection,
-        preparedStmt,
-        statementHandle,
-        signature,
-        resultSetType,
-        resultSetConcurrency,
-        resultSetHoldability);
+    final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement =
+        connection.getClientHandler().prepare(query);
+    final Signature signature =
+        ArrowFlightMetaImpl.buildSignature(
+            query, preparedStatement.getDataSetSchema(), preparedStatement.getParameterSchema());
+    statementHandle.signature = signature;
+
+    final ArrowFlightPreparedStatement statement =
+        new ArrowFlightPreparedStatement(
+            connection,
+            statementHandle,
+            signature,
+            resultSetType,
+            resultSetConcurrency,
+            resultSetHoldability);
+    statement.preparedStatement = Preconditions.checkNotNull(preparedStatement);
+    statement.setSignature(signature);
+    return statement;
   }
 
   @Override
@@ -68,14 +84,93 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
     return (ArrowFlightConnection) super.getConnection();
   }
 
+  ExecuteResult prepareAndExecute(final PrepareCallback callback) throws SQLException {
+    ensurePrepared();
+    final StatementType statementType = preparedStatement.getType();
+    final long updateCount =
+        statementType.equals(StatementType.UPDATE) ? preparedStatement.executeUpdate() : -1;
+    synchronized (callback.getMonitor()) {
+      callback.clear();
+      callback.assign(handle.signature, null, updateCount);
+    }
+    callback.execute();
+    final MetaResultSet metaResultSet =
+        MetaResultSet.create(handle.connectionId, handle.id, false, handle.signature, null);
+    return new ExecuteResult(Collections.singletonList(metaResultSet));
+  }
+
+  Schema getDataSetSchema() {
+    ensurePrepared();
+    return preparedStatement.getDataSetSchema();
+  }
+
   @Override
   public synchronized void close() throws SQLException {
-    this.preparedStatement.close();
     super.close();
+  }
+
+  void closePreparedResources() {
+    if (preparedStatement != null) {
+      preparedStatement.close();
+      preparedStatement = null;
+    }
+  }
+
+  ExecuteResult executeWithTypedValues(
+      final StatementHandle statementHandle,
+      final List<TypedValue> typedValues,
+      final long maxRowCount) {
+    ensurePrepared();
+    Preconditions.checkArgument(
+        connection.id.equals(statementHandle.connectionId), "Connection IDs are not consistent");
+    new AvaticaParameterBinder(
+            preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator())
+        .bind(typedValues);
+
+    if (statementHandle.signature == null
+        || statementHandle.signature.statementType == StatementType.IS_DML) {
+      long updatedCount = preparedStatement.executeUpdate();
+      return new ExecuteResult(
+          Collections.singletonList(
+              MetaResultSet.count(statementHandle.connectionId, statementHandle.id, updatedCount)));
+    }
+
+    // TODO Why is maxRowCount ignored?
+    return new ExecuteResult(
+        Collections.singletonList(
+            MetaResultSet.create(
+                statementHandle.connectionId,
+                statementHandle.id,
+                true,
+                statementHandle.signature,
+                null)));
+  }
+
+  ExecuteBatchResult executeBatchWithTypedValues(
+      final StatementHandle statementHandle, final List<List<TypedValue>> parameterValuesList) {
+    ensurePrepared();
+    Preconditions.checkArgument(
+        connection.id.equals(statementHandle.connectionId), "Connection IDs are not consistent");
+    final AvaticaParameterBinder binder =
+        new AvaticaParameterBinder(
+            preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator());
+    for (int i = 0; i < parameterValuesList.size(); i++) {
+      binder.bind(parameterValuesList.get(i), i);
+    }
+
+    long[] updatedCounts = {preparedStatement.executeUpdate()};
+    return new ExecuteBatchResult(updatedCounts);
   }
 
   @Override
   public FlightInfo executeFlightInfoQuery() throws SQLException {
+    ensurePrepared();
     return preparedStatement.executeQuery();
+  }
+
+  private void ensurePrepared() {
+    if (preparedStatement == null) {
+      throw new IllegalStateException("PreparedStatement is already closed.");
+    }
   }
 }
