@@ -17,7 +17,6 @@
 package org.apache.arrow.driver.jdbc;
 
 import java.sql.SQLException;
-import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler.PreparedStatement;
 import org.apache.arrow.driver.jdbc.utils.ConvertUtils;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.vector.types.pojo.Schema;
@@ -44,18 +43,21 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
 
   @Override
   public FlightInfo executeFlightInfoQuery() throws SQLException {
-    final PreparedStatement preparedStatement =
-        getConnection().getMeta().getPreparedStatement(handle);
+    final ArrowFlightPreparedStatement preparedStatement =
+        getConnection().getMeta().getPreparedStatementInstanceOrNull(handle);
     final Meta.Signature signature = getSignature();
     if (signature == null) {
       return null;
     }
 
-    final Schema resultSetSchema = preparedStatement.getDataSetSchema();
-    signature.columns.addAll(
-        ConvertUtils.convertArrowFieldsToColumnMetaDataList(resultSetSchema.getFields()));
-    setSignature(signature);
+    if (preparedStatement != null) {
+      final Schema resultSetSchema = preparedStatement.getDataSetSchema();
+      signature.columns.addAll(
+          ConvertUtils.convertArrowFieldsToColumnMetaDataList(resultSetSchema.getFields()));
+      setSignature(signature);
+      return preparedStatement.executeFlightInfoQuery();
+    }
 
-    return preparedStatement.executeQuery();
+    throw new IllegalStateException("Prepared statement query not found: " + handle);
   }
 }
