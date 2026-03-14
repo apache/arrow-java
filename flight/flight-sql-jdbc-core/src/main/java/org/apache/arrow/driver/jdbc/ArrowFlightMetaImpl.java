@@ -102,15 +102,13 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final int resultSetConcurrency,
       final int resultSetHoldability)
       throws SQLException {
-    final StatementHandle handle = super.createStatement(connection.handle);
-    return ArrowFlightPreparedStatement.createPrepared(
-        (ArrowFlightConnection) connection,
-        handle,
-        //        null,
-        query,
-        resultSetType,
-        resultSetConcurrency,
-        resultSetHoldability);
+    return ArrowFlightPreparedStatement.builder((ArrowFlightConnection) connection)
+        .withQuery(query)
+        .withGeneratedHandle()
+        .withResultSetType(resultSetType)
+        .withResultSetConcurrency(resultSetConcurrency)
+        .withResultSetHoldability(resultSetHoldability)
+        .build();
   }
 
   @Override
@@ -153,14 +151,14 @@ public class ArrowFlightMetaImpl extends MetaImpl {
           && !(statement instanceof ArrowFlightPreparedStatement)) {
         throw new IllegalStateException("Prepared statement not found: " + handle);
       }
+      if (statement instanceof ArrowFlightPreparedStatement) {
+        ((ArrowFlightPreparedStatement) statement).closePreparedResources();
+      }
       final ArrowFlightPreparedStatement preparedStatement =
-          ArrowFlightPreparedStatement.createPrepared(
-              (ArrowFlightConnection) connection,
-              handle,
-              query,
-              statement.getResultSetType(),
-              statement.getResultSetConcurrency(),
-              statement.getResultSetHoldability());
+          ArrowFlightPreparedStatement.builder((ArrowFlightConnection) connection)
+              .withQuery(query)
+              .withExistingStatement(statement)
+              .build();
       return preparedStatement.prepareAndExecute(callback);
     } catch (SQLTimeoutException e) {
       // So far AvaticaStatement(executeInternal) only handles NoSuchStatement and
