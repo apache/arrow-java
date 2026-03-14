@@ -25,6 +25,7 @@ import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.calcite.avatica.AvaticaPreparedStatement;
+import org.apache.calcite.avatica.AvaticaStatement;
 import org.apache.calcite.avatica.Meta.ExecuteBatchResult;
 import org.apache.calcite.avatica.Meta.ExecuteResult;
 import org.apache.calcite.avatica.Meta.MetaResultSet;
@@ -44,39 +45,19 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
       final ArrowFlightConnection connection,
       final StatementHandle handle,
       final Signature signature,
+      final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement,
       final int resultSetType,
       final int resultSetConcurrency,
       final int resultSetHoldability)
       throws SQLException {
     super(connection, handle, signature, resultSetType, resultSetConcurrency, resultSetHoldability);
+    this.preparedStatement = Preconditions.checkNotNull(preparedStatement);
+    this.handle.signature = signature;
+    setSignature(signature);
   }
 
-  static ArrowFlightPreparedStatement createPrepared(
-      final ArrowFlightConnection connection,
-      final StatementHandle statementHandle,
-      final String query,
-      final int resultSetType,
-      final int resultSetConcurrency,
-      final int resultSetHoldability)
-      throws SQLException {
-    final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement =
-        connection.getClientHandler().prepare(query);
-    final Signature signature =
-        ArrowFlightMetaImpl.buildSignature(
-            query, preparedStatement.getDataSetSchema(), preparedStatement.getParameterSchema());
-    statementHandle.signature = signature;
-
-    final ArrowFlightPreparedStatement statement =
-        new ArrowFlightPreparedStatement(
-            connection,
-            statementHandle,
-            signature,
-            resultSetType,
-            resultSetConcurrency,
-            resultSetHoldability);
-    statement.preparedStatement = Preconditions.checkNotNull(preparedStatement);
-    statement.setSignature(signature);
-    return statement;
+  static Builder builder(final ArrowFlightConnection connection) {
+    return new Builder(connection);
   }
 
   @Override
@@ -171,6 +152,81 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
   private void ensurePrepared() {
     if (preparedStatement == null) {
       throw new IllegalStateException("PreparedStatement is already closed.");
+    }
+  }
+
+  static final class Builder {
+    private final ArrowFlightConnection connection;
+    private StatementHandle handle;
+    private String query;
+    private Integer resultSetType;
+    private Integer resultSetConcurrency;
+    private Integer resultSetHoldability;
+    private boolean generateHandle;
+
+    private Builder(final ArrowFlightConnection connection) {
+      this.connection = Preconditions.checkNotNull(connection);
+    }
+
+    Builder withQuery(final String query) {
+      this.query = Preconditions.checkNotNull(query);
+      return this;
+    }
+
+    Builder withGeneratedHandle() {
+      this.generateHandle = true;
+      this.handle = null;
+      return this;
+    }
+
+    Builder withExistingStatement(final AvaticaStatement statement) throws SQLException {
+      Preconditions.checkNotNull(statement);
+      this.generateHandle = false;
+      this.handle = Preconditions.checkNotNull(statement.handle);
+      this.resultSetType = statement.getResultSetType();
+      this.resultSetConcurrency = statement.getResultSetConcurrency();
+      this.resultSetHoldability = statement.getResultSetHoldability();
+      return this;
+    }
+
+    Builder withResultSetType(final int resultSetType) {
+      this.resultSetType = resultSetType;
+      return this;
+    }
+
+    Builder withResultSetConcurrency(final int resultSetConcurrency) {
+      this.resultSetConcurrency = resultSetConcurrency;
+      return this;
+    }
+
+    Builder withResultSetHoldability(final int resultSetHoldability) {
+      this.resultSetHoldability = resultSetHoldability;
+      return this;
+    }
+
+    ArrowFlightPreparedStatement build() throws SQLException {
+      Preconditions.checkNotNull(query);
+      Preconditions.checkNotNull(resultSetType);
+      Preconditions.checkNotNull(resultSetConcurrency);
+      Preconditions.checkNotNull(resultSetHoldability);
+      if (!generateHandle && handle == null) {
+        throw new IllegalStateException("PreparedStatement builder requires a handle.");
+      }
+
+      final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement =
+          connection.getClientHandler().prepare(query);
+      final Signature signature =
+          ArrowFlightMetaImpl.buildSignature(
+              query, preparedStatement.getDataSetSchema(), preparedStatement.getParameterSchema());
+
+      return new ArrowFlightPreparedStatement(
+          connection,
+          generateHandle ? null : handle,
+          signature,
+          preparedStatement,
+          resultSetType,
+          resultSetConcurrency,
+          resultSetHoldability);
     }
   }
 }

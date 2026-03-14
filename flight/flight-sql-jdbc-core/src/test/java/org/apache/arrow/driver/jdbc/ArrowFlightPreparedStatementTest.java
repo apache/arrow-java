@@ -21,6 +21,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -132,6 +134,24 @@ public class ArrowFlightPreparedStatementTest {
       assertFalse(resultSet.next());
       assertFalse(preparedStatement.getMoreResults());
       assertEquals(-1, preparedStatement.getUpdateCount());
+  @Test
+  public void testPrepareStatementRegistersCreatedStatementByGeneratedHandle() throws SQLException {
+    final String query = CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD;
+    final ArrowFlightConnection flightConnection = (ArrowFlightConnection) connection;
+
+    try (final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+      final ArrowFlightPreparedStatement arrowPreparedStatement =
+          (ArrowFlightPreparedStatement) preparedStatement;
+
+      assertNotNull(
+          flightConnection
+              .getMeta()
+              .getPreparedStatementInstanceOrNull(arrowPreparedStatement.handle));
+      assertSame(
+          arrowPreparedStatement,
+          flightConnection
+              .getMeta()
+              .getPreparedStatementInstanceOrNull(arrowPreparedStatement.handle));
     }
   }
 
