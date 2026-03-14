@@ -22,6 +22,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -135,6 +137,21 @@ public class ArrowFlightStatementExecuteTest {
     assertThat(
         (long) statement.getUpdateCount(),
         is(allOf(equalTo(statement.getLargeUpdateCount()), equalTo(-1L))));
+  }
+
+  @Test
+  public void testExecuteReplacesStatementMapEntryWithPreparedStatement() throws SQLException {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+
+    final ArrowFlightPreparedStatement preparedStatement =
+        arrowConnection.getMeta().getPreparedStatementInstanceOrNull(arrowStatement.handle);
+
+    assertNotNull(preparedStatement);
+    assertSame(preparedStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
+    assertThat(preparedStatement.handle.id, is(equalTo(arrowStatement.handle.id)));
   }
 
   @Test
