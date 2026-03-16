@@ -101,6 +101,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   private final SqlInfoBuilder sqlInfoBuilder = new SqlInfoBuilder();
   private final Map<String, Schema> parameterSchemas = new HashMap<>();
   private final Map<String, List<List<Object>>> expectedParameterValues = new HashMap<>();
+  private final Map<String, Boolean> isUpdateMap = new HashMap<>();
 
   private final Map<String, Integer> actionTypeCounter = new HashMap<>();
 
@@ -177,6 +178,32 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   }
 
   /**
+   * Registers a new {@link StatementType#SELECT} SQL query with is_update field set.
+   *
+   * @param sqlCommand the SQL command under which to register the new query.
+   * @param schema the schema to use for the query result.
+   * @param resultProviders the result provider for this query.
+   */
+  public void addSelectQueryV2(
+      final String sqlCommand,
+      final Schema schema,
+      final List<Consumer<ServerStreamListener>> resultProviders) {
+    addSelectQuery(sqlCommand, schema, resultProviders);
+    isUpdateMap.put(sqlCommand, false);
+  }
+
+  /**
+   * Registers a new {@link StatementType#UPDATE} SQL query with is_update field set.
+   *
+   * @param sqlCommand the SQL command.
+   * @param updatedRows the number of rows affected.
+   */
+  public void addUpdateQueryV2(final String sqlCommand, final long updatedRows) {
+    addUpdateQuery(sqlCommand, updatedRows);
+    isUpdateMap.put(sqlCommand, true);
+  }
+
+  /**
    * Adds a catalog query to the results.
    *
    * @param message the {@link Message} corresponding to the catalog query request type to register.
@@ -245,6 +272,12 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
         MessageSerializer.serialize(
             new WriteChannel(Channels.newChannel(outputStream)), parameterSchema);
         resultBuilder.setParameterSchema(ByteString.copyFrom(outputStream.toByteArray()));
+      }
+
+      // Set is_update field if present
+      final Boolean isUpdate = isUpdateMap.get(query);
+      if (isUpdate != null) {
+        resultBuilder.setIsUpdate(isUpdate);
       }
 
       listener.onNext(new Result(pack(resultBuilder.build()).toByteArray()));
