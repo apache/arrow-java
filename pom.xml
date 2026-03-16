@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.arrow</groupId>
   <artifactId>arrow-java-root</artifactId>
-  <version>19.0.0</version>
+  <version>20.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Arrow Java Root POM</name>
@@ -82,7 +82,7 @@ under the License.
   <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
     <connection>scm:git:https://github.com/apache/arrow-java.git</connection>
     <developerConnection>scm:git:https://github.com/apache/arrow-java.git</developerConnection>
-    <tag>v19.0.0</tag>
+    <tag>main</tag>
     <url>https://github.com/apache/arrow-java/tree/${project.scm.tag}</url>
   </scm>
 
@@ -92,7 +92,7 @@ under the License.
   </issueManagement>
 
   <properties>
-    <project.build.outputTimestamp>1773307790</project.build.outputTimestamp>
+    <project.build.outputTimestamp>1773644827</project.build.outputTimestamp>
     <target.gen.source.path>${project.build.directory}/generated-sources</target.gen.source.path>
     <dep.junit.platform.version>1.9.0</dep.junit.platform.version>
     <dep.junit.jupiter.version>5.12.2</dep.junit.jupiter.version>
