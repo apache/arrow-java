@@ -40,7 +40,7 @@ services:
     #   docker compose run ubuntu
     # Parameters:
     #   MAVEN: 3.9.9
-    #   JDK: 11, 17, 21
+    #   JDK: 17, 21
     image: ${ARCH}/maven:${MAVEN}-eclipse-temurin-${JDK}
     volumes:
       - .:/arrow-java:delegated
@@ -60,7 +60,7 @@ services:
     #   docker compose run conda-jni-cdata
     # Parameters:
     #   MAVEN: 3.9.9
-    #   JDK: 11, 17, 21
+    #   JDK: 17, 21
     image: ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
     build:
       context: .
