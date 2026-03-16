@@ -88,6 +88,9 @@ class TestCompressionCodec {
       CompressionCodec lz4Codec = new Lz4CompressionCodec();
       params.add(Arguments.arguments(len, lz4Codec));
 
+      CompressionCodec snappyCodec = new SnappyCompressionCodec();
+      params.add(Arguments.arguments(len, snappyCodec));
+
       CompressionCodec zstdCodec = new ZstdCompressionCodec();
       params.add(Arguments.arguments(len, zstdCodec));
 
