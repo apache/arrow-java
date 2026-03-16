@@ -16,6 +16,8 @@
  */
 package org.apache.arrow.vector.ipc.message;
 
+import java.util.Map;
+
 /** Interface for Arrow IPC messages (https://arrow.apache.org/docs/format/IPC.html). */
 public interface ArrowMessage extends FBSerializable, AutoCloseable {
 
@@ -25,6 +27,15 @@ public interface ArrowMessage extends FBSerializable, AutoCloseable {
 
   /** Returns the flatbuffer enum value indicating the type of the message. */
   byte getMessageType();
+
+  /**
+   * Returns custom metadata for this message, or null if none.
+   *
+   * @return custom metadata map, or null if no custom metadata is present
+   */
+  default Map<String, String> getCustomMetadata() {
+    return null;
+  }
 
   /**
    * Visitor interface for implementations of {@link ArrowMessage}.
