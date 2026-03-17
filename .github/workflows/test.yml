@@ -53,6 +53,8 @@ jobs:
             name: "Ubuntu"
           - image: conda-jni-cdata
             name: "Conda JNI"
+    # JDK 25 is early-access; Docker images may not be available yet
+    continue-on-error: ${{ matrix.jdk == 25 }}
     env:
       JDK: ${{ matrix.jdk }}
       MAVEN: ${{ matrix.maven }}
