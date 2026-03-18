@@ -273,7 +273,7 @@ jobs:
         run: |
           set -e
           # make brew Java available to CMake
-          export JAVA_HOME=$(brew --prefix openjdk@11)/libexec/openjdk.jdk/Contents/Home
+          export JAVA_HOME=$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home
           ci/scripts/jni_macos_build.sh . arrow build jni
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
@@ -317,7 +317,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v5
         with:
-          java-version: '11'
+          java-version: '17'
           distribution: 'temurin'
       - name: Download Timezone Database
         shell: bash

@@ -341,7 +341,7 @@ How this works:
 .. _`newChildAllocator`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/RootAllocator.html#newChildAllocator-java.lang.String-org.apache.arrow.memory.AllocationListener-long-long-
 .. _`Netty`: https://netty.io/wiki/
 .. _`sun.misc.unsafe`: https://web.archive.org/web/20210929024401/http://www.docjar.com/html/api/sun/misc/Unsafe.java.html
-.. _`Direct Memory`: https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html
+.. _`Direct Memory`: https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html
 .. _`ReferenceManager`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html
 .. _`ReferenceManager.release`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html#release--
 .. _`ReferenceManager.retain`: https://arrow.apache.org/java/current/reference/org.apache.arrow.memory.core/org/apache/arrow/memory/ReferenceManager.html#retain--

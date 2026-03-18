@@ -119,10 +119,10 @@ under the License.
     <!-- List of add-opens arg line arguments for tests -->
     <surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</surefire.add-opens.argLine>
     <!-- org.apache:apache overrides -->
-    <minimalJavaBuildVersion>11</minimalJavaBuildVersion>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.release>11</maven.compiler.release>
+    <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
     <!--
       Downgrade maven-jar-plugin until https://github.com/codehaus-plexus/plexus-archiver/issues/332
       is addressed
@@ -1246,7 +1246,7 @@ under the License.
                       <property>arrow.test.jdk-version</property>
                       <message>"JDK version used for test must be specified."</message>
                       <regex>^\d{2,}</regex>
-                      <regexMessage>"JDK version used for test must be 11, 17, 21, ..."</regexMessage>
+                      <regexMessage>"JDK version used for test must be 17, 21, ..."</regexMessage>
                     </requireProperty>
                   </rules>
                 </configuration>
