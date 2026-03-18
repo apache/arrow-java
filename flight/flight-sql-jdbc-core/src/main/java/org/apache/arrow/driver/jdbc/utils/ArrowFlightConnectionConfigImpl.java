@@ -182,6 +182,22 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     return ArrowFlightConnectionProperty.USE_CLIENT_CACHE.getBoolean(properties);
   }
 
+  public String getProxyHost() {
+    return ArrowFlightConnectionProperty.PROXY_HOST.getString(properties);
+  }
+
+  public Integer getProxyPort() {
+    return ArrowFlightConnectionProperty.PROXY_PORT.getInteger(properties);
+  }
+
+  public String getProxyBypassPattern() {
+    return ArrowFlightConnectionProperty.PROXY_BYPASS_PATTERN.getString(properties);
+  }
+
+  public String getProxyDisable() {
+    return ArrowFlightConnectionProperty.PROXY_DISABLE.getString(properties);
+  }
+
   /**
    * Gets the {@link CallOption}s from this {@link ConnectionConfig}.
    *
@@ -284,6 +300,10 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     OAUTH_EXCHANGE_AUDIENCE("oauth.exchange.aud", null, Type.STRING, false),
     OAUTH_EXCHANGE_REQUESTED_TOKEN_TYPE(
         "oauth.exchange.requestedTokenType", null, Type.STRING, false),
+    PROXY_HOST("proxyHost", null, Type.STRING, false),
+    PROXY_PORT("proxyPort", null, Type.NUMBER, false),
+    PROXY_BYPASS_PATTERN("proxyBypassPattern", null, Type.STRING, false),
+    PROXY_DISABLE("proxyDisable", null, Type.STRING, false),
     ;
 
     private final String camelName;

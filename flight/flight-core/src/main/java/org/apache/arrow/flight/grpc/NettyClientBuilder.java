@@ -185,6 +185,28 @@ public class NettyClientBuilder {
             "Scheme is not supported: " + location.getUri().getScheme());
     }
 
+    try {
+      configureChannel(builder);
+    } catch (SSLException e) {
+      throw new RuntimeException(e);
+    }
+    return builder;
+  }
+
+  /**
+   * Build a {@link NettyChannelBuilder} using {@code forTarget()} instead of {@code forAddress()}.
+   *
+   * <p>This is required for proxy support: only the DNS resolver path ({@code dns:///host:port})
+   * invokes the {@link io.grpc.ProxyDetector}. {@code forAddress()} bypasses it entirely.
+   */
+  public NettyChannelBuilder buildForTarget(String target) throws SSLException {
+    final NettyChannelBuilder builder = NettyChannelBuilder.forTarget(target);
+    configureChannel(builder);
+    return builder;
+  }
+
+  /** Apply TLS and message-size configuration to an already-created {@link NettyChannelBuilder}. */
+  protected void configureChannel(NettyChannelBuilder builder) throws SSLException {
     if (this.forceTls || LocationSchemes.GRPC_TLS.equals(location.getUri().getScheme())) {
       builder.useTransportSecurity();
 
@@ -210,11 +232,8 @@ public class NettyClientBuilder {
           sslContextBuilder.keyManager(this.clientCertificate, this.clientKey);
         }
       }
-      try {
-        builder.sslContext(sslContextBuilder.build());
-      } catch (SSLException e) {
-        throw new RuntimeException(e);
-      }
+
+      builder.sslContext(sslContextBuilder.build());
 
       if (this.overrideHostname != null) {
         builder.overrideAuthority(this.overrideHostname);
@@ -227,6 +246,5 @@ public class NettyClientBuilder {
         .maxTraceEvents(MAX_CHANNEL_TRACE_EVENTS)
         .maxInboundMessageSize(maxInboundMessageSize)
         .maxInboundMetadataSize(maxInboundMessageSize);
-    return builder;
   }
 }

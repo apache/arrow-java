@@ -150,6 +150,12 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     assertNull(builder.flightClientCache);
     assertNull(builder.connectTimeout);
     assertNull(builder.driverVersion);
+
+    // Proxy fields default to null
+    assertNull(builder.proxyHost);
+    assertNull(builder.proxyPort);
+    assertNull(builder.proxyBypassPattern);
+    assertNull(builder.proxyDisable);
   }
 
   @Test
@@ -174,5 +180,35 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     rootBuilder.withCatalog(nameWithSpaces);
     assertTrue(rootBuilder.catalog.isPresent());
     assertEquals(nameWithSpaces, rootBuilder.catalog.get());
+  }
+
+  @Test
+  public void testProxyFieldsSetViaWithMethods() {
+    final ArrowFlightSqlClientHandler.Builder builder = new ArrowFlightSqlClientHandler.Builder();
+
+    builder.withProxySettings("proxy.corp.net", 8080);
+    assertEquals("proxy.corp.net", builder.proxyHost);
+    assertEquals(Integer.valueOf(8080), builder.proxyPort);
+
+    builder.withProxyBypassPattern("*.internal|localhost");
+    assertEquals("*.internal|localhost", builder.proxyBypassPattern);
+
+    builder.withProxyDisable("force");
+    assertEquals("force", builder.proxyDisable);
+  }
+
+  @Test
+  public void testProxySettingsAcceptNull() {
+    final ArrowFlightSqlClientHandler.Builder builder = new ArrowFlightSqlClientHandler.Builder();
+
+    builder.withProxySettings(null, null);
+    assertNull(builder.proxyHost);
+    assertNull(builder.proxyPort);
+
+    builder.withProxyBypassPattern(null);
+    assertNull(builder.proxyBypassPattern);
+
+    builder.withProxyDisable(null);
+    assertNull(builder.proxyDisable);
   }
 }

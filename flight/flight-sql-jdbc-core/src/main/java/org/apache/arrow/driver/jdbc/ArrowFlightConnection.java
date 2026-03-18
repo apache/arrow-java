@@ -128,6 +128,9 @@ public final class ArrowFlightConnection extends AvaticaConnection {
           .withConnectTimeout(config.getConnectTimeout())
           .withDriverVersion(driverVersion)
           .withOAuthConfiguration(config.getOauthConfiguration())
+          .withProxySettings(config.getProxyHost(), config.getProxyPort())
+          .withProxyBypassPattern(config.getProxyBypassPattern())
+          .withProxyDisable(config.getProxyDisable())
           .build();
     } catch (final SQLException e) {
       try {

@@ -38,6 +38,7 @@ import org.apache.arrow.driver.jdbc.client.oauth.OAuthTokenProvider;
 import org.apache.arrow.driver.jdbc.client.utils.ClientAuthenticationUtils;
 import org.apache.arrow.driver.jdbc.client.utils.FlightClientCache;
 import org.apache.arrow.driver.jdbc.client.utils.FlightLocationQueue;
+import org.apache.arrow.driver.jdbc.utils.ArrowFlightProxyDetector;
 import org.apache.arrow.flight.CallOption;
 import org.apache.arrow.flight.CallStatus;
 import org.apache.arrow.flight.CloseSessionRequest;
@@ -693,6 +694,14 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     DriverVersion driverVersion;
 
+    @VisibleForTesting String proxyHost;
+
+    @VisibleForTesting Integer proxyPort;
+
+    @VisibleForTesting String proxyBypassPattern;
+
+    @VisibleForTesting String proxyDisable;
+
     public Builder() {}
 
     /**
@@ -1000,6 +1009,63 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       return this;
     }
 
+    /**
+     * Sets the explicit proxy host and port for this connection.
+     *
+     * @param proxyHost the proxy hostname or IP, or {@code null} to clear
+     * @param proxyPort the proxy port, or {@code null} to clear
+     * @return this builder instance
+     */
+    public Builder withProxySettings(
+        @Nullable final String proxyHost, @Nullable final Integer proxyPort) {
+      this.proxyHost = proxyHost;
+      this.proxyPort = proxyPort;
+      return this;
+    }
+
+    /**
+     * Sets the proxy bypass pattern in {@code http.nonProxyHosts} format ({@code |}-separated glob
+     * patterns).
+     *
+     * @param proxyBypassPattern bypass pattern, or {@code null} to clear
+     * @return this builder instance
+     */
+    public Builder withProxyBypassPattern(@Nullable final String proxyBypassPattern) {
+      this.proxyBypassPattern = proxyBypassPattern;
+      return this;
+    }
+
+    /**
+     * Sets the proxy disable flag. Pass {@code "force"} to disable proxy even when system
+     * properties or environment variables configure one.
+     *
+     * @param proxyDisable disable flag value, or {@code null} to clear
+     * @return this builder instance
+     */
+    public Builder withProxyDisable(@Nullable final String proxyDisable) {
+      this.proxyDisable = proxyDisable;
+      return this;
+    }
+
+    private String getDnsTarget() {
+      // Validate port is in valid range (0-65535) before passing to gRPC.
+      // gRPC's DNS resolver validates the port on a background thread, but background thread
+      // exceptions do not propagate to the caller and prevent proper error handling.
+      if (port < 0 || port > 65535) {
+        throw new IllegalArgumentException("port out of range: " + port);
+      }
+      // IPv6 addresses need brackets in the URI authority component
+      String normalizedHost = host.contains(":") && !host.startsWith("[") ? "[" + host + "]" : host;
+      return "dns:///" + normalizedHost + ":" + port;
+    }
+
+    private NettyChannelBuilder getChannelBuilder(final NettyClientBuilder clientBuilder)
+        throws IOException {
+      // forTarget() ensures the DNS resolver is used, which invokes ProxyDetector.
+      // forAddress() bypasses it entirely.
+      return clientBuilder.buildForTarget(getDnsTarget());
+    }
+
     public String getCacheKey() {
       return getLocation().toString();
     }
@@ -1075,9 +1141,12 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           }
         }
 
-        NettyChannelBuilder channelBuilder = clientBuilder.build();
+        NettyChannelBuilder channelBuilder = getChannelBuilder(clientBuilder);
 
         channelBuilder.userAgent(userAgent);
+        // Always install — returns null when no proxy is applicable, safe for all connections
+        channelBuilder.proxyDetector(
+            new ArrowFlightProxyDetector(proxyHost, proxyPort, proxyBypassPattern, proxyDisable));
 
         if (connectTimeout != null) {
           channelBuilder.withOption(
