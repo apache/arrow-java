@@ -22,7 +22,7 @@ under the License.
   <parent>
     <groupId>org.apache.arrow</groupId>
     <artifactId>arrow-flight</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>19.0.0-iomete.1</version>
   </parent>
 
   <artifactId>flight-sql-jdbc-driver</artifactId>
@@ -138,6 +138,14 @@ under the License.
                 </relocation>
               </relocations>
               <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <manifestEntries>
+                    <Built-By>IOMETE</Built-By>
+                    <Implementation-Vendor>IOMETE</Implementation-Vendor>
+                    <Implementation-Version>19.0.0-iomete.1</Implementation-Version>
+                    <X-Fork-Source>Apache Arrow Java 19.0.0</X-Fork-Source>
+                  </manifestEntries>
+                </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"></transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
                   <resource>META-INF/LICENSE.txt</resource>

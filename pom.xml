@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.arrow</groupId>
   <artifactId>arrow-java-root</artifactId>
-  <version>19.0.0-SNAPSHOT</version>
+  <version>19.0.0-iomete.1</version>
   <packaging>pom</packaging>
 
   <name>Apache Arrow Java Root POM</name>
@@ -92,7 +92,7 @@ under the License.
   </issueManagement>
 
   <properties>
-    <project.build.outputTimestamp>1695310533</project.build.outputTimestamp>
+    <project.build.outputTimestamp>1773860567</project.build.outputTimestamp>
     <target.gen.source.path>${project.build.directory}/generated-sources</target.gen.source.path>
     <dep.junit.platform.version>1.9.0</dep.junit.platform.version>
     <dep.junit.jupiter.version>5.12.2</dep.junit.jupiter.version>
@@ -611,6 +611,7 @@ under the License.
           <skipPoms>false</skipPoms>
           <generateGitPropertiesFile>true</generateGitPropertiesFile>
           <failOnNoGitDirectory>false</failOnNoGitDirectory>
+          <dotGitDirectory>/Users/mateus/workspace/conductor-ai/repos/arrow-java/.git</dotGitDirectory>
           <gitDescribe>
             <skip>false</skip>
             <always>false</always>
