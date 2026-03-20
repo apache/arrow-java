@@ -109,15 +109,10 @@ public class ArrowFlightPreparedStatementTest {
       final ArrowFlightPreparedStatement arrowPreparedStatement =
           (ArrowFlightPreparedStatement) preparedStatement;
 
-      assertNotNull(
-          flightConnection
-              .getMeta()
-              .getPreparedStatementInstanceOrNull(arrowPreparedStatement.handle));
+      assertNotNull(flightConnection.statementMap.get(arrowPreparedStatement.handle.id));
       assertSame(
           arrowPreparedStatement,
-          flightConnection
-              .getMeta()
-              .getPreparedStatementInstanceOrNull(arrowPreparedStatement.handle));
+          flightConnection.statementMap.get(arrowPreparedStatement.handle.id));
     }
   }
 

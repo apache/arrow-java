@@ -282,7 +282,12 @@ public final class ArrowFlightConnection extends AvaticaConnection {
       final int resultSetHoldability)
       throws SQLException {
     checkOpen();
-    return getMeta()
-        .createPreparedStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+    return ArrowFlightPreparedStatement.builder(this)
+        .withQuery(sql)
+        .withGeneratedHandle()
+        .withResultSetType(resultSetType)
+        .withResultSetConcurrency(resultSetConcurrency)
+        .withResultSetHoldability(resultSetHoldability)
+        .build();
   }
 }

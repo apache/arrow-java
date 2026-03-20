@@ -18,6 +18,7 @@ package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -146,12 +147,25 @@ public class ArrowFlightStatementExecuteTest {
 
     assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
 
-    final ArrowFlightPreparedStatement preparedStatement =
-        arrowConnection.getMeta().getPreparedStatementInstanceOrNull(arrowStatement.handle);
+    final Object preparedStatement = arrowConnection.statementMap.get(arrowStatement.handle.id);
 
     assertNotNull(preparedStatement);
     assertSame(preparedStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
-    assertThat(preparedStatement.handle.id, is(equalTo(arrowStatement.handle.id)));
+    assertThat(preparedStatement, instanceOf(ArrowFlightPreparedStatement.class));
+  }
+
+  @Test
+  public void testExecuteQueryRestoresStatementMapEntryWithStatement() throws SQLException {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+
+    try (ResultSet resultSet = statement.executeQuery(SAMPLE_QUERY_CMD)) {
+      assertThat(resultSet.next(), is(true));
+    }
+
+    assertSame(arrowStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
   }
 
   @Test
