@@ -33,11 +33,31 @@ import org.apache.calcite.avatica.remote.TypedValue;
 /** AvaticaParameterConverter for Timestamp Arrow types. */
 public class TimestampAvaticaParameterConverter extends BaseAvaticaParameterConverter {
 
-  public TimestampAvaticaParameterConverter(ArrowType.Timestamp type) {}
+  private final ArrowType.Timestamp type;
+
+  public TimestampAvaticaParameterConverter(ArrowType.Timestamp type) {
+    this.type = type;
+  }
+
+  /** Converts an epoch millisecond value from Avatica to the target time unit. */
+  private long convertFromMillis(long epochMillis) {
+    switch (type.getUnit()) {
+      case SECOND:
+        return epochMillis / 1_000L;
+      case MILLISECOND:
+        return epochMillis;
+      case MICROSECOND:
+        return epochMillis * 1_000L;
+      case NANOSECOND:
+        return epochMillis * 1_000_000L;
+      default:
+        throw new UnsupportedOperationException("Unsupported time unit: " + type.getUnit());
+    }
+  }
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    long value = (long) typedValue.toLocal();
+    long value = convertFromMillis((long) typedValue.toLocal());
     if (vector instanceof TimeStampSecVector) {
       ((TimeStampSecVector) vector).setSafe(index, value);
       return true;
