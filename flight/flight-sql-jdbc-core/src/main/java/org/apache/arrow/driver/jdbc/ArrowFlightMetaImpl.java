@@ -48,10 +48,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
 
   @Override
   public void closeStatement(final StatementHandle statementHandle) {
-    AvaticaStatement statement = connection.statementMap.get(statementHandle.id);
-    if (statement instanceof ArrowFlightPreparedStatement) {
-      ((ArrowFlightPreparedStatement) statement).closePreparedResources();
-    }
+    getMetaStatement(statementHandle).closeStatement();
   }
 
   @Override
@@ -64,8 +61,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final StatementHandle statementHandle,
       final List<TypedValue> typedValues,
       final long maxRowCount) {
-    return getPreparedStatementInstance(statementHandle)
-        .executeWithTypedValues(statementHandle, typedValues, maxRowCount);
+    return getMetaStatement(statementHandle).execute(statementHandle, typedValues, maxRowCount);
   }
 
   @Override
@@ -80,8 +76,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
   public ExecuteBatchResult executeBatch(
       final StatementHandle statementHandle, final List<List<TypedValue>> parameterValuesList)
       throws IllegalStateException {
-    return getPreparedStatementInstance(statementHandle)
-        .executeBatchWithTypedValues(statementHandle, parameterValuesList);
+    return getMetaStatement(statementHandle).executeBatch(statementHandle, parameterValuesList);
   }
 
   @Override
@@ -96,31 +91,16 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         String.format("%s does not use frames.", this), AvaticaConnection.HELPER.unsupported());
   }
 
-  ArrowFlightPreparedStatement createPreparedStatement(
-      final String query,
-      final int resultSetType,
-      final int resultSetConcurrency,
-      final int resultSetHoldability)
-      throws SQLException {
-    return ArrowFlightPreparedStatement.builder((ArrowFlightConnection) connection)
-        .withQuery(query)
-        .withGeneratedHandle()
-        .withResultSetType(resultSetType)
-        .withResultSetConcurrency(resultSetConcurrency)
-        .withResultSetHoldability(resultSetHoldability)
-        .build();
-  }
-
   @Override
   public StatementHandle prepare(
       final ConnectionHandle connectionHandle, final String query, final long maxRowCount) {
     try {
-      return createPreparedStatement(
-              query,
-              ResultSet.TYPE_FORWARD_ONLY,
-              ResultSet.CONCUR_READ_ONLY,
-              connection.getHoldability())
-          .handle;
+      // This is the Avatica entry point used by Connection.prepareStatement(String).
+      ArrowFlightPreparedStatement stmt =
+          (ArrowFlightPreparedStatement)
+              connection.prepareStatement(
+                  query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      return stmt.handle;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -133,6 +113,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final long maxRowCount,
       final PrepareCallback prepareCallback)
       throws NoSuchStatementException {
+    // This is the Avatica entry point used by Statement.execute(String).
     return prepareAndExecute(
         statementHandle, query, maxRowCount, -1 /* Not used */, prepareCallback);
   }
@@ -146,20 +127,9 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final PrepareCallback callback)
       throws NoSuchStatementException {
     try {
-      final AvaticaStatement statement = connection.statementMap.get(handle.id);
-      if (!(statement instanceof ArrowFlightStatement)
-          && !(statement instanceof ArrowFlightPreparedStatement)) {
-        throw new IllegalStateException("Prepared statement not found: " + handle);
-      }
-      if (statement instanceof ArrowFlightPreparedStatement) {
-        ((ArrowFlightPreparedStatement) statement).closePreparedResources();
-      }
-      final ArrowFlightPreparedStatement preparedStatement =
-          ArrowFlightPreparedStatement.builder((ArrowFlightConnection) connection)
-              .withQuery(query)
-              .withExistingStatement(statement)
-              .build();
-      return preparedStatement.prepareAndExecute(callback);
+      // This is the Avatica entry point used by Statement.execute(String).
+      return getMetaStatement(handle)
+          .prepareAndExecute(query, maxRowCount, maxRowsInFirstFrame, callback);
     } catch (SQLTimeoutException e) {
       // So far AvaticaStatement(executeInternal) only handles NoSuchStatement and
       // Runtime
@@ -216,30 +186,37 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         .setTransactionIsolation(Connection.TRANSACTION_NONE);
   }
 
-  private ArrowFlightPreparedStatement getPreparedStatementInstance(
-      StatementHandle statementHandle) {
+  private ArrowFlightMetaStatement getMetaStatement(StatementHandle statementHandle) {
     AvaticaStatement statement = connection.statementMap.get(statementHandle.id);
-    if (!(statement instanceof ArrowFlightPreparedStatement)) {
-      throw new IllegalStateException("Prepared statement not found: " + statementHandle);
+    if (statement instanceof ArrowFlightMetaStatement) {
+      return (ArrowFlightMetaStatement) statement;
     }
-    return (ArrowFlightPreparedStatement) statement;
-  }
-
-  ArrowFlightPreparedStatement getPreparedStatementInstanceOrNull(StatementHandle statementHandle) {
-    AvaticaStatement statement = connection.statementMap.get(statementHandle.id);
-    if (statement instanceof ArrowFlightPreparedStatement) {
-      return (ArrowFlightPreparedStatement) statement;
-    }
-    return null;
+    throw new IllegalStateException("Statement not found: " + statementHandle);
   }
 
   public static Signature buildDefaultSignature() {
-    return buildSignature(null, null, null);
+    return buildSignature(null, StatementType.SELECT);
+  }
+
+  public static Signature buildSignature(final String sql, final StatementType type) {
+    return buildSignature(sql, null, null, type);
   }
 
   /** Builds an Avatica signature from Arrow result and parameter schemas. */
   public static Signature buildSignature(
       final String sql, final Schema resultSetSchema, final Schema parameterSchema) {
+    StatementType statementType =
+        resultSetSchema == null || resultSetSchema.getFields().isEmpty()
+            ? StatementType.IS_DML
+            : StatementType.SELECT;
+    return buildSignature(sql, resultSetSchema, parameterSchema, statementType);
+  }
+
+  private static Signature buildSignature(
+      final String sql,
+      final Schema resultSetSchema,
+      final Schema parameterSchema,
+      final StatementType statementType) {
     List<ColumnMetaData> columnMetaData =
         resultSetSchema == null
             ? new ArrayList<>()
@@ -248,10 +225,6 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         parameterSchema == null
             ? new ArrayList<>()
             : ConvertUtils.convertArrowFieldsToAvaticaParameters(parameterSchema.getFields());
-    StatementType statementType =
-        resultSetSchema == null || resultSetSchema.getFields().isEmpty()
-            ? StatementType.IS_DML
-            : StatementType.SELECT;
     return new Signature(
         columnMetaData,
         sql,
