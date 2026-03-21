@@ -19,6 +19,7 @@ package org.apache.arrow.driver.jdbc.converter.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.sql.Timestamp;
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.BaseFixedWidthVector;
@@ -87,6 +88,102 @@ public class TimestampAvaticaParameterConverterTest {
   public void testNanoTZVector() {
     assertBindConvertsMillis(
         TimeUnit.NANOSECOND, "UTC", TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS * 1_000_000L);
+  }
+
+  @Test
+  public void testMicroVectorPreservesSubMillisecondPrecision() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MICROSECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    // Issue #838 exact values: 2024-11-03 12:45:09.869885001
+    Timestamp ts = new Timestamp(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+    ts.setNanos(869885001); // .869885001 seconds — sub-ms precision
+
+    try (TimeStampMicroVector vector = new TimeStampMicroVector("ts", allocator)) {
+      vector.allocateNew(1);
+      TypedValue typedValue =
+          TypedValue.ofLocal(
+              ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+      assertTrue(converter.bindParameter(vector, typedValue, 0, ts));
+      // epochSeconds=1730637909, nanos=869885001 → micros = 1730637909 * 1_000_000 + 869885
+      assertEquals(1730637909869885L, vector.get(0));
+    }
+  }
+
+  @Test
+  public void testNanoVectorPreservesFullNanosecondPrecision() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.NANOSECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    Timestamp ts = new Timestamp(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+    ts.setNanos(869885001);
+
+    try (TimeStampNanoVector vector = new TimeStampNanoVector("ts", allocator)) {
+      vector.allocateNew(1);
+      TypedValue typedValue =
+          TypedValue.ofLocal(
+              ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+      assertTrue(converter.bindParameter(vector, typedValue, 0, ts));
+      // epochSeconds=1730637909, nanos=869885001 → nanos = 1730637909 * 1_000_000_000 + 869885001
+      assertEquals(1730637909869885001L, vector.get(0));
+    }
+  }
+
+  @Test
+  public void testMilliVectorFromRawTimestampTruncatesSubMillisecond() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MILLISECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    Timestamp ts = new Timestamp(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+    ts.setNanos(869885001); // sub-ms nanos are truncated for MILLISECOND target
+
+    try (TimeStampMilliVector vector = new TimeStampMilliVector("ts", allocator)) {
+      vector.allocateNew(1);
+      TypedValue typedValue =
+          TypedValue.ofLocal(
+              ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+      assertTrue(converter.bindParameter(vector, typedValue, 0, ts));
+      assertEquals(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS, vector.get(0));
+    }
+  }
+
+  @Test
+  public void testSecVectorFromRawTimestampTruncatesSubSecond() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.SECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    Timestamp ts = new Timestamp(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+    ts.setNanos(869885001);
+
+    try (TimeStampSecVector vector = new TimeStampSecVector("ts", allocator)) {
+      vector.allocateNew(1);
+      TypedValue typedValue =
+          TypedValue.ofLocal(
+              ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+      assertTrue(converter.bindParameter(vector, typedValue, 0, ts));
+      assertEquals(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS / 1_000L, vector.get(0));
+    }
+  }
+
+  @Test
+  public void testFallbackToMillisWhenRawTimestampIsNull() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MICROSECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    try (TimeStampMicroVector vector = new TimeStampMicroVector("ts", allocator)) {
+      vector.allocateNew(1);
+      TypedValue typedValue =
+          TypedValue.ofLocal(
+              ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+      // null rawTimestamp → falls back to convertFromMillis
+      assertTrue(converter.bindParameter(vector, typedValue, 0, null));
+      assertEquals(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS * 1_000L, vector.get(0));
+    }
   }
 
   @Test

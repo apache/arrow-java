@@ -19,6 +19,7 @@ package org.apache.arrow.driver.jdbc;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +32,7 @@ import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaParameter;
+import org.apache.calcite.avatica.AvaticaStatement;
 import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.MetaImpl;
 import org.apache.calcite.avatica.NoSuchStatementException;
@@ -105,9 +107,10 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       throw new IllegalStateException("Prepared statement not found: " + statementHandle);
     }
 
+    Map<Integer, Timestamp> rawTimestamps = getRawTimestamps(statementHandle);
     new AvaticaParameterBinder(
             preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator())
-        .bind(typedValues);
+        .bind(typedValues, 0, rawTimestamps);
 
     if (statementHandle.signature == null
         || statementHandle.signature.statementType == StatementType.IS_DML) {
@@ -149,11 +152,12 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       throw new IllegalStateException("Prepared statement not found: " + statementHandle);
     }
 
+    Map<Integer, Timestamp> rawTimestamps = getRawTimestamps(statementHandle);
     final AvaticaParameterBinder binder =
         new AvaticaParameterBinder(
             preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator());
     for (int i = 0; i < parameterValuesList.size(); i++) {
-      binder.bind(parameterValuesList.get(i), i);
+      binder.bind(parameterValuesList.get(i), i, rawTimestamps);
     }
 
     // Update query
@@ -171,6 +175,14 @@ public class ArrowFlightMetaImpl extends MetaImpl {
      */
     throw AvaticaConnection.HELPER.wrap(
         String.format("%s does not use frames.", this), AvaticaConnection.HELPER.unsupported());
+  }
+
+  private Map<Integer, Timestamp> getRawTimestamps(StatementHandle statementHandle) {
+    AvaticaStatement avaticaStmt = connection.statementMap.get(statementHandle.id);
+    if (avaticaStmt instanceof ArrowFlightPreparedStatement) {
+      return ((ArrowFlightPreparedStatement) avaticaStmt).getRawTimestamps();
+    }
+    return Collections.emptyMap();
   }
 
   private PreparedStatement prepareForHandle(final String query, StatementHandle handle) {

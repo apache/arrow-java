@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -249,6 +251,57 @@ public class ArrowFlightPreparedStatementTest {
       stmt.addBatch();
       int[] updated = stmt.executeBatch();
       assertEquals(42, updated[0]);
+    }
+  }
+
+  @Test
+  public void testTimestampParameterWithMicrosecondPrecision() throws SQLException {
+    String query = "Fake timestamp micro update";
+    // Server schema declares parameter as TIMESTAMP(MICROSECOND, UTC)
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // TimeStampMicroTZVector.getObject() returns Long (raw epoch micros)
+    // epochSeconds=1730637909, nanos=869885001 → micros = 1730637909 * 1_000_000 + 869885
+    List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(1730637909869885L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001); // .869885001 seconds — sub-ms precision
+      stmt.setTimestamp(1, ts);
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
+  public void testTimestampParameterWithMillisecondPrecision() throws SQLException {
+    String query = "Fake timestamp milli update";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC"))));
+
+    // TimeStampMilliTZVector.getObject() returns Long (raw epoch millis)
+    // Sub-ms nanos are correctly truncated for MILLISECOND target
+    List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(1730637909869L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001);
+      stmt.setTimestamp(1, ts);
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
     }
   }
 }
