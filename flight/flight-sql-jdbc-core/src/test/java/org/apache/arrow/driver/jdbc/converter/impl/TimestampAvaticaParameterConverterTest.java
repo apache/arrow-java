@@ -201,6 +201,51 @@ public class TimestampAvaticaParameterConverterTest {
     }
   }
 
+  @Test
+  public void testSecVectorNegativeEpochFloorDivision() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.SECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    try (TimeStampSecVector vector = new TimeStampSecVector("ts", allocator)) {
+      vector.allocateNew(3);
+      // -999 millis: regular division gives 0 (wrong), floorDiv gives -1 (correct)
+      TypedValue tv1 = TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, -999L);
+      assertTrue(converter.bindParameter(vector, tv1, 0));
+      assertEquals(-1L, vector.get(0));
+
+      // -1000 millis: exactly -1 second
+      TypedValue tv2 = TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, -1000L);
+      assertTrue(converter.bindParameter(vector, tv2, 1));
+      assertEquals(-1L, vector.get(1));
+
+      // -1001 millis: floorDiv gives -2 (correct), regular division gives -1 (wrong)
+      TypedValue tv3 = TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, -1001L);
+      assertTrue(converter.bindParameter(vector, tv3, 2));
+      assertEquals(-2L, vector.get(2));
+    }
+  }
+
+  @Test
+  public void testNegativeEpochRawTimestampPreservesSubMillis() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MICROSECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    // 1969-12-31 23:59:59.000123456 UTC → epochMillis=-1000, nanos=123456
+    // epochSeconds = floorDiv(-1000, 1000) = -1
+    // micros = -1 * 1_000_000 + 123456/1000 = -1_000_000 + 123 = -999877
+    Timestamp ts = new Timestamp(-1000L);
+    ts.setNanos(123456);
+
+    try (TimeStampMicroVector vector = new TimeStampMicroVector("ts", allocator)) {
+      vector.allocateNew(1);
+      TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, -1000L);
+      assertTrue(converter.bindParameter(vector, typedValue, 0, ts));
+      assertEquals(-999877L, vector.get(0));
+    }
+  }
+
   private void assertBindConvertsMillis(TimeUnit unit, String tz, long expectedValue) {
     BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
     ArrowType.Timestamp type = new ArrowType.Timestamp(unit, tz);

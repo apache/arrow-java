@@ -17,7 +17,6 @@
 package org.apache.arrow.driver.jdbc.converter.impl;
 
 import java.sql.Timestamp;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
 import org.apache.arrow.vector.TimeStampMicroVector;
@@ -31,6 +30,7 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.calcite.avatica.AvaticaParameter;
 import org.apache.calcite.avatica.remote.TypedValue;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** AvaticaParameterConverter for Timestamp Arrow types. */
 public class TimestampAvaticaParameterConverter extends BaseAvaticaParameterConverter {
@@ -69,7 +69,7 @@ public class TimestampAvaticaParameterConverter extends BaseAvaticaParameterConv
   private long convertFromMillis(long epochMillis) {
     switch (type.getUnit()) {
       case SECOND:
-        return epochMillis / 1_000L;
+        return Math.floorDiv(epochMillis, 1_000L);
       case MILLISECOND:
         return epochMillis;
       case MICROSECOND:

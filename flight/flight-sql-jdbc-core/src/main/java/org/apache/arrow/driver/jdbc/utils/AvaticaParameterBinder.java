@@ -105,8 +105,7 @@ public class AvaticaParameterBinder {
    * @param index index for parameter.
    * @param rawTimestamps Raw java.sql.Timestamp objects keyed by 1-based parameter index.
    */
-  public void bind(
-      List<TypedValue> typedValues, int index, Map<Integer, Timestamp> rawTimestamps) {
+  public void bind(List<TypedValue> typedValues, int index, Map<Integer, Timestamp> rawTimestamps) {
     if (preparedStatement.getParameterSchema().getFields().size() != typedValues.size()) {
       throw new IllegalStateException(
           String.format(

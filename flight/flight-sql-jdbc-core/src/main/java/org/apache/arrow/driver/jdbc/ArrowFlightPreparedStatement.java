@@ -83,7 +83,7 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
   @Override
   public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
     if (x != null) {
-      rawTimestamps.put(parameterIndex, x);
+      rawTimestamps.put(parameterIndex, (Timestamp) x.clone());
     } else {
       rawTimestamps.remove(parameterIndex);
     }
@@ -93,11 +93,30 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
   @Override
   public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
     if (x != null) {
-      rawTimestamps.put(parameterIndex, x);
+      rawTimestamps.put(parameterIndex, (Timestamp) x.clone());
     } else {
       rawTimestamps.remove(parameterIndex);
     }
     super.setTimestamp(parameterIndex, x, cal);
+  }
+
+  @Override
+  public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
+    rawTimestamps.remove(parameterIndex);
+    super.setObject(parameterIndex, x, targetSqlType);
+  }
+
+  @Override
+  public void setObject(int parameterIndex, Object x) throws SQLException {
+    rawTimestamps.remove(parameterIndex);
+    super.setObject(parameterIndex, x);
+  }
+
+  @Override
+  public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength)
+      throws SQLException {
+    rawTimestamps.remove(parameterIndex);
+    super.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
   }
 
   @Override
