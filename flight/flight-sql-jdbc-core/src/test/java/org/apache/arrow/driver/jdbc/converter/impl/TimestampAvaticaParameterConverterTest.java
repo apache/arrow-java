@@ -21,8 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.BaseFixedWidthVector;
+import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.TimeStampMicroTZVector;
 import org.apache.arrow.vector.TimeStampMicroVector;
+import org.apache.arrow.vector.TimeStampMilliTZVector;
 import org.apache.arrow.vector.TimeStampMilliVector;
 import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.TimeStampNanoVector;
@@ -42,119 +45,52 @@ public class TimestampAvaticaParameterConverterTest {
   public static RootAllocatorTestExtension rootAllocatorTestExtension =
       new RootAllocatorTestExtension();
 
-  // A known epoch millis value: 2024-11-03 12:45:09.869 UTC
-  private static final long EPOCH_MILLIS = 1730637909869L;
+  // 2024-11-03 12:45:09.869 UTC — fractional seconds exercise the SECOND truncation path
+  private static final long TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS = 1730637909869L;
 
   @Test
-  public void testBindParameterMilliVector() {
-    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
-    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MILLISECOND, null);
-    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
-
-    try (TimeStampMilliVector vector = new TimeStampMilliVector("ts", allocator)) {
-      vector.allocateNew(1);
-      TypedValue typedValue =
-          TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, EPOCH_MILLIS);
-      assertTrue(converter.bindParameter(vector, typedValue, 0));
-      assertEquals(EPOCH_MILLIS, vector.get(0));
-    }
+  public void testSecVector() {
+    assertBindConvertsMillis(
+        TimeUnit.SECOND, null, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS / 1_000L);
   }
 
   @Test
-  public void testBindParameterMicroVector() {
-    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
-    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MICROSECOND, null);
-    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
-
-    try (TimeStampMicroVector vector = new TimeStampMicroVector("ts", allocator)) {
-      vector.allocateNew(1);
-      TypedValue typedValue =
-          TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, EPOCH_MILLIS);
-      assertTrue(converter.bindParameter(vector, typedValue, 0));
-      // Millis should be converted to micros
-      assertEquals(EPOCH_MILLIS * 1_000L, vector.get(0));
-    }
+  public void testMilliVector() {
+    assertBindConvertsMillis(TimeUnit.MILLISECOND, null, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
   }
 
   @Test
-  public void testBindParameterNanoVector() {
-    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
-    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.NANOSECOND, null);
-    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
-
-    try (TimeStampNanoVector vector = new TimeStampNanoVector("ts", allocator)) {
-      vector.allocateNew(1);
-      TypedValue typedValue =
-          TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, EPOCH_MILLIS);
-      assertTrue(converter.bindParameter(vector, typedValue, 0));
-      // Millis should be converted to nanos
-      assertEquals(EPOCH_MILLIS * 1_000_000L, vector.get(0));
-    }
+  public void testMicroVector() {
+    assertBindConvertsMillis(
+        TimeUnit.MICROSECOND, null, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS * 1_000L);
   }
 
   @Test
-  public void testBindParameterSecVector() {
-    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
-    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.SECOND, null);
-    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
-
-    try (TimeStampSecVector vector = new TimeStampSecVector("ts", allocator)) {
-      vector.allocateNew(1);
-      TypedValue typedValue =
-          TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, EPOCH_MILLIS);
-      assertTrue(converter.bindParameter(vector, typedValue, 0));
-      // Millis should be converted to seconds
-      assertEquals(EPOCH_MILLIS / 1_000L, vector.get(0));
-    }
+  public void testNanoVector() {
+    assertBindConvertsMillis(
+        TimeUnit.NANOSECOND, null, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS * 1_000_000L);
   }
 
   @Test
-  public void testBindParameterMicroTZVector() {
-    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
-    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC");
-    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
-
-    try (TimeStampMicroTZVector vector = new TimeStampMicroTZVector("ts", allocator, "UTC")) {
-      vector.allocateNew(1);
-      TypedValue typedValue =
-          TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, EPOCH_MILLIS);
-      assertTrue(converter.bindParameter(vector, typedValue, 0));
-      assertEquals(EPOCH_MILLIS * 1_000L, vector.get(0));
-    }
+  public void testSecTZVector() {
+    assertBindConvertsMillis(
+        TimeUnit.SECOND, "UTC", TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS / 1_000L);
   }
 
   @Test
-  public void testBindParameterNanoTZVector() {
-    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
-    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC");
-    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
-
-    try (TimeStampNanoTZVector vector = new TimeStampNanoTZVector("ts", allocator, "UTC")) {
-      vector.allocateNew(1);
-      TypedValue typedValue =
-          TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, EPOCH_MILLIS);
-      assertTrue(converter.bindParameter(vector, typedValue, 0));
-      assertEquals(EPOCH_MILLIS * 1_000_000L, vector.get(0));
-    }
+  public void testMicroTZVector() {
+    assertBindConvertsMillis(
+        TimeUnit.MICROSECOND, "UTC", TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS * 1_000L);
   }
 
   @Test
-  public void testBindParameterSecTZVector() {
-    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
-    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.SECOND, "UTC");
-    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
-
-    try (TimeStampSecTZVector vector = new TimeStampSecTZVector("ts", allocator, "UTC")) {
-      vector.allocateNew(1);
-      TypedValue typedValue =
-          TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, EPOCH_MILLIS);
-      assertTrue(converter.bindParameter(vector, typedValue, 0));
-      assertEquals(EPOCH_MILLIS / 1_000L, vector.get(0));
-    }
+  public void testNanoTZVector() {
+    assertBindConvertsMillis(
+        TimeUnit.NANOSECOND, "UTC", TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS * 1_000_000L);
   }
 
   @Test
-  public void testBindParameterSecVectorTruncatesSubSecond() {
+  public void testSecVectorTruncatesSubSecond() {
     BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
     ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.SECOND, null);
     TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
@@ -162,10 +98,50 @@ public class TimestampAvaticaParameterConverterTest {
     try (TimeStampSecVector vector = new TimeStampSecVector("ts", allocator)) {
       vector.allocateNew(1);
       // 1999 millis should truncate to 1 second, not round to 2
-      long millis = 1999L;
-      TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, millis);
+      TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, 1999L);
       assertTrue(converter.bindParameter(vector, typedValue, 0));
       assertEquals(1L, vector.get(0));
+    }
+  }
+
+  private void assertBindConvertsMillis(TimeUnit unit, String tz, long expectedValue) {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(unit, tz);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    try (FieldVector vector = createTestTimestampVector(unit, tz, allocator)) {
+      ((BaseFixedWidthVector) vector).allocateNew(1);
+      TypedValue typedValue =
+          TypedValue.ofLocal(
+              ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+      assertTrue(converter.bindParameter(vector, typedValue, 0));
+      long actual = vector.getDataBuffer().getLong(0);
+      assertEquals(expectedValue, actual);
+    }
+  }
+
+  private static FieldVector createTestTimestampVector(
+      TimeUnit unit, String tz, BufferAllocator allocator) {
+    boolean hasTz = tz != null;
+    switch (unit) {
+      case SECOND:
+        return hasTz
+            ? new TimeStampSecTZVector("ts", allocator, tz)
+            : new TimeStampSecVector("ts", allocator);
+      case MILLISECOND:
+        return hasTz
+            ? new TimeStampMilliTZVector("ts", allocator, tz)
+            : new TimeStampMilliVector("ts", allocator);
+      case MICROSECOND:
+        return hasTz
+            ? new TimeStampMicroTZVector("ts", allocator, tz)
+            : new TimeStampMicroVector("ts", allocator);
+      case NANOSECOND:
+        return hasTz
+            ? new TimeStampNanoTZVector("ts", allocator, tz)
+            : new TimeStampNanoVector("ts", allocator);
+      default:
+        throw new IllegalArgumentException("Unsupported time unit: " + unit);
     }
   }
 }
