@@ -18,6 +18,11 @@ package org.apache.arrow.driver.jdbc;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.util.Preconditions;
@@ -30,6 +35,7 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
     implements ArrowFlightInfoStatement {
 
   private final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement;
+  private final Map<Integer, Timestamp> rawTimestamps = new HashMap<>();
 
   private ArrowFlightPreparedStatement(
       final ArrowFlightConnection connection,
@@ -72,6 +78,60 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
   public synchronized void close() throws SQLException {
     this.preparedStatement.close();
     super.close();
+  }
+
+  @Override
+  public void setTimestamp(int parameterIndex, Timestamp x) throws SQLException {
+    if (x != null) {
+      rawTimestamps.put(parameterIndex, (Timestamp) x.clone());
+    } else {
+      rawTimestamps.remove(parameterIndex);
+    }
+    super.setTimestamp(parameterIndex, x);
+  }
+
+  @Override
+  public void setTimestamp(int parameterIndex, Timestamp x, Calendar cal) throws SQLException {
+    if (x != null) {
+      rawTimestamps.put(parameterIndex, (Timestamp) x.clone());
+    } else {
+      rawTimestamps.remove(parameterIndex);
+    }
+    super.setTimestamp(parameterIndex, x, cal);
+  }
+
+  @Override
+  public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
+    rawTimestamps.remove(parameterIndex);
+    super.setObject(parameterIndex, x, targetSqlType);
+  }
+
+  @Override
+  public void setObject(int parameterIndex, Object x) throws SQLException {
+    rawTimestamps.remove(parameterIndex);
+    super.setObject(parameterIndex, x);
+  }
+
+  @Override
+  public void setObject(int parameterIndex, Object x, int targetSqlType, int scaleOrLength)
+      throws SQLException {
+    rawTimestamps.remove(parameterIndex);
+    super.setObject(parameterIndex, x, targetSqlType, scaleOrLength);
+  }
+
+  @Override
+  public void clearParameters() throws SQLException {
+    rawTimestamps.clear();
+    super.clearParameters();
+  }
+
+  /**
+   * Returns the raw java.sql.Timestamp objects set via setTimestamp(), keyed by 1-based parameter
+   * index. These preserve sub-millisecond precision (getNanos()) that Avatica's TypedValue
+   * serialization discards.
+   */
+  Map<Integer, Timestamp> getRawTimestamps() {
+    return Collections.unmodifiableMap(rawTimestamps);
   }
 
   @Override
