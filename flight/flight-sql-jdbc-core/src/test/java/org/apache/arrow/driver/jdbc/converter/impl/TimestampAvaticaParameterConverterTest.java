@@ -152,4 +152,20 @@ public class TimestampAvaticaParameterConverterTest {
       assertEquals(EPOCH_MILLIS / 1_000L, vector.get(0));
     }
   }
+
+  @Test
+  public void testBindParameterSecVectorTruncatesSubSecond() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.SECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    try (TimeStampSecVector vector = new TimeStampSecVector("ts", allocator)) {
+      vector.allocateNew(1);
+      // 1999 millis should truncate to 1 second, not round to 2
+      long millis = 1999L;
+      TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP, millis);
+      assertTrue(converter.bindParameter(vector, typedValue, 0));
+      assertEquals(1L, vector.get(0));
+    }
+  }
 }
