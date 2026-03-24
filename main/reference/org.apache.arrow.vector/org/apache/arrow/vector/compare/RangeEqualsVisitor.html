@@ -74,13 +74,13 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.compare</a></div>
 <h1 title="Class RangeEqualsVisitor" class="title">Class RangeEqualsVisitor</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.vector.compare.RangeEqualsVisitor</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
@@ -88,8 +88,8 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">RangeEqualsVisitor</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</span></div>
 <div class="block">Visitor to compare a range of values for vectors.</div>
 </section>
 <section class="summary">
@@ -103,7 +103,7 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Field</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</code></div>
+<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="#DEFAULT_TYPE_COMPARATOR" class="member-name-link">DEFAULT_TYPE_COMPARATOR</a></code></div>
 <div class="col-last even-row-color">
 <div class="block">Default type comparator.</div>
@@ -126,7 +126,7 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.ValueVector,java.util.function.BiFunction)" class="member-name-link">RangeEqualsVisitor</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;left,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;right,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Constructs a new instance.</div>
 </div>
@@ -186,7 +186,7 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected <a href="RangeEqualsVisitor.html" title="class in org.apache.arrow.vector.compare">RangeEqualsVisitor</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#createInnerVisitor(org.apache.arrow.vector.ValueVector,org.apache.arrow.vector.ValueVector,java.util.function.BiFunction)" class="member-name-link">createInnerVisitor</a><wbr>(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;leftInner,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;rightInner,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLeft()" class="member-name-link">getLeft</a>()</code></div>
@@ -204,63 +204,63 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Validate the passed left vector, if it is changed, reset and check type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.BaseFixedWidthVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../BaseFixedWidthVector.html" title="class in org.apache.arrow.vector">BaseFixedWidthVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.BaseLargeVariableWidthVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../BaseLargeVariableWidthVector.html" title="class in org.apache.arrow.vector">BaseLargeVariableWidthVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.BaseVariableWidthVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../BaseVariableWidthVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.BaseVariableWidthViewVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.DenseUnionVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/DenseUnionVector.html" title="class in org.apache.arrow.vector.complex">DenseUnionVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.FixedSizeListVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/FixedSizeListVector.html" title="class in org.apache.arrow.vector.complex">FixedSizeListVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.LargeListVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/LargeListVector.html" title="class in org.apache.arrow.vector.complex">LargeListVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.LargeListViewVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/LargeListViewVector.html" title="class in org.apache.arrow.vector.complex">LargeListViewVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.ListVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/ListVector.html" title="class in org.apache.arrow.vector.complex">ListVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.ListViewVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/ListViewVector.html" title="class in org.apache.arrow.vector.complex">ListViewVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.NonNullableStructVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/NonNullableStructVector.html" title="class in org.apache.arrow.vector.complex">NonNullableStructVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/RunEndEncodedVector.html" title="class in org.apache.arrow.vector.complex">RunEndEncodedVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.complex.UnionVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.ExtensionTypeVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a>&lt;?&gt;&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#visit(org.apache.arrow.vector.NullVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit</a><wbr>(<a href="../NullVector.html" title="class in org.apache.arrow.vector">NullVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -268,8 +268,8 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -284,7 +284,7 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 <li>
 <section class="detail" id="DEFAULT_TYPE_COMPARATOR">
 <h3>DEFAULT_TYPE_COMPARATOR</h3>
-<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">DEFAULT_TYPE_COMPARATOR</span></div>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;</span>&nbsp;<span class="element-name">DEFAULT_TYPE_COMPARATOR</span></div>
 <div class="block">Default type comparator.</div>
 </section>
 </li>
@@ -314,7 +314,7 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 <h3>RangeEqualsVisitor</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">RangeEqualsVisitor</span><wbr><span class="parameters">(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;left,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;right,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</span></div>
 <div class="block">Constructs a new instance.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -361,165 +361,165 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.BaseFixedWidthVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseFixedWidthVector.html" title="class in org.apache.arrow.vector">BaseFixedWidthVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseFixedWidthVector.html" title="class in org.apache.arrow.vector">BaseFixedWidthVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseFixedWidthVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseFixedWidthVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.BaseVariableWidthVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseVariableWidthVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseVariableWidthVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseVariableWidthVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseVariableWidthVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.BaseLargeVariableWidthVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseLargeVariableWidthVector.html" title="class in org.apache.arrow.vector">BaseLargeVariableWidthVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseLargeVariableWidthVector.html" title="class in org.apache.arrow.vector">BaseLargeVariableWidthVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseLargeVariableWidthVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseLargeVariableWidthVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.BaseVariableWidthViewVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseVariableWidthViewVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.BaseVariableWidthViewVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.ListVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/ListVector.html" title="class in org.apache.arrow.vector.complex">ListVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/ListVector.html" title="class in org.apache.arrow.vector.complex">ListVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.FixedSizeListVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/FixedSizeListVector.html" title="class in org.apache.arrow.vector.complex">FixedSizeListVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/FixedSizeListVector.html" title="class in org.apache.arrow.vector.complex">FixedSizeListVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.FixedSizeListVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.FixedSizeListVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.LargeListVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/LargeListVector.html" title="class in org.apache.arrow.vector.complex">LargeListVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/LargeListVector.html" title="class in org.apache.arrow.vector.complex">LargeListVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.LargeListVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.LargeListVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.NonNullableStructVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/NonNullableStructVector.html" title="class in org.apache.arrow.vector.complex">NonNullableStructVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/NonNullableStructVector.html" title="class in org.apache.arrow.vector.complex">NonNullableStructVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.NonNullableStructVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.NonNullableStructVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.UnionVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.UnionVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.UnionVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.DenseUnionVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/DenseUnionVector.html" title="class in org.apache.arrow.vector.complex">DenseUnionVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/DenseUnionVector.html" title="class in org.apache.arrow.vector.complex">DenseUnionVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.DenseUnionVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.DenseUnionVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.NullVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../NullVector.html" title="class in org.apache.arrow.vector">NullVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../NullVector.html" title="class in org.apache.arrow.vector">NullVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.NullVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.NullVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.RunEndEncodedVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/RunEndEncodedVector.html" title="class in org.apache.arrow.vector.complex">RunEndEncodedVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/RunEndEncodedVector.html" title="class in org.apache.arrow.vector.complex">RunEndEncodedVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.ExtensionTypeVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a>&lt;?&gt;&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a>&lt;?&gt;&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.ExtensionTypeVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.ExtensionTypeVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.ListViewVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/ListViewVector.html" title="class in org.apache.arrow.vector.complex">ListViewVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/ListViewVector.html" title="class in org.apache.arrow.vector.complex">ListViewVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="visit(org.apache.arrow.vector.complex.LargeListViewVector,org.apache.arrow.vector.compare.Range)">
 <h3>visit</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/LargeListViewVector.html" title="class in org.apache.arrow.vector.complex">LargeListViewVector</a>&nbsp;left,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a></span>&nbsp;<span class="element-name">visit</span><wbr><span class="parameters">(<a href="../complex/LargeListViewVector.html" title="class in org.apache.arrow.vector.complex">LargeListViewVector</a>&nbsp;left,
  <a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&nbsp;range)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
+<dd><code><a href="VectorVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,IN)">visit</a></code>&nbsp;in interface&nbsp;<code><a href="VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>,<wbr><a href="Range.html" title="class in org.apache.arrow.vector.compare">Range</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
@@ -534,7 +534,7 @@ implements <a href="VectorVisitor.html" title="interface in org.apache.arrow.vec
 <h3>createInnerVisitor</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="RangeEqualsVisitor.html" title="class in org.apache.arrow.vector.compare">RangeEqualsVisitor</a></span>&nbsp;<span class="element-name">createInnerVisitor</span><wbr><span class="parameters">(<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;leftInner,
  <a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;rightInner,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html" title="class or interface in java.util.function" class="external-link">BiFunction</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html" title="class or interface in java.lang" class="external-link">Boolean</a>&gt;&nbsp;typeComparator)</span></div>
 </section>
 </li>
 <li>

@@ -74,18 +74,18 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.memory</a></div>
 <h1 title="Class ArrowBuf" class="title">Class ArrowBuf</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.memory.ArrowBuf</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">ArrowBuf</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
 <div class="block">ArrowBuf serves as a facade over underlying memory by providing several access APIs to read/write
  data into a chunk of direct memory. All the accounting, ownership and reference management is
  done by <a href="ReferenceManager.html" title="interface in org.apache.arrow.memory"><code>ReferenceManager</code></a> and ArrowBuf can work with a custom user provided implementation
@@ -150,7 +150,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;obj)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#equals(java.lang.Object)" class="member-name-link">equals</a><wbr>(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;obj)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getActualMemoryConsumed()" class="member-name-link">getActualMemoryConsumed</a>()</code></div>
@@ -180,14 +180,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBytes(long,java.io.OutputStream,int)" class="member-name-link">getBytes</a><wbr>(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out,
  int&nbsp;length)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Copy a certain length of bytes from this ArrowBuf at a given index into the given OutputStream.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getBytes(long,java.nio.ByteBuffer)" class="member-name-link">getBytes</a><wbr>(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;dst)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;dst)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Copy data from this ArrowBuf at a given index into the destination ByteBuffer.</div>
 </div>
@@ -257,30 +257,30 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#memoryAddress()" class="member-name-link">memoryAddress</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#nioBuffer()" class="member-name-link">nioBuffer</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Make a nio byte buffer from this arrowbuf.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#nioBuffer(long,int)" class="member-name-link">nioBuffer</a><wbr>(long&nbsp;index,
  int&nbsp;length)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Make a nio byte buffer from this ArrowBuf.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteOrder.html" title="class or interface in java.nio" class="external-link">ByteOrder</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteOrder.html" title="class or interface in java.nio" class="external-link">ByteOrder</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#order()" class="member-name-link">order</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the byte order of elements in this buffer.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#print(java.lang.StringBuilder,int)" class="member-name-link">print</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#print(java.lang.StringBuilder,int)" class="member-name-link">print</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
  int&nbsp;indent)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Print detailed information of this buffer into <code>sb</code>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#print(java.lang.StringBuilder,int,org.apache.arrow.memory.BaseAllocator.Verbosity)" class="member-name-link">print</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#print(java.lang.StringBuilder,int,org.apache.arrow.memory.BaseAllocator.Verbosity)" class="member-name-link">print</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
  int&nbsp;indent,
  org.apache.arrow.memory.BaseAllocator.Verbosity&nbsp;verbosity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -352,20 +352,20 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBytes(long,java.io.InputStream,int)" class="member-name-link">setBytes</a><wbr>(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  int&nbsp;length)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Copy a certain length of bytes from given InputStream into this ArrowBuf at the provided index.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBytes(long,java.nio.ByteBuffer)" class="member-name-link">setBytes</a><wbr>(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Copy data into this ArrowBuf at a given index onwards from a source ByteBuffer.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBytes(long,java.nio.ByteBuffer,int,int)" class="member-name-link">setBytes</a><wbr>(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src,
  int&nbsp;srcIndex,
  int&nbsp;length)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -466,13 +466,13 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a slice (view) starting at <code>index</code> with the given <code>length</code>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toHexString(long,int)" class="member-name-link">toHexString</a><wbr>(long&nbsp;start,
  int&nbsp;length)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Return the buffer's byte contents in the form of a hex dump.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#toString()" class="member-name-link">toString</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
@@ -543,8 +543,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -633,7 +633,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="order()">
 <h3>order</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteOrder.html" title="class or interface in java.nio" class="external-link">ByteOrder</a></span>&nbsp;<span class="element-name">order</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteOrder.html" title="class or interface in java.nio" class="external-link">ByteOrder</a></span>&nbsp;<span class="element-name">order</span>()</div>
 <div class="block">Returns the byte order of elements in this buffer.</div>
 </section>
 </li>
@@ -670,14 +670,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="nioBuffer()">
 <h3>nioBuffer</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">nioBuffer</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">nioBuffer</span>()</div>
 <div class="block">Make a nio byte buffer from this arrowbuf.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="nioBuffer(long,int)">
 <h3>nioBuffer</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">nioBuffer</span><wbr><span class="parameters">(long&nbsp;index,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">nioBuffer</span><wbr><span class="parameters">(long&nbsp;index,
  int&nbsp;length)</span></div>
 <div class="block">Make a nio byte buffer from this ArrowBuf.</div>
 </section>
@@ -691,10 +691,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="toString()">
 <h3>toString</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toString</span>()</div>
 <dl class="notes">
 <dt>Overrides:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
 </dl>
 </section>
 </li>
@@ -704,17 +704,17 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">hashCode</span>()</div>
 <dl class="notes">
 <dt>Overrides:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="equals(java.lang.Object)">
 <h3>equals</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">equals</span><wbr><span class="parameters">(@Nullable <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;obj)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">equals</span><wbr><span class="parameters">(@Nullable <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;obj)</span></div>
 <dl class="notes">
 <dt>Overrides:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a></code>&nbsp;in class&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></dd>
 </dl>
 </section>
 </li>
@@ -1134,7 +1134,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="getBytes(long,java.nio.ByteBuffer)">
 <h3>getBytes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">getBytes</span><wbr><span class="parameters">(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;dst)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;dst)</span></div>
 <div class="block">Copy data from this ArrowBuf at a given index into the destination ByteBuffer.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -1147,7 +1147,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="setBytes(long,java.nio.ByteBuffer)">
 <h3>setBytes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBytes</span><wbr><span class="parameters">(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src)</span></div>
 <div class="block">Copy data into this ArrowBuf at a given index onwards from a source ByteBuffer.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -1161,7 +1161,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="setBytes(long,java.nio.ByteBuffer,int,int)">
 <h3>setBytes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setBytes</span><wbr><span class="parameters">(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;src,
  int&nbsp;srcIndex,
  int&nbsp;length)</span></div>
 <div class="block">Copy data into this ArrowBuf at a given index onwards from a source ByteBuffer starting at a
@@ -1230,9 +1230,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="setBytes(long,java.io.InputStream,int)">
 <h3>setBytes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">setBytes</span><wbr><span class="parameters">(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  int&nbsp;length)</span>
-             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Copy a certain length of bytes from given InputStream into this ArrowBuf at the provided index.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -1243,7 +1243,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dt>Returns:</dt>
 <dd>number of bytes copied from stream into ArrowBuf</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on failing to read from stream</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on failing to read from stream</dd>
 </dl>
 </section>
 </li>
@@ -1251,9 +1251,9 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="getBytes(long,java.io.OutputStream,int)">
 <h3>getBytes</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">getBytes</span><wbr><span class="parameters">(long&nbsp;index,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out,
  int&nbsp;length)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Copy a certain length of bytes from this ArrowBuf at a given index into the given OutputStream.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -1262,7 +1262,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dd><code>out</code> - dst stream to copy data into</dd>
 <dd><code>length</code> - length of data to copy</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on failing to write to stream</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on failing to write to stream</dd>
 </dl>
 </section>
 </li>
@@ -1272,7 +1272,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 </section>
 </li>
@@ -1303,7 +1303,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="toHexString(long,int)">
 <h3>toHexString</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toHexString</span><wbr><span class="parameters">(long&nbsp;start,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toHexString</span><wbr><span class="parameters">(long&nbsp;start,
  int&nbsp;length)</span></div>
 <div class="block">Return the buffer's byte contents in the form of a hex dump.</div>
 <dl class="notes">
@@ -1321,7 +1321,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">getId</span>()</div>
 <div class="block">Get the id assigned to this ArrowBuf for debugging purposes.
 
- <p>Returns <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#identityHashCode(java.lang.Object)" title="class or interface in java.lang" class="external-link"><code>System.identityHashCode(Object)</code></a> which provides a unique identifier for this
+ <p>Returns <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.html#identityHashCode(java.lang.Object)" title="class or interface in java.lang" class="external-link"><code>System.identityHashCode(Object)</code></a> which provides a unique identifier for this
  buffer without any per-instance memory overhead.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -1332,7 +1332,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="print(java.lang.StringBuilder,int,org.apache.arrow.memory.BaseAllocator.Verbosity)">
 <h3>print</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">print</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">print</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
  int&nbsp;indent,
  org.apache.arrow.memory.BaseAllocator.Verbosity&nbsp;verbosity)</span></div>
 <div class="block">Print information of this buffer into <code>sb</code> at the given indentation and verbosity
@@ -1345,7 +1345,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="print(java.lang.StringBuilder,int)">
 <h3>print</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">print</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">print</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/StringBuilder.html" title="class or interface in java.lang" class="external-link">StringBuilder</a>&nbsp;sb,
  int&nbsp;indent)</span></div>
 <div class="block">Print detailed information of this buffer into <code>sb</code>.
 
@@ -1419,7 +1419,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="setOne(int,int)">
 <h3>setOne</h3>
-<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
 </span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></span>&nbsp;<span class="element-name">setOne</span><wbr><span class="parameters">(int&nbsp;index,
  int&nbsp;length)</span></div>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span>

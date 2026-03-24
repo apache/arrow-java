@@ -74,13 +74,13 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.validate</a></div>
 <h1 title="Class MetadataV4UnionChecker" class="title">Class MetadataV4UnionChecker</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.vector.validate.MetadataV4UnionChecker</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public final class </span><span class="element-name type-name-label">MetadataV4UnionChecker</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Given a field, checks that no Union fields are present.
 
  <p>This is intended to be used to prevent unions from being read/written with V4 metadata.</div>
@@ -112,15 +112,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#checkForUnion(java.util.Iterator,org.apache.arrow.vector.types.MetadataVersion)" class="member-name-link">checkForUnion</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;fields,
- <a href="../types/MetadataVersion.html" title="enum in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#checkForUnion(java.util.Iterator,org.apache.arrow.vector.types.MetadataVersion)" class="member-name-link">checkForUnion</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;fields,
+ <a href="../types/MetadataVersion.html" title="enum class in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Check the schema, raising an error if an unsupported feature is used (e.g. unions with &lt; V5
  metadata).</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#checkRead(org.apache.arrow.vector.types.pojo.Schema,org.apache.arrow.vector.types.MetadataVersion)" class="member-name-link">checkRead</a><wbr>(<a href="../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema,
- <a href="../types/MetadataVersion.html" title="enum in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</code></div>
+ <a href="../types/MetadataVersion.html" title="enum class in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Check the schema, raising an error if an unsupported feature is used (e.g. unions with &lt; V5
  metadata).</div>
@@ -129,8 +129,8 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -159,8 +159,8 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="checkForUnion(java.util.Iterator,org.apache.arrow.vector.types.MetadataVersion)">
 <h3>checkForUnion</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">checkForUnion</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;fields,
- <a href="../types/MetadataVersion.html" title="enum in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">checkForUnion</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;fields,
+ <a href="../types/MetadataVersion.html" title="enum class in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</span></div>
 <div class="block">Check the schema, raising an error if an unsupported feature is used (e.g. unions with &lt; V5
  metadata).</div>
 </section>
@@ -169,13 +169,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="checkRead(org.apache.arrow.vector.types.pojo.Schema,org.apache.arrow.vector.types.MetadataVersion)">
 <h3>checkRead</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">checkRead</span><wbr><span class="parameters">(<a href="../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema,
- <a href="../types/MetadataVersion.html" title="enum in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</span>
-                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+ <a href="../types/MetadataVersion.html" title="enum class in org.apache.arrow.vector.types">MetadataVersion</a>&nbsp;metadataVersion)</span>
+                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Check the schema, raising an error if an unsupported feature is used (e.g. unions with &lt; V5
  metadata).</div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>

@@ -276,7 +276,7 @@ mapping, with additional support for the UUID extension type noted below.
   JDBC value, because a JDBC Timestamp is in UTC, and we have no
   timezone information.  In this case, the default binder will call
   `setTimestamp(int, Timestamp)
-  <https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html#setTimestamp(int,java.sql.Timestamp)>`_,
+  <https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/PreparedStatement.html#setTimestamp(int,java.sql.Timestamp)>`_,
   which will lead to the driver using the "default timezone" (that of
   the Java VM).
 * \(3) For the Flight SQL JDBC driver, the Arrow UUID extension type

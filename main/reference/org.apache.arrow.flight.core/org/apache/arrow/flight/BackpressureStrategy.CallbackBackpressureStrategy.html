@@ -74,7 +74,7 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.flight</a></div>
 <h1 title="Class BackpressureStrategy.CallbackBackpressureStrategy" class="title">Class BackpressureStrategy.CallbackBackpressureStrategy</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.flight.BackpressureStrategy.CallbackBackpressureStrategy</div>
 </div>
 <section class="class-description" id="class-description">
@@ -88,7 +88,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public static class </span><span class="element-name type-name-label">BackpressureStrategy.CallbackBackpressureStrategy</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="BackpressureStrategy.html" title="interface in org.apache.arrow.flight">BackpressureStrategy</a></span></div>
 <div class="block">A back pressure strategy that uses callbacks to notify when the client is ready or cancelled.</div>
 </section>
@@ -100,7 +100,7 @@ implements <a href="BackpressureStrategy.html" title="interface in org.apache.ar
 <h2>Nested Class Summary</h2>
 <div class="inherited-list">
 <h2 id="nested-classes-inherited-from-class-org.apache.arrow.flight.BackpressureStrategy">Nested classes/interfaces inherited from interface&nbsp;org.apache.arrow.flight.<a href="BackpressureStrategy.html" title="interface in org.apache.arrow.flight">BackpressureStrategy</a></h2>
-<code><a href="BackpressureStrategy.CallbackBackpressureStrategy.html" title="class in org.apache.arrow.flight">BackpressureStrategy.CallbackBackpressureStrategy</a>, <a href="BackpressureStrategy.WaitResult.html" title="enum in org.apache.arrow.flight">BackpressureStrategy.WaitResult</a></code></div>
+<code><a href="BackpressureStrategy.CallbackBackpressureStrategy.html" title="class in org.apache.arrow.flight">BackpressureStrategy.CallbackBackpressureStrategy</a>, <a href="BackpressureStrategy.WaitResult.html" title="enum class in org.apache.arrow.flight">BackpressureStrategy.WaitResult</a></code></div>
 </section>
 </li>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -154,7 +154,7 @@ implements <a href="BackpressureStrategy.html" title="interface in org.apache.ar
 <div class="block">Callback function to run to check if the listener should continue to be waited on if it
  leaves the waiting state without being cancelled, ready, or timed out.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="BackpressureStrategy.WaitResult.html" title="enum in org.apache.arrow.flight">BackpressureStrategy.WaitResult</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="BackpressureStrategy.WaitResult.html" title="enum class in org.apache.arrow.flight">BackpressureStrategy.WaitResult</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#waitForListener(long)" class="member-name-link">waitForListener</a><wbr>(long&nbsp;timeout)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Waits for the listener to be ready or cancelled up to the given timeout.</div>
@@ -163,8 +163,8 @@ implements <a href="BackpressureStrategy.html" title="interface in org.apache.ar
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -210,7 +210,7 @@ implements <a href="BackpressureStrategy.html" title="interface in org.apache.ar
 <li>
 <section class="detail" id="waitForListener(long)">
 <h3>waitForListener</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="BackpressureStrategy.WaitResult.html" title="enum in org.apache.arrow.flight">BackpressureStrategy.WaitResult</a></span>&nbsp;<span class="element-name">waitForListener</span><wbr><span class="parameters">(long&nbsp;timeout)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="BackpressureStrategy.WaitResult.html" title="enum class in org.apache.arrow.flight">BackpressureStrategy.WaitResult</a></span>&nbsp;<span class="element-name">waitForListener</span><wbr><span class="parameters">(long&nbsp;timeout)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="BackpressureStrategy.html#waitForListener(long)">BackpressureStrategy</a></code></span></div>
 <div class="block">Waits for the listener to be ready or cancelled up to the given timeout.</div>
 <dl class="notes">

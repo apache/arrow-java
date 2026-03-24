@@ -74,13 +74,13 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.ipc.message</a></div>
 <h1 title="Class MessageSerializer" class="title">Class MessageSerializer</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.vector.ipc.message.MessageSerializer</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">MessageSerializer</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Utility class for serializing Messages. Messages are all serialized a similar way. 1. 4 byte
  little endian message header prefix 2. FB serialized Message: This includes it the body length,
  which is the serialized body and the type of the message. 3. Serialized message.
@@ -281,7 +281,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Serialize a schema object.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#serializeMessage(com.google.flatbuffers.FlatBufferBuilder,byte,int,long)" class="member-name-link">serializeMessage</a><wbr>(com.google.flatbuffers.FlatBufferBuilder&nbsp;builder,
  byte&nbsp;headerType,
  int&nbsp;headerOffset,
@@ -289,7 +289,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#serializeMessage(com.google.flatbuffers.FlatBufferBuilder,byte,int,long,org.apache.arrow.vector.ipc.message.IpcOption)" class="member-name-link">serializeMessage</a><wbr>(com.google.flatbuffers.FlatBufferBuilder&nbsp;builder,
  byte&nbsp;headerType,
  int&nbsp;headerOffset,
@@ -298,23 +298,23 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Serializes a message header.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#serializeMetadata(org.apache.arrow.vector.ipc.message.ArrowMessage)" class="member-name-link">serializeMetadata</a><wbr>(<a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a>&nbsp;message)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#serializeMetadata(org.apache.arrow.vector.ipc.message.ArrowMessage,org.apache.arrow.vector.ipc.message.IpcOption)" class="member-name-link">serializeMetadata</a><wbr>(<a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a>&nbsp;message,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;writeOption)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Returns the serialized form of <a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/RecordBatch.html" title="class in org.apache.arrow.flatbuf"><code>RecordBatch</code></a> wrapped in a <a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/Message.html" title="class in org.apache.arrow.flatbuf"><code>Message</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#serializeMetadata(org.apache.arrow.vector.types.pojo.Schema)" class="member-name-link">serializeMetadata</a><wbr>(<a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#serializeMetadata(org.apache.arrow.vector.types.pojo.Schema,org.apache.arrow.vector.ipc.message.IpcOption)" class="member-name-link">serializeMetadata</a><wbr>(<a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;writeOption)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
@@ -329,12 +329,12 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeMessageBuffer(org.apache.arrow.vector.ipc.WriteChannel,int,java.nio.ByteBuffer)" class="member-name-link">writeMessageBuffer</a><wbr>(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  int&nbsp;messageLength,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeMessageBuffer(org.apache.arrow.vector.ipc.WriteChannel,int,java.nio.ByteBuffer,org.apache.arrow.vector.ipc.message.IpcOption)" class="member-name-link">writeMessageBuffer</a><wbr>(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  int&nbsp;messageLength,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Write the serialized Message metadata, prefixed by the length, to the output Channel.</div>
@@ -343,8 +343,8 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -436,11 +436,11 @@ loadScripts(document, 'script');</script>
 <h3>writeMessageBuffer</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">writeMessageBuffer</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  int&nbsp;messageLength,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer)</span>
-                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer)</span>
+                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -449,9 +449,9 @@ loadScripts(document, 'script');</script>
 <h3>writeMessageBuffer</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">writeMessageBuffer</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  int&nbsp;messageLength,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;messageBuffer,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</span>
-                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Write the serialized Message metadata, prefixed by the length, to the output Channel. This
  ensures that it aligns to an 8 byte boundary and will adjust the message length to include any
  padding used for alignment.</div>
@@ -465,7 +465,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>Number of bytes written</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -474,11 +474,11 @@ loadScripts(document, 'script');</script>
 <h3>serialize</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">serialize</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema)</span>
-                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Serialize a schema object.</div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -488,7 +488,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">serialize</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</span>
-                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Serialize a schema object.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -497,15 +497,15 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the number of bytes written</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="serializeMetadata(org.apache.arrow.vector.types.pojo.Schema)">
 <h3>serializeMetadata</h3>
-<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema)</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema)</span></div>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <div class="block">Returns the serialized flatbuffer bytes of the schema wrapped in a message table.</div>
 </section>
@@ -513,7 +513,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="serializeMetadata(org.apache.arrow.vector.types.pojo.Schema,org.apache.arrow.vector.ipc.message.IpcOption)">
 <h3>serializeMetadata</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a>&nbsp;schema,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;writeOption)</span></div>
 <div class="block">Returns the serialized flatbuffer bytes of the schema wrapped in a message table.</div>
 </section>
@@ -535,7 +535,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="deserializeSchema(org.apache.arrow.vector.ipc.ReadChannel)">
 <h3>deserializeSchema</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a></span>&nbsp;<span class="element-name">deserializeSchema</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in)</span>
-                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an Arrow Schema read from the input channel. Format is from serialize().</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -543,7 +543,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized Arrow Schema</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -566,11 +566,11 @@ loadScripts(document, 'script');</script>
 <h3>serialize</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowBlock.html" title="class in org.apache.arrow.vector.ipc.message">ArrowBlock</a></span>&nbsp;<span class="element-name">serialize</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a>&nbsp;batch)</span>
-                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Serializes an ArrowRecordBatch. Returns the offset and length of the written batch.</div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -580,7 +580,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowBlock.html" title="class in org.apache.arrow.vector.ipc.message">ArrowBlock</a></span>&nbsp;<span class="element-name">serialize</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a>&nbsp;batch,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</span>
-                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Serializes an ArrowRecordBatch. Returns the offset and length of the written batch.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -589,7 +589,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the serialized block metadata</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -598,7 +598,7 @@ loadScripts(document, 'script');</script>
 <h3>writeBatchBuffers</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">writeBatchBuffers</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a>&nbsp;batch)</span>
-                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Write the Arrow buffers of the record batch to the output channel.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -607,15 +607,15 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the number of bytes written</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="serializeMetadata(org.apache.arrow.vector.ipc.message.ArrowMessage)">
 <h3>serializeMetadata</h3>
-<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a>&nbsp;message)</span></div>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a>&nbsp;message)</span></div>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <div class="block">Returns the serialized form of <a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/RecordBatch.html" title="class in org.apache.arrow.flatbuf"><code>RecordBatch</code></a> wrapped in a <a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/Message.html" title="class in org.apache.arrow.flatbuf"><code>Message</code></a>.</div>
 </section>
@@ -623,7 +623,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="serializeMetadata(org.apache.arrow.vector.ipc.message.ArrowMessage,org.apache.arrow.vector.ipc.message.IpcOption)">
 <h3>serializeMetadata</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a>&nbsp;message,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMetadata</span><wbr><span class="parameters">(<a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a>&nbsp;message,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;writeOption)</span></div>
 <div class="block">Returns the serialized form of <a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/RecordBatch.html" title="class in org.apache.arrow.flatbuf"><code>RecordBatch</code></a> wrapped in a <a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/Message.html" title="class in org.apache.arrow.flatbuf"><code>Message</code></a>.</div>
 </section>
@@ -633,7 +633,7 @@ loadScripts(document, 'script');</script>
 <h3>deserializeRecordBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a></span>&nbsp;<span class="element-name">deserializeRecordBatch</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/Message.html" title="class in org.apache.arrow.flatbuf">Message</a>&nbsp;recordBatchMessage,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bodyBuffer)</span>
-                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an ArrowRecordBatch from a record batch message and data in an ArrowBuf.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -642,7 +642,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized ArrowRecordBatch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -651,7 +651,7 @@ loadScripts(document, 'script');</script>
 <h3>deserializeRecordBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a></span>&nbsp;<span class="element-name">deserializeRecordBatch</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span>
-                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an ArrowRecordBatch read from the input channel. This uses the given allocator to
  create an ArrowBuf for the batch body data.</div>
 <dl class="notes">
@@ -661,7 +661,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized ArrowRecordBatch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -671,7 +671,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a></span>&nbsp;<span class="element-name">deserializeRecordBatch</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in,
  <a href="ArrowBlock.html" title="class in org.apache.arrow.vector.ipc.message">ArrowBlock</a>&nbsp;block,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;alloc)</span>
-                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an ArrowRecordBatch knowing the size of the entire message up front. This
  minimizes the number of reads to the underlying stream.</div>
 <dl class="notes">
@@ -682,7 +682,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized ArrowRecordBatch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -691,7 +691,7 @@ loadScripts(document, 'script');</script>
 <h3>deserializeRecordBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a></span>&nbsp;<span class="element-name">deserializeRecordBatch</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/RecordBatch.html" title="class in org.apache.arrow.flatbuf">RecordBatch</a>&nbsp;recordBatchFB,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;body)</span>
-                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an ArrowRecordBatch given the Flatbuffer metadata and in-memory body.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -700,7 +700,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>ArrowRecordBatch from metadata and in-memory body</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -709,11 +709,11 @@ loadScripts(document, 'script');</script>
 <h3>deserializeRecordBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a></span>&nbsp;<span class="element-name">deserializeRecordBatch</span><wbr><span class="parameters">(<a href="MessageMetadataResult.html" title="class in org.apache.arrow.vector.ipc.message">MessageMetadataResult</a>&nbsp;serializedMessage,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;underlying)</span>
-                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                               throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Reads a record batch based on the metadata in serializedMessage and the underlying data buffer.</div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -722,10 +722,10 @@ loadScripts(document, 'script');</script>
 <h3>serialize</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowBlock.html" title="class in org.apache.arrow.vector.ipc.message">ArrowBlock</a></span>&nbsp;<span class="element-name">serialize</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a>&nbsp;batch)</span>
-                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -735,7 +735,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowBlock.html" title="class in org.apache.arrow.vector.ipc.message">ArrowBlock</a></span>&nbsp;<span class="element-name">serialize</span><wbr><span class="parameters">(<a href="../WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a>&nbsp;batch,
  <a href="IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</span>
-                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Serializes a dictionary ArrowRecordBatch. Returns the offset and length of the written batch.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -745,7 +745,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the metadata of the serialized block</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -754,7 +754,7 @@ loadScripts(document, 'script');</script>
 <h3>deserializeDictionaryBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a></span>&nbsp;<span class="element-name">deserializeDictionaryBatch</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.format/org/apache/arrow/flatbuf/Message.html" title="class in org.apache.arrow.flatbuf">Message</a>&nbsp;message,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bodyBuffer)</span>
-                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an ArrowDictionaryBatch from a dictionary batch Message and data in an ArrowBuf.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -764,7 +764,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized ArrowDictionaryBatch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -773,7 +773,7 @@ loadScripts(document, 'script');</script>
 <h3>deserializeDictionaryBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a></span>&nbsp;<span class="element-name">deserializeDictionaryBatch</span><wbr><span class="parameters">(<a href="MessageMetadataResult.html" title="class in org.apache.arrow.vector.ipc.message">MessageMetadataResult</a>&nbsp;message,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bodyBuffer)</span>
-                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an ArrowDictionaryBatch from a dictionary batch Message and data in an ArrowBuf.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -783,7 +783,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized ArrowDictionaryBatch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -792,7 +792,7 @@ loadScripts(document, 'script');</script>
 <h3>deserializeDictionaryBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a></span>&nbsp;<span class="element-name">deserializeDictionaryBatch</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span>
-                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes an ArrowDictionaryBatch read from the input channel. This uses the given allocator
  to create an ArrowBuf for the batch body data.</div>
 <dl class="notes">
@@ -802,7 +802,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized ArrowDictionaryBatch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -812,7 +812,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a></span>&nbsp;<span class="element-name">deserializeDictionaryBatch</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in,
  <a href="ArrowBlock.html" title="class in org.apache.arrow.vector.ipc.message">ArrowBlock</a>&nbsp;block,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;alloc)</span>
-                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                                       throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserializes a DictionaryBatch knowing the size of the entire message up front. This minimizes
  the number of reads to the underlying stream.</div>
 <dl class="notes">
@@ -823,7 +823,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized ArrowDictionaryBatch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if something went wrong</dd>
 </dl>
 </section>
 </li>
@@ -831,7 +831,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="deserializeMessageBatch(org.apache.arrow.vector.ipc.message.MessageChannelReader)">
 <h3>deserializeMessageBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a></span>&nbsp;<span class="element-name">deserializeMessageBatch</span><wbr><span class="parameters">(<a href="MessageChannelReader.html" title="class in org.apache.arrow.vector.ipc.message">MessageChannelReader</a>&nbsp;reader)</span>
-                                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserialize a message that is either an ArrowDictionaryBatch or ArrowRecordBatch.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -839,7 +839,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>The deserialized record batch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if the message is not an ArrowDictionaryBatch or ArrowRecordBatch</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if the message is not an ArrowDictionaryBatch or ArrowRecordBatch</dd>
 </dl>
 </section>
 </li>
@@ -848,7 +848,7 @@ loadScripts(document, 'script');</script>
 <h3>deserializeMessageBatch</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="ArrowMessage.html" title="interface in org.apache.arrow.vector.ipc.message">ArrowMessage</a></span>&nbsp;<span class="element-name">deserializeMessageBatch</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;alloc)</span>
-                                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                            throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Deserialize a message that is either an ArrowDictionaryBatch or ArrowRecordBatch.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -857,15 +857,15 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>The deserialized record batch</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if the message is not an ArrowDictionaryBatch or ArrowRecordBatch</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if the message is not an ArrowDictionaryBatch or ArrowRecordBatch</dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="serializeMessage(com.google.flatbuffers.FlatBufferBuilder,byte,int,long)">
 <h3>serializeMessage</h3>
-<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
-</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMessage</span><wbr><span class="parameters">(com.google.flatbuffers.FlatBufferBuilder&nbsp;builder,
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+</span><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMessage</span><wbr><span class="parameters">(com.google.flatbuffers.FlatBufferBuilder&nbsp;builder,
  byte&nbsp;headerType,
  int&nbsp;headerOffset,
  long&nbsp;bodyLength)</span></div>
@@ -875,7 +875,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="serializeMessage(com.google.flatbuffers.FlatBufferBuilder,byte,int,long,org.apache.arrow.vector.ipc.message.IpcOption)">
 <h3>serializeMessage</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMessage</span><wbr><span class="parameters">(com.google.flatbuffers.FlatBufferBuilder&nbsp;builder,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a></span>&nbsp;<span class="element-name">serializeMessage</span><wbr><span class="parameters">(com.google.flatbuffers.FlatBufferBuilder&nbsp;builder,
  byte&nbsp;headerType,
  int&nbsp;headerOffset,
  long&nbsp;bodyLength,
@@ -897,7 +897,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="readMessage(org.apache.arrow.vector.ipc.ReadChannel)">
 <h3>readMessage</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="MessageMetadataResult.html" title="class in org.apache.arrow.vector.ipc.message">MessageMetadataResult</a></span>&nbsp;<span class="element-name">readMessage</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in)</span>
-                                         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Read a Message from the input channel and return a MessageMetadataResult that contains the
  Message metadata, buffer containing the serialized Message metadata as read, and length of the
  Message in bytes. Returns null if the end-of-stream has been reached.</div>
@@ -908,7 +908,7 @@ loadScripts(document, 'script');</script>
 <dd>MessageMetadataResult with deserialized Message metadata and message information if a
      valid Message was read, or null if end-of-stream</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -918,7 +918,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></span>&nbsp;<span class="element-name">readMessageBody</span><wbr><span class="parameters">(<a href="../ReadChannel.html" title="class in org.apache.arrow.vector.ipc">ReadChannel</a>&nbsp;in,
  long&nbsp;bodyLength,
  <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span>
-                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                                throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Read a Message body from the in channel into an ArrowBuf.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -928,7 +928,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>an ArrowBuf containing the message body data</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>

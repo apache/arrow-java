@@ -74,18 +74,18 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.ipc</a></div>
 <h1 title="Class JsonFileReader" class="title">Class JsonFileReader</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.vector.ipc.JsonFileReader</div>
 </div>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">JsonFileReader</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
-implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a>, <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></span></div>
 <div class="block">A reader for JSON files that translates them into vectors. This reader is used for integration
  tests.
 
@@ -111,7 +111,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.io.File,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">JsonFileReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&nbsp;inputFile,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.io.File,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">JsonFileReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&nbsp;inputFile,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs a new instance.</div>
@@ -133,7 +133,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#close()" class="member-name-link">close</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDictionaryIds()" class="member-name-link">getDictionaryIds</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get all dictionary IDs.</div>
@@ -167,8 +167,8 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -183,10 +183,10 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="&lt;init&gt;(java.io.File,org.apache.arrow.memory.BufferAllocator)">
 <h3>JsonFileReader</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JsonFileReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&nbsp;inputFile,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JsonFileReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html" title="class or interface in java.io" class="external-link">File</a>&nbsp;inputFile,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span>
                throws <span class="exceptions">com.fasterxml.jackson.core.JsonParseException,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Constructs a new instance.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -194,7 +194,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dd><code>allocator</code> - The allocator to use for allocating buffers.</dd>
 <dt>Throws:</dt>
 <dd><code>com.fasterxml.jackson.core.JsonParseException</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -221,7 +221,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="getDictionaryIds()">
 <h3>getDictionaryIds</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">getDictionaryIds</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;</span>&nbsp;<span class="element-name">getDictionaryIds</span>()</div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../dictionary/DictionaryProvider.html#getDictionaryIds()">DictionaryProvider</a></code></span></div>
 <div class="block">Get all dictionary IDs.</div>
 <dl class="notes">
@@ -235,12 +235,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <h3>start</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a></span>&nbsp;<span class="element-name">start</span>()
              throws <span class="exceptions">com.fasterxml.jackson.core.JsonParseException,
-<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Reads the beginning (schema section) of the json file and returns it.</div>
 <dl class="notes">
 <dt>Throws:</dt>
 <dd><code>com.fasterxml.jackson.core.JsonParseException</code></dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -248,11 +248,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="read(org.apache.arrow.vector.VectorSchemaRoot)">
 <h3>read</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">read</span><wbr><span class="parameters">(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root)</span>
-             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Reads the next record batch from the file into <code>root</code>.</div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -260,11 +260,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="read()">
 <h3>read</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a></span>&nbsp;<span class="element-name">read</span>()
-                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Returns the next record batch from the file.</div>
 <dl class="notes">
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -272,7 +272,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="skip(int)">
 <h3>skip</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">skip</span><wbr><span class="parameters">(int&nbsp;numBatches)</span>
-         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+         throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Skips a number of record batches in the file.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -280,7 +280,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <dt>Returns:</dt>
 <dd>the actual number of skipped batches.</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -288,12 +288,12 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <section class="detail" id="close()">
 <h3>close</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()
-           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+           throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>

@@ -74,7 +74,7 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.ipc</a></div>
 <h1 title="Class ArrowStreamReader" class="title">Class ArrowStreamReader</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="ArrowReader.html" title="class in org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc.ArrowReader</a>
 <div class="inheritance">org.apache.arrow.vector.ipc.ArrowStreamReader</div>
 </div>
@@ -82,7 +82,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ArrowStreamReader</span>
@@ -117,23 +117,23 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.io.InputStream,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.io.InputStream,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs a streaming reader from an InputStream.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.io.InputStream,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.compression.CompressionCodec.Factory)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.io.InputStream,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.compression.CompressionCodec.Factory)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Constructs a streaming reader from a ReadableByteChannel input.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.nio.channels.ReadableByteChannel,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.nio.channels.ReadableByteChannel,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs a streaming reader from a ReadableByteChannel input.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.nio.channels.ReadableByteChannel,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.compression.CompressionCodec.Factory)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.nio.channels.ReadableByteChannel,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.compression.CompressionCodec.Factory)" class="member-name-link">ArrowStreamReader</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory)</code></div>
 <div class="col-last odd-row-color">
@@ -191,8 +191,8 @@ loadScripts(document, 'script');</script>
 <h3 id="methods-inherited-from-class-org.apache.arrow.vector.ipc.ArrowReader">Methods inherited from class&nbsp;org.apache.arrow.vector.ipc.<a href="ArrowReader.html" title="class in org.apache.arrow.vector.ipc">ArrowReader</a></h3>
 <code><a href="ArrowReader.html#close()">close</a>, <a href="ArrowReader.html#close(boolean)">close</a>, <a href="ArrowReader.html#ensureInitialized()">ensureInitialized</a>, <a href="ArrowReader.html#getDictionaryIds()">getDictionaryIds</a>, <a href="ArrowReader.html#getDictionaryVectors()">getDictionaryVectors</a>, <a href="ArrowReader.html#getVectorSchemaRoot()">getVectorSchemaRoot</a>, <a href="ArrowReader.html#initialize()">initialize</a>, <a href="ArrowReader.html#loadDictionary(org.apache.arrow.vector.ipc.message.ArrowDictionaryBatch)">loadDictionary</a>, <a href="ArrowReader.html#loadRecordBatch(org.apache.arrow.vector.ipc.message.ArrowRecordBatch)">loadRecordBatch</a>, <a href="ArrowReader.html#lookup(long)">lookup</a>, <a href="ArrowReader.html#prepareLoadNextBatch()">prepareLoadNextBatch</a></code></div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -235,7 +235,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(java.nio.channels.ReadableByteChannel,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.compression.CompressionCodec.Factory)">
 <h3>ArrowStreamReader</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory)</span></div>
 <div class="block">Constructs a streaming reader from a ReadableByteChannel input. Non-blocking.</div>
@@ -250,7 +250,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(java.nio.channels.ReadableByteChannel,org.apache.arrow.memory.BufferAllocator)">
 <h3>ArrowStreamReader</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/ReadableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">ReadableByteChannel</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span></div>
 <div class="block">Constructs a streaming reader from a ReadableByteChannel input. Non-blocking.</div>
 <dl class="notes">
@@ -263,7 +263,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(java.io.InputStream,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.compression.CompressionCodec.Factory)">
 <h3>ArrowStreamReader</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory)</span></div>
 <div class="block">Constructs a streaming reader from a ReadableByteChannel input. Non-blocking.</div>
@@ -278,7 +278,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(java.io.InputStream,org.apache.arrow.memory.BufferAllocator)">
 <h3>ArrowStreamReader</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamReader</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html" title="class or interface in java.io" class="external-link">InputStream</a>&nbsp;in,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span></div>
 <div class="block">Constructs a streaming reader from an InputStream. Non-blocking.</div>
 <dl class="notes">
@@ -313,13 +313,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="closeReadSource()">
 <h3>closeReadSource</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">closeReadSource</span>()
-                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                        throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Closes the underlying read source.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="ArrowReader.html#closeReadSource()">closeReadSource</a></code>&nbsp;in class&nbsp;<code><a href="ArrowReader.html" title="class in org.apache.arrow.vector.ipc">ArrowReader</a></code></dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -327,7 +327,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="loadNextBatch()">
 <h3>loadNextBatch</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">loadNextBatch</span>()
-                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                      throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Load the next ArrowRecordBatch to the vector schema root if available.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
@@ -335,7 +335,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>true if a batch was read, false on EOS</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -343,7 +343,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="readSchema()">
 <h3>readSchema</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a></span>&nbsp;<span class="element-name">readSchema</span>()
-                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                     throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Reads the schema message from the beginning of the stream.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
@@ -351,7 +351,7 @@ loadScripts(document, 'script');</script>
 <dt>Returns:</dt>
 <dd>the deserialized arrow schema</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>

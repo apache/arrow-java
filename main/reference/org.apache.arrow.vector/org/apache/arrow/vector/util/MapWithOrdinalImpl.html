@@ -74,7 +74,7 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.util</a></div>
 <h1 title="Class MapWithOrdinalImpl" class="title">Class MapWithOrdinalImpl&lt;K,<wbr>V&gt;</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.vector.util.MapWithOrdinalImpl&lt;K,<wbr>V&gt;</div>
 </div>
 <section class="class-description" id="class-description">
@@ -89,11 +89,11 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">MapWithOrdinalImpl&lt;K,<wbr>V&gt;</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>
 implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.vector.util">MapWithOrdinal</a>&lt;K,<wbr>V&gt;</span></div>
 <div class="block">An implementation of map that supports constant time look-up by a generic key or an ordinal.
 
- <p>This class extends the functionality a regular <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link"><code>Map</code></a> with ordinal lookup support. Upon
+ <p>This class extends the functionality a regular <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link"><code>Map</code></a> with ordinal lookup support. Upon
  insertion an unused ordinal is assigned to the inserted (key, value) tuple. Upon update the same
  ordinal id is re-used while value is replaced. Upon deletion of an existing item, its
  corresponding ordinal is recycled and could be used by another item.
@@ -134,12 +134,12 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clear()" class="member-name-link">clear</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#containsKey(java.lang.Object)" class="member-name-link">containsKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;key)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#containsKey(java.lang.Object)" class="member-name-link">containsKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;key)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#get(K)" class="member-name-link">get</a><wbr>(<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&nbsp;key)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAll(K)" class="member-name-link">getAll</a><wbr>(<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&nbsp;key)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a></code></div>
@@ -155,7 +155,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isEmpty()" class="member-name-link">isEmpty</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#keys()" class="member-name-link">keys</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
@@ -163,7 +163,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
  <a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&nbsp;value,
  boolean&nbsp;overwrite)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Inserts the tuple (key, value) into the map extending the semantics of <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html#put(K,V)" title="class or interface in java.util" class="external-link"><code>Map.put(K, V)</code></a> with
+<div class="block">Inserts the tuple (key, value) into the map extending the semantics of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html#put(K,V)" title="class or interface in java.util" class="external-link"><code>Map.put(K, V)</code></a> with
  automatic ordinal assignment.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
@@ -173,20 +173,20 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#removeAll(K)" class="member-name-link">removeAll</a><wbr>(<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&nbsp;key)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Removes the element corresponding to the key if exists extending the semantics of <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html#remove(java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Map.remove(java.lang.Object)</code></a> with ordinal re-cycling.</div>
+<div class="block">Removes the element corresponding to the key if exists extending the semantics of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html#remove(java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Map.remove(java.lang.Object)</code></a> with ordinal re-cycling.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#values()" class="member-name-link">values</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -265,7 +265,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <li>
 <section class="detail" id="getAll(K)">
 <h3 id="getAll(java.lang.Object)">getAll</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</span>&nbsp;<span class="element-name">getAll</span><wbr><span class="parameters">(<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&nbsp;key)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</span>&nbsp;<span class="element-name">getAll</span><wbr><span class="parameters">(<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&nbsp;key)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="MapWithOrdinal.html#getAll(K)">getAll</a></code>&nbsp;in interface&nbsp;<code><a href="MapWithOrdinal.html" title="interface in org.apache.arrow.vector.util">MapWithOrdinal</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>,<wbr><a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></dd>
@@ -288,7 +288,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">put</span><wbr><span class="parameters">(<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&nbsp;key,
  <a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&nbsp;value,
  boolean&nbsp;overwrite)</span></div>
-<div class="block">Inserts the tuple (key, value) into the map extending the semantics of <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html#put(K,V)" title="class or interface in java.util" class="external-link"><code>Map.put(K, V)</code></a> with
+<div class="block">Inserts the tuple (key, value) into the map extending the semantics of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html#put(K,V)" title="class or interface in java.util" class="external-link"><code>Map.put(K, V)</code></a> with
  automatic ordinal assignment. A new ordinal is assigned if key does not exists. Otherwise the
  same ordinal is re-used but the value is replaced.</div>
 <dl class="notes">
@@ -297,7 +297,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list-long">
-<li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html#put(K,V)" title="class or interface in java.util" class="external-link"><code>Map.put(K, V)</code></a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html#put(K,V)" title="class or interface in java.util" class="external-link"><code>Map.put(K, V)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -306,7 +306,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <li>
 <section class="detail" id="values()">
 <h3>values</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</span>&nbsp;<span class="element-name">values</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</span>&nbsp;<span class="element-name">values</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="MapWithOrdinal.html#values()">values</a></code>&nbsp;in interface&nbsp;<code><a href="MapWithOrdinal.html" title="interface in org.apache.arrow.vector.util">MapWithOrdinal</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>,<wbr><a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></dd>
@@ -327,7 +327,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <li>
 <section class="detail" id="containsKey(java.lang.Object)">
 <h3>containsKey</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">containsKey</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;key)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">containsKey</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>&nbsp;key)</span></div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="MapWithOrdinal.html#containsKey(K)">containsKey</a></code>&nbsp;in interface&nbsp;<code><a href="MapWithOrdinal.html" title="interface in org.apache.arrow.vector.util">MapWithOrdinal</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>,<wbr><a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></dd>
@@ -338,7 +338,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <section class="detail" id="removeAll(K)">
 <h3 id="removeAll(java.lang.Object)">removeAll</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">removeAll</span><wbr><span class="parameters">(<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&nbsp;key)</span></div>
-<div class="block">Removes the element corresponding to the key if exists extending the semantics of <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html#remove(java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Map.remove(java.lang.Object)</code></a> with ordinal re-cycling. The ordinal corresponding to the given key may
+<div class="block">Removes the element corresponding to the key if exists extending the semantics of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html#remove(java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Map.remove(java.lang.Object)</code></a> with ordinal re-cycling. The ordinal corresponding to the given key may
  be re-assigned to another tuple. It is important that consumer checks the ordinal value via
  <a href="#getOrdinal(K)"><code>getOrdinal(Object)</code></a> before attempting to look-up by ordinal.</div>
 <dl class="notes">
@@ -347,7 +347,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <dt>See Also:</dt>
 <dd>
 <ul class="see-list">
-<li><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Map.html#remove(java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Map.remove(java.lang.Object)</code></a></li>
+<li><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html#remove(java.lang.Object)" title="class or interface in java.util" class="external-link"><code>Map.remove(java.lang.Object)</code></a></li>
 </ul>
 </dd>
 </dl>
@@ -366,7 +366,7 @@ implements <a href="MapWithOrdinal.html" title="interface in org.apache.arrow.ve
 <li>
 <section class="detail" id="keys()">
 <h3>keys</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&gt;</span>&nbsp;<span class="element-name">keys</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>&gt;</span>&nbsp;<span class="element-name">keys</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="MapWithOrdinal.html#keys()">keys</a></code>&nbsp;in interface&nbsp;<code><a href="MapWithOrdinal.html" title="interface in org.apache.arrow.vector.util">MapWithOrdinal</a>&lt;<a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">K</a>,<wbr><a href="MapWithOrdinalImpl.html" title="type parameter in MapWithOrdinalImpl">V</a>&gt;</code></dd>

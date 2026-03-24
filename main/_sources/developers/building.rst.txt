@@ -32,7 +32,7 @@ Arrow Java uses the `Maven <https://maven.apache.org/>`_ build system.
 
 Building requires:
 
-* JDK 11+
+* JDK 17+
 * Maven 3+
 
 .. note::
@@ -345,7 +345,7 @@ configuration file usually located under ``${HOME}/.m2`` with the following snip
         <toolchain>
           <type>jdk</type>
           <provides>
-            <version>21</version> <!-- Replace with the corresponding JDK version: 11, 17, ... -->
+            <version>21</version> <!-- Replace with the corresponding JDK version: 17, 21, ... -->
             <vendor>temurin</vendor> <!-- Replace with the vendor/distribution: temurin, oracle, zulu ... -->
           </provides>
           <configuration>
@@ -383,11 +383,11 @@ Arrow repository, and update the following settings:
   right click the directory, and select Mark Directory as > Generated Sources
   Root. There is no need to mark other generated sources directories, as only
   the ``vector`` module generates sources.
-* For JDK 11, due to an `IntelliJ bug
-  <https://youtrack.jetbrains.com/issue/IDEA-201168>`__, you must go into
+* Due to an `IntelliJ bug
+  <https://youtrack.jetbrains.com/issue/IDEA-201168>`__, you may need to go into
   Settings > Build, Execution, Deployment > Compiler > Java Compiler and disable
   "Use '--release' option for cross-compilation (Java 9 and later)". Otherwise
-  you will get an error like "package sun.misc does not exist".
+  you may get an error like "package sun.misc does not exist".
 * You may want to disable error-prone entirely if it gives spurious
   warnings (disable both error-prone profiles in the Maven tool window
   and "Reload All Maven Projects").
@@ -397,7 +397,7 @@ Arrow repository, and update the following settings:
 * To enable debugging JNI-based modules like ``dataset``,
   activate specific profiles in the Maven tab under "Profiles".
   Ensure the profiles ``arrow-c-data``, ``arrow-jni``, ``generate-libs-cdata-all-os``,
-  ``generate-libs-jni-macos-linux``, and ``jdk11+`` are enabled, so that the
+  ``generate-libs-jni-macos-linux``, and ``jdk17+`` are enabled, so that the
   IDE can build them and enable debugging.
 
 You may not need to update all of these settings if you build/test with the
@@ -478,8 +478,8 @@ Installing Manually
    .. code-block:: xml
 
       <properties>
-         <maven.compiler.source>8</maven.compiler.source>
-         <maven.compiler.target>8</maven.compiler.target>
+         <maven.compiler.source>17</maven.compiler.source>
+         <maven.compiler.target>17</maven.compiler.target>
          <arrow.version>9.0.0.dev501</arrow.version>
       </properties>
 

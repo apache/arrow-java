@@ -74,7 +74,7 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.complex</a></div>
 <h1 title="Class LargeListViewVector" class="title">Class LargeListViewVector</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="../BaseValueVector.html" title="class in org.apache.arrow.vector">org.apache.arrow.vector.BaseValueVector</a>
 <div class="inheritance"><a href="BaseLargeRepeatedValueViewVector.html" title="class in org.apache.arrow.vector.complex">org.apache.arrow.vector.complex.BaseLargeRepeatedValueViewVector</a>
 <div class="inheritance">org.apache.arrow.vector.complex.LargeListViewVector</div>
@@ -84,12 +84,12 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</code>, <code><a href="PromotableVector.html" title="interface in org.apache.arrow.vector.complex">PromotableVector</a></code>, <code><a href="RepeatedValueVector.html" title="interface in org.apache.arrow.vector.complex">RepeatedValueVector</a></code>, <code><a href="../DensityAwareVector.html" title="interface in org.apache.arrow.vector">DensityAwareVector</a></code>, <code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code>, <code><a href="../ValueIterableVector.html" title="interface in org.apache.arrow.vector">ValueIterableVector</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;&gt;</code>, <code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</code>, <code><a href="PromotableVector.html" title="interface in org.apache.arrow.vector.complex">PromotableVector</a></code>, <code><a href="RepeatedValueVector.html" title="interface in org.apache.arrow.vector.complex">RepeatedValueVector</a></code>, <code><a href="../DensityAwareVector.html" title="interface in org.apache.arrow.vector">DensityAwareVector</a></code>, <code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code>, <code><a href="../ValueIterableVector.html" title="interface in org.apache.arrow.vector">ValueIterableVector</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;&gt;</code>, <code><a href="../ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">LargeListViewVector</span>
 <span class="extends-implements">extends <a href="BaseLargeRepeatedValueViewVector.html" title="class in org.apache.arrow.vector.complex">BaseLargeRepeatedValueViewVector</a>
-implements <a href="PromotableVector.html" title="interface in org.apache.arrow.vector.complex">PromotableVector</a>, <a href="../ValueIterableVector.html" title="interface in org.apache.arrow.vector">ValueIterableVector</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;&gt;</span></div>
+implements <a href="PromotableVector.html" title="interface in org.apache.arrow.vector.complex">PromotableVector</a>, <a href="../ValueIterableVector.html" title="interface in org.apache.arrow.vector">ValueIterableVector</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;&gt;</span></div>
 <div class="block">A large list view vector contains lists of a specific type of elements. Its structure contains 3
  elements.
 
@@ -148,7 +148,7 @@ implements <a href="PromotableVector.html" title="interface in org.apache.arrow.
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.vector.util.CallBack)" class="member-name-link">LargeListViewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.vector.util.CallBack)" class="member-name-link">LargeListViewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../types/pojo/FieldType.html" title="class in org.apache.arrow.vector.types.pojo">FieldType</a>&nbsp;fieldType,
  <a href="../util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
@@ -225,7 +225,7 @@ IN&gt;&nbsp;OUT</code></div>
  capacity of the vector needs to be expanded before copy.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="LargeListViewVector.html" title="class in org.apache.arrow.vector.complex">LargeListViewVector</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#empty(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">empty</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#empty(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">empty</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
@@ -235,7 +235,7 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="block">End the current value.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffersPtr,
  long&nbsp;nullValue)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -256,7 +256,7 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the size (number of bytes) of underlying buffers used by this.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getChildrenFromFields()" class="member-name-link">getChildrenFromFields</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The returned list is the same size as the list passed to initializeChildrenFromFields.</div>
@@ -286,17 +286,17 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the field associated with the list view vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFieldBuffers()" class="member-name-link">getFieldBuffers</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the buffers of the fields, (same size as getFieldVectors() since it is their content).</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BufferBacked.html" title="interface in org.apache.arrow.vector">BufferBacked</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BufferBacked.html" title="interface in org.apache.arrow.vector">BufferBacked</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getFieldInnerVectors()" class="member-name-link">getFieldInnerVectors</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span></div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../types/Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../types/Types.MinorType.html" title="enum class in org.apache.arrow.vector.types">Types.MinorType</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMinorType()" class="member-name-link">getMinorType</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the minor type for the vector.</div>
@@ -306,7 +306,7 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the number of elements that are null in the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getObject(int)" class="member-name-link">getObject</a><wbr>(int&nbsp;index)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the element in the list view vector at a particular index.</div>
@@ -338,13 +338,13 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSizeBufferAddress()" class="member-name-link">getSizeBufferAddress</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">To transfer quota responsibility.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -398,7 +398,7 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="block">Get the hash code for the element at the given index.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initializeChildrenFromFields(java.util.List)" class="member-name-link">initializeChildrenFromFields</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;children)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initializeChildrenFromFields(java.util.List)" class="member-name-link">initializeChildrenFromFields</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;children)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Initializes the child vectors to be later loaded with loadBuffers.</div>
 </div>
@@ -419,7 +419,7 @@ IN&gt;&nbsp;OUT</code></div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Load the buffers associated with this Field.</div>
 </div>
@@ -509,14 +509,14 @@ IN&gt;&nbsp;OUT</code></div>
 <h3 id="methods-inherited-from-class-org.apache.arrow.vector.BaseValueVector">Methods inherited from class&nbsp;org.apache.arrow.vector.<a href="../BaseValueVector.html" title="class in org.apache.arrow.vector">BaseValueVector</a></h3>
 <code><a href="../BaseValueVector.html#checkBufRefs(org.apache.arrow.vector.ValueVector)">checkBufRefs</a>, <a href="../BaseValueVector.html#close()">close</a>, <a href="../BaseValueVector.html#copyValidityBuffer(int,int,org.apache.arrow.vector.BaseValueVector)">copyValidityBuffer</a>, <a href="../BaseValueVector.html#getAllocator()">getAllocator</a>, <a href="../BaseValueVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)">getTransferPair</a>, <a href="../BaseValueVector.html#getValidityBufferSizeFromCount(int)">getValidityBufferSizeFromCount</a>, <a href="../BaseValueVector.html#releaseBuffer(org.apache.arrow.memory.ArrowBuf)">releaseBuffer</a>, <a href="../BaseValueVector.html#sliceAndTransferValidityBuffer(int,int,org.apache.arrow.vector.BaseValueVector)">sliceAndTransferValidityBuffer</a>, <a href="../BaseValueVector.html#splitAndTransferValidityBuffer(int,int,org.apache.arrow.vector.BaseValueVector)">splitAndTransferValidityBuffer</a>, <a href="../BaseValueVector.html#toString()">toString</a>, <a href="../BaseValueVector.html#transferBuffer(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator)">transferBuffer</a></code></div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-org.apache.arrow.vector.FieldVector">Methods inherited from interface&nbsp;org.apache.arrow.vector.<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></h3>
 <code><a href="../FieldVector.html#exportBuffer(org.apache.arrow.memory.ArrowBuf,java.util.List,org.apache.arrow.memory.ArrowBuf,long,boolean)">exportBuffer</a>, <a href="../FieldVector.html#getExportedCDataBufferCount()">getExportedCDataBufferCount</a></code></div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Iterable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="external-link">forEach</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#iterator()" title="class or interface in java.lang" class="external-link">iterator</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#spliterator()" title="class or interface in java.lang" class="external-link">spliterator</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Iterable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="external-link">forEach</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#iterator()" title="class or interface in java.lang" class="external-link">iterator</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#spliterator()" title="class or interface in java.lang" class="external-link">spliterator</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-org.apache.arrow.vector.ValueIterableVector">Methods inherited from interface&nbsp;org.apache.arrow.vector.<a href="../ValueIterableVector.html" title="interface in org.apache.arrow.vector">ValueIterableVector</a></h3>
 <code><a href="../ValueIterableVector.html#getValueIterable()">getValueIterable</a>, <a href="../ValueIterableVector.html#getValueIterator()">getValueIterator</a></code></div>
@@ -563,7 +563,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="&lt;init&gt;(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.vector.util.CallBack)">
 <h3>LargeListViewVector</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">LargeListViewVector</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">LargeListViewVector</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../types/pojo/FieldType.html" title="class in org.apache.arrow.vector.types.pojo">FieldType</a>&nbsp;fieldType,
  <a href="../util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</span></div>
@@ -603,14 +603,14 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="empty(java.lang.String,org.apache.arrow.memory.BufferAllocator)">
 <h3>empty</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="LargeListViewVector.html" title="class in org.apache.arrow.vector.complex">LargeListViewVector</a></span>&nbsp;<span class="element-name">empty</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="LargeListViewVector.html" title="class in org.apache.arrow.vector.complex">LargeListViewVector</a></span>&nbsp;<span class="element-name">empty</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span></div>
 </section>
 </li>
 <li>
 <section class="detail" id="initializeChildrenFromFields(java.util.List)">
 <h3>initializeChildrenFromFields</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">initializeChildrenFromFields</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;children)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">initializeChildrenFromFields</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;children)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../FieldVector.html#initializeChildrenFromFields(java.util.List)">FieldVector</a></code></span></div>
 <div class="block">Initializes the child vectors to be later loaded with loadBuffers.</div>
 <dl class="notes">
@@ -690,7 +690,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getChildrenFromFields()">
 <h3>getChildrenFromFields</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</span>&nbsp;<span class="element-name">getChildrenFromFields</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</span>&nbsp;<span class="element-name">getChildrenFromFields</span>()</div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../FieldVector.html#getChildrenFromFields()">FieldVector</a></code></span></div>
 <div class="block">The returned list is the same size as the list passed to initializeChildrenFromFields.</div>
 <dl class="notes">
@@ -705,7 +705,7 @@ IN&gt;&nbsp;OUT</code></div>
 <section class="detail" id="loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)">
 <h3>loadFieldBuffers</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">loadFieldBuffers</span><wbr><span class="parameters">(<a href="../ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</span></div>
 <div class="block">Load the buffers associated with this Field.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
@@ -719,7 +719,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getFieldBuffers()">
 <h3>getFieldBuffers</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</span>&nbsp;<span class="element-name">getFieldBuffers</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</span>&nbsp;<span class="element-name">getFieldBuffers</span>()</div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../FieldVector.html#getFieldBuffers()">FieldVector</a></code></span></div>
 <div class="block">Get the buffers of the fields, (same size as getFieldVectors() since it is their content).</div>
 <dl class="notes">
@@ -733,7 +733,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)">
 <h3>exportCDataBuffers</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">exportCDataBuffers</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">exportCDataBuffers</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffersPtr,
  long&nbsp;nullValue)</span></div>
 <div class="block">Export the buffers of the fields for C Data Interface. This method traverses the buffers and
@@ -872,7 +872,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)">
 <h3>getTransferPair</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../ValueVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)">ValueVector</a></code></span></div>
 <div class="block">To transfer quota responsibility.</div>
@@ -910,7 +910,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)">
 <h3>getTransferPair</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="../util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../ValueVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)">ValueVector</a></code></span></div>
@@ -1191,7 +1191,7 @@ IN&gt;</span>&nbsp;<span class="return-type">OUT</span>&nbsp;<span class="elemen
 <li>
 <section class="detail" id="getMinorType()">
 <h3>getMinorType</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../types/Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a></span>&nbsp;<span class="element-name">getMinorType</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../types/Types.MinorType.html" title="enum class in org.apache.arrow.vector.types">Types.MinorType</a></span>&nbsp;<span class="element-name">getMinorType</span>()</div>
 <div class="block">Get the minor type for the vector.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
@@ -1252,7 +1252,7 @@ IN&gt;</span>&nbsp;<span class="return-type">OUT</span>&nbsp;<span class="elemen
 <li>
 <section class="detail" id="getObject(int)">
 <h3>getObject</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;</span>&nbsp;<span class="element-name">getObject</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;?&gt;</span>&nbsp;<span class="element-name">getObject</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
 <div class="block">Get the element in the list view vector at a particular index.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
@@ -1450,8 +1450,8 @@ IN&gt;</span>&nbsp;<span class="return-type">OUT</span>&nbsp;<span class="elemen
 <li>
 <section class="detail" id="getFieldInnerVectors()">
 <h3>getFieldInnerVectors</h3>
-<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BufferBacked.html" title="interface in org.apache.arrow.vector">BufferBacked</a>&gt;</span>&nbsp;<span class="element-name">getFieldInnerVectors</span>()</div>
+<div class="member-signature"><span class="annotations"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Deprecated.html" title="class or interface in java.lang" class="external-link">@Deprecated</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../BufferBacked.html" title="interface in org.apache.arrow.vector">BufferBacked</a>&gt;</span>&nbsp;<span class="element-name">getFieldInnerVectors</span>()</div>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from interface:&nbsp;<code><a href="../FieldVector.html#getFieldInnerVectors()">FieldVector</a></code></span></div>
 <div class="block">Get the inner vectors.</div>

@@ -74,21 +74,21 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.adapter.jdbc</a></div>
 <h1 title="Class JdbcFieldInfo" class="title">Class JdbcFieldInfo</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.adapter.jdbc.JdbcFieldInfo</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">JdbcFieldInfo</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">This class represents the information about a JDBC ResultSet Field that is needed to construct an
  <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a>. Currently, this is:
 
  <ul>
-   <li>The JDBC <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.
+   <li>The JDBC <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.
    <li>The nullability.
-   <li>The field's precision (used for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> types).
-   <li>The field's scale (used for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> types).
+   <li>The field's precision (used for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> types).
+   <li>The field's scale (used for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> types).
  </ul></div>
 </section>
 <section class="summary">
@@ -103,30 +103,30 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int)" class="member-name-link">JdbcFieldInfo</a><wbr>(int&nbsp;jdbcType)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Builds a <code>JdbcFieldInfo</code> using only the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</div>
+<div class="block">Builds a <code>JdbcFieldInfo</code> using only the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(int,int,int)" class="member-name-link">JdbcFieldInfo</a><wbr>(int&nbsp;jdbcType,
  int&nbsp;precision,
  int&nbsp;scale)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, precision, and scale.</div>
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, precision, and scale.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(int,int,int,int)" class="member-name-link">JdbcFieldInfo</a><wbr>(int&nbsp;jdbcType,
  int&nbsp;nullability,
  int&nbsp;precision,
  int&nbsp;scale)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, nullability,
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, nullability,
  precision, and scale.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.sql.ResultSet)" class="member-name-link">JdbcFieldInfo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;rs)</code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.sql.ResultSet)" class="member-name-link">JdbcFieldInfo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;rs)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding row from a <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/DatabaseMetaData.html#getColumns(java.lang.String,java.lang.String,java.lang.String,java.lang.String)" title="class or interface in java.sql" class="external-link"><code>DatabaseMetaData.getColumns(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</code></a> ResultSet.</div>
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding row from a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/DatabaseMetaData.html#getColumns(java.lang.String,java.lang.String,java.lang.String,java.lang.String)" title="class or interface in java.sql" class="external-link"><code>DatabaseMetaData.getColumns(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</code></a> ResultSet.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.sql.ResultSetMetaData,int)" class="member-name-link">JdbcFieldInfo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link">ResultSetMetaData</a>&nbsp;rsmd,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.sql.ResultSetMetaData,int)" class="member-name-link">JdbcFieldInfo</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link">ResultSetMetaData</a>&nbsp;rsmd,
  int&nbsp;column)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a>
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a>
  column.</div>
 </div>
 </div>
@@ -156,20 +156,20 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getJdbcType()" class="member-name-link">getJdbcType</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">The <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</div>
+<div class="block">The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPrecision()" class="member-name-link">getPrecision</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">The numeric precision, for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a>
+<div class="block">The numeric precision, for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a>
  types.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getScale()" class="member-name-link">getScale</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">The numeric scale, for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> types.</div>
+<div class="block">The numeric scale, for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> types.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTypeName()" class="member-name-link">getTypeName</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">The type name as reported by the database.</div>
@@ -183,8 +183,8 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -200,13 +200,13 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="&lt;init&gt;(int)">
 <h3>JdbcFieldInfo</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JdbcFieldInfo</span><wbr><span class="parameters">(int&nbsp;jdbcType)</span></div>
-<div class="block">Builds a <code>JdbcFieldInfo</code> using only the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type. Do not use this
- constructor if the field type is <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> or <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a>; the precision and scale will be set to <code>0</code>.</div>
+<div class="block">Builds a <code>JdbcFieldInfo</code> using only the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type. Do not use this
+ constructor if the field type is <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> or <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a>; the precision and scale will be set to <code>0</code>.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>jdbcType</code> - The <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</dd>
+<dd><code>jdbcType</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if jdbcType is <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> or <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a>.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if jdbcType is <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> or <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a>.</dd>
 </dl>
 </section>
 </li>
@@ -216,12 +216,12 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JdbcFieldInfo</span><wbr><span class="parameters">(int&nbsp;jdbcType,
  int&nbsp;precision,
  int&nbsp;scale)</span></div>
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, precision, and scale.
- Use this constructor for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a>
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, precision, and scale.
+ Use this constructor for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a>
  types.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>jdbcType</code> - The <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</dd>
+<dd><code>jdbcType</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</dd>
 <dd><code>precision</code> - The field's numeric precision.</dd>
 <dd><code>scale</code> - The field's numeric scale.</dd>
 </dl>
@@ -234,13 +234,13 @@ loadScripts(document, 'script');</script>
  int&nbsp;nullability,
  int&nbsp;precision,
  int&nbsp;scale)</span></div>
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, nullability,
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type, nullability,
  precision, and scale.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>jdbcType</code> - The <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</dd>
-<dd><code>nullability</code> - The nullability. Must be one of <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html#columnNoNulls" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData.columnNoNulls</code></a>,
-     <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html#columnNullable" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData.columnNullable</code></a>, or <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html#columnNullableUnknown" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData.columnNullableUnknown</code></a>.</dd>
+<dd><code>jdbcType</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</dd>
+<dd><code>nullability</code> - The nullability. Must be one of <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html#columnNoNulls" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData.columnNoNulls</code></a>,
+     <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html#columnNullable" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData.columnNullable</code></a>, or <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html#columnNullableUnknown" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData.columnNullableUnknown</code></a>.</dd>
 <dd><code>precision</code> - The field's numeric precision.</dd>
 <dd><code>scale</code> - The field's numeric scale.</dd>
 </dl>
@@ -249,33 +249,33 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="&lt;init&gt;(java.sql.ResultSetMetaData,int)">
 <h3>JdbcFieldInfo</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JdbcFieldInfo</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link">ResultSetMetaData</a>&nbsp;rsmd,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JdbcFieldInfo</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link">ResultSetMetaData</a>&nbsp;rsmd,
  int&nbsp;column)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></span></div>
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a>
+              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></span></div>
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a>
  column.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>rsmd</code> - The <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a> to get the field information from.</dd>
+<dd><code>rsmd</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a> to get the field information from.</dd>
 <dd><code>column</code> - The column to get the field information for (on a 1-based index).</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></code> - If the column information cannot be retrieved.</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if <code>rsmd</code> is <code>null</code>.</dd>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>column</code> is out of bounds.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></code> - If the column information cannot be retrieved.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html" title="class or interface in java.lang" class="external-link">NullPointerException</a></code> - if <code>rsmd</code> is <code>null</code>.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if <code>column</code> is out of bounds.</dd>
 </dl>
 </section>
 </li>
 <li>
 <section class="detail" id="&lt;init&gt;(java.sql.ResultSet)">
 <h3>JdbcFieldInfo</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JdbcFieldInfo</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;rs)</span>
-              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></span></div>
-<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding row from a <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/DatabaseMetaData.html#getColumns(java.lang.String,java.lang.String,java.lang.String,java.lang.String)" title="class or interface in java.sql" class="external-link"><code>DatabaseMetaData.getColumns(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</code></a> ResultSet.</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">JdbcFieldInfo</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;rs)</span>
+              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></span></div>
+<div class="block">Builds a <code>JdbcFieldInfo</code> from the corresponding row from a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/DatabaseMetaData.html#getColumns(java.lang.String,java.lang.String,java.lang.String,java.lang.String)" title="class or interface in java.sql" class="external-link"><code>DatabaseMetaData.getColumns(java.lang.String, java.lang.String, java.lang.String, java.lang.String)</code></a> ResultSet.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>rs</code> - The <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link"><code>ResultSet</code></a> to get the field information from.</dd>
+<dd><code>rs</code> - The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link"><code>ResultSet</code></a> to get the field information from.</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></code> - If the column information cannot be retrieved.</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></code> - If the column information cannot be retrieved.</dd>
 </dl>
 </section>
 </li>
@@ -291,7 +291,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getJdbcType()">
 <h3>getJdbcType</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getJdbcType</span>()</div>
-<div class="block">The <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</div>
+<div class="block">The <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a> type.</div>
 </section>
 </li>
 <li>
@@ -305,7 +305,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getPrecision()">
 <h3>getPrecision</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getPrecision</span>()</div>
-<div class="block">The numeric precision, for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a>
+<div class="block">The numeric precision, for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a>
  types.</div>
 </section>
 </li>
@@ -313,7 +313,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="getScale()">
 <h3>getScale</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getScale</span>()</div>
-<div class="block">The numeric scale, for <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> types.</div>
+<div class="block">The numeric scale, for <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#NUMERIC" title="class or interface in java.sql" class="external-link"><code>Types.NUMERIC</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html#DECIMAL" title="class or interface in java.sql" class="external-link"><code>Types.DECIMAL</code></a> types.</div>
 </section>
 </li>
 <li>
@@ -326,7 +326,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getTypeName()">
 <h3>getTypeName</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getTypeName</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getTypeName</span>()</div>
 <div class="block">The type name as reported by the database.</div>
 </section>
 </li>

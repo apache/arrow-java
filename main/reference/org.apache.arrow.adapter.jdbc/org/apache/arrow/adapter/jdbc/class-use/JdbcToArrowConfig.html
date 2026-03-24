@@ -72,7 +72,7 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color"><code><a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc">JdbcToArrowConfig</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">JdbcToArrowConfigBuilder.</span><code><a href="../JdbcToArrowConfigBuilder.html#build()" class="member-name-link">build</a>()</code></div>
 <div class="col-last even-row-color">
-<div class="block">This builds the <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc"><code>JdbcToArrowConfig</code></a> from the provided <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory"><code>BufferAllocator</code></a> and <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Calendar.html" title="class or interface in java.util" class="external-link"><code>Calendar</code></a>.</div>
+<div class="block">This builds the <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc"><code>JdbcToArrowConfig</code></a> from the provided <a href="../../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory"><code>BufferAllocator</code></a> and <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Calendar.html" title="class or interface in java.util" class="external-link"><code>Calendar</code></a>.</div>
 </div>
 </div>
 <div class="caption"><span>Methods in <a href="../package-summary.html">org.apache.arrow.adapter.jdbc</a> with parameters of type <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc">JdbcToArrowConfig</a></span></div>
@@ -88,7 +88,7 @@ loadScripts(document, 'script');</script>
  <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc">JdbcToArrowConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static <a href="../ArrowVectorIterator.html" title="class in org.apache.arrow.adapter.jdbc">ArrowVectorIterator</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ArrowVectorIterator.</span><code><a href="../ArrowVectorIterator.html#create(java.sql.ResultSet,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">create</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;resultSet,
+<div class="col-second odd-row-color"><span class="type-name-label">ArrowVectorIterator.</span><code><a href="../ArrowVectorIterator.html#create(java.sql.ResultSet,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">create</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;resultSet,
  <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc">JdbcToArrowConfig</a>&nbsp;config)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Create a ArrowVectorIterator to partially convert data.</div>
@@ -103,24 +103,24 @@ loadScripts(document, 'script');</script>
 <div class="block">Default function used for JdbcConsumerFactory.</div>
 </div>
 <div class="col-first odd-row-color"><code>static <a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JdbcToArrowUtils.</span><code><a href="../JdbcToArrowUtils.html#jdbcToArrowSchema(java.sql.ResultSetMetaData,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">jdbcToArrowSchema</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link">ResultSetMetaData</a>&nbsp;rsmd,
+<div class="col-second odd-row-color"><span class="type-name-label">JdbcToArrowUtils.</span><code><a href="../JdbcToArrowUtils.html#jdbcToArrowSchema(java.sql.ResultSetMetaData,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">jdbcToArrowSchema</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link">ResultSetMetaData</a>&nbsp;rsmd,
  <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc">JdbcToArrowConfig</a>&nbsp;config)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Create Arrow <a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo"><code>Schema</code></a> object for the given JDBC <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a>.</div>
+<div class="block">Create Arrow <a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo"><code>Schema</code></a> object for the given JDBC <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSetMetaData.html" title="class or interface in java.sql" class="external-link"><code>ResultSetMetaData</code></a>.</div>
 </div>
 <div class="col-first even-row-color"><code>static void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">JdbcToArrowUtils.</span><code><a href="../JdbcToArrowUtils.html#jdbcToArrowVectors(java.sql.ResultSet,org.apache.arrow.vector.VectorSchemaRoot,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">jdbcToArrowVectors</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;rs,
+<div class="col-second even-row-color"><span class="type-name-label">JdbcToArrowUtils.</span><code><a href="../JdbcToArrowUtils.html#jdbcToArrowVectors(java.sql.ResultSet,org.apache.arrow.vector.VectorSchemaRoot,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">jdbcToArrowVectors</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;rs,
  <a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc">JdbcToArrowConfig</a>&nbsp;config)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Iterate the given JDBC <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link"><code>ResultSet</code></a> object to fetch the data and transpose it to populate
+<div class="block">Iterate the given JDBC <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link"><code>ResultSet</code></a> object to fetch the data and transpose it to populate
  the given Arrow Vector objects.</div>
 </div>
 <div class="col-first odd-row-color"><code>static <a href="../ArrowVectorIterator.html" title="class in org.apache.arrow.adapter.jdbc">ArrowVectorIterator</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">JdbcToArrow.</span><code><a href="../JdbcToArrow.html#sqlToArrowVectorIterator(java.sql.ResultSet,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">sqlToArrowVectorIterator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;resultSet,
+<div class="col-second odd-row-color"><span class="type-name-label">JdbcToArrow.</span><code><a href="../JdbcToArrow.html#sqlToArrowVectorIterator(java.sql.ResultSet,org.apache.arrow.adapter.jdbc.JdbcToArrowConfig)" class="member-name-link">sqlToArrowVectorIterator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link">ResultSet</a>&nbsp;resultSet,
  <a href="../JdbcToArrowConfig.html" title="class in org.apache.arrow.adapter.jdbc">JdbcToArrowConfig</a>&nbsp;config)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">For the given JDBC <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link"><code>ResultSet</code></a>, fetch the data from Relational DB and convert it to Arrow
+<div class="block">For the given JDBC <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/ResultSet.html" title="class or interface in java.sql" class="external-link"><code>ResultSet</code></a>, fetch the data from Relational DB and convert it to Arrow
  objects.</div>
 </div>
 </div>

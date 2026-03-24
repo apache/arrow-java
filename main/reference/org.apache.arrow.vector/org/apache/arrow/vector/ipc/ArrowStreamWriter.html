@@ -74,7 +74,7 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.ipc</a></div>
 <h1 title="Class ArrowStreamWriter" class="title">Class ArrowStreamWriter</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="ArrowWriter.html" title="class in org.apache.arrow.vector.ipc">org.apache.arrow.vector.ipc.ArrowWriter</a>
 <div class="inheritance">org.apache.arrow.vector.ipc.ArrowStreamWriter</div>
 </div>
@@ -82,7 +82,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">ArrowStreamWriter</span>
@@ -110,39 +110,39 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-last">Description</div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.VectorSchemaRoot,org.apache.arrow.vector.dictionary.DictionaryProvider,java.io.OutputStream)" class="member-name-link">ArrowStreamWriter</a><wbr>(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct an ArrowStreamWriter with an optional DictionaryProvider for the OutputStream.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.VectorSchemaRoot,org.apache.arrow.vector.dictionary.DictionaryProvider,java.nio.channels.WritableByteChannel)" class="member-name-link">ArrowStreamWriter</a><wbr>(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct an ArrowStreamWriter with an optional DictionaryProvider for the WritableByteChannel.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.VectorSchemaRoot,org.apache.arrow.vector.dictionary.DictionaryProvider,java.nio.channels.WritableByteChannel,org.apache.arrow.vector.ipc.message.IpcOption)" class="member-name-link">ArrowStreamWriter</a><wbr>(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
  <a href="message/IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct an ArrowStreamWriter with an optional DictionaryProvider for the WritableByteChannel.</div>
 </div>
 <div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.VectorSchemaRoot,org.apache.arrow.vector.dictionary.DictionaryProvider,java.nio.channels.WritableByteChannel,org.apache.arrow.vector.ipc.message.IpcOption,org.apache.arrow.vector.compression.CompressionCodec.Factory,org.apache.arrow.vector.compression.CompressionUtil.CodecType)" class="member-name-link">ArrowStreamWriter</a><wbr>(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
  <a href="message/IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory,
- <a href="../compression/CompressionUtil.CodecType.html" title="enum in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType)</code></div>
+ <a href="../compression/CompressionUtil.CodecType.html" title="enum class in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Construct an ArrowStreamWriter with compression enabled.</div>
 </div>
 <div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(org.apache.arrow.vector.VectorSchemaRoot,org.apache.arrow.vector.dictionary.DictionaryProvider,java.nio.channels.WritableByteChannel,org.apache.arrow.vector.ipc.message.IpcOption,org.apache.arrow.vector.compression.CompressionCodec.Factory,org.apache.arrow.vector.compression.CompressionUtil.CodecType,java.util.Optional)" class="member-name-link">ArrowStreamWriter</a><wbr>(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
  <a href="message/IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory,
- <a href="../compression/CompressionUtil.CodecType.html" title="enum in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;compressionLevel)</code></div>
+ <a href="../compression/CompressionUtil.CodecType.html" title="enum class in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;compressionLevel)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Construct an ArrowStreamWriter with compression enabled.</div>
 </div>
@@ -168,7 +168,7 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#ensureDictionariesWritten(org.apache.arrow.vector.dictionary.DictionaryProvider,java.util.Set)" class="member-name-link">ensureDictionariesWritten</a><wbr>(<a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;dictionaryIdsUsed)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;dictionaryIdsUsed)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Write dictionaries after schema and before recordBatches, dictionaries won't be written if
  empty stream (only has schema data in IPC).</div>
@@ -186,8 +186,8 @@ loadScripts(document, 'script');</script>
 <h3 id="methods-inherited-from-class-org.apache.arrow.vector.ipc.ArrowWriter">Methods inherited from class&nbsp;org.apache.arrow.vector.ipc.<a href="ArrowWriter.html" title="class in org.apache.arrow.vector.ipc">ArrowWriter</a></h3>
 <code><a href="ArrowWriter.html#bytesWritten()">bytesWritten</a>, <a href="ArrowWriter.html#end()">end</a>, <a href="ArrowWriter.html#start()">start</a>, <a href="ArrowWriter.html#startInternal(org.apache.arrow.vector.ipc.WriteChannel)">startInternal</a>, <a href="ArrowWriter.html#writeBatch()">writeBatch</a>, <a href="ArrowWriter.html#writeDictionaryBatch(org.apache.arrow.vector.dictionary.Dictionary)">writeDictionaryBatch</a>, <a href="ArrowWriter.html#writeDictionaryBatch(org.apache.arrow.vector.ipc.message.ArrowDictionaryBatch)">writeDictionaryBatch</a>, <a href="ArrowWriter.html#writeRecordBatch(org.apache.arrow.vector.ipc.message.ArrowRecordBatch)">writeRecordBatch</a></code></div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -204,7 +204,7 @@ loadScripts(document, 'script');</script>
 <h3>ArrowStreamWriter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamWriter</span><wbr><span class="parameters">(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html" title="class or interface in java.io" class="external-link">OutputStream</a>&nbsp;out)</span></div>
 <div class="block">Construct an ArrowStreamWriter with an optional DictionaryProvider for the OutputStream.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -220,7 +220,7 @@ loadScripts(document, 'script');</script>
 <h3>ArrowStreamWriter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamWriter</span><wbr><span class="parameters">(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out)</span></div>
 <div class="block">Construct an ArrowStreamWriter with an optional DictionaryProvider for the WritableByteChannel.</div>
 </section>
 </li>
@@ -229,7 +229,7 @@ loadScripts(document, 'script');</script>
 <h3>ArrowStreamWriter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamWriter</span><wbr><span class="parameters">(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
  <a href="message/IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</span></div>
 <div class="block">Construct an ArrowStreamWriter with an optional DictionaryProvider for the WritableByteChannel.</div>
 <dl class="notes">
@@ -247,10 +247,10 @@ loadScripts(document, 'script');</script>
 <h3>ArrowStreamWriter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamWriter</span><wbr><span class="parameters">(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
  <a href="message/IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory,
- <a href="../compression/CompressionUtil.CodecType.html" title="enum in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType)</span></div>
+ <a href="../compression/CompressionUtil.CodecType.html" title="enum class in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType)</span></div>
 <div class="block">Construct an ArrowStreamWriter with compression enabled.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -269,11 +269,11 @@ loadScripts(document, 'script');</script>
 <h3>ArrowStreamWriter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">ArrowStreamWriter</span><wbr><span class="parameters">(<a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a>&nbsp;root,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/channels/WritableByteChannel.html" title="class or interface in java.nio.channels" class="external-link">WritableByteChannel</a>&nbsp;out,
  <a href="message/IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option,
  <a href="../compression/CompressionCodec.Factory.html" title="interface in org.apache.arrow.vector.compression">CompressionCodec.Factory</a>&nbsp;compressionFactory,
- <a href="../compression/CompressionUtil.CodecType.html" title="enum in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;compressionLevel)</span></div>
+ <a href="../compression/CompressionUtil.CodecType.html" title="enum class in org.apache.arrow.vector.compression">CompressionUtil.CodecType</a>&nbsp;codecType,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&gt;&nbsp;compressionLevel)</span></div>
 <div class="block">Construct an ArrowStreamWriter with compression enabled.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -301,14 +301,14 @@ loadScripts(document, 'script');</script>
 <h3>writeEndOfStream</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">writeEndOfStream</span><wbr><span class="parameters">(<a href="WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out,
  <a href="message/IpcOption.html" title="class in org.apache.arrow.vector.ipc.message">IpcOption</a>&nbsp;option)</span>
-                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                             throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block">Write an EOS identifier to the WriteChannel.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>out</code> - Open WriteChannel with an active Arrow stream.</dd>
 <dd><code>option</code> - IPC write option</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - on error</dd>
 </dl>
 </section>
 </li>
@@ -316,12 +316,12 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="endInternal(org.apache.arrow.vector.ipc.WriteChannel)">
 <h3>endInternal</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">endInternal</span><wbr><span class="parameters">(<a href="WriteChannel.html" title="class in org.apache.arrow.vector.ipc">WriteChannel</a>&nbsp;out)</span>
-                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+                    throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <dl class="notes">
 <dt>Overrides:</dt>
 <dd><code><a href="ArrowWriter.html#endInternal(org.apache.arrow.vector.ipc.WriteChannel)">endInternal</a></code>&nbsp;in class&nbsp;<code><a href="ArrowWriter.html" title="class in org.apache.arrow.vector.ipc">ArrowWriter</a></code></dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -329,8 +329,8 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="ensureDictionariesWritten(org.apache.arrow.vector.dictionary.DictionaryProvider,java.util.Set)">
 <h3>ensureDictionariesWritten</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">ensureDictionariesWritten</span><wbr><span class="parameters">(<a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;dictionaryIdsUsed)</span>
-                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&gt;&nbsp;dictionaryIdsUsed)</span>
+                                  throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
 <div class="block"><span class="descfrm-type-label">Description copied from class:&nbsp;<code><a href="ArrowWriter.html#ensureDictionariesWritten(org.apache.arrow.vector.dictionary.DictionaryProvider,java.util.Set)">ArrowWriter</a></code></span></div>
 <div class="block">Write dictionaries after schema and before recordBatches, dictionaries won't be written if
  empty stream (only has schema data in IPC).</div>
@@ -338,7 +338,7 @@ loadScripts(document, 'script');</script>
 <dt>Specified by:</dt>
 <dd><code><a href="ArrowWriter.html#ensureDictionariesWritten(org.apache.arrow.vector.dictionary.DictionaryProvider,java.util.Set)">ensureDictionariesWritten</a></code>&nbsp;in class&nbsp;<code><a href="ArrowWriter.html" title="class in org.apache.arrow.vector.ipc">ArrowWriter</a></code></dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code></dd>
 </dl>
 </section>
 </li>
@@ -348,7 +348,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">close</span>()</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 <dt>Overrides:</dt>
 <dd><code><a href="ArrowWriter.html#close()">close</a></code>&nbsp;in class&nbsp;<code><a href="ArrowWriter.html" title="class in org.apache.arrow.vector.ipc">ArrowWriter</a></code></dd>
 </dl>

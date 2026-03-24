@@ -101,8 +101,8 @@ without writing JNI bindings ourselves.
        <version>1.0-SNAPSHOT</version>
 
        <properties>
-           <maven.compiler.source>8</maven.compiler.source>
-           <maven.compiler.target>8</maven.compiler.target>
+           <maven.compiler.source>17</maven.compiler.source>
+           <maven.compiler.target>17</maven.compiler.target>
            <arrow.version>9.0.0</arrow.version>
        </properties>
        <dependencies>
@@ -237,8 +237,8 @@ For this example, we will build a JAR with all dependencies bundled.
        <artifactId>cpptojava</artifactId>
        <version>1.0-SNAPSHOT</version>
        <properties>
-           <maven.compiler.source>8</maven.compiler.source>
-           <maven.compiler.target>8</maven.compiler.target>
+           <maven.compiler.source>17</maven.compiler.source>
+           <maven.compiler.target>17</maven.compiler.target>
            <arrow.version>9.0.0</arrow.version>
        </properties>
        <dependencies>

@@ -97,7 +97,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#bind(java.sql.PreparedStatement,int,int)" class="member-name-link">bind</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html" title="class or interface in java.sql" class="external-link">PreparedStatement</a>&nbsp;statement,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#bind(java.sql.PreparedStatement,int,int)" class="member-name-link">bind</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/PreparedStatement.html" title="class or interface in java.sql" class="external-link">PreparedStatement</a>&nbsp;statement,
  int&nbsp;parameterIndex,
  int&nbsp;rowIndex)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -110,7 +110,7 @@ loadScripts(document, 'script');</script>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="ColumnBinder.html" title="interface in org.apache.arrow.adapter.jdbc.binder">ColumnBinder</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#forVector(org.apache.arrow.vector.FieldVector,java.lang.Integer)" class="member-name-link">forVector</a><wbr>(<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&nbsp;vector,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;jdbcType)</code></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;jdbcType)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1">
 <div class="block">Create a column binder for a vector, overriding the JDBC type code used for null values.</div>
 </div>
@@ -141,10 +141,10 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="bind(java.sql.PreparedStatement,int,int)">
 <h3>bind</h3>
-<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">bind</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html" title="class or interface in java.sql" class="external-link">PreparedStatement</a>&nbsp;statement,
+<div class="member-signature"><span class="return-type">void</span>&nbsp;<span class="element-name">bind</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/PreparedStatement.html" title="class or interface in java.sql" class="external-link">PreparedStatement</a>&nbsp;statement,
  int&nbsp;parameterIndex,
  int&nbsp;rowIndex)</span>
-   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></span></div>
+   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></span></div>
 <div class="block">Bind the given row to the given parameter.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -152,7 +152,7 @@ loadScripts(document, 'script');</script>
 <dd><code>parameterIndex</code> - The parameter to bind to (1-indexed)</dd>
 <dd><code>rowIndex</code> - The row to bind values from (0-indexed)</dd>
 <dt>Throws:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></code> - if an error occurs</dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/SQLException.html" title="class or interface in java.sql" class="external-link">SQLException</a></code> - if an error occurs</dd>
 </dl>
 </section>
 </li>
@@ -163,7 +163,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Get the JDBC type code used by this binder.</div>
 <dl class="notes">
 <dt>Returns:</dt>
-<dd>A type code from <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a>.</dd>
+<dd>A type code from <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Types.html" title="class or interface in java.sql" class="external-link"><code>Types</code></a>.</dd>
 </dl>
 </section>
 </li>
@@ -185,7 +185,7 @@ loadScripts(document, 'script');</script>
 <section class="detail" id="forVector(org.apache.arrow.vector.FieldVector,java.lang.Integer)">
 <h3>forVector</h3>
 <div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="ColumnBinder.html" title="interface in org.apache.arrow.adapter.jdbc.binder">ColumnBinder</a></span>&nbsp;<span class="element-name">forVector</span><wbr><span class="parameters">(<a href="../../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&nbsp;vector,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;jdbcType)</span></div>
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html" title="class or interface in java.lang" class="external-link">Integer</a>&nbsp;jdbcType)</span></div>
 <div class="block">Create a column binder for a vector, overriding the JDBC type code used for null values.</div>
 <dl class="notes">
 <dt>Parameters:</dt>

@@ -77,7 +77,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Implementing Classes:</dt>
@@ -85,7 +85,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">BufferAllocator</span><span class="extends-implements">
-extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
+extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></span></div>
 <div class="block">Wrapper class to deal with byte buffer allocation. Ensures users only use designated methods.</div>
 </section>
 <section class="summary">
@@ -132,7 +132,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns the amount of memory currently allocated from this allocator.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getChildAllocators()" class="member-name-link">getChildAllocators</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns the set of child allocators.</div>
@@ -163,7 +163,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns the allocation listener used by this allocator.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Return the name of this allocator.</div>
@@ -194,14 +194,14 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="block">Return whether or not this allocator (or one if its parents) is over its limits.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newChildAllocator(java.lang.String,long,long)" class="member-name-link">newChildAllocator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newChildAllocator(java.lang.String,long,long)" class="member-name-link">newChildAllocator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  long&nbsp;initReservation,
  long&nbsp;maxAllocation)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Create a new child allocator.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newChildAllocator(java.lang.String,org.apache.arrow.memory.AllocationListener,long,long)" class="member-name-link">newChildAllocator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#newChildAllocator(java.lang.String,org.apache.arrow.memory.AllocationListener,long,long)" class="member-name-link">newChildAllocator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="AllocationListener.html" title="interface in org.apache.arrow.memory">AllocationListener</a>&nbsp;listener,
  long&nbsp;initReservation,
  long&nbsp;maxAllocation)</code></div>
@@ -223,7 +223,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Set the maximum amount of memory this allocator is allowed to allocate.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#toVerboseString()" class="member-name-link">toVerboseString</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Return a verbose string describing this allocator.</div>
@@ -300,7 +300,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li>
 <section class="detail" id="newChildAllocator(java.lang.String,long,long)">
 <h3>newChildAllocator</h3>
-<div class="member-signature"><span class="return-type"><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></span>&nbsp;<span class="element-name">newChildAllocator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="member-signature"><span class="return-type"><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></span>&nbsp;<span class="element-name">newChildAllocator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  long&nbsp;initReservation,
  long&nbsp;maxAllocation)</span></div>
 <div class="block">Create a new child allocator.</div>
@@ -317,7 +317,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li>
 <section class="detail" id="newChildAllocator(java.lang.String,org.apache.arrow.memory.AllocationListener,long,long)">
 <h3>newChildAllocator</h3>
-<div class="member-signature"><span class="return-type"><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></span>&nbsp;<span class="element-name">newChildAllocator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="member-signature"><span class="return-type"><a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a></span>&nbsp;<span class="element-name">newChildAllocator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="AllocationListener.html" title="interface in org.apache.arrow.memory">AllocationListener</a>&nbsp;listener,
  long&nbsp;initReservation,
  long&nbsp;maxAllocation)</span></div>
@@ -343,7 +343,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
  release all buffers before the allocator is closed.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 </dl>
 </section>
 </li>
@@ -464,7 +464,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li>
 <section class="detail" id="getChildAllocators()">
 <h3>getChildAllocators</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&gt;</span>&nbsp;<span class="element-name">getChildAllocators</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html" title="class or interface in java.util" class="external-link">Collection</a>&lt;<a href="BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&gt;</span>&nbsp;<span class="element-name">getChildAllocators</span>()</div>
 <div class="block">Returns the set of child allocators.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -506,7 +506,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li>
 <section class="detail" id="getName()">
 <h3>getName</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
 <div class="block">Return the name of this allocator. This is a human readable name that can help debugging.
  Typically provides coordinates about where this allocator was created</div>
 <dl class="notes">
@@ -531,7 +531,7 @@ extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/ja
 <li>
 <section class="detail" id="toVerboseString()">
 <h3>toVerboseString</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toVerboseString</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">toVerboseString</span>()</div>
 <div class="block">Return a verbose string describing this allocator. If in DEBUG mode, this will also include
  relevant stacktraces and historical logs for underlying objects</div>
 <dl class="notes">

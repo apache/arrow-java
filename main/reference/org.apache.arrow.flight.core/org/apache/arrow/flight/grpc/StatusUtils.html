@@ -74,13 +74,13 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.flight.grpc</a></div>
 <h1 title="Class StatusUtils" class="title">Class StatusUtils</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance">org.apache.arrow.flight.grpc.StatusUtils</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">StatusUtils</span>
-<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
+<span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Utilities to adapt gRPC and Flight status objects.
 
  <p>NOT A PUBLIC CLASS, interface is not guaranteed to remain stable.</div>
@@ -114,18 +114,18 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Convert from a gRPC Status &amp; trailers to a Flight status.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../FlightStatusCode.html" title="enum in org.apache.arrow.flight">FlightStatusCode</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../FlightStatusCode.html" title="enum class in org.apache.arrow.flight">FlightStatusCode</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromGrpcStatusCode(io.grpc.Status.Code)" class="member-name-link">fromGrpcStatusCode</a><wbr>(io.grpc.Status.Code&nbsp;code)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Convert from a gRPC status code to a Flight status code.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="../FlightRuntimeException.html" title="class in org.apache.arrow.flight">FlightRuntimeException</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromThrowable(java.lang.Throwable)" class="member-name-link">fromThrowable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;t)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#fromThrowable(java.lang.Throwable)" class="member-name-link">fromThrowable</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;t)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Convert arbitrary exceptions to a <a href="../FlightRuntimeException.html" title="class in org.apache.arrow.flight"><code>FlightRuntimeException</code></a>.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#toGrpcException(java.lang.Throwable)" class="member-name-link">toGrpcException</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;ex)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#toGrpcException(java.lang.Throwable)" class="member-name-link">toGrpcException</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;ex)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Convert arbitrary exceptions to a <code>StatusRuntimeException</code> or <code>StatusException</code>.</div>
 </div>
@@ -135,14 +135,14 @@ loadScripts(document, 'script');</script>
 <div class="block">Convert from a Flight status to a gRPC status.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static io.grpc.Status.Code</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#toGrpcStatusCode(org.apache.arrow.flight.FlightStatusCode)" class="member-name-link">toGrpcStatusCode</a><wbr>(<a href="../FlightStatusCode.html" title="enum in org.apache.arrow.flight">FlightStatusCode</a>&nbsp;code)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#toGrpcStatusCode(org.apache.arrow.flight.FlightStatusCode)" class="member-name-link">toGrpcStatusCode</a><wbr>(<a href="../FlightStatusCode.html" title="enum class in org.apache.arrow.flight">FlightStatusCode</a>&nbsp;code)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Convert from a Flight status code to a gRPC status code.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static &lt;FROM,<wbr>
-TO&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;TO&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#wrapIterator(java.util.Iterator,java.util.function.Function)" class="member-name-link">wrapIterator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;FROM&gt;&nbsp;fromIterator,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super FROM,<wbr>? extends TO&gt;&nbsp;transformer)</code></div>
+TO&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;TO&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#wrapIterator(java.util.Iterator,java.util.function.Function)" class="member-name-link">wrapIterator</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;FROM&gt;&nbsp;fromIterator,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super FROM,<wbr>? extends TO&gt;&nbsp;transformer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Maps a transformation function to the elements of an iterator, while wrapping exceptions in
  <a href="../FlightRuntimeException.html" title="class in org.apache.arrow.flight"><code>FlightRuntimeException</code></a>.</div>
@@ -151,8 +151,8 @@ TO&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.bas
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 </section>
 </li>
 </ul>
@@ -167,14 +167,14 @@ TO&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.bas
 <li>
 <section class="detail" id="toGrpcStatusCode(org.apache.arrow.flight.FlightStatusCode)">
 <h3>toGrpcStatusCode</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">io.grpc.Status.Code</span>&nbsp;<span class="element-name">toGrpcStatusCode</span><wbr><span class="parameters">(<a href="../FlightStatusCode.html" title="enum in org.apache.arrow.flight">FlightStatusCode</a>&nbsp;code)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type">io.grpc.Status.Code</span>&nbsp;<span class="element-name">toGrpcStatusCode</span><wbr><span class="parameters">(<a href="../FlightStatusCode.html" title="enum class in org.apache.arrow.flight">FlightStatusCode</a>&nbsp;code)</span></div>
 <div class="block">Convert from a Flight status code to a gRPC status code.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="fromGrpcStatusCode(io.grpc.Status.Code)">
 <h3>fromGrpcStatusCode</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../FlightStatusCode.html" title="enum in org.apache.arrow.flight">FlightStatusCode</a></span>&nbsp;<span class="element-name">fromGrpcStatusCode</span><wbr><span class="parameters">(io.grpc.Status.Code&nbsp;code)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../FlightStatusCode.html" title="enum class in org.apache.arrow.flight">FlightStatusCode</a></span>&nbsp;<span class="element-name">fromGrpcStatusCode</span><wbr><span class="parameters">(io.grpc.Status.Code&nbsp;code)</span></div>
 <div class="block">Convert from a gRPC status code to a Flight status code.</div>
 </section>
 </li>
@@ -210,14 +210,14 @@ TO&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.bas
 <li>
 <section class="detail" id="fromThrowable(java.lang.Throwable)">
 <h3>fromThrowable</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../FlightRuntimeException.html" title="class in org.apache.arrow.flight">FlightRuntimeException</a></span>&nbsp;<span class="element-name">fromThrowable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;t)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="../FlightRuntimeException.html" title="class in org.apache.arrow.flight">FlightRuntimeException</a></span>&nbsp;<span class="element-name">fromThrowable</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;t)</span></div>
 <div class="block">Convert arbitrary exceptions to a <a href="../FlightRuntimeException.html" title="class in org.apache.arrow.flight"><code>FlightRuntimeException</code></a>.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="toGrpcException(java.lang.Throwable)">
 <h3>toGrpcException</h3>
-<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></span>&nbsp;<span class="element-name">toGrpcException</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;ex)</span></div>
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a></span>&nbsp;<span class="element-name">toGrpcException</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&nbsp;ex)</span></div>
 <div class="block">Convert arbitrary exceptions to a <code>StatusRuntimeException</code> or <code>StatusException</code>.
 
  <p>Such exceptions can be passed to <code>StreamObserver.onError(Throwable)</code> and
@@ -228,8 +228,8 @@ TO&gt;&nbsp;<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.bas
 <section class="detail" id="wrapIterator(java.util.Iterator,java.util.function.Function)">
 <h3>wrapIterator</h3>
 <div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="type-parameters">&lt;FROM,<wbr>
-TO&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;TO&gt;</span>&nbsp;<span class="element-name">wrapIterator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;FROM&gt;&nbsp;fromIterator,
- <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super FROM,<wbr>? extends TO&gt;&nbsp;transformer)</span></div>
+TO&gt;</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;TO&gt;</span>&nbsp;<span class="element-name">wrapIterator</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;FROM&gt;&nbsp;fromIterator,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html" title="class or interface in java.util.function" class="external-link">Function</a>&lt;? super FROM,<wbr>? extends TO&gt;&nbsp;transformer)</span></div>
 <div class="block">Maps a transformation function to the elements of an iterator, while wrapping exceptions in
  <a href="../FlightRuntimeException.html" title="class in org.apache.arrow.flight"><code>FlightRuntimeException</code></a>.</div>
 </section>

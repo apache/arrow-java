@@ -77,7 +77,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Superinterfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</code></dd>
 </dl>
 <dl class="notes">
 <dt>All Known Subinterfaces:</dt>
@@ -89,7 +89,7 @@ loadScripts(document, 'script');</script>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public interface </span><span class="element-name type-name-label">ValueVector</span><span class="extends-implements">
-extends <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</span></div>
+extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&gt;</span></div>
 <div class="block">An abstraction that is used to store a sequence of values in an individual column.
 
  <p>A <a href="ValueVector.html" title="interface in org.apache.arrow.vector"><code>value vector</code></a> stores underlying data in-memory in a columnar fashion that
@@ -205,10 +205,10 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Get information about how this field is materialized.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="types/Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a></code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="types/Types.MinorType.html" title="enum class in org.apache.arrow.vector.types">Types.MinorType</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getMinorType()" class="member-name-link">getMinorType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Gets the name of the vector.</div>
@@ -218,7 +218,7 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns number of null elements in the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getObject(int)" class="member-name-link">getObject</a><wbr>(int&nbsp;index)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Get friendly type object from the vector.</div>
@@ -234,13 +234,13 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="block">Get a reader for this vector.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">To transfer quota responsibility.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
@@ -330,8 +330,8 @@ IN&gt;&nbsp;OUT</code></div>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Iterable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="external-link">forEach</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#iterator()" title="class or interface in java.lang" class="external-link">iterator</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#spliterator()" title="class or interface in java.lang" class="external-link">spliterator</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Iterable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="external-link">forEach</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#iterator()" title="class or interface in java.lang" class="external-link">iterator</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#spliterator()" title="class or interface in java.lang" class="external-link">spliterator</a></code></div>
 </section>
 </li>
 </ul>
@@ -415,9 +415,9 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="block">Alternative to clear(). Allows use as an AutoCloseable in try-with-resources.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()" title="class or interface in java.lang" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code></dd>
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html#close()" title="class or interface in java.io" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html#close()" title="class or interface in java.io" class="external-link">close</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Closeable.html" title="class or interface in java.io" class="external-link">Closeable</a></code></dd>
 </dl>
 </section>
 </li>
@@ -453,7 +453,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getMinorType()">
 <h3>getMinorType</h3>
-<div class="member-signature"><span class="return-type"><a href="types/Types.MinorType.html" title="enum in org.apache.arrow.vector.types">Types.MinorType</a></span>&nbsp;<span class="element-name">getMinorType</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="types/Types.MinorType.html" title="enum class in org.apache.arrow.vector.types">Types.MinorType</a></span>&nbsp;<span class="element-name">getMinorType</span>()</div>
 </section>
 </li>
 <li>
@@ -473,7 +473,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)">
 <h3>getTransferPair</h3>
-<div class="member-signature"><span class="return-type"><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="member-signature"><span class="return-type"><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</span></div>
 <div class="block">To transfer quota responsibility.</div>
 <dl class="notes">
@@ -505,7 +505,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)">
 <h3>getTransferPair</h3>
-<div class="member-signature"><span class="return-type"><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
+<div class="member-signature"><span class="return-type"><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">getTransferPair</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</span></div>
 <div class="block">To transfer quota responsibility.</div>
@@ -664,7 +664,7 @@ IN&gt;&nbsp;OUT</code></div>
 <li>
 <section class="detail" id="getObject(int)">
 <h3>getObject</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getObject</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span>&nbsp;<span class="element-name">getObject</span><wbr><span class="parameters">(int&nbsp;index)</span></div>
 <div class="block">Get friendly type object from the vector.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -762,7 +762,7 @@ IN&gt;</span>&nbsp;<span class="return-type">OUT</span>&nbsp;<span class="elemen
 <li>
 <section class="detail" id="getName()">
 <h3>getName</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name">getName</span>()</div>
 <div class="block">Gets the name of the vector.</div>
 <dl class="notes">
 <dt>Returns:</dt>

@@ -321,7 +321,7 @@
 <p>Arrow Java uses the <a class="reference external" href="https://maven.apache.org/">Maven</a> build system.</p>
 <p>Building requires:</p>
 <ul class="simple">
-<li><p>JDK 11+</p></li>
+<li><p>JDK 17+</p></li>
 <li><p>Maven 3+</p></li>
 </ul>
 <div class="admonition note">
@@ -618,7 +618,7 @@ configuration file usually located under <code class="docutils literal notransla
 <span class="go">  &lt;toolchain&gt;</span>
 <span class="go">    &lt;type&gt;jdk&lt;/type&gt;</span>
 <span class="go">    &lt;provides&gt;</span>
-<span class="go">      &lt;version&gt;21&lt;/version&gt; &lt;!-- Replace with the corresponding JDK version: 11, 17, ... --&gt;</span>
+<span class="go">      &lt;version&gt;21&lt;/version&gt; &lt;!-- Replace with the corresponding JDK version: 17, 21, ... --&gt;</span>
 <span class="go">      &lt;vendor&gt;temurin&lt;/vendor&gt; &lt;!-- Replace with the vendor/distribution: temurin, oracle, zulu ... --&gt;</span>
 <span class="go">    &lt;/provides&gt;</span>
 <span class="go">    &lt;configuration&gt;</span>
@@ -657,10 +657,10 @@ Arrow repository, and update the following settings:</p>
 right click the directory, and select Mark Directory as &gt; Generated Sources
 Root. There is no need to mark other generated sources directories, as only
 the <code class="docutils literal notranslate"><span class="pre">vector</span></code> module generates sources.</p></li>
-<li><p>For JDK 11, due to an <a class="reference external" href="https://youtrack.jetbrains.com/issue/IDEA-201168">IntelliJ bug</a>, you must go into
+<li><p>Due to an <a class="reference external" href="https://youtrack.jetbrains.com/issue/IDEA-201168">IntelliJ bug</a>, you may need to go into
 Settings &gt; Build, Execution, Deployment &gt; Compiler &gt; Java Compiler and disable
 “Use ‘–release’ option for cross-compilation (Java 9 and later)”. Otherwise
-you will get an error like “package sun.misc does not exist”.</p></li>
+you may get an error like “package sun.misc does not exist”.</p></li>
 <li><p>You may want to disable error-prone entirely if it gives spurious
 warnings (disable both error-prone profiles in the Maven tool window
 and “Reload All Maven Projects”).</p></li>
@@ -669,7 +669,7 @@ and “Reload All Maven Projects”).</p></li>
 <li><p>To enable debugging JNI-based modules like <code class="docutils literal notranslate"><span class="pre">dataset</span></code>,
 activate specific profiles in the Maven tab under “Profiles”.
 Ensure the profiles <code class="docutils literal notranslate"><span class="pre">arrow-c-data</span></code>, <code class="docutils literal notranslate"><span class="pre">arrow-jni</span></code>, <code class="docutils literal notranslate"><span class="pre">generate-libs-cdata-all-os</span></code>,
-<code class="docutils literal notranslate"><span class="pre">generate-libs-jni-macos-linux</span></code>, and <code class="docutils literal notranslate"><span class="pre">jdk11+</span></code> are enabled, so that the
+<code class="docutils literal notranslate"><span class="pre">generate-libs-jni-macos-linux</span></code>, and <code class="docutils literal notranslate"><span class="pre">jdk17+</span></code> are enabled, so that the
 IDE can build them and enable debugging.</p></li>
 </ul>
 <p>You may not need to update all of these settings if you build/test with the
@@ -742,8 +742,8 @@ The artifacts are uploaded to GitHub. For example, for 2022/07/30, they can be f
 <li><p>Decide nightly packages repository to use, for example: <a class="reference external" href="https://github.com/ursacomputing/crossbow/releases/tag/nightly-packaging-2022-07-30-0-github-java-jars">https://github.com/ursacomputing/crossbow/releases/tag/nightly-packaging-2022-07-30-0-github-java-jars</a></p></li>
 <li><p>Add packages to your pom.xml, for example: flight-core (it depends on: arrow-format, arrow-vector, arrow-memory-core and arrow-memory-netty).</p>
 <div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;properties&gt;</span>
-<span class="w">   </span><span class="nt">&lt;maven.compiler.source&gt;</span>8<span class="nt">&lt;/maven.compiler.source&gt;</span>
-<span class="w">   </span><span class="nt">&lt;maven.compiler.target&gt;</span>8<span class="nt">&lt;/maven.compiler.target&gt;</span>
+<span class="w">   </span><span class="nt">&lt;maven.compiler.source&gt;</span>17<span class="nt">&lt;/maven.compiler.source&gt;</span>
+<span class="w">   </span><span class="nt">&lt;maven.compiler.target&gt;</span>17<span class="nt">&lt;/maven.compiler.target&gt;</span>
 <span class="w">   </span><span class="nt">&lt;arrow.version&gt;</span>9.0.0.dev501<span class="nt">&lt;/arrow.version&gt;</span>
 <span class="nt">&lt;/properties&gt;</span>
 

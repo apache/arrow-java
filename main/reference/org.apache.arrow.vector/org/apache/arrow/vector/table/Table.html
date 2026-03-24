@@ -74,7 +74,7 @@ loadScripts(document, 'script');</script>
 <div class="sub-title"><span class="package-label-in-type">Package</span>&nbsp;<a href="package-summary.html">org.apache.arrow.vector.table</a></div>
 <h1 title="Class Table" class="title">Class Table</h1>
 </div>
-<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
+<div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
 <div class="inheritance"><a href="BaseTable.html" title="class in org.apache.arrow.vector.table">org.apache.arrow.vector.table.BaseTable</a>
 <div class="inheritance">org.apache.arrow.vector.table.Table</div>
 </div>
@@ -82,12 +82,12 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>All Implemented Interfaces:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html" title="class or interface in java.lang" class="external-link">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</code></dd>
 </dl>
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Table</span>
 <span class="extends-implements">extends <a href="BaseTable.html" title="class in org.apache.arrow.vector.table">BaseTable</a>
-implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</span></div>
+implements <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</span></div>
 <div class="block">Table is an immutable tabular data structure.
 
  <p>See <a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector"><code>VectorSchemaRoot</code></a> for batch processing use cases
@@ -113,21 +113,21 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.Iterable)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;vectors)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.lang.Iterable)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;vectors)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs new instance containing each of the given vectors.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.List)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors)</code></div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.List)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Constructs a new instance with the number of rows set to the value count of the first
  FieldVector.</div>
 </div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,int)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(java.util.List,int)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
  int&nbsp;rowCount)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Constructs a new instance.</div>
 </div>
-<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.List,int,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(java.util.List,int,org.apache.arrow.vector.dictionary.DictionaryProvider)" class="member-name-link">Table</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
  int&nbsp;rowCount,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider)</code></div>
 <div class="col-last odd-row-color">
@@ -162,7 +162,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a deep copy of this table.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#iterator()" class="member-name-link">iterator</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns a Row iterator for this Table.</div>
@@ -195,11 +195,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <h3 id="methods-inherited-from-class-org.apache.arrow.vector.table.BaseTable">Methods inherited from class&nbsp;org.apache.arrow.vector.table.<a href="BaseTable.html" title="class in org.apache.arrow.vector.table">BaseTable</a></h3>
 <code><a href="BaseTable.html#close()">close</a>, <a href="BaseTable.html#contentToTSVString()">contentToTSVString</a>, <a href="BaseTable.html#decode(java.lang.String,long)">decode</a>, <a href="BaseTable.html#encode(java.lang.String,long)">encode</a>, <a href="BaseTable.html#getDictionaryProvider()">getDictionaryProvider</a>, <a href="BaseTable.html#getField(java.lang.String)">getField</a>, <a href="BaseTable.html#getReader(int)">getReader</a>, <a href="BaseTable.html#getReader(java.lang.String)">getReader</a>, <a href="BaseTable.html#getReader(org.apache.arrow.vector.types.pojo.Field)">getReader</a>, <a href="BaseTable.html#getRowCount()">getRowCount</a>, <a href="BaseTable.html#getSchema()">getSchema</a>, <a href="BaseTable.html#getVectorCopy(int)">getVectorCopy</a>, <a href="BaseTable.html#getVectorCopy(java.lang.String)">getVectorCopy</a>, <a href="BaseTable.html#getVectorCount()">getVectorCount</a>, <a href="BaseTable.html#immutableRow()">immutableRow</a>, <a href="BaseTable.html#isRowDeleted(int)">isRowDeleted</a>, <a href="BaseTable.html#toVectorSchemaRoot()">toVectorSchemaRoot</a></code></div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-java.lang.Iterable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a></h3>
-<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="external-link">forEach</a>, <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#spliterator()" title="class or interface in java.lang" class="external-link">spliterator</a></code></div>
+<h3 id="methods-inherited-from-class-java.lang.Iterable">Methods inherited from interface&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a></h3>
+<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#forEach(java.util.function.Consumer)" title="class or interface in java.lang" class="external-link">forEach</a>, <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#spliterator()" title="class or interface in java.lang" class="external-link">spliterator</a></code></div>
 </section>
 </li>
 </ul>
@@ -214,14 +214,14 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="&lt;init&gt;(java.lang.Iterable)">
 <h3>Table</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;vectors)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;vectors)</span></div>
 <div class="block">Constructs new instance containing each of the given vectors.</div>
 </section>
 </li>
 <li>
 <section class="detail" id="&lt;init&gt;(java.util.List)">
 <h3>Table</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors)</span></div>
 <div class="block">Constructs a new instance with the number of rows set to the value count of the first
  FieldVector.
 
@@ -236,7 +236,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="&lt;init&gt;(java.util.List,int)">
 <h3>Table</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
  int&nbsp;rowCount)</span></div>
 <div class="block">Constructs a new instance.</div>
 <dl class="notes">
@@ -249,7 +249,7 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="&lt;init&gt;(java.util.List,int,org.apache.arrow.vector.dictionary.DictionaryProvider)">
 <h3>Table</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">Table</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;&nbsp;fieldVectors,
  int&nbsp;rowCount,
  <a href="../dictionary/DictionaryProvider.html" title="interface in org.apache.arrow.vector.dictionary">DictionaryProvider</a>&nbsp;provider)</span></div>
 <div class="block">Constructs a new instance.</div>
@@ -357,11 +357,11 @@ implements <a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base
 <li>
 <section class="detail" id="iterator()">
 <h3>iterator</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</span>&nbsp;<span class="element-name">iterator</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</span>&nbsp;<span class="element-name">iterator</span>()</div>
 <div class="block">Returns a Row iterator for this Table.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
-<dd><code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html#iterator()" title="class or interface in java.lang" class="external-link">iterator</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</code></dd>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html#iterator()" title="class or interface in java.lang" class="external-link">iterator</a></code>&nbsp;in interface&nbsp;<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link">Iterable</a>&lt;<a href="Row.html" title="class in org.apache.arrow.vector.table">Row</a>&gt;</code></dd>
 </dl>
 </section>
 </li>
