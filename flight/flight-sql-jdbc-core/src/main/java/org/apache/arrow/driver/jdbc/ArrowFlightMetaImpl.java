@@ -17,20 +17,17 @@
 package org.apache.arrow.driver.jdbc;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler.PreparedStatement;
-import org.apache.arrow.driver.jdbc.utils.AvaticaParameterBinder;
 import org.apache.arrow.driver.jdbc.utils.ConvertUtils;
-import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaParameter;
+import org.apache.calcite.avatica.AvaticaStatement;
 import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.MetaImpl;
 import org.apache.calcite.avatica.NoSuchStatementException;
@@ -39,8 +36,6 @@ import org.apache.calcite.avatica.remote.TypedValue;
 
 /** Metadata handler for Arrow Flight. */
 public class ArrowFlightMetaImpl extends MetaImpl {
-  private final Map<StatementHandleKey, PreparedStatement> statementHandlePreparedStatementMap;
-
   /**
    * Constructs a {@link MetaImpl} object specific for Arrow Flight.
    *
@@ -48,43 +43,12 @@ public class ArrowFlightMetaImpl extends MetaImpl {
    */
   public ArrowFlightMetaImpl(final AvaticaConnection connection) {
     super(connection);
-    this.statementHandlePreparedStatementMap = new ConcurrentHashMap<>();
     setDefaultConnectionProperties();
-  }
-
-  /** Construct a signature. */
-  static Signature newSignature(final String sql, Schema resultSetSchema, Schema parameterSchema) {
-    List<ColumnMetaData> columnMetaData =
-        resultSetSchema == null
-            ? new ArrayList<>()
-            : ConvertUtils.convertArrowFieldsToColumnMetaDataList(resultSetSchema.getFields());
-    List<AvaticaParameter> parameters =
-        parameterSchema == null
-            ? new ArrayList<>()
-            : ConvertUtils.convertArrowFieldsToAvaticaParameters(parameterSchema.getFields());
-    StatementType statementType =
-        resultSetSchema == null || resultSetSchema.getFields().isEmpty()
-            ? StatementType.IS_DML
-            : StatementType.SELECT;
-    return new Signature(
-        columnMetaData,
-        sql,
-        parameters,
-        Collections.emptyMap(),
-        null, // unnecessary, as SQL requests use ArrowFlightJdbcCursor
-        statementType);
   }
 
   @Override
   public void closeStatement(final StatementHandle statementHandle) {
-    PreparedStatement preparedStatement =
-        statementHandlePreparedStatementMap.remove(new StatementHandleKey(statementHandle));
-    // Testing if the prepared statement was created because the statement can be
-    // not created until
-    // this moment
-    if (preparedStatement != null) {
-      preparedStatement.close();
-    }
+    getMetaStatement(statementHandle).closeStatement();
   }
 
   @Override
@@ -97,36 +61,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final StatementHandle statementHandle,
       final List<TypedValue> typedValues,
       final long maxRowCount) {
-    Preconditions.checkArgument(
-        connection.id.equals(statementHandle.connectionId), "Connection IDs are not consistent");
-    PreparedStatement preparedStatement = getPreparedStatement(statementHandle);
-
-    if (preparedStatement == null) {
-      throw new IllegalStateException("Prepared statement not found: " + statementHandle);
-    }
-
-    new AvaticaParameterBinder(
-            preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator())
-        .bind(typedValues);
-
-    if (statementHandle.signature == null
-        || statementHandle.signature.statementType == StatementType.IS_DML) {
-      // Update query
-      long updatedCount = preparedStatement.executeUpdate();
-      return new ExecuteResult(
-          Collections.singletonList(
-              MetaResultSet.count(statementHandle.connectionId, statementHandle.id, updatedCount)));
-    } else {
-      // TODO Why is maxRowCount ignored?
-      return new ExecuteResult(
-          Collections.singletonList(
-              MetaResultSet.create(
-                  statementHandle.connectionId,
-                  statementHandle.id,
-                  true,
-                  statementHandle.signature,
-                  null)));
-    }
+    return getMetaStatement(statementHandle).execute(statementHandle, typedValues, maxRowCount);
   }
 
   @Override
@@ -141,24 +76,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
   public ExecuteBatchResult executeBatch(
       final StatementHandle statementHandle, final List<List<TypedValue>> parameterValuesList)
       throws IllegalStateException {
-    Preconditions.checkArgument(
-        connection.id.equals(statementHandle.connectionId), "Connection IDs are not consistent");
-    PreparedStatement preparedStatement = getPreparedStatement(statementHandle);
-
-    if (preparedStatement == null) {
-      throw new IllegalStateException("Prepared statement not found: " + statementHandle);
-    }
-
-    final AvaticaParameterBinder binder =
-        new AvaticaParameterBinder(
-            preparedStatement, ((ArrowFlightConnection) connection).getBufferAllocator());
-    for (int i = 0; i < parameterValuesList.size(); i++) {
-      binder.bind(parameterValuesList.get(i), i);
-    }
-
-    // Update query
-    long[] updatedCounts = {preparedStatement.executeUpdate()};
-    return new ExecuteBatchResult(updatedCounts);
+    return getMetaStatement(statementHandle).executeBatch(statementHandle, parameterValuesList);
   }
 
   @Override
@@ -173,22 +91,19 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         String.format("%s does not use frames.", this), AvaticaConnection.HELPER.unsupported());
   }
 
-  private PreparedStatement prepareForHandle(final String query, StatementHandle handle) {
-    final PreparedStatement preparedStatement =
-        ((ArrowFlightConnection) connection).getClientHandler().prepare(query);
-    handle.signature =
-        newSignature(
-            query, preparedStatement.getDataSetSchema(), preparedStatement.getParameterSchema());
-    statementHandlePreparedStatementMap.put(new StatementHandleKey(handle), preparedStatement);
-    return preparedStatement;
-  }
-
   @Override
   public StatementHandle prepare(
       final ConnectionHandle connectionHandle, final String query, final long maxRowCount) {
-    final StatementHandle handle = super.createStatement(connectionHandle);
-    prepareForHandle(query, handle);
-    return handle;
+    try {
+      // This is the Avatica entry point used by Connection.prepareStatement(String).
+      ArrowFlightPreparedStatement stmt =
+          (ArrowFlightPreparedStatement)
+              connection.prepareStatement(
+                  query, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+      return stmt.handle;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override
@@ -198,6 +113,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final long maxRowCount,
       final PrepareCallback prepareCallback)
       throws NoSuchStatementException {
+    // This is the Avatica entry point used by Statement.execute(String).
     return prepareAndExecute(
         statementHandle, query, maxRowCount, -1 /* Not used */, prepareCallback);
   }
@@ -211,19 +127,9 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final PrepareCallback callback)
       throws NoSuchStatementException {
     try {
-      PreparedStatement preparedStatement = prepareForHandle(query, handle);
-      final StatementType statementType = preparedStatement.getType();
-
-      final long updateCount =
-          statementType.equals(StatementType.UPDATE) ? preparedStatement.executeUpdate() : -1;
-      synchronized (callback.getMonitor()) {
-        callback.clear();
-        callback.assign(handle.signature, null, updateCount);
-      }
-      callback.execute();
-      final MetaResultSet metaResultSet =
-          MetaResultSet.create(handle.connectionId, handle.id, false, handle.signature, null);
-      return new ExecuteResult(Collections.singletonList(metaResultSet));
+      // This is the Avatica entry point used by Statement.execute(String).
+      return getMetaStatement(handle)
+          .prepareAndExecute(query, maxRowCount, maxRowsInFirstFrame, callback);
     } catch (SQLTimeoutException e) {
       // So far AvaticaStatement(executeInternal) only handles NoSuchStatement and
       // Runtime
@@ -280,45 +186,51 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         .setTransactionIsolation(Connection.TRANSACTION_NONE);
   }
 
-  PreparedStatement getPreparedStatement(StatementHandle statementHandle) {
-    return statementHandlePreparedStatementMap.get(new StatementHandleKey(statementHandle));
+  private ArrowFlightMetaStatement getMetaStatement(StatementHandle statementHandle) {
+    AvaticaStatement statement = connection.statementMap.get(statementHandle.id);
+    if (statement instanceof ArrowFlightMetaStatement) {
+      return (ArrowFlightMetaStatement) statement;
+    }
+    throw new IllegalStateException("Statement not found: " + statementHandle);
   }
 
-  // Helper used to look up prepared statement instances later. Avatica doesn't
-  // give us the
-  // signature in
-  // an UPDATE code path so we can't directly use StatementHandle as a map key.
-  private static final class StatementHandleKey {
-    public final String connectionId;
-    public final int id;
+  public static Signature buildDefaultSignature() {
+    return buildSignature(null, StatementType.SELECT);
+  }
 
-    StatementHandleKey(StatementHandle statementHandle) {
-      this.connectionId = statementHandle.connectionId;
-      this.id = statementHandle.id;
-    }
+  public static Signature buildSignature(final String sql, final StatementType type) {
+    return buildSignature(sql, null, null, type);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
+  /** Builds an Avatica signature from Arrow result and parameter schemas. */
+  public static Signature buildSignature(
+      final String sql, final Schema resultSetSchema, final Schema parameterSchema) {
+    StatementType statementType =
+        resultSetSchema == null || resultSetSchema.getFields().isEmpty()
+            ? StatementType.IS_DML
+            : StatementType.SELECT;
+    return buildSignature(sql, resultSetSchema, parameterSchema, statementType);
+  }
 
-      StatementHandleKey that = (StatementHandleKey) o;
-
-      if (id != that.id) {
-        return false;
-      }
-      return connectionId.equals(that.connectionId);
-    }
-
-    @Override
-    public int hashCode() {
-      int result = connectionId.hashCode();
-      result = 31 * result + id;
-      return result;
-    }
+  private static Signature buildSignature(
+      final String sql,
+      final Schema resultSetSchema,
+      final Schema parameterSchema,
+      final StatementType statementType) {
+    List<ColumnMetaData> columnMetaData =
+        resultSetSchema == null
+            ? new ArrayList<>()
+            : ConvertUtils.convertArrowFieldsToColumnMetaDataList(resultSetSchema.getFields());
+    List<AvaticaParameter> parameters =
+        parameterSchema == null
+            ? new ArrayList<>()
+            : ConvertUtils.convertArrowFieldsToAvaticaParameters(parameterSchema.getFields());
+    return new Signature(
+        columnMetaData,
+        sql,
+        parameters,
+        Collections.emptyMap(),
+        null, // unnecessary, as SQL requests use ArrowFlightJdbcCursor
+        statementType);
   }
 }

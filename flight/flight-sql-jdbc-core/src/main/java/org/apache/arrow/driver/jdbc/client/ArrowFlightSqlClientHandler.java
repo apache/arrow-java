@@ -267,6 +267,16 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     return sqlClient.execute(query, getOptions());
   }
 
+  /**
+   * Executes an update query directly, without creating a prepared statement first.
+   *
+   * @param query The update query.
+   * @return the number of rows affected.
+   */
+  public long executeUpdate(final String query) {
+    return sqlClient.executeUpdate(query, getOptions());
+  }
+
   @Override
   public void close() throws SQLException {
     if (catalog.isPresent()) {
