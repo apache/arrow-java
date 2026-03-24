@@ -108,6 +108,7 @@ services:
     environment:
       ARROW_JAVA_CDATA: "ON"
       CCACHE_DIR: "/ccache"
-    command:
-      ["git config --global --add safe.directory /arrow-java && \
-        /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build/java /arrow-java/jni"]
+    command: >-
+      /bin/bash -c "
+        git config --global --add safe.directory /arrow-java &&
+        /arrow-java/ci/scripts/jni_manylinux_build.sh /arrow-java /arrow /build/java /arrow-java/jni"
