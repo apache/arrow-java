@@ -36,7 +36,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.flight.FlightDataParser.ArrowBufReader;
 import org.apache.arrow.flight.FlightDataParser.FlightDataReader;
@@ -138,6 +137,8 @@ class ArrowMessage implements AutoCloseable {
   private final ArrowBuf appMetadata;
   private final List<ArrowBuf> bufs;
   private final boolean tryZeroCopyWrite;
+  // For zero-copy reads, this releases the message-scoped allocator after local buffers close.
+  private final BufferAllocator messageAllocator;
 
   public ArrowMessage(FlightDescriptor descriptor, Schema schema, IpcOption option) {
     this.writeOption = option;
@@ -148,6 +149,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = descriptor;
     this.appMetadata = null;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
   /**
@@ -167,6 +169,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = null;
     this.appMetadata = appMetadata;
     this.tryZeroCopyWrite = tryZeroCopy;
+    this.messageAllocator = null;
   }
 
   public ArrowMessage(ArrowDictionaryBatch batch, IpcOption option) {
@@ -180,6 +183,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = null;
     this.appMetadata = null;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
   /**
@@ -195,6 +199,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = null;
     this.appMetadata = appMetadata;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
   public ArrowMessage(FlightDescriptor descriptor) {
@@ -205,6 +210,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = descriptor;
     this.appMetadata = null;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
   ArrowMessage(
@@ -212,6 +218,15 @@ class ArrowMessage implements AutoCloseable {
       MessageMetadataResult message,
       ArrowBuf appMetadata,
       ArrowBuf buf) {
+    this(descriptor, message, appMetadata, buf, null);
+  }
+
+  ArrowMessage(
+      FlightDescriptor descriptor,
+      MessageMetadataResult message,
+      ArrowBuf appMetadata,
+      ArrowBuf buf,
+      BufferAllocator messageAllocator) {
     // No need to take IpcOption as this is used for deserialized ArrowMessage coming from the wire.
     this.writeOption =
         message != null
@@ -224,6 +239,7 @@ class ArrowMessage implements AutoCloseable {
     this.appMetadata = appMetadata;
     this.bufs = buf == null ? ImmutableList.of() : ImmutableList.of(buf);
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = messageAllocator;
   }
 
   public MessageMetadataResult asSchemaMessage() {
@@ -264,6 +280,7 @@ class ArrowMessage implements AutoCloseable {
         bufs.size() == 1, "A batch can only be consumed if it contains a single ArrowBuf.");
     Preconditions.checkArgument(getMessageType() == HeaderType.DICTIONARY_BATCH);
     ArrowBuf underlying = bufs.get(0);
+
     // Retain a reference to keep the batch alive when the message is closed
     underlying.getReferenceManager().retain();
     // Do not set drained - we still want to release our reference
@@ -496,6 +513,6 @@ class ArrowMessage implements AutoCloseable {
 
   @Override
   public void close() throws Exception {
-    AutoCloseables.close(Iterables.concat(bufs, Collections.singletonList(appMetadata)));
+    AutoCloseables.close(Iterables.concat(bufs, AutoCloseables.iter(appMetadata, messageAllocator)));
   }
 }
