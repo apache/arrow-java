@@ -17,8 +17,7 @@
 package org.apache.arrow.memory;
 
 import java.util.IdentityHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import org.apache.arrow.memory.util.CommonUtil;
 import org.apache.arrow.memory.util.HistoricalLog;
 import org.apache.arrow.util.Preconditions;
@@ -32,12 +31,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class BufferLedger implements ValueWithKeyIncluded<BufferAllocator>, ReferenceManager {
   private final @Nullable IdentityHashMap<ArrowBuf, @Nullable Object> buffers =
       BaseAllocator.DEBUG ? new IdentityHashMap<>() : null;
-  private static final AtomicLong LEDGER_ID_GENERATOR = new AtomicLong(0);
-  // unique ID assigned to each ledger
-  private final long ledgerId = LEDGER_ID_GENERATOR.incrementAndGet();
-  private final AtomicInteger bufRefCnt = new AtomicInteger(0); // start at zero so we can
-  // manage request for retain
-  // correctly
+
+  // AtomicIntegerFieldUpdater for bufRefCnt to reduce memory overhead
+  private static final AtomicIntegerFieldUpdater<BufferLedger> BUF_REF_CNT_UPDATER =
+      AtomicIntegerFieldUpdater.newUpdater(BufferLedger.class, "bufRefCnt");
+  // start at zero so we can manage request for retain correctly
+  private volatile int bufRefCnt = 0;
+
   private final long lCreationTime = System.nanoTime();
   private final BufferAllocator allocator;
   private final AllocationManager allocationManager;
@@ -78,7 +78,7 @@ public class BufferLedger implements ValueWithKeyIncluded<BufferAllocator>, Refe
    */
   @Override
   public int getRefCount() {
-    return bufRefCnt.get();
+    return bufRefCnt;
   }
 
   /**
@@ -86,7 +86,7 @@ public class BufferLedger implements ValueWithKeyIncluded<BufferAllocator>, Refe
    * ArrowBufs managed by this ledger will share the ref count.
    */
   void increment() {
-    bufRefCnt.incrementAndGet();
+    BUF_REF_CNT_UPDATER.incrementAndGet(this);
   }
 
   /**
@@ -144,7 +144,7 @@ public class BufferLedger implements ValueWithKeyIncluded<BufferAllocator>, Refe
     allocator.assertOpen();
     final int outcome;
     synchronized (allocationManager) {
-      outcome = bufRefCnt.addAndGet(-decrement);
+      outcome = BUF_REF_CNT_UPDATER.addAndGet(this, -decrement);
       if (outcome == 0) {
         lDestructionTime = System.nanoTime();
         // refcount of this reference manager has dropped to 0
@@ -174,7 +174,7 @@ public class BufferLedger implements ValueWithKeyIncluded<BufferAllocator>, Refe
     if (historicalLog != null) {
       historicalLog.recordEvent("retain(%d)", increment);
     }
-    final int originalReferenceCount = bufRefCnt.getAndAdd(increment);
+    final int originalReferenceCount = BUF_REF_CNT_UPDATER.getAndAdd(this, increment);
     Preconditions.checkArgument(originalReferenceCount > 0);
   }
 
@@ -472,13 +472,13 @@ public class BufferLedger implements ValueWithKeyIncluded<BufferAllocator>, Refe
   void print(StringBuilder sb, int indent, BaseAllocator.Verbosity verbosity) {
     CommonUtil.indent(sb, indent)
         .append("ledger[")
-        .append(ledgerId)
+        .append(System.identityHashCode(this))
         .append("] allocator: ")
         .append(allocator.getName())
         .append("), isOwning: ")
         .append(", size: ")
         .append(", references: ")
-        .append(bufRefCnt.get())
+        .append(bufRefCnt)
         .append(", life: ")
         .append(lCreationTime)
         .append("..")

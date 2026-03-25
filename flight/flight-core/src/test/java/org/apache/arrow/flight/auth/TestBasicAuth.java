@@ -178,6 +178,12 @@ public class TestBasicAuth {
     AutoCloseables.close(server);
 
     allocator.getChildAllocators().forEach(BufferAllocator::close);
+
+    // gRPC/Netty may still be releasing Arrow buffers asynchronously after server shutdown.
+    // Poll briefly to allow in-flight buffer releases to complete before closing the allocator.
+    for (int i = 0; i < 20 && allocator.getAllocatedMemory() > 0; i++) {
+      Thread.sleep(100);
+    }
     AutoCloseables.close(allocator);
   }
 }

@@ -1353,17 +1353,6 @@ public class TestMapVector {
     }
   }
 
-  private FixedSizeBinaryHolder getFixedSizeBinaryHolder(byte[] array) {
-    FixedSizeBinaryHolder holder = new FixedSizeBinaryHolder();
-    holder.byteWidth = array.length;
-    holder.buffer = allocator.buffer(array.length);
-    for (int i = 0; i < array.length; i++) {
-      holder.buffer.setByte(i, array[i]);
-    }
-
-    return holder;
-  }
-
   /**
    * Regression test for GH-586: UnionMapWriter.fixedSizeBinary() should properly delegate to the
    * entry writer for both key and value paths.
@@ -1382,8 +1371,10 @@ public class TestMapVector {
       // {[11, 22] -> null}
       // {null -> [32, 21]} - wrong "for a given entry, the "key" is non-nullable" - todo: it
       // shouldn't work. Should it?
-      FixedSizeBinaryHolder holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
-      FixedSizeBinaryHolder holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      FixedSizeBinaryHolder holder1 =
+          TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {11, 22});
+      FixedSizeBinaryHolder holder2 =
+          TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {32, 21});
 
       writer.setPosition(0); // optional
       writer.startMap();
@@ -1399,8 +1390,8 @@ public class TestMapVector {
       writer.endMap();
 
       // {1 -> [11, 22], 2 -> [32, 21]}
-      holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
-      holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      holder1 = TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {11, 22});
+      holder2 = TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {32, 21});
       writer.setPosition(1);
       writer.startMap();
       writer.startEntry();
@@ -1416,8 +1407,8 @@ public class TestMapVector {
       holder2.buffer.close();
 
       // {[11, 22] -> 1, [32, 21] -> 2}
-      holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
-      holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      holder1 = TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {11, 22});
+      holder2 = TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {32, 21});
       writer.setPosition(3);
       writer.startMap();
       writer.startEntry();
@@ -1433,7 +1424,7 @@ public class TestMapVector {
       holder2.buffer.close();
 
       // {[11, 22] -> null}
-      holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
+      holder1 = TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {11, 22});
       writer.setPosition(4);
       writer.startMap();
       writer.startEntry();
@@ -1443,7 +1434,7 @@ public class TestMapVector {
       holder1.buffer.close();
 
       // {null -> [32, 21]}
-      holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      holder2 = TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {32, 21});
       writer.setPosition(5);
       writer.startMap();
       writer.startEntry();
@@ -1536,8 +1527,10 @@ public class TestMapVector {
 
       // populate input vector with the following records
       // {[11, 22] -> [32, 21]}
-      FixedSizeBinaryHolder holder1 = getFixedSizeBinaryHolder(new byte[] {11, 22});
-      FixedSizeBinaryHolder holder2 = getFixedSizeBinaryHolder(new byte[] {32, 21});
+      FixedSizeBinaryHolder holder1 =
+          TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {11, 22});
+      FixedSizeBinaryHolder holder2 =
+          TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {32, 21});
 
       writer.setPosition(0); // optional
       writer.startMap();

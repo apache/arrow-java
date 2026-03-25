@@ -28,7 +28,7 @@ under the License.
 
   <groupId>org.apache.arrow</groupId>
   <artifactId>arrow-java-root</artifactId>
-  <version>19.0.0-SNAPSHOT</version>
+  <version>20.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache Arrow Java Root POM</name>
@@ -92,37 +92,37 @@ under the License.
   </issueManagement>
 
   <properties>
-    <project.build.outputTimestamp>1695310533</project.build.outputTimestamp>
+    <project.build.outputTimestamp>1773644827</project.build.outputTimestamp>
     <target.gen.source.path>${project.build.directory}/generated-sources</target.gen.source.path>
     <dep.junit.platform.version>1.9.0</dep.junit.platform.version>
     <dep.junit.jupiter.version>5.12.2</dep.junit.jupiter.version>
     <dep.slf4j.version>2.0.17</dep.slf4j.version>
-    <dep.guava-bom.version>33.4.8-jre</dep.guava-bom.version>
-    <dep.netty-bom.version>4.2.9.Final</dep.netty-bom.version>
-    <dep.grpc-bom.version>1.78.0</dep.grpc-bom.version>
-    <dep.protobuf-bom.version>4.33.4</dep.protobuf-bom.version>
-    <dep.jackson-bom.version>2.21.0</dep.jackson-bom.version>
-    <dep.hadoop.version>3.4.2</dep.hadoop.version>
+    <dep.guava-bom.version>33.5.0-jre</dep.guava-bom.version>
+    <dep.netty-bom.version>4.2.10.Final</dep.netty-bom.version>
+    <dep.grpc-bom.version>1.79.0</dep.grpc-bom.version>
+    <dep.protobuf-bom.version>4.34.1</dep.protobuf-bom.version>
+    <dep.jackson-bom.version>2.21.2</dep.jackson-bom.version>
+    <dep.hadoop.version>3.4.3</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
     <dep.avro.version>1.12.1</dep.avro.version>
     <dep.parquet.version>1.17.0</dep.parquet.version>
-    <dep.mockito-bom.version>5.21.0</dep.mockito-bom.version>
+    <dep.mockito-bom.version>5.23.0</dep.mockito-bom.version>
     <arrow.vector.classifier></arrow.vector.classifier>
     <forkCount>2</forkCount>
     <checkstyle.version>10.23.0</checkstyle.version>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.42.0</error_prone_core.version>
-    <checker.framework.version>3.53.1</checker.framework.version>
+    <checker.framework.version>3.54.0</checker.framework.version>
     <logback.version>1.5.32</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
     <!-- List of add-opens arg line arguments for tests -->
     <surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</surefire.add-opens.argLine>
     <!-- org.apache:apache overrides -->
-    <minimalJavaBuildVersion>11</minimalJavaBuildVersion>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.release>11</maven.compiler.release>
+    <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
     <!--
       Downgrade maven-jar-plugin until https://github.com/codehaus-plexus/plexus-archiver/issues/332
       is addressed
@@ -497,12 +497,12 @@ under the License.
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>3.6.0</version>
+          <version>3.6.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>properties-maven-plugin</artifactId>
-          <version>1.2.1</version>
+          <version>1.3.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -1246,7 +1246,7 @@ under the License.
                       <property>arrow.test.jdk-version</property>
                       <message>"JDK version used for test must be specified."</message>
                       <regex>^\d{2,}</regex>
-                      <regexMessage>"JDK version used for test must be 11, 17, 21, ..."</regexMessage>
+                      <regexMessage>"JDK version used for test must be 17, 21, ..."</regexMessage>
                     </requireProperty>
                   </rules>
                 </configuration>

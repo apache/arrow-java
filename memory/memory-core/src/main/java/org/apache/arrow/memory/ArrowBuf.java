@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.ReadOnlyBufferException;
-import java.util.concurrent.atomic.AtomicLong;
 import org.apache.arrow.memory.BaseAllocator.Verbosity;
 import org.apache.arrow.memory.util.CommonUtil;
 import org.apache.arrow.memory.util.HistoricalLog;
@@ -57,9 +56,8 @@ public final class ArrowBuf implements AutoCloseable {
   private static final int DOUBLE_SIZE = Double.BYTES;
   private static final int LONG_SIZE = Long.BYTES;
 
-  private static final AtomicLong idGenerator = new AtomicLong(0);
   private static final int LOG_BYTES_PER_ROW = 10;
-  private final long id = idGenerator.incrementAndGet();
+
   private final ReferenceManager referenceManager;
   private final @Nullable BufferManager bufferManager;
   private final long addr;
@@ -67,7 +65,8 @@ public final class ArrowBuf implements AutoCloseable {
   private long writerIndex;
   private final @Nullable HistoricalLog historicalLog =
       BaseAllocator.DEBUG
-          ? new HistoricalLog(BaseAllocator.DEBUG_LOG_LENGTH, "ArrowBuf[%d]", id)
+          ? new HistoricalLog(
+              BaseAllocator.DEBUG_LOG_LENGTH, "ArrowBuf[%d]", System.identityHashCode(this))
           : null;
   private volatile long capacity;
 
@@ -218,7 +217,8 @@ public final class ArrowBuf implements AutoCloseable {
 
   @Override
   public String toString() {
-    return String.format("ArrowBuf[%d], address:%d, capacity:%d", id, memoryAddress(), capacity);
+    return String.format(
+        "ArrowBuf[%d], address:%d, capacity:%d", getId(), memoryAddress(), capacity);
   }
 
   @Override
@@ -1080,12 +1080,15 @@ public final class ArrowBuf implements AutoCloseable {
   }
 
   /**
-   * Get the integer id assigned to this ArrowBuf for debugging purposes.
+   * Get the id assigned to this ArrowBuf for debugging purposes.
    *
-   * @return integer id
+   * <p>Returns {@link System#identityHashCode(Object)} which provides a unique identifier for this
+   * buffer without any per-instance memory overhead.
+   *
+   * @return the identity hash code for this buffer
    */
   public long getId() {
-    return id;
+    return System.identityHashCode(this);
   }
 
   /**

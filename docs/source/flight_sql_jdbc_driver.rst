@@ -27,7 +27,7 @@ Flight SQL.
 Installation and Requirements
 =============================
 
-The driver is compatible with JDK 11+. Note that the following JVM
+The driver is compatible with JDK 17+. Note that the following JVM
 parameter is required:
 
 .. code-block:: shell

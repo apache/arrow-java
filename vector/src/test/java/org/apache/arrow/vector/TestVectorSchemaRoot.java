@@ -172,6 +172,26 @@ public class TestVectorSchemaRoot {
   }
 
   @Test
+  public void testAddVectorAtEnd() {
+    try (final IntVector intVector1 = new IntVector("intVector1", allocator);
+        final IntVector intVector2 = new IntVector("intVector2", allocator);
+        final IntVector intVector3 = new IntVector("intVector3", allocator); ) {
+
+      VectorSchemaRoot original = new VectorSchemaRoot(Arrays.asList(intVector1, intVector2));
+      assertEquals(2, original.getFieldVectors().size());
+
+      VectorSchemaRoot newRecordBatch = original.addVector(2, intVector3);
+      assertEquals(3, newRecordBatch.getFieldVectors().size());
+      assertEquals(intVector1, newRecordBatch.getFieldVectors().get(0));
+      assertEquals(intVector2, newRecordBatch.getFieldVectors().get(1));
+      assertEquals(intVector3, newRecordBatch.getFieldVectors().get(2));
+
+      original.close();
+      newRecordBatch.close();
+    }
+  }
+
+  @Test
   public void testRemoveVector() {
     try (final IntVector intVector1 = new IntVector("intVector1", allocator);
         final IntVector intVector2 = new IntVector("intVector2", allocator);

@@ -42,6 +42,7 @@ if [ ! -f "${SOURCE_DIR}/.env" ]; then
   exit 1
 fi
 . "${SOURCE_DIR}/.env"
+export GH_TOKEN
 
 cd "${SOURCE_TOP_DIR}"
 

@@ -16,7 +16,7 @@
  */
 package org.apache.arrow.memory;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import org.apache.arrow.util.Preconditions;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -37,16 +37,24 @@ class Accountant implements AutoCloseable {
    */
   protected final long reservation;
 
-  private final AtomicLong peakAllocation = new AtomicLong();
+  // AtomicLongFieldUpdaters for memory accounting fields to reduce memory overhead
+  private static final AtomicLongFieldUpdater<Accountant> PEAK_ALLOCATION_UPDATER =
+      AtomicLongFieldUpdater.newUpdater(Accountant.class, "peakAllocation");
+  private static final AtomicLongFieldUpdater<Accountant> ALLOCATION_LIMIT_UPDATER =
+      AtomicLongFieldUpdater.newUpdater(Accountant.class, "allocationLimit");
+  private static final AtomicLongFieldUpdater<Accountant> LOCALLY_HELD_MEMORY_UPDATER =
+      AtomicLongFieldUpdater.newUpdater(Accountant.class, "locallyHeldMemory");
+
+  private volatile long peakAllocation = 0;
 
   /**
    * Maximum local memory that can be held. This can be externally updated. Changing it won't cause
    * past memory to change but will change responses to future allocation efforts
    */
-  private final AtomicLong allocationLimit = new AtomicLong();
+  private volatile long allocationLimit = 0;
 
   /** Currently allocated amount of memory. */
-  private final AtomicLong locallyHeldMemory = new AtomicLong();
+  private volatile long locallyHeldMemory = 0;
 
   public Accountant(
       @Nullable Accountant parent, String name, long reservation, long maxAllocation) {
@@ -64,7 +72,7 @@ class Accountant implements AutoCloseable {
     this.parent = parent;
     this.name = name;
     this.reservation = reservation;
-    this.allocationLimit.set(maxAllocation);
+    ALLOCATION_LIMIT_UPDATER.set(this, maxAllocation);
 
     if (reservation != 0) {
       Preconditions.checkArgument(parent != null, "parent must not be null");
@@ -117,12 +125,12 @@ class Accountant implements AutoCloseable {
   }
 
   private void updatePeak() {
-    final long currentMemory = locallyHeldMemory.get();
+    final long currentMemory = locallyHeldMemory;
     while (true) {
 
-      final long previousPeak = peakAllocation.get();
+      final long previousPeak = peakAllocation;
       if (currentMemory > previousPeak) {
-        if (!peakAllocation.compareAndSet(previousPeak, currentMemory)) {
+        if (!PEAK_ALLOCATION_UPDATER.compareAndSet(this, previousPeak, currentMemory)) {
           // peak allocation changed underneath us. try again.
           continue;
         }
@@ -166,7 +174,7 @@ class Accountant implements AutoCloseable {
       final boolean incomingUpdatePeak,
       final boolean forceAllocation,
       @Nullable AllocationOutcomeDetails details) {
-    final long oldLocal = locallyHeldMemory.getAndAdd(size);
+    final long oldLocal = LOCALLY_HELD_MEMORY_UPDATER.getAndAdd(this, size);
     final long newLocal = oldLocal + size;
     // Borrowed from Math.addExact (but avoid exception here)
     // Overflow if result has opposite sign of both arguments
@@ -174,7 +182,7 @@ class Accountant implements AutoCloseable {
     // failure
     final boolean overflow = ((oldLocal ^ newLocal) & (size ^ newLocal)) < 0;
     final long beyondReservation = newLocal - reservation;
-    final boolean beyondLimit = overflow || newLocal > allocationLimit.get();
+    final boolean beyondLimit = overflow || newLocal > allocationLimit;
     final boolean updatePeak = forceAllocation || (incomingUpdatePeak && !beyondLimit);
 
     if (details != null) {
@@ -214,7 +222,7 @@ class Accountant implements AutoCloseable {
 
   public void releaseBytes(long size) {
     // reduce local memory. all memory released above reservation should be released up the tree.
-    final long newSize = locallyHeldMemory.addAndGet(-size);
+    final long newSize = LOCALLY_HELD_MEMORY_UPDATER.addAndGet(this, -size);
 
     Preconditions.checkArgument(newSize >= 0, "Accounted size went negative.");
 
@@ -255,7 +263,7 @@ class Accountant implements AutoCloseable {
    * @return Limit in bytes.
    */
   public long getLimit() {
-    return allocationLimit.get();
+    return allocationLimit;
   }
 
   /**
@@ -274,7 +282,7 @@ class Accountant implements AutoCloseable {
    * @param newLimit The limit in bytes.
    */
   public void setLimit(long newLimit) {
-    allocationLimit.set(newLimit);
+    ALLOCATION_LIMIT_UPDATER.set(this, newLimit);
   }
 
   /**
@@ -284,7 +292,7 @@ class Accountant implements AutoCloseable {
    * @return Currently allocate memory in bytes.
    */
   public long getAllocatedMemory() {
-    return locallyHeldMemory.get();
+    return locallyHeldMemory;
   }
 
   /**
@@ -293,17 +301,17 @@ class Accountant implements AutoCloseable {
    * @return The peak allocated memory in bytes.
    */
   public long getPeakMemoryAllocation() {
-    return peakAllocation.get();
+    return peakAllocation;
   }
 
   public long getHeadroom() {
-    long localHeadroom = allocationLimit.get() - locallyHeldMemory.get();
+    long localHeadroom = allocationLimit - locallyHeldMemory;
     if (parent == null) {
       return localHeadroom;
     }
 
     // Amount of reserved memory left on top of what parent has
-    long reservedHeadroom = Math.max(0, reservation - locallyHeldMemory.get());
+    long reservedHeadroom = Math.max(0, reservation - locallyHeldMemory);
     return Math.min(localHeadroom, parent.getHeadroom() + reservedHeadroom);
   }
 }

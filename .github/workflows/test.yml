@@ -45,7 +45,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [11, 17, 21, 23]
+        jdk: [17, 21, 23]
         maven: [3.9.9]
         image: [ubuntu, conda-jni-cdata]
         include:
@@ -88,10 +88,10 @@ jobs:
       matrix:
         include:
           - arch: AMD64
-            jdk: 11
+            jdk: 17
             macos: 15-intel
           - arch: AArch64
-            jdk: 11
+            jdk: 17
             macos: latest
     steps:
       - name: Set up Java
@@ -123,7 +123,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [11]
+        jdk: [17]
     steps:
       - name: Set up Java
         uses: actions/setup-java@v5

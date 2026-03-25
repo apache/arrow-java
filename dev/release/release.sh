@@ -36,6 +36,7 @@ if [ ! -f "${SOURCE_DIR}/.env" ]; then
   exit 1
 fi
 . "${SOURCE_DIR}/.env"
+export GH_TOKEN
 
 git_origin_url="$(git remote get-url origin)"
 repository="${git_origin_url#*github.com?}"
