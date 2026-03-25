@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 import org.apache.arrow.flight.impl.Flight.FlightData;
 import org.apache.arrow.flight.impl.Flight.FlightDescriptor;
 import org.apache.arrow.memory.ArrowBuf;
@@ -45,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * zero-copy slicing when parsing from ArrowBuf.
  */
 final class FlightDataParser {
+  private static final AtomicLong ALLOCATOR_ID = new AtomicLong();
 
   // Protobuf wire format tags for FlightData fields
   private static final int DESCRIPTOR_TAG =
@@ -74,7 +76,8 @@ final class FlightDataParser {
       try {
         parseFields();
         ArrowBuf adjustedBody = adjustBodyForHeaderType();
-        ArrowMessage message = new ArrowMessage(descriptor, header, appMetadata, adjustedBody);
+        ArrowMessage message =
+            new ArrowMessage(descriptor, header, appMetadata, adjustedBody, getMessageAllocator());
         // Ownership transferred to ArrowMessage
         appMetadata = null;
         body = null;
@@ -168,6 +171,11 @@ final class FlightDataParser {
     /** Reads the specified number of bytes into an ArrowBuf. */
     protected abstract ArrowBuf readBuffer(int size) throws IOException;
 
+    /** Additional resources that should be transferred to the parsed ArrowMessage. */
+    protected BufferAllocator getMessageAllocator() {
+      return null;
+    }
+
     /** Called in finally block to clean up resources. Subclasses can override to add cleanup. */
     protected void cleanup() {
       closeAppMetadata();
@@ -240,11 +248,15 @@ final class FlightDataParser {
   static final class ArrowBufReader extends FlightDataReader {
     private static final Logger LOG = LoggerFactory.getLogger(ArrowBufReader.class);
 
+    private final BufferAllocator messageAllocator;
     private final ArrowBuf backingBuffer;
     private final CodedInputStream codedInput;
+    private boolean transferred;
 
-    ArrowBufReader(BufferAllocator allocator, ArrowBuf backingBuffer) {
+    ArrowBufReader(
+        BufferAllocator allocator, BufferAllocator messageAllocator, ArrowBuf backingBuffer) {
       super(allocator);
+      this.messageAllocator = messageAllocator;
       this.backingBuffer = backingBuffer;
       ByteBuffer buffer = backingBuffer.nioBuffer(0, (int) backingBuffer.capacity());
       this.codedInput = CodedInputStream.newInstance(buffer);
@@ -288,10 +300,16 @@ final class FlightDataParser {
             }
           };
 
+      BufferAllocator messageAllocator =
+          allocator.newChildAllocator(
+              // Keep detached transport memory scoped to this message until a downstream retain.
+              "arrow-msg-" + ALLOCATOR_ID.incrementAndGet(), 0, bufferSize);
+
       try {
-        ArrowBuf backingBuffer = allocator.wrapForeignAllocation(foreignAllocation);
-        return new ArrowBufReader(allocator, backingBuffer);
+        ArrowBuf backingBuffer = messageAllocator.wrapForeignAllocation(foreignAllocation);
+        return new ArrowBufReader(allocator, messageAllocator, backingBuffer);
       } catch (Throwable t) {
+        closeQuietly(messageAllocator);
         closeQuietly(detachedStream);
         throw t;
       }
@@ -307,10 +325,23 @@ final class FlightDataParser {
       }
     }
 
+    private static void closeQuietly(BufferAllocator allocator) {
+      if (allocator != null) {
+        try {
+          allocator.close();
+        } catch (Exception e) {
+          LOG.debug("Error closing message allocator", e);
+        }
+      }
+    }
+
     @Override
     protected void cleanup() {
       super.cleanup();
       backingBuffer.close();
+      if (!transferred) {
+        closeQuietly(messageAllocator);
+      }
     }
 
     @Override
@@ -342,6 +373,12 @@ final class FlightDataParser {
       codedInput.skipRawBytes(size);
       backingBuffer.getReferenceManager().retain();
       return backingBuffer.slice(offset, size);
+    }
+
+    @Override
+    protected BufferAllocator getMessageAllocator() {
+      transferred = true;
+      return messageAllocator;
     }
   }
 }
