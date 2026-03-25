@@ -27,18 +27,28 @@ import com.google.protobuf.CodedOutputStream;
 import io.grpc.Detachable;
 import io.grpc.HasByteBuffer;
 import io.grpc.protobuf.ProtoUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.arrow.flight.FlightProducer.CallContext;
+import org.apache.arrow.flight.FlightProducer.ServerStreamListener;
 import org.apache.arrow.flight.impl.Flight.FlightData;
 import org.apache.arrow.flight.impl.Flight.FlightDescriptor;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.BigIntVector;
+import org.apache.arrow.vector.VectorLoader;
+import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.VectorUnloader;
+import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.ipc.message.IpcOption;
 import org.apache.arrow.vector.ipc.message.MessageSerializer;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -305,7 +315,105 @@ public class TestArrowMessageParse {
     assertEquals(0, allocator.getAllocatedMemory());
   }
 
+  @Test
+  public void testRealFlightSmallBatchLifecycle() throws Exception {
+    try (BufferAllocator rootAllocator = new RootAllocator(Long.MAX_VALUE);
+        FlightServer server =
+            FlightServer.builder(
+                    rootAllocator,
+                    Location.forGrpcInsecure("localhost", 0),
+                    new NoOpFlightProducer() {
+                      @Override
+                      public void getStream(
+                          CallContext context, Ticket ticket, ServerStreamListener listener) {
+                        try (VectorSchemaRoot root =
+                            VectorSchemaRoot.of(new BigIntVector("a", rootAllocator))) {
+                          BigIntVector vector = (BigIntVector) root.getVector(0);
+                          vector.allocateNew(8);
+                          for (int i = 0; i < 8; i++) {
+                            vector.set(i, i);
+                          }
+                          root.setRowCount(8);
+                          listener.start(root);
+                          listener.putNext();
+                          listener.completed();
+                        }
+                      }
+                    })
+                .build()
+                .start();
+        FlightClient client = FlightClient.builder(rootAllocator, server.getLocation()).build();
+        FlightStream stream = client.getStream(new Ticket(new byte[] {1}))) {
+      while (stream.next()) {
+        assertEquals(8, stream.getRoot().getRowCount());
+      }
+    }
+  }
+
+  @Test
+  public void testBufferInputStreamLargeRecordBatchLifecycle() throws Exception {
+    byte[] batchBytes;
+    try (BufferAllocator writerAllocator =
+            allocator.newChildAllocator("writer", 0, Long.MAX_VALUE);
+        VectorSchemaRoot root = VectorSchemaRoot.of(new BigIntVector("a", writerAllocator))) {
+      BigIntVector vector = (BigIntVector) root.getVector(0);
+      vector.allocateNew(4095);
+      for (int i = 0; i < 4095; i++) {
+        vector.set(i, i);
+      }
+      root.setRowCount(4095);
+
+      try (ArrowRecordBatch batch = new VectorUnloader(root).getRecordBatch();
+          InputStream grpcStream =
+              ArrowMessage.createMarshaller(writerAllocator).stream(
+                  new ArrowMessage(batch, null, false, IpcOption.DEFAULT))) {
+        batchBytes = ByteStreams.toByteArray(grpcStream);
+      }
+    }
+
+    try (BufferAllocator parseAllocator = allocator.newChildAllocator("parse", 0, Long.MAX_VALUE)) {
+      try (VectorSchemaRoot loadedRoot =
+          VectorSchemaRoot.of(new BigIntVector("a", parseAllocator))) {
+        ArrowMessage message =
+            ArrowMessage.createMarshaller(parseAllocator)
+                .parse(createGrpcBufferInputStream(batchBytes));
+        assertEquals(batchBytes.length, parseAllocator.getAllocatedMemory());
+        assertEquals(ArrowMessage.HeaderType.RECORD_BATCH, message.getMessageType());
+
+        try (ArrowRecordBatch batch = message.asRecordBatch()) {
+          new VectorLoader(loadedRoot).load(batch);
+        } finally {
+          message.close();
+        }
+
+        assertEquals(batchBytes.length, parseAllocator.getAllocatedMemory());
+        assertEquals(4095, loadedRoot.getRowCount());
+        assertEquals(4094L, ((BigIntVector) loadedRoot.getVector(0)).get(4095 - 1));
+      }
+    }
+
+    assertEquals(0, allocator.getAllocatedMemory());
+  }
+
   // Helper methods to build complete FlightData messages
+
+  private InputStream createGrpcBufferInputStream(byte[] data) throws Exception {
+    ByteBuf byteBuf = Unpooled.directBuffer(data.length);
+    byteBuf.writeBytes(data);
+
+    Class<?> readableBufferClass = Class.forName("io.grpc.internal.ReadableBuffer");
+    Class<?> nettyReadableBufferClass = Class.forName("io.grpc.netty.NettyReadableBuffer");
+    Constructor<?> readableBufferCtor =
+        nettyReadableBufferClass.getDeclaredConstructor(ByteBuf.class);
+    readableBufferCtor.setAccessible(true);
+    Object readableBuffer = readableBufferCtor.newInstance(byteBuf);
+
+    Class<?> bufferInputStreamClass =
+        Class.forName("io.grpc.internal.ReadableBuffers$BufferInputStream");
+    Constructor<?> streamCtor = bufferInputStreamClass.getDeclaredConstructor(readableBufferClass);
+    streamCtor.setAccessible(true);
+    return (InputStream) streamCtor.newInstance(readableBuffer);
+  }
 
   private FlightDescriptor createTestDescriptor() {
     return FlightDescriptor.newBuilder()
