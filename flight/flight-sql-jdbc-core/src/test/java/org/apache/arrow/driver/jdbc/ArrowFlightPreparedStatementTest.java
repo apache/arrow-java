@@ -389,6 +389,33 @@ public class ArrowFlightPreparedStatementTest {
   }
 
   @Test
+  public void testSetLongAfterSetTimestampIgnoresRawTimestamp() throws SQLException {
+    String query = "Fake timestamp setLong after setTimestamp";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // setLong replaces the timestamp TypedValue with millis. The stale raw timestamp must be
+    // ignored, so the long value 1000L becomes 1000000 epoch micros.
+    List<List<Object>> expected = Collections.singletonList(Collections.singletonList(1000000L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001);
+      stmt.setTimestamp(1, ts);
+
+      stmt.setLong(1, 1000L);
+
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
   public void testSetTimestampAfterSetObjectPreservesSubMillis() throws SQLException {
     String query = "Fake timestamp setTimestamp after setObject";
     Schema parameterSchema =

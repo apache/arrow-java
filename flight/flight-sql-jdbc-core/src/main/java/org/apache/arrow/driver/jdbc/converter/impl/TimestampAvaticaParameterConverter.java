@@ -29,6 +29,7 @@ import org.apache.arrow.vector.TimeStampSecVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.calcite.avatica.AvaticaParameter;
+import org.apache.calcite.avatica.ColumnMetaData;
 import org.apache.calcite.avatica.remote.TypedValue;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -93,7 +94,8 @@ public class TimestampAvaticaParameterConverter extends BaseAvaticaParameterConv
   public boolean bindParameter(
       FieldVector vector, TypedValue typedValue, int index, @Nullable Timestamp rawTimestamp) {
     long value;
-    if (rawTimestamp != null) {
+    // Only use the raw timestamp if the TypedValue actually represents a timestamp.
+    if (rawTimestamp != null && typedValue.type == ColumnMetaData.Rep.JAVA_SQL_TIMESTAMP) {
       value = convertFromTimestamp(rawTimestamp);
     } else {
       value = convertFromMillis((long) typedValue.toLocal());

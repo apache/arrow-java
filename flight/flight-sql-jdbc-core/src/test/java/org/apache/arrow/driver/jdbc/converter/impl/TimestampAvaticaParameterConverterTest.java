@@ -246,6 +246,30 @@ public class TimestampAvaticaParameterConverterTest {
     }
   }
 
+  @Test
+  public void testStaleRawTimestampIgnoredWhenTypedValueIsNotTimestamp() {
+    BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
+    ArrowType.Timestamp type = new ArrowType.Timestamp(TimeUnit.MICROSECOND, null);
+    TimestampAvaticaParameterConverter converter = new TimestampAvaticaParameterConverter(type);
+
+    // Simulate stale map: rawTimestamp is present but TypedValue was set via setLong()
+    Timestamp staleTs = new Timestamp(TEST_EPOCH_MILLIS_WITH_FRACTIONAL_SECONDS);
+    staleTs.setNanos(869885001);
+
+    // A different value set via setLong — TypedValue type will be PRIMITIVE_LONG, not
+    // JAVA_SQL_TIMESTAMP
+    long longValue = 1774261392L;
+
+    try (TimeStampMicroVector vector = new TimeStampMicroVector("ts", allocator)) {
+      vector.allocateNew(1);
+      TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.LONG, longValue);
+      // Even though staleTs is provided, the converter should ignore it because
+      // typedValue.type != JAVA_SQL_TIMESTAMP, and fall back to convertFromMillis
+      assertTrue(converter.bindParameter(vector, typedValue, 0, staleTs));
+      assertEquals(longValue * 1_000L, vector.get(0));
+    }
+  }
+
   private void assertBindConvertsMillis(TimeUnit unit, String tz, long expectedValue) {
     BufferAllocator allocator = rootAllocatorTestExtension.getRootAllocator();
     ArrowType.Timestamp type = new ArrowType.Timestamp(unit, tz);
