@@ -128,7 +128,7 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
     if (metaData.type.id == Types.TIMESTAMP_WITH_TIMEZONE) {
       return accessor.getTimestamp(localCalendar);
     } else {
-      return AvaticaSite.get(accessor, metaData.type.id, localCalendar);
+      return AvaticaSite.get(accessor, metaData.type.id, true, localCalendar);
     }
   }
 

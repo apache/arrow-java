@@ -36,6 +36,10 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.function.IntSupplier;
+import org.joou.UByte;
+import org.joou.UInteger;
+import org.joou.ULong;
+import org.joou.UShort;
 
 /** Base Jdbc Accessor. */
 public abstract class ArrowFlightJdbcAccessor implements Accessor {
@@ -96,6 +100,26 @@ public abstract class ArrowFlightJdbcAccessor implements Accessor {
 
   @Override
   public long getLong() throws SQLException {
+    throw getOperationNotSupported(this.getClass());
+  }
+
+  @Override
+  public UByte getUByte() throws SQLException {
+    throw getOperationNotSupported(this.getClass());
+  }
+
+  @Override
+  public UShort getUShort() throws SQLException {
+    throw getOperationNotSupported(this.getClass());
+  }
+
+  @Override
+  public UInteger getUInt() throws SQLException {
+    throw getOperationNotSupported(this.getClass());
+  }
+
+  @Override
+  public ULong getULong() throws SQLException {
     throw getOperationNotSupported(this.getClass());
   }
 
