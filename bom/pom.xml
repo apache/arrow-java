@@ -24,7 +24,7 @@ under the License.
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
     <version>33</version>
-    <relativePath></relativePath>
+    <relativePath/>
   </parent>
 
   <groupId>org.apache.arrow</groupId>
@@ -78,7 +78,7 @@ under the License.
   </issueManagement>
 
   <properties>
-    <arrow.vector.classifier></arrow.vector.classifier>
+    <arrow.vector.classifier/>
     <!-- org.apache:apache overrides -->
     <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
     <maven.compiler.source>17</maven.compiler.source>
@@ -235,7 +235,7 @@ under the License.
               <file>${maven.multiModuleProjectDirectory}/dev/license/asf-xml.license</file>
               <delimiter>(&lt;configuration|&lt;project)</delimiter>
             </licenseHeader>
-            <sortPom></sortPom>
+            <sortPom/>
           </pom>
         </configuration>
         <executions>

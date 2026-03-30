@@ -100,8 +100,8 @@ under the License.
             <phase>test</phase>
             <configuration>
               <!-- Do not inherit the default add-opens flag and excludes -->
-              <argLine combine.self="override"></argLine>
-              <excludes combine.self="override"></excludes>
+              <argLine combine.self="override"/>
+              <excludes combine.self="override"/>
               <includes>
                 <include>**/TestOpens.java</include>
               </includes>

@@ -35,10 +35,10 @@ under the License.
     <skip.perf.benchmarks>true</skip.perf.benchmarks>
     <benchmark.filter>.*</benchmark.filter>
     <benchmark.forks>1</benchmark.forks>
-    <benchmark.jvmargs></benchmark.jvmargs>
+    <benchmark.jvmargs/>
     <benchmark.warmups>5</benchmark.warmups>
     <benchmark.runs>5</benchmark.runs>
-    <benchmark.list></benchmark.list>
+    <benchmark.list/>
     <benchmark.resultfile>jmh-result.json</benchmark.resultfile>
     <benchmark.resultformat>json</benchmark.resultformat>
   </properties>
@@ -143,7 +143,7 @@ under the License.
           <executable>java</executable>
           <arguments>
             <argument>-classpath</argument>
-            <classpath></classpath>
+            <classpath/>
             <argument>org.openjdk.jmh.Main</argument>
             <argument>${benchmark.filter}</argument>
             <argument>-f</argument>
