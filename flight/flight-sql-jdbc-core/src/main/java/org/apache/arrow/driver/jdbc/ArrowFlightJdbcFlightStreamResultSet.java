@@ -67,7 +67,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
       throws SQLException {
     super(statement, state, signature, resultSetMetaData, timeZone, firstFrame);
     this.connection = (ArrowFlightConnection) statement.connection;
-    this.flightInfo = ((ArrowFlightInfoStatement) statement).executeFlightInfoQuery();
+    this.flightInfo = ((ArrowFlightMetaStatement) statement).executeFlightInfoQuery();
   }
 
   /** Private constructor for fromFlightInfo. */
@@ -106,7 +106,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
     final TimeZone timeZone = TimeZone.getDefault();
     final QueryState state = new QueryState();
 
-    final Meta.Signature signature = ArrowFlightMetaImpl.newSignature(null, null, null);
+    final Meta.Signature signature = ArrowFlightMetaImpl.buildDefaultSignature();
 
     final AvaticaResultSetMetaData resultSetMetaData =
         new AvaticaResultSetMetaData(null, null, signature);
