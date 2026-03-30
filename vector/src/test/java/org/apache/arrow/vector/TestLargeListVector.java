@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -1126,5 +1127,91 @@ public class TestLargeListVector {
       writer.integer().writeInt(v);
     }
     writer.endList();
+  }
+
+  @Test
+  public void testSetValueCountRejectsNegativeChildValueCount() {
+    try (final LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      vector.allocateNew();
+
+      // Write a negative value into the offset buffer to simulate a corrupted offset.
+      // The Preconditions check should reject any negative childValueCount.
+      vector.getOffsetBuffer().setLong(LargeListVector.OFFSET_WIDTH, -1L);
+      vector.setLastSet(0);
+
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> vector.setValueCount(1),
+          "setValueCount should reject negative childValueCount");
+    }
+  }
+
+  @Test
+  public void testSetValueCountRejectsOverflowChildValueCount() {
+    try (final LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      vector.allocateNew();
+
+      // Write a value exceeding Integer.MAX_VALUE into the offset buffer
+      vector.getOffsetBuffer().setLong(LargeListVector.OFFSET_WIDTH, (long) Integer.MAX_VALUE + 1L);
+      vector.setLastSet(0);
+
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> vector.setValueCount(1),
+          "setValueCount should reject childValueCount exceeding Integer.MAX_VALUE");
+    }
+  }
+
+  @Test
+  public void testSetValueCountAcceptsZeroChildValueCount() {
+    try (final LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      vector.allocateNew();
+
+      // childValueCount = 0 when valueCount = 0 (no elements)
+      vector.setValueCount(0);
+      assertEquals(0, vector.getValueCount());
+    }
+  }
+
+  @Test
+  public void testSetValueCountAcceptsValidChildValueCount() {
+    try (final LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      vector.allocateNew();
+
+      // Write a valid childValueCount (5) into the offset buffer
+      vector.getOffsetBuffer().setLong(LargeListVector.OFFSET_WIDTH, 5L);
+      vector.setLastSet(0);
+      vector.setValueCount(1);
+      assertEquals(1, vector.getValueCount());
+    }
+  }
+
+  @Test
+  public void testSetValueCountAcceptsMaxIntChildValueCount() {
+    try (final LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      vector.allocateNew();
+
+      // Write Integer.MAX_VALUE into the offset buffer to verify the upper boundary is inclusive.
+      // The Preconditions check should accept this value (not throw IllegalArgumentException).
+      // The child vector may throw OversizedAllocationException due to memory limits,
+      // which is expected and unrelated to the precondition validation.
+      vector.getOffsetBuffer().setLong(LargeListVector.OFFSET_WIDTH, (long) Integer.MAX_VALUE);
+      vector.setLastSet(0);
+      try {
+        vector.setValueCount(1);
+      } catch (IllegalArgumentException e) {
+        throw new AssertionError(
+            "setValueCount should not reject childValueCount = Integer.MAX_VALUE", e);
+      } catch (Exception e) {
+        // OversizedAllocationException or other allocation errors are expected
+        // when trying to allocate Integer.MAX_VALUE elements — this is fine,
+        // the precondition check itself passed.
+      }
+    }
   }
 }
