@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -249,6 +251,197 @@ public class ArrowFlightPreparedStatementTest {
       stmt.addBatch();
       int[] updated = stmt.executeBatch();
       assertEquals(42, updated[0]);
+    }
+  }
+
+  @Test
+  public void testTimestampParameterWithMicrosecondPrecision() throws SQLException {
+    String query = "Fake timestamp micro update";
+    // Server schema declares parameter as TIMESTAMP(MICROSECOND, UTC)
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // TimeStampMicroTZVector.getObject() returns Long (raw epoch micros)
+    // epochSeconds=1730637909, nanos=869885001 → micros = 1730637909 * 1_000_000 + 869885
+    List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(1730637909869885L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001); // .869885001 seconds — sub-ms precision
+      stmt.setTimestamp(1, ts);
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
+  public void testTimestampParameterWithMillisecondPrecision() throws SQLException {
+    String query = "Fake timestamp milli update";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MILLISECOND, "UTC"))));
+
+    // TimeStampMilliTZVector.getObject() returns Long (raw epoch millis)
+    // Sub-ms nanos are correctly truncated for MILLISECOND target
+    List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(1730637909869L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001);
+      stmt.setTimestamp(1, ts);
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
+  public void testTimestampMutationAfterSetDoesNotAffectBoundValue() throws SQLException {
+    String query = "Fake timestamp mutation test";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // Original: epochSeconds=1730637909, nanos=869885001 → micros = 1730637909869885
+    List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(1730637909869885L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001);
+      stmt.setTimestamp(1, ts);
+
+      // Mutate the Timestamp after setTimestamp — should not affect the stored value
+      ts.setNanos(0);
+      ts.setTime(0);
+
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
+  public void testTimestampSetObjectFallsBackToMillis() throws SQLException {
+    String query = "Fake timestamp setObject test";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // setObject goes through Avatica's millis-only path: 1730637909869 * 1000 = 1730637909869000
+    List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(1730637909869000L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001); // sub-ms nanos present but will be lost via setObject
+      stmt.setObject(1, ts);
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
+  public void testSetObjectAfterSetTimestampClearsRawTimestamp() throws SQLException {
+    String query = "Fake timestamp setObject after setTimestamp";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // After setObject replaces setTimestamp, millis-only path is used:
+    // 1000L (epoch millis) * 1000 = 1000000 (epoch micros)
+    List<List<Object>> expected = Collections.singletonList(Collections.singletonList(1000000L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      // First set with setTimestamp (populates rawTimestamps)
+      Timestamp ts1 = new Timestamp(1730637909869L);
+      ts1.setNanos(869885001);
+      stmt.setTimestamp(1, ts1);
+
+      // Then replace with setObject (should clear rawTimestamps for this index)
+      Timestamp ts2 = new Timestamp(1000L);
+      stmt.setObject(1, ts2);
+
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
+  public void testSetLongAfterSetTimestampIgnoresRawTimestamp() throws SQLException {
+    String query = "Fake timestamp setLong after setTimestamp";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // setLong replaces the timestamp TypedValue with millis. The stale raw timestamp must be
+    // ignored, so the long value 1000L becomes 1000000 epoch micros.
+    List<List<Object>> expected = Collections.singletonList(Collections.singletonList(1000000L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      Timestamp ts = new Timestamp(1730637909869L);
+      ts.setNanos(869885001);
+      stmt.setTimestamp(1, ts);
+
+      stmt.setLong(1, 1000L);
+
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
+    }
+  }
+
+  @Test
+  public void testSetTimestampAfterSetObjectPreservesSubMillis() throws SQLException {
+    String query = "Fake timestamp setTimestamp after setObject";
+    Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("ts", new ArrowType.Timestamp(TimeUnit.MICROSECOND, "UTC"))));
+
+    // setTimestamp called last, so rawTimestamp is used: epochSeconds=1730637909, nanos=869885001
+    List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(1730637909869885L));
+
+    PRODUCER.addUpdateQuery(query, 1);
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (PreparedStatement stmt = connection.prepareStatement(query)) {
+      // First set with setObject (millis only)
+      Timestamp ts1 = new Timestamp(1000L);
+      stmt.setObject(1, ts1);
+
+      // Then replace with setTimestamp (populates rawTimestamps with sub-ms precision)
+      Timestamp ts2 = new Timestamp(1730637909869L);
+      ts2.setNanos(869885001);
+      stmt.setTimestamp(1, ts2);
+
+      int updated = stmt.executeUpdate();
+      assertEquals(1, updated);
     }
   }
 }
