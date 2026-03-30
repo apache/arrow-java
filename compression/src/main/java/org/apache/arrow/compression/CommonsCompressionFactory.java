@@ -33,6 +33,8 @@ public class CommonsCompressionFactory implements CompressionCodec.Factory {
     switch (codecType) {
       case LZ4_FRAME:
         return new Lz4CompressionCodec();
+      case SNAPPY:
+        return new SnappyCompressionCodec();
       case ZSTD:
         return new ZstdCompressionCodec();
       default:
@@ -45,6 +47,8 @@ public class CommonsCompressionFactory implements CompressionCodec.Factory {
     switch (codecType) {
       case LZ4_FRAME:
         return new Lz4CompressionCodec();
+      case SNAPPY:
+        return new SnappyCompressionCodec();
       case ZSTD:
         return new ZstdCompressionCodec(compressionLevel);
       default:
