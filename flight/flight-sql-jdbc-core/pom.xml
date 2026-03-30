@@ -159,7 +159,7 @@ under the License.
     <dependency>
       <groupId>org.apache.calcite.avatica</groupId>
       <artifactId>avatica</artifactId>
-      <version>1.26.0</version>
+      <version>1.27.0</version>
     </dependency>
 
     <dependency>
