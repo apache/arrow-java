@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -1126,5 +1127,40 @@ public class TestLargeListVector {
       writer.integer().writeInt(v);
     }
     writer.endList();
+  }
+
+  @Test
+  public void testSetValueCountRejectsNegativeChildValueCount() {
+    try (final LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      vector.allocateNew();
+
+      // Write a negative value into the offset buffer to simulate a corrupted offset
+      // that exceeds Integer.MAX_VALUE (which wraps to negative when read as long offset).
+      vector.getOffsetBuffer().setLong(LargeListVector.OFFSET_WIDTH, -1L);
+      vector.setLastSet(0);
+
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> vector.setValueCount(1),
+          "setValueCount should reject negative childValueCount");
+    }
+  }
+
+  @Test
+  public void testSetValueCountRejectsOverflowChildValueCount() {
+    try (final LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      vector.allocateNew();
+
+      // Write a value exceeding Integer.MAX_VALUE into the offset buffer
+      vector.getOffsetBuffer().setLong(LargeListVector.OFFSET_WIDTH, (long) Integer.MAX_VALUE + 1L);
+      vector.setLastSet(0);
+
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> vector.setValueCount(1),
+          "setValueCount should reject childValueCount exceeding Integer.MAX_VALUE");
+    }
   }
 }
