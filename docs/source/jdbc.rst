@@ -95,7 +95,7 @@ Type Mapping
 The JDBC to Arrow type mapping can be obtained at runtime from
 `JdbcToArrowUtils.getArrowTypeFromJdbcType`_.
 
-.. _JdbcToArrowUtils.getArrowTypeFromJdbcType: https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowUtils.html#getArrowTypeFromJdbcType-org.apache.arrow.adapter.jdbc.JdbcFieldInfo-java.util.Calendar-
+.. _JdbcToArrowUtils.getArrowTypeFromJdbcType: https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowUtils.html#getArrowTypeFromJdbcType-org.apache.arrow.adapter.jdbc.JdbcFieldInfo-java.util.Calendar-
 
 +--------------------+--------------------+-------+
 | JDBC Type          | Arrow Type         | Notes |
@@ -171,8 +171,8 @@ The JDBC to Arrow type mapping can be obtained at runtime from
   timezone of the calendar, else it will be a timestamp without
   timezone.
 
-.. _setArraySubTypeByColumnIndexMap: https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnIndexMap-java.util.Map-
-.. _setArraySubTypeByColumnNameMap: https://arrow.apache.org/docs/java/reference/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnNameMap-java.util.Map-
+.. _setArraySubTypeByColumnIndexMap: https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnIndexMap-java.util.Map-
+.. _setArraySubTypeByColumnNameMap: https://arrow.apache.org/java/current/reference/org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/JdbcToArrowConfigBuilder.html#setArraySubTypeByColumnNameMap-java.util.Map-
 .. _ARROW-17006: https://issues.apache.org/jira/browse/ARROW-17006
 
 VectorSchemaRoot to PreparedStatement Parameter Conversion
@@ -276,7 +276,7 @@ mapping, with additional support for the UUID extension type noted below.
   JDBC value, because a JDBC Timestamp is in UTC, and we have no
   timezone information.  In this case, the default binder will call
   `setTimestamp(int, Timestamp)
-  <https://docs.oracle.com/en/java/javase/11/docs/api/java.sql/java/sql/PreparedStatement.html#setTimestamp(int,java.sql.Timestamp)>`_,
+  <https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/PreparedStatement.html#setTimestamp(int,java.sql.Timestamp)>`_,
   which will lead to the driver using the "default timezone" (that of
   the Java VM).
 * \(3) For the Flight SQL JDBC driver, the Arrow UUID extension type

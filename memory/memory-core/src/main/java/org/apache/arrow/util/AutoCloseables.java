@@ -22,7 +22,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** Utilities for AutoCloseable classes. */
 public final class AutoCloseables {
@@ -33,7 +35,8 @@ public final class AutoCloseables {
    * Returns a new {@link AutoCloseable} that calls {@link #close(Iterable)} on <code>autoCloseables
    * </code> when close is called.
    */
-  public static AutoCloseable all(final Collection<? extends AutoCloseable> autoCloseables) {
+  public static AutoCloseable all(
+      final @Nullable Collection<? extends @Nullable AutoCloseable> autoCloseables) {
     return new AutoCloseable() {
       @Override
       public void close() throws Exception {
@@ -48,7 +51,10 @@ public final class AutoCloseables {
    * @param t the throwable to add suppressed exception to
    * @param autoCloseables the closeables to close
    */
-  public static void close(Throwable t, AutoCloseable... autoCloseables) {
+  public static void close(Throwable t, @Nullable AutoCloseable... autoCloseables) {
+    if (autoCloseables == null) {
+      return;
+    }
     close(t, Arrays.asList(autoCloseables));
   }
 
@@ -58,7 +64,8 @@ public final class AutoCloseables {
    * @param t the throwable to add suppressed exception to
    * @param autoCloseables the closeables to close
    */
-  public static void close(Throwable t, Iterable<? extends AutoCloseable> autoCloseables) {
+  public static void close(
+      Throwable t, @Nullable Iterable<? extends @Nullable AutoCloseable> autoCloseables) {
     try {
       close(autoCloseables);
     } catch (Exception e) {
@@ -71,7 +78,10 @@ public final class AutoCloseables {
    *
    * @param autoCloseables the closeables to close
    */
-  public static void close(AutoCloseable... autoCloseables) throws Exception {
+  public static void close(@Nullable AutoCloseable... autoCloseables) throws Exception {
+    if (autoCloseables == null) {
+      return;
+    }
     close(Arrays.asList(autoCloseables));
   }
 
@@ -80,7 +90,8 @@ public final class AutoCloseables {
    *
    * @param ac the closeables to close
    */
-  public static void close(Iterable<? extends AutoCloseable> ac) throws Exception {
+  public static void close(@Nullable Iterable<? extends @Nullable AutoCloseable> ac)
+      throws Exception {
     // this method can be called on a single object if it implements Iterable<AutoCloseable>
     // like for example VectorContainer make sure we handle that properly
     if (ac == null) {
@@ -111,12 +122,17 @@ public final class AutoCloseables {
 
   /** Calls {@link #close(Iterable)} on the flattened list of closeables. */
   @SafeVarargs
-  public static void close(Iterable<? extends AutoCloseable>... closeables) throws Exception {
+  public static void close(@Nullable Iterable<? extends @Nullable AutoCloseable>... closeables)
+      throws Exception {
+    if (closeables == null) {
+      return;
+    }
     close(flatten(closeables));
   }
 
   @SafeVarargs
-  private static Iterable<AutoCloseable> flatten(Iterable<? extends AutoCloseable>... closeables) {
+  private static Iterable<AutoCloseable> flatten(
+      Iterable<? extends @Nullable AutoCloseable>... closeables) {
     return new Iterable<AutoCloseable>() {
       // Cast from Iterable<? extends AutoCloseable> to Iterable<AutoCloseable> is safe in this
       // context
@@ -127,16 +143,18 @@ public final class AutoCloseables {
         return Arrays.stream(closeables)
             .flatMap(
                 (Iterable<? extends AutoCloseable> i) ->
-                    StreamSupport.stream(
-                        ((Iterable<AutoCloseable>) i).spliterator(), /* parallel= */ false))
+                    i == null
+                        ? Stream.empty()
+                        : StreamSupport.stream(
+                            ((Iterable<AutoCloseable>) i).spliterator(), /* parallel= */ false))
             .iterator();
       }
     };
   }
 
   /** Converts <code>ac</code> to a {@link Iterable} filtering out any null values. */
-  public static Iterable<AutoCloseable> iter(AutoCloseable... ac) {
-    if (ac.length == 0) {
+  public static Iterable<AutoCloseable> iter(@Nullable AutoCloseable... ac) {
+    if (ac == null || ac.length == 0) {
       return Collections.emptyList();
     } else {
       final List<AutoCloseable> nonNullAc = new ArrayList<>();
@@ -153,10 +171,11 @@ public final class AutoCloseables {
   public static class RollbackCloseable implements AutoCloseable {
 
     private boolean commit = false;
-    private List<AutoCloseable> closeables;
+    private final List<AutoCloseable> closeables;
 
-    public RollbackCloseable(AutoCloseable... closeables) {
-      this.closeables = new ArrayList<>(Arrays.asList(closeables));
+    public RollbackCloseable(@Nullable AutoCloseable... closeables) {
+      this.closeables =
+          closeables == null ? new ArrayList<>() : new ArrayList<>(Arrays.asList(closeables));
     }
 
     public <T extends AutoCloseable> T add(T t) {
@@ -165,12 +184,18 @@ public final class AutoCloseables {
     }
 
     /** Add all of <code>list</code> to the rollback list. */
-    public void addAll(AutoCloseable... list) {
+    public void addAll(@Nullable AutoCloseable... list) {
+      if (list == null) {
+        return;
+      }
       closeables.addAll(Arrays.asList(list));
     }
 
     /** Add all of <code>list</code> to the rollback list. */
-    public void addAll(Iterable<? extends AutoCloseable> list) {
+    public void addAll(@Nullable Iterable<? extends @Nullable AutoCloseable> list) {
+      if (list == null) {
+        return;
+      }
       for (AutoCloseable ac : list) {
         closeables.add(ac);
       }
@@ -189,7 +214,7 @@ public final class AutoCloseables {
   }
 
   /** Creates an {@link RollbackCloseable} from the given closeables. */
-  public static RollbackCloseable rollbackable(AutoCloseable... closeables) {
+  public static RollbackCloseable rollbackable(@Nullable AutoCloseable... closeables) {
     return new RollbackCloseable(closeables);
   }
 
@@ -203,7 +228,7 @@ public final class AutoCloseables {
    * @throws RuntimeException if an Exception occurs; the Exception is wrapped by the
    *     RuntimeException
    */
-  public static void closeNoChecked(final AutoCloseable autoCloseable) {
+  public static void closeNoChecked(final @Nullable AutoCloseable autoCloseable) {
     if (autoCloseable != null) {
       try {
         autoCloseable.close();

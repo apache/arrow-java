@@ -20,7 +20,7 @@ FROM ${base}
 
 # Install Java
 # We need Java for JNI headers, but we don't invoke Maven in this build.
-ARG java=11
+ARG java=17
 RUN dnf install -y java-$java-openjdk-devel && dnf clean all
 
 # For ci/scripts/{cpp,java}_*.sh

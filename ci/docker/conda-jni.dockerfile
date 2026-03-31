@@ -17,7 +17,7 @@
 
 FROM ghcr.io/mamba-org/micromamba:ubuntu24.04
 
-ARG jdk=11
+ARG jdk=17
 ARG maven=3.9.9
 
 RUN micromamba install -y \

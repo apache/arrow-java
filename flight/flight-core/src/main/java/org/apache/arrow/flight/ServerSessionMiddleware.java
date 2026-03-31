@@ -80,20 +80,18 @@ public class ServerSessionMiddleware implements FlightServerMiddleware {
       String sessionId = null;
 
       final Iterable<String> it = incomingHeaders.getAll("cookie");
-      if (it != null) {
-        findIdCookie:
-        for (final String headerValue : it) {
-          for (final String cookie : headerValue.split(" ;")) {
-            final String[] cookiePair = cookie.split("=");
-            if (cookiePair.length != 2) {
-              // Soft failure:  Ignore invalid cookie list field
-              break;
-            }
+      findIdCookie:
+      for (final String headerValue : it) {
+        for (final String cookie : headerValue.split(" ;")) {
+          final String[] cookiePair = cookie.split("=");
+          if (cookiePair.length != 2) {
+            // Soft failure:  Ignore invalid cookie list field
+            break;
+          }
 
-            if (sessionCookieName.equals(cookiePair[0]) && cookiePair[1].length() > 0) {
-              sessionId = cookiePair[1];
-              break findIdCookie;
-            }
+          if (sessionCookieName.equals(cookiePair[0]) && cookiePair[1].length() > 0) {
+            sessionId = cookiePair[1];
+            break findIdCookie;
           }
         }
       }

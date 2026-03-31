@@ -126,7 +126,7 @@ public class ${holderMode}${name}HolderReaderImpl extends AbstractFieldReader {
   <#elseif minor.class == "Duration">
     return DurationVector.toDuration(holder.value, holder.unit);
   <#elseif minor.class == "Bit" >
-    return new Boolean(holder.value != 0);
+    return Boolean.valueOf(holder.value != 0);
   <#elseif minor.class == "Decimal">
     byte[] bytes = new byte[${type.width}];
     holder.buffer.getBytes(holder.start, bytes, 0, ${type.width});
@@ -151,7 +151,7 @@ public class ${holderMode}${name}HolderReaderImpl extends AbstractFieldReader {
   <#elseif minor.class == "TimeStampNano">
     return DateUtility.getLocalDateTimeFromEpochNano(holder.value);
   <#else>
-    ${friendlyType} value = new ${friendlyType}(this.holder.value);
+    ${friendlyType} value = ${friendlyType}.valueOf(this.holder.value);
     return value;
   </#if>
   }

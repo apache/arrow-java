@@ -1543,11 +1543,83 @@ public class ArrowDatabaseMetadataTest {
     try (final Connection testConnection =
         FLIGHT_SERVER_EMPTY_SQLINFO_TEST_RULE.getConnection(false)) {
       final DatabaseMetaData metaData = testConnection.getMetaData();
+
       assertThat(metaData.getSQLKeywords(), is(""));
       assertThat(metaData.getNumericFunctions(), is(""));
       assertThat(metaData.getStringFunctions(), is(""));
       assertThat(metaData.getSystemFunctions(), is(""));
       assertThat(metaData.getTimeDateFunctions(), is(""));
+
+      assertThat(metaData.getMaxBinaryLiteralLength(), is(0));
+      assertThat(metaData.getMaxCharLiteralLength(), is(0));
+      assertThat(metaData.getMaxColumnNameLength(), is(0));
+      assertThat(metaData.getMaxColumnsInGroupBy(), is(0));
+      assertThat(metaData.getMaxColumnsInIndex(), is(0));
+      assertThat(metaData.getMaxColumnsInOrderBy(), is(0));
+      assertThat(metaData.getMaxColumnsInSelect(), is(0));
+      assertThat(metaData.getMaxColumnsInTable(), is(0));
+      assertThat(metaData.getMaxConnections(), is(0));
+      assertThat(metaData.getMaxCursorNameLength(), is(0));
+      assertThat(metaData.getMaxIndexLength(), is(0));
+      assertThat(metaData.getMaxSchemaNameLength(), is(0));
+      assertThat(metaData.getMaxProcedureNameLength(), is(0));
+      assertThat(metaData.getMaxCatalogNameLength(), is(0));
+      assertThat(metaData.getMaxRowSize(), is(0));
+      assertThat(metaData.getMaxStatementLength(), is(0));
+      assertThat(metaData.getMaxStatements(), is(0));
+      assertThat(metaData.getMaxTableNameLength(), is(0));
+      assertThat(metaData.getMaxTablesInSelect(), is(0));
+      assertThat(metaData.getMaxUserNameLength(), is(0));
+
+      assertThat(metaData.supportsColumnAliasing(), is(false));
+      assertThat(metaData.nullPlusNonNullIsNull(), is(false));
+      assertThat(metaData.supportsTableCorrelationNames(), is(false));
+      assertThat(metaData.supportsDifferentTableCorrelationNames(), is(false));
+      assertThat(metaData.supportsExpressionsInOrderBy(), is(false));
+      assertThat(metaData.supportsOrderByUnrelated(), is(false));
+      assertThat(metaData.supportsLikeEscapeClause(), is(false));
+      assertThat(metaData.supportsNonNullableColumns(), is(false));
+      assertThat(metaData.supportsIntegrityEnhancementFacility(), is(false));
+      assertThat(metaData.isCatalogAtStart(), is(false));
+      assertThat(metaData.supportsSelectForUpdate(), is(false));
+      assertThat(metaData.supportsStoredProcedures(), is(false));
+      assertThat(metaData.supportsCorrelatedSubqueries(), is(false));
+      assertThat(metaData.doesMaxRowSizeIncludeBlobs(), is(false));
+      assertThat(metaData.supportsTransactions(), is(false));
+      assertThat(metaData.dataDefinitionCausesTransactionCommit(), is(false));
+      assertThat(metaData.dataDefinitionIgnoredInTransactions(), is(false));
+      assertThat(metaData.supportsBatchUpdates(), is(false));
+      assertThat(metaData.supportsSavepoints(), is(false));
+      assertThat(metaData.supportsNamedParameters(), is(false));
+      assertThat(metaData.locatorsUpdateCopy(), is(false));
+      assertThat(metaData.supportsStoredFunctionsUsingCallSyntax(), is(false));
+      assertThat(metaData.supportsGroupBy(), is(false));
+      assertThat(metaData.supportsGroupByUnrelated(), is(false));
+      assertThat(metaData.supportsMinimumSQLGrammar(), is(false));
+      assertThat(metaData.supportsCoreSQLGrammar(), is(false));
+      assertThat(metaData.supportsExtendedSQLGrammar(), is(false));
+      assertThat(metaData.supportsANSI92EntryLevelSQL(), is(false));
+      assertThat(metaData.supportsANSI92IntermediateSQL(), is(false));
+      assertThat(metaData.supportsANSI92FullSQL(), is(false));
+      assertThat(metaData.supportsOuterJoins(), is(false));
+      assertThat(metaData.supportsFullOuterJoins(), is(false));
+      assertThat(metaData.supportsLimitedOuterJoins(), is(false));
+      assertThat(metaData.supportsSchemasInProcedureCalls(), is(false));
+      assertThat(metaData.supportsSchemasInIndexDefinitions(), is(false));
+      assertThat(metaData.supportsSchemasInPrivilegeDefinitions(), is(false));
+      assertThat(metaData.supportsCatalogsInIndexDefinitions(), is(false));
+      assertThat(metaData.supportsCatalogsInPrivilegeDefinitions(), is(false));
+      assertThat(metaData.supportsPositionedDelete(), is(false));
+      assertThat(metaData.supportsPositionedUpdate(), is(false));
+      assertThat(metaData.supportsSubqueriesInComparisons(), is(false));
+      assertThat(metaData.supportsSubqueriesInExists(), is(false));
+      assertThat(metaData.supportsSubqueriesInIns(), is(false));
+      assertThat(metaData.supportsSubqueriesInQuantifieds(), is(false));
+      assertThat(metaData.supportsUnion(), is(false));
+      assertThat(metaData.supportsUnionAll(), is(false));
+      assertThat(metaData.supportsConvert(), is(false));
+
+      assertThat(metaData.getDefaultTransactionIsolation(), is(Connection.TRANSACTION_NONE));
     }
   }
 }

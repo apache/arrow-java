@@ -22,7 +22,7 @@ under the License.
   <parent>
     <groupId>org.apache.arrow</groupId>
     <artifactId>arrow-flight</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>20.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>flight-sql-jdbc-core</artifactId>
@@ -141,7 +141,7 @@ under the License.
     <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio-jvm</artifactId>
-      <version>3.16.4</version>
+      <version>3.17.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -182,7 +182,7 @@ under the License.
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>oauth2-oidc-sdk</artifactId>
-      <version>11.20.1</version>
+      <version>11.37</version>
     </dependency>
 
   </dependencies>

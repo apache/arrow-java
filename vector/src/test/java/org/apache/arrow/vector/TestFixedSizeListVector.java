@@ -30,14 +30,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.impl.UnionFixedSizeListReader;
 import org.apache.arrow.vector.complex.impl.UnionFixedSizeListWriter;
 import org.apache.arrow.vector.complex.impl.UnionListReader;
 import org.apache.arrow.vector.complex.reader.FieldReader;
+import org.apache.arrow.vector.holders.DurationHolder;
+import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
+import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
+import org.apache.arrow.vector.holders.TimeStampNanoTZHolder;
+import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.Text;
 import org.apache.arrow.vector.util.TransferPair;
@@ -625,6 +632,206 @@ public class TestFixedSizeListVector {
           "row1,3", new String((byte[]) vector.getObject(0).get(2), StandardCharsets.UTF_8));
       assertEquals(
           "row1,4", new String((byte[]) vector.getObject(0).get(3), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  public void testWriterTimeStampNanoTZField() {
+    try (final FixedSizeListVector vector =
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
+      UnionFixedSizeListWriter writer = vector.getWriter();
+      writer.allocate();
+
+      final int valueCount = 10;
+
+      for (int i = 0; i < valueCount; i++) {
+        writer.startList();
+        writer.timeStampNanoTZ().writeTimeStampNanoTZ(i * 1000L);
+        writer.timeStampNanoTZ().writeTimeStampNanoTZ((i + 1) * 1000L);
+        writer.timeStampNanoTZ().writeTimeStampNanoTZ((i + 2) * 1000L);
+        writer.endList();
+      }
+      vector.setValueCount(valueCount);
+
+      UnionFixedSizeListReader reader = vector.getReader();
+      for (int i = 0; i < valueCount; i++) {
+        reader.setPosition(i);
+        assertTrue(reader.isSet());
+        assertTrue(reader.next());
+        assertEquals(i * 1000L, reader.reader().readLong().longValue());
+        assertTrue(reader.next());
+        assertEquals((i + 1) * 1000L, reader.reader().readLong().longValue());
+        assertTrue(reader.next());
+        assertEquals((i + 2) * 1000L, reader.reader().readLong().longValue());
+        assertFalse(reader.next());
+      }
+    }
+  }
+
+  @Test
+  public void testWriterUsingHolderTimeStampNanoTZField() {
+    try (final FixedSizeListVector vector =
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
+      UnionFixedSizeListWriter writer = vector.getWriter();
+      writer.allocate();
+
+      TimeStampNanoTZHolder holder = new TimeStampNanoTZHolder();
+      holder.timezone = "SomeFakeTimeZone";
+      writer.startList();
+      holder.value = 12341234L;
+      writer.timeStampNanoTZ().write(holder);
+      holder.value = 55555L;
+      writer.timeStampNanoTZ().write(holder);
+
+      // Writing with a different timezone should throw
+      holder.timezone = "AsdfTimeZone";
+      holder.value = 77777;
+      IllegalArgumentException ex =
+          assertThrows(
+              IllegalArgumentException.class, () -> writer.timeStampNanoTZ().write(holder));
+      assertEquals(
+          "holder.timezone: AsdfTimeZone not equal to vector timezone: SomeFakeTimeZone",
+          ex.getMessage());
+
+      writer.endList();
+      vector.setValueCount(1);
+
+      Field expectedDataField =
+          new Field(
+              BaseRepeatedValueVector.DATA_VECTOR_NAME,
+              FieldType.nullable(new ArrowType.Timestamp(TimeUnit.NANOSECOND, "SomeFakeTimeZone")),
+              null);
+      Field expectedField =
+          new Field(
+              vector.getName(),
+              FieldType.nullable(new ArrowType.FixedSizeList(3)),
+              List.of(expectedDataField));
+
+      assertEquals(expectedField, writer.getField());
+    }
+  }
+
+  @Test
+  public void testWriterUsingHolderTimestampMilliTZField() {
+    try (final FixedSizeListVector vector =
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
+      UnionFixedSizeListWriter writer = vector.getWriter();
+      writer.allocate();
+
+      TimeStampMilliTZHolder holder = new TimeStampMilliTZHolder();
+      holder.timezone = "SomeFakeTimeZone";
+      writer.startList();
+      holder.value = 12341234L;
+      writer.timeStampMilliTZ().write(holder);
+      holder.value = 55555L;
+      writer.timeStampMilliTZ().write(holder);
+
+      // Writing with a different timezone should throw
+      holder.timezone = "AsdfTimeZone";
+      holder.value = 77777;
+      IllegalArgumentException ex =
+          assertThrows(
+              IllegalArgumentException.class, () -> writer.timeStampMilliTZ().write(holder));
+      assertEquals(
+          "holder.timezone: AsdfTimeZone not equal to vector timezone: SomeFakeTimeZone",
+          ex.getMessage());
+
+      writer.endList();
+      vector.setValueCount(1);
+
+      Field expectedDataField =
+          new Field(
+              BaseRepeatedValueVector.DATA_VECTOR_NAME,
+              FieldType.nullable(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "SomeFakeTimeZone")),
+              null);
+      Field expectedField =
+          new Field(
+              vector.getName(),
+              FieldType.nullable(new ArrowType.FixedSizeList(3)),
+              List.of(expectedDataField));
+
+      assertEquals(expectedField, writer.getField());
+    }
+  }
+
+  @Test
+  public void testWriterUsingHolderDurationField() {
+    try (final FixedSizeListVector vector =
+        FixedSizeListVector.empty("vector", /* size= */ 3, allocator)) {
+      UnionFixedSizeListWriter writer = vector.getWriter();
+      writer.allocate();
+
+      DurationHolder durationHolder = new DurationHolder();
+      durationHolder.unit = TimeUnit.MILLISECOND;
+
+      writer.startList();
+      durationHolder.value = 812374L;
+      writer.duration().write(durationHolder);
+      durationHolder.value = 143451L;
+      writer.duration().write(durationHolder);
+
+      // Writing with a different unit should throw
+      durationHolder.unit = TimeUnit.SECOND;
+      durationHolder.value = 8888888;
+      IllegalArgumentException ex =
+          assertThrows(
+              IllegalArgumentException.class, () -> writer.duration().write(durationHolder));
+      assertEquals("holder.unit: SECOND not equal to vector unit: MILLISECOND", ex.getMessage());
+
+      writer.endList();
+      vector.setValueCount(1);
+
+      Field expectedDataField =
+          new Field(
+              BaseRepeatedValueVector.DATA_VECTOR_NAME,
+              FieldType.nullable(new ArrowType.Duration(TimeUnit.MILLISECOND)),
+              null);
+      Field expectedField =
+          new Field(
+              vector.getName(),
+              FieldType.nullable(new ArrowType.FixedSizeList(3)),
+              List.of(expectedDataField));
+
+      assertEquals(expectedField, writer.getField());
+    }
+  }
+
+  @Test
+  public void testWriterUsingHolderFixedSizeBinaryField() {
+    try (final FixedSizeListVector vector =
+        FixedSizeListVector.empty("vector", /* size= */ 2, allocator)) {
+      UnionFixedSizeListWriter writer = vector.getWriter();
+      writer.allocate();
+
+      FixedSizeBinaryHolder holder1 =
+          TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {11, 22});
+      FixedSizeBinaryHolder holder2 =
+          TestUtils.fixedSizeBinaryHolder(allocator, new byte[] {32, 21});
+
+      writer.startList();
+      writer.fixedSizeBinary().write(holder1);
+      holder1.buffer.close();
+      writer.fixedSizeBinary().write(holder2);
+      holder2.buffer.close();
+
+      writer.endList();
+      vector.setValueCount(1);
+
+      FieldReader reader = vector.getReader();
+      assertTrue(reader.isSet(), "shouldn't be null");
+
+      Field expectedDataField =
+          new Field(
+              BaseRepeatedValueVector.DATA_VECTOR_NAME,
+              FieldType.nullable(new ArrowType.FixedSizeBinary(2)),
+              null);
+      Field expectedField =
+          new Field(
+              vector.getName(),
+              FieldType.nullable(new ArrowType.FixedSizeList(2)),
+              List.of(expectedDataField));
+
+      assertEquals(expectedField, writer.getField());
     }
   }
 

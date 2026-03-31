@@ -35,6 +35,10 @@ import java.math.BigDecimal;
 
 <#include "/@includes/vv_imports.ftl" />
 
+<#function is_timestamp_tz type>
+  <#return type?starts_with("TimeStamp") && type?ends_with("TZ")>
+</#function>
+
 /*
  * This class is generated using freemarker and the ${.template_name} template.
  */
@@ -96,55 +100,30 @@ public class UnionFixedSizeListWriter extends AbstractFieldWriter {
   public void setPosition(int index) {
     super.setPosition(index);
   }
-  <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
-  <#assign fields = minor.fields!type.fields />
-  <#assign uncappedName = name?uncap_first/>
-  <#if uncappedName == "int" ><#assign uncappedName = "integer" /></#if>
-  <#if !minor.typeParams?? >
 
+  <#list vv.types as type><#list type.minor as minor>
+  <#assign lowerName = minor.class?uncap_first />
+  <#if lowerName == "int" ><#assign lowerName = "integer" /></#if>
+  <#assign upperName = minor.class?upper_case />
   @Override
-  public ${name}Writer ${uncappedName}() {
+  public ${minor.class}Writer ${lowerName}() {
     return this;
   }
 
+  <#if minor.typeParams?? >
   @Override
-  public ${name}Writer ${uncappedName}(String name) {
-    structName = name;
-    return writer.${uncappedName}(name);
+  public ${minor.class}Writer ${lowerName}(String name<#list minor.typeParams as typeParam>, ${typeParam.type} ${typeParam.name}</#list>) {
+    return writer.${lowerName}(name<#list minor.typeParams as typeParam>, ${typeParam.name}</#list>);
   }
   </#if>
+
+  @Override
+  public ${minor.class}Writer ${lowerName}(String name) {
+    structName = name;
+    return writer.${lowerName}(name);
+  }
+
   </#list></#list>
-
-  @Override
-  public DecimalWriter decimal() {
-    return this;
-  }
-
-  @Override
-  public DecimalWriter decimal(String name, int scale, int precision) {
-    return writer.decimal(name, scale, precision);
-  }
-
-  @Override
-  public DecimalWriter decimal(String name) {
-    return writer.decimal(name);
-  }
-
-
-  @Override
-  public Decimal256Writer decimal256() {
-    return this;
-  }
-
-  @Override
-  public Decimal256Writer decimal256(String name, int scale, int precision) {
-    return writer.decimal256(name, scale, precision);
-  }
-
-  @Override
-  public Decimal256Writer decimal256(String name) {
-    return writer.decimal256(name);
-  }
 
   @Override
   public StructWriter struct() {
@@ -215,78 +194,11 @@ public class UnionFixedSizeListWriter extends AbstractFieldWriter {
   }
 
   @Override
-  public void write(DecimalHolder holder) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.write(holder);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-  @Override
-  public void write(Decimal256Holder holder) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.write(holder);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-
-  @Override
   public void writeNull() {
     if (writer.idx() >= (idx() + 1) * listSize) {
       throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
     }
     writer.writeNull();
-  }
-
-  public void writeDecimal(long start, ArrowBuf buffer, ArrowType arrowType) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.writeDecimal(start, buffer, arrowType);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-  public void writeDecimal(BigDecimal value) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.writeDecimal(value);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-  public void writeBigEndianBytesToDecimal(byte[] value, ArrowType arrowType) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.writeBigEndianBytesToDecimal(value, arrowType);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-  public void writeDecimal256(long start, ArrowBuf buffer, ArrowType arrowType) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.writeDecimal256(start, buffer, arrowType);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-  public void writeDecimal256(BigDecimal value) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.writeDecimal256(value);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-  public void writeBigEndianBytesToDecimal256(byte[] value, ArrowType arrowType) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.writeBigEndianBytesToDecimal256(value, arrowType);
-    writer.setPosition(writer.idx() + 1);
   }
 
 
@@ -295,7 +207,73 @@ public class UnionFixedSizeListWriter extends AbstractFieldWriter {
       <#assign name = minor.class?cap_first />
       <#assign fields = minor.fields!type.fields />
       <#assign uncappedName = name?uncap_first/>
-      <#if minor.class?ends_with("VarBinary")>
+  @Override
+  public void write${name}(<#list fields as field>${field.type} ${field.name}<#if field_has_next>, </#if></#list>) {
+    if (writer.idx() >= (idx() + 1) * listSize) {
+      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
+    }
+    writer.write${name}(<#list fields as field>${field.name}<#if field_has_next>, </#if></#list>);
+    writer.setPosition(writer.idx()+1);
+  }
+
+  <#if is_timestamp_tz(minor.class) || minor.class == "Duration" || minor.class == "FixedSizeBinary">
+  @Override
+  public void write(${name}Holder holder) {
+    if (writer.idx() >= (idx() + 1) * listSize) {
+      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
+    }
+    writer.write(holder);
+    writer.setPosition(writer.idx()+1);
+  }
+
+  <#elseif minor.class?starts_with("Decimal")>
+  @Override
+  public void write${name}(long start, ArrowBuf buffer, ArrowType arrowType) {
+    if (writer.idx() >= (idx() + 1) * listSize) {
+      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
+    }
+    writer.write${name}(start, buffer, arrowType);
+    writer.setPosition(writer.idx()+1);
+  }
+
+  @Override
+  public void write(${name}Holder holder) {
+    if (writer.idx() >= (idx() + 1) * listSize) {
+      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
+    }
+    writer.write(holder);
+    writer.setPosition(writer.idx()+1);
+  }
+
+  @Override
+  public void write${name}(BigDecimal value) {
+    if (writer.idx() >= (idx() + 1) * listSize) {
+      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
+    }
+    writer.write${name}(value);
+    writer.setPosition(writer.idx()+1);
+  }
+
+  @Override
+  public void writeBigEndianBytesTo${name}(byte[] value, ArrowType arrowType){
+    if (writer.idx() >= (idx() + 1) * listSize) {
+      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
+    }
+    writer.writeBigEndianBytesTo${name}(value, arrowType);
+    writer.setPosition(writer.idx() + 1);
+  }
+  <#else>
+  @Override
+  public void write(${name}Holder holder) {
+    if (writer.idx() >= (idx() + 1) * listSize) {
+      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
+    }
+    writer.write${name}(<#list fields as field>holder.${field.name}<#if field_has_next>, </#if></#list>);
+    writer.setPosition(writer.idx()+1);
+  }
+  </#if>
+
+  <#if minor.class?ends_with("VarBinary")>
   @Override
   public void write${minor.class}(byte[] value) {
     if (writer.idx() >= (idx() + 1) * listSize) {
@@ -349,27 +327,8 @@ public class UnionFixedSizeListWriter extends AbstractFieldWriter {
     writer.write${minor.class}(value);
     writer.setPosition(writer.idx() + 1);
   }
-      </#if>
+  </#if>
 
-      <#if !minor.typeParams?? >
-  @Override
-  public void write${name}(<#list fields as field>${field.type} ${field.name}<#if field_has_next>, </#if></#list>) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.write${name}(<#list fields as field>${field.name}<#if field_has_next>, </#if></#list>);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-  public void write(${name}Holder holder) {
-    if (writer.idx() >= (idx() + 1) * listSize) {
-      throw new IllegalStateException(String.format("values at index %s is greater than listSize %s", idx(), listSize));
-    }
-    writer.write${name}(<#list fields as field>holder.${field.name}<#if field_has_next>, </#if></#list>);
-    writer.setPosition(writer.idx() + 1);
-  }
-
-      </#if>
     </#list>
   </#list>
 }

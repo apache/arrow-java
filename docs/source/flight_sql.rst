@@ -29,4 +29,4 @@ over the network.
 
 For usage information, see the `API documentation`_.
 
-.. _API documentation: https://arrow.apache.org/docs/java/reference/org/apache/arrow/flight/sql/package-summary.html
+.. _API documentation: https://arrow.apache.org/java/current/reference/org.apache.arrow.flight.sql/org/apache/arrow/flight/sql/package-summary.html

@@ -373,14 +373,26 @@ public abstract class BaseLargeVariableWidthVector extends BaseValueVector
     valueBuffer.readerIndex(0);
     if (valueCount == 0) {
       validityBuffer.writerIndex(0);
-      offsetBuffer.writerIndex(0);
       valueBuffer.writerIndex(0);
     } else {
       final long lastDataOffset = getStartOffset(valueCount);
       validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
-      offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
       valueBuffer.writerIndex(lastDataOffset);
     }
+    // IPC serializer will determine readable bytes based on `readerIndex` and `writerIndex`.
+    // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
+    // in other libraries. According to Arrow spec, we should still output the offset buffer which
+    // is [0].
+    final long requiredOffsetBufferSize = (long) (valueCount + 1) * OFFSET_WIDTH;
+    if (offsetBuffer.capacity() < requiredOffsetBufferSize) {
+      ArrowBuf newOffsetBuffer = allocateOffsetBuffer(requiredOffsetBufferSize);
+      if (offsetBuffer.capacity() > 0) {
+        newOffsetBuffer.setBytes(0, offsetBuffer, 0, offsetBuffer.capacity());
+      }
+      offsetBuffer.getReferenceManager().release();
+      offsetBuffer = newOffsetBuffer;
+    }
+    offsetBuffer.writerIndex(requiredOffsetBufferSize);
   }
 
   /** Same as {@link #allocateNewSafe()}. */
