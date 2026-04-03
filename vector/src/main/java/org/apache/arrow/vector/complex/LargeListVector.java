@@ -1041,8 +1041,8 @@ public class LargeListVector extends BaseValueVector
      * TODO: revisit when 64-bit vectors are supported
      */
     Preconditions.checkArgument(
-        childValueCount <= Integer.MAX_VALUE && childValueCount >= 0,
-        "LargeListVector doesn't yet support 64-bit allocations: %s",
+        childValueCount >= 0 && childValueCount <= Integer.MAX_VALUE,
+        "LargeListVector childValueCount must be in [0, Integer.MAX_VALUE] but was: %s",
         childValueCount);
     vector.setValueCount((int) childValueCount);
   }
