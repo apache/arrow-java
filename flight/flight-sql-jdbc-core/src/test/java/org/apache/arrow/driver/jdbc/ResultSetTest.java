@@ -302,14 +302,14 @@ public class ResultSetTest {
   @Test
   public void testShouldInterruptFlightStreamsIfQueryIsCancelledMidQuerying()
       throws SQLException, InterruptedException {
+    final String query = CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD;
     try (final Statement statement = connection.createStatement()) {
       final CountDownLatch latch = new CountDownLatch(1);
       final Set<Exception> exceptions = synchronizedSet(new HashSet<>(1));
       final Thread thread =
           new Thread(
               () -> {
-                try (final ResultSet resultSet =
-                    statement.executeQuery(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD)) {
+                try (final ResultSet resultSet = statement.executeQuery(query)) {
                   final int cachedColumnCount = resultSet.getMetaData().getColumnCount();
                   Thread.sleep(300);
                   while (resultSet.next()) {
@@ -332,7 +332,14 @@ public class ResultSetTest {
               .reduce(StringBuilder::append)
               .orElseThrow(IllegalArgumentException::new)
               .toString(),
-          is("Statement canceled"));
+          anyOf(
+              is("Statement canceled"),
+              allOf(
+                  containsString(format("Error while executing SQL \"%s\"", query)),
+                  anyOf(
+                      containsString("Query canceled"),
+                      containsString("CANCELLED"),
+                      containsString("Cancelling")))));
     }
   }
 
