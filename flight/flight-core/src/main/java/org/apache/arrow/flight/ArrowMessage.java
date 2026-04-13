@@ -513,6 +513,7 @@ class ArrowMessage implements AutoCloseable {
 
   @Override
   public void close() throws Exception {
-    AutoCloseables.close(Iterables.concat(bufs, AutoCloseables.iter(appMetadata, messageAllocator)));
+    AutoCloseables.close(
+        Iterables.concat(bufs, AutoCloseables.iter(appMetadata, messageAllocator)));
   }
 }
