@@ -32,6 +32,7 @@ import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.Schema;
+import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaResultSet;
 import org.apache.calcite.avatica.AvaticaResultSetMetaData;
 import org.apache.calcite.avatica.AvaticaStatement;
@@ -207,6 +208,13 @@ public final class ArrowFlightJdbcFlightStreamResultSet
       if (currentEndpointData != null) {
         populateDataForCurrentFlightStream();
         continue;
+      }
+
+      // No more data. If the queue was closed concurrently (e.g. statement.cancel()
+      // racing with the reader past super.next()), surface as "Statement canceled"
+      // to match Avatica's cancellation semantics.
+      if (flightEndpointDataQueue.isClosed()) {
+        throw AvaticaConnection.HELPER.createException("Statement canceled");
       }
 
       if (statement != null && statement.isCloseOnCompletion()) {
