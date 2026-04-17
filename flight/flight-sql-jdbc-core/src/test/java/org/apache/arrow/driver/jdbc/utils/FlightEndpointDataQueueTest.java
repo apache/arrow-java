@@ -48,10 +48,9 @@ public class FlightEndpointDataQueueTest {
   }
 
   @Test
-  public void testNextShouldThrowExceptionUponClose() throws Exception {
+  public void testNextShouldReturnNullUponClose() throws Exception {
     queue.close();
-    ThrowableAssertionUtils.simpleAssertThrowableClass(
-        IllegalStateException.class, () -> queue.next());
+    assertThat(queue.next(), is(nullValue()));
   }
 
   @Test
