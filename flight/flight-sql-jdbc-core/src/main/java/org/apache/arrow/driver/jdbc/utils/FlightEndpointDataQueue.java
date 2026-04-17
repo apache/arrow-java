@@ -177,7 +177,17 @@ public class FlightEndpointDataQueue implements AutoCloseable {
   /** Adds given {@link FlightStream} to the queue. */
   public synchronized void enqueue(final CloseableEndpointStreamPair endpointRequest) {
     checkNotNull(endpointRequest);
-    checkOpen();
+    if (isClosed()) {
+      // Concurrent close() raced with enqueue (e.g. statement.cancel() while the reader
+      // was mid-loop). Treat as end-of-stream: close the endpoint and return silently.
+      // The reader detects cancellation via a subsequent isClosed() check.
+      try {
+        endpointRequest.close();
+      } catch (final Exception e) {
+        LOGGER.error("Failed to close endpoint after queue was closed.", e);
+      }
+      return;
+    }
     endpointsToClose.add(endpointRequest);
     futures.add(
         completionService.submit(
