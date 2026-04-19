@@ -27,7 +27,9 @@ import java.util.concurrent.TimeUnit;
 import org.apache.arrow.driver.jdbc.client.CloseableEndpointStreamPair;
 import org.apache.arrow.driver.jdbc.utils.FlightEndpointDataQueue;
 import org.apache.arrow.driver.jdbc.utils.VectorSchemaRootTransformer;
+import org.apache.arrow.flight.CallStatus;
 import org.apache.arrow.flight.FlightInfo;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.VectorSchemaRoot;
@@ -193,17 +195,27 @@ public final class ArrowFlightJdbcFlightStreamResultSet
         return true;
       }
 
-      if (currentEndpointData != null) {
-        currentEndpointData.getStream().getRoot().clear();
-        if (currentEndpointData.getStream().next()) {
-          populateDataForCurrentFlightStream();
-          continue;
+      try {
+        if (currentEndpointData != null) {
+          currentEndpointData.getStream().getRoot().clear();
+          if (currentEndpointData.getStream().next()) {
+            populateDataForCurrentFlightStream();
+            continue;
+          }
+
+          flightEndpointDataQueue.enqueue(currentEndpointData);
         }
 
-        flightEndpointDataQueue.enqueue(currentEndpointData);
+        currentEndpointData = getNextEndpointStream(false);
+      } catch (final FlightRuntimeException e) {
+        // A concurrent statement.cancel() (or close) cancels in-flight FlightStreams,
+        // which surface here as CANCELLED. Normalize to Avatica's "Statement canceled".
+        if (flightEndpointDataQueue.isClosed()
+            && e.status().code() == CallStatus.CANCELLED.code()) {
+          throw AvaticaConnection.HELPER.createException("Statement canceled");
+        }
+        throw e;
       }
-
-      currentEndpointData = getNextEndpointStream(false);
 
       if (currentEndpointData != null) {
         populateDataForCurrentFlightStream();
