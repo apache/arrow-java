@@ -99,6 +99,39 @@ public class ArrowFlightPreparedStatementTest {
   }
 
   @Test
+  public void testSimpleQueryNoParameterBindingWithExecuteV2() throws SQLException {
+    final String query = "SELECT * FROM TEST_V2";
+    final Schema schema =
+        new Schema(Collections.singletonList(Field.nullable("", Types.MinorType.INT.getType())));
+    PRODUCER.addSelectQueryV2(
+        query,
+        schema,
+        Collections.singletonList(
+            listener -> {
+              try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+                  final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+                root.allocateNew();
+                ((IntVector) root.getVector(0)).setSafe(0, 123);
+                root.setRowCount(1);
+                listener.start(root);
+                listener.putNext();
+              } finally {
+                listener.completed();
+              }
+            }));
+    try (final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+      boolean isResultSet = preparedStatement.execute();
+      assertTrue(isResultSet);
+      final ResultSet resultSet = preparedStatement.getResultSet();
+      assertTrue(resultSet.next());
+      assertEquals(123, resultSet.getInt(1));
+      assertFalse(resultSet.next());
+      assertFalse(preparedStatement.getMoreResults());
+      assertEquals(-1, preparedStatement.getUpdateCount());
+    }
+  }
+
+  @Test
   public void testQueryWithParameterBinding() throws SQLException {
     final String query = "Fake query with parameters";
     final Schema schema =
@@ -198,6 +231,20 @@ public class ArrowFlightPreparedStatementTest {
       assertFalse(isResultSet);
       int updated = stmt.getUpdateCount();
       assertEquals(42, updated);
+      assertFalse(stmt.getMoreResults());
+      assertEquals(-1, stmt.getUpdateCount());
+    }
+  }
+
+  @Test
+  public void testUpdateQueryWithExecuteV2() throws SQLException {
+    String query = "Fake update with execute V2";
+    PRODUCER.addUpdateQueryV2(query, /*updatedRows*/ 99);
+    try (final PreparedStatement stmt = connection.prepareStatement(query)) {
+      boolean isResultSet = stmt.execute();
+      assertFalse(isResultSet);
+      int updated = stmt.getUpdateCount();
+      assertEquals(99, updated);
       assertFalse(stmt.getMoreResults());
       assertEquals(-1, stmt.getUpdateCount());
     }
