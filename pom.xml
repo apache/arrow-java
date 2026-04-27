@@ -97,7 +97,7 @@ under the License.
     <dep.junit.platform.version>1.9.0</dep.junit.platform.version>
     <dep.junit.jupiter.version>5.12.2</dep.junit.jupiter.version>
     <dep.slf4j.version>2.0.17</dep.slf4j.version>
-    <dep.guava-bom.version>33.5.0-jre</dep.guava-bom.version>
+    <dep.guava-bom.version>33.6.0-jre</dep.guava-bom.version>
     <dep.netty-bom.version>4.2.12.Final</dep.netty-bom.version>
     <dep.grpc-bom.version>1.79.0</dep.grpc-bom.version>
     <dep.protobuf-bom.version>4.34.1</dep.protobuf-bom.version>
@@ -112,7 +112,7 @@ under the License.
     <checkstyle.version>10.23.0</checkstyle.version>
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.49.0</error_prone_core.version>
-    <checker.framework.version>3.55.1</checker.framework.version>
+    <checker.framework.version>4.0.0</checker.framework.version>
     <logback.version>1.5.32</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
