@@ -29,12 +29,12 @@ import org.apache.arrow.memory.BufferAllocator;
 /** Java binding of the C++ FileSystemDatasetFactory. */
 public class FileSystemDatasetFactory extends NativeDatasetFactory {
 
-  private final String[] uris;
+  private final Set<URI> hdfsFileSystems;
 
   public FileSystemDatasetFactory(
       BufferAllocator allocator, NativeMemoryPool memoryPool, FileFormat format, String uri) {
     super(allocator, memoryPool, createNative(format, uri, Optional.empty()));
-    this.uris = uri == null ? new String[0] : new String[] {uri};
+    this.hdfsFileSystems = toHdfsFileSystems(uri);
   }
 
   public FileSystemDatasetFactory(
@@ -44,13 +44,13 @@ public class FileSystemDatasetFactory extends NativeDatasetFactory {
       String uri,
       Optional<FragmentScanOptions> fragmentScanOptions) {
     super(allocator, memoryPool, createNative(format, uri, fragmentScanOptions));
-    this.uris = uri == null ? new String[0] : new String[] {uri};
+    this.hdfsFileSystems = toHdfsFileSystems(uri);
   }
 
   public FileSystemDatasetFactory(
       BufferAllocator allocator, NativeMemoryPool memoryPool, FileFormat format, String[] uris) {
     super(allocator, memoryPool, createNative(format, uris, Optional.empty()));
-    this.uris = uris == null ? new String[0] : uris.clone();
+    this.hdfsFileSystems = toHdfsFileSystems(uris);
   }
 
   public FileSystemDatasetFactory(
@@ -60,7 +60,7 @@ public class FileSystemDatasetFactory extends NativeDatasetFactory {
       String[] uris,
       Optional<FragmentScanOptions> fragmentScanOptions) {
     super(allocator, memoryPool, createNative(format, uris, fragmentScanOptions));
-    this.uris = uris == null ? new String[0] : uris.clone();
+    this.hdfsFileSystems = toHdfsFileSystems(uris);
   }
 
   /**
@@ -73,7 +73,7 @@ public class FileSystemDatasetFactory extends NativeDatasetFactory {
     try {
       super.close();
     } finally {
-      closeHadoopFileSystemsIfHdfs(uris);
+      hdfsFileSystems.forEach(FileSystemDatasetFactory::closeHadoopFileSystem);
     }
   }
 
@@ -85,34 +85,26 @@ public class FileSystemDatasetFactory extends NativeDatasetFactory {
    * dependency on hadoop-common.
    */
   static void closeHadoopFileSystemsIfHdfs(String... uris) {
-    if (uris == null || uris.length == 0) {
-      return;
-    }
-    Set<URI> hdfsFileSystems = new LinkedHashSet<>();
-    for (String uri : uris) {
-      URI hdfsUri = toHdfsFileSystemUri(uri);
-      if (hdfsUri != null) {
-        hdfsFileSystems.add(hdfsUri);
-      }
-    }
-    for (URI hdfsUri : hdfsFileSystems) {
-      closeHadoopFileSystem(hdfsUri);
-    }
+    toHdfsFileSystems(uris).forEach(FileSystemDatasetFactory::closeHadoopFileSystem);
   }
 
-  private static URI toHdfsFileSystemUri(String uri) {
-    if (uri == null) {
-      return null;
+  private static Set<URI> toHdfsFileSystems(String... uris) {
+    Set<URI> hdfsFileSystems = new LinkedHashSet<>();
+    if (uris == null) {
+      return hdfsFileSystems;
     }
-    try {
-      URI parsedUri = new URI(uri);
-      if (!"hdfs".equalsIgnoreCase(parsedUri.getScheme())) {
-        return null;
+    for (String uri : uris) {
+      try {
+        URI parsedUri = new URI(uri);
+        if ("hdfs".equalsIgnoreCase(parsedUri.getScheme())) {
+          hdfsFileSystems.add(
+              new URI(parsedUri.getScheme(), parsedUri.getAuthority(), null, null, null));
+        }
+      } catch (Exception e) {
+        // Ignore here; native factory creation reports invalid user URIs.
       }
-      return new URI(parsedUri.getScheme(), parsedUri.getAuthority(), null, null, null);
-    } catch (Exception e) {
-      return null;
     }
+    return hdfsFileSystems;
   }
 
   private static void closeHadoopFileSystem(URI hdfsUri) {
