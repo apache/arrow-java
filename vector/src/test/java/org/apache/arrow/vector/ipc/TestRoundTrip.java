@@ -50,8 +50,11 @@ import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.TinyIntVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.VectorUnloader;
+import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
+import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
+import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.ipc.message.ArrowBlock;
 import org.apache.arrow.vector.ipc.message.ArrowBuffer;
@@ -324,6 +327,82 @@ public class TestRoundTrip extends BaseFileTest {
           validateFileBatches(new int[] {0}, validate),
           validateStreamBatches(new int[] {0}, validate));
     }
+  }
+
+  @ParameterizedTest(name = "options = {0}")
+  @MethodSource("getWriteOption")
+  public void testEmptyUnionListReadersAfterIpc(String name, IpcOption writeOption)
+      throws Exception {
+    Field structField =
+        new Field(
+            "struct",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Collections2.asImmutableList(
+                listField("list", ArrowType.List.INSTANCE),
+                listField("largeList", ArrowType.LargeList.INSTANCE),
+                mapField("map")));
+    Schema schema = new Schema(Collections2.asImmutableList(structField));
+
+    try (final BufferAllocator originalVectorAllocator =
+            allocator.newChildAllocator("original vectors", 0, allocator.getLimit());
+        final StructVector vector = (StructVector) structField.createVector(originalVectorAllocator)) {
+      vector.allocateNewSafe();
+      vector.setValueCount(0);
+
+      List<FieldVector> vectors = Collections2.asImmutableList(vector);
+      VectorSchemaRoot root = new VectorSchemaRoot(schema, vectors, 0);
+      roundTrip(
+          name,
+          writeOption,
+          root,
+          /* dictionaryProvider */ null,
+          TestRoundTrip::writeSingleBatch,
+          validateFileBatches(new int[] {0}, this::validateEmptyUnionListReaders),
+          validateStreamBatches(new int[] {0}, this::validateEmptyUnionListReaders));
+    }
+  }
+
+  private Field listField(String name, ArrowType type) {
+    return new Field(
+        name,
+        FieldType.nullable(type),
+        Collections2.asImmutableList(
+            new Field(
+                BaseRepeatedValueVector.DATA_VECTOR_NAME,
+                FieldType.nullable(new ArrowType.Int(32, true)),
+                null)));
+  }
+
+  private Field mapField(String name) {
+    Field keyField =
+        new Field(MapVector.KEY_NAME, FieldType.notNullable(new ArrowType.Int(32, true)), null);
+    Field valueField =
+        new Field(MapVector.VALUE_NAME, FieldType.nullable(new ArrowType.Int(32, true)), null);
+    Field entriesField =
+        new Field(
+            MapVector.DATA_VECTOR_NAME,
+            FieldType.notNullable(ArrowType.Struct.INSTANCE),
+            Collections2.asImmutableList(keyField, valueField));
+
+    return new Field(
+        name,
+        FieldType.nullable(new ArrowType.Map(false)),
+        Collections2.asImmutableList(entriesField));
+  }
+
+  private void validateEmptyUnionListReaders(int expectedCount, VectorSchemaRoot root) {
+    assertEquals(0, expectedCount);
+
+    FieldReader structReader = root.getVector("struct").getReader();
+    assertEmptyUnionListReader(structReader.reader("list"));
+    assertEmptyUnionListReader(structReader.reader("largeList"));
+    assertEmptyUnionListReader(structReader.reader("map"));
+  }
+
+  private void assertEmptyUnionListReader(FieldReader reader) {
+    assertEquals(0, reader.size());
+    assertFalse(reader.next());
+    assertThrows(IndexOutOfBoundsException.class, () -> reader.setPosition(1));
   }
 
   private Map<String, String> metadata(int i) {
