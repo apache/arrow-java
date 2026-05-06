@@ -220,4 +220,23 @@ public class ResultSetMetadataTest {
   public void testShouldGetColumnTypesFromOutOfBoundIndex() {
     assertThrows(IndexOutOfBoundsException.class, () -> metadata.getColumnType(4));
   }
+
+  /**
+   * Regression test for <a href="https://github.com/apache/arrow-java/issues/44">issue #44</a>:
+   * {@code ArrowFlightStatement#executeFlightInfoQuery} appends schema columns to the reused {@code
+   * Meta.Signature} without clearing the existing list. When the result has at least one endpoint,
+   * the {@code FlightStream} consumption path overwrites {@code signature.columns} from the actual
+   * stream schema and hides the duplication. With an empty endpoint list — the scenario reported
+   * against both Rust- and Denodo-based Flight SQL servers — that overwrite never runs and {@code
+   * ResultSetMetaData#getColumnCount()} reports double the schema width.
+   */
+  @Test
+  public void testShouldNotDuplicateColumnsWhenFlightInfoHasNoEndpoints() throws SQLException {
+    try (Connection conn = FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        Statement st = conn.createStatement();
+        ResultSet rs =
+            st.executeQuery(CoreMockedSqlProducers.LEGACY_REGULAR_NO_ENDPOINTS_SQL_CMD)) {
+      assertThat(rs.getMetaData().getColumnCount(), equalTo(1));
+    }
+  }
 }
