@@ -1213,6 +1213,7 @@ message CommandGetDbSchemas {
  *  - ARROW:FLIGHT:SQL:IS_READ_ONLY      - "1" indicates if the column is read only, "0" otherwise.
  *  - ARROW:FLIGHT:SQL:IS_SEARCHABLE     - "1" indicates if the column is searchable via WHERE clause, "0" otherwise.
  *  - ARROW:FLIGHT:SQL:REMARKS           - A comment describing the column.
+ *  - ARROW:FLIGHT:SQL:COLUMN_DEF        - The default value for the column.
  * The returned data should be ordered by catalog_name, db_schema_name, table_name, then table_type, followed by table_schema if requested.
  */
 message CommandGetTables {
