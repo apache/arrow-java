@@ -52,6 +52,7 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
     }
 
     final Schema resultSetSchema = preparedStatement.getDataSetSchema();
+    signature.columns.clear();
     signature.columns.addAll(
         ConvertUtils.convertArrowFieldsToColumnMetaDataList(resultSetSchema.getFields()));
     setSignature(signature);
