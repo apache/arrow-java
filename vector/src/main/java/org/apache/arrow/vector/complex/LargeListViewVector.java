@@ -966,6 +966,7 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     return offsetBuffer.getInt((long) index * OFFSET_WIDTH);
   }
 
+  /** Get the size at the given index. */
   private int getElementSize(int index) {
     return sizeBuffer.getInt((long) index * SIZE_WIDTH);
   }
