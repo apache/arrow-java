@@ -345,7 +345,8 @@ public class TestRoundTrip extends BaseFileTest {
 
     try (final BufferAllocator originalVectorAllocator =
             allocator.newChildAllocator("original vectors", 0, allocator.getLimit());
-        final StructVector vector = (StructVector) structField.createVector(originalVectorAllocator)) {
+        final StructVector vector =
+            (StructVector) structField.createVector(originalVectorAllocator)) {
       vector.allocateNewSafe();
       vector.setValueCount(0);
 
@@ -400,8 +401,10 @@ public class TestRoundTrip extends BaseFileTest {
   }
 
   private void assertEmptyUnionListReader(FieldReader reader) {
+    reader.setPosition(0);
     assertEquals(0, reader.size());
     assertFalse(reader.next());
+    assertThrows(IndexOutOfBoundsException.class, () -> reader.setPosition(-1));
     assertThrows(IndexOutOfBoundsException.class, () -> reader.setPosition(1));
   }
 
