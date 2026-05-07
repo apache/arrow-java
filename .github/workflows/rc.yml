@@ -77,7 +77,7 @@ jobs:
           path: |
             apache-arrow-java-*
   jni-linux:
-    name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }}
+    name: JNI ${{ matrix.platform.runs_on }} ${{ matrix.platform.arch }} (C++ ${{ matrix.apache-arrow-cpp }})
     runs-on: ${{ matrix.platform.runs_on }}
     timeout-minutes: 120
     needs:
@@ -92,6 +92,9 @@ jobs:
           - runs_on: ubuntu-24.04-arm
             arch: "aarch_64"
             archery_arch: "arm64v8"
+        apache-arrow-cpp:
+          - main
+          - released
     env:
       # architecture name used for archery build
       ARCH: ${{ matrix.platform.archery_arch }}
@@ -108,11 +111,11 @@ jobs:
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
       - name: Download the latest Apache Arrow C++
-        if: github.event_name != 'schedule'
+        if: matrix.apache-arrow-cpp == 'released'
         run: |
           ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
-        if: github.event_name == 'schedule'
+        if: matrix.apache-arrow-cpp == 'main'
         uses: actions/checkout@v6
         with:
           repository: apache/arrow
