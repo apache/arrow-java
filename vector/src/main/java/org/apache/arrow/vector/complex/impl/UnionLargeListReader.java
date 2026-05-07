@@ -60,7 +60,7 @@ public class UnionLargeListReader extends AbstractFieldReader {
     }
 
     UnionListReaderPositionValidator.checkIndex(index, valueCount);
-    UnionListReaderPositionValidator.checkOffsetBufferReadable(
+    UnionListReaderPositionValidator.checkListBufferReadable(
         vector.getOffsetBuffer(), index, OFFSET_WIDTH);
 
     super.setPosition(index);
