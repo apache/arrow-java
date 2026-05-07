@@ -68,6 +68,9 @@ export ARROW_PARQUET=ON
 
 export AWS_EC2_METADATA_DISABLED=TRUE
 
+# Arrow C++ 24.0.0 requires xsimd >= 14.0.0 which may not be pre-installed in the base image
+"${VCPKG_ROOT}/vcpkg" install "xsimd:${VCPKG_TARGET_TRIPLET}"
+
 install_dir="${build_dir}/cpp-install"
 
 cmake \
