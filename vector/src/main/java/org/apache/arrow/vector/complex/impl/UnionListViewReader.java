@@ -17,7 +17,6 @@
 package org.apache.arrow.vector.complex.impl;
 
 import org.apache.arrow.vector.ValueVector;
-import org.apache.arrow.vector.complex.BaseRepeatedValueViewVector;
 import org.apache.arrow.vector.complex.ListViewVector;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.UnionHolder;
@@ -65,13 +64,12 @@ public class UnionListViewReader extends AbstractFieldReader {
         vector.getOffsetBuffer(),
         vector.getSizeBuffer(),
         index,
-        BaseRepeatedValueViewVector.OFFSET_WIDTH,
-        BaseRepeatedValueViewVector.SIZE_WIDTH);
+        ListViewVector.OFFSET_WIDTH,
+        ListViewVector.SIZE_WIDTH);
 
     super.setPosition(index);
-    currentOffset =
-        vector.getOffsetBuffer().getInt(index * (long) BaseRepeatedValueViewVector.OFFSET_WIDTH);
-    size = vector.getSizeBuffer().getInt(index * (long) BaseRepeatedValueViewVector.SIZE_WIDTH);
+    currentOffset = vector.getElementStartIndex(index);
+    size = vector.getElementEndIndex(index) - currentOffset;
   }
 
   private void setEmptyPosition(int index) {

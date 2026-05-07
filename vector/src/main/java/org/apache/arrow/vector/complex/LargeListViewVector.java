@@ -960,4 +960,18 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
   public void endValue(int index, int size) {
     sizeBuffer.setInt((long) index * SIZE_WIDTH, size);
   }
+
+  /** Get data vector start index with the given list index. */
+  public int getElementStartIndex(int index) {
+    return offsetBuffer.getInt((long) index * OFFSET_WIDTH);
+  }
+
+  private int getElementSize(int index) {
+    return sizeBuffer.getInt((long) index * SIZE_WIDTH);
+  }
+
+  /** Get data vector end index with the given list index. */
+  public int getElementEndIndex(int index) {
+    return getElementStartIndex(index) + getElementSize(index);
+  }
 }
