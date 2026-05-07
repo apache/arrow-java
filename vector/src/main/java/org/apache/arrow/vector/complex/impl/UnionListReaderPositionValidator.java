@@ -19,13 +19,9 @@ package org.apache.arrow.vector.complex.impl;
 import org.apache.arrow.memory.ArrowBuf;
 
 /** Shared position validation for union list readers backed by offset buffers. */
-final class UnionListReaderBoundsChecker {
+final class UnionListReaderPositionValidator {
 
-  private UnionListReaderBoundsChecker() {}
-
-  static boolean isEmptyVectorPosition(int index, int valueCount) {
-    return valueCount == 0 && index == 0;
-  }
+  private UnionListReaderPositionValidator() {}
 
   static void checkIndex(int index, int valueCount) {
     if (index < 0 || index >= valueCount) {
@@ -34,7 +30,7 @@ final class UnionListReaderBoundsChecker {
     }
   }
 
-  static void checkOffsetBuffer(ArrowBuf offsetBuffer, int index, long offsetWidth) {
+  static void checkOffsetBufferReadable(ArrowBuf offsetBuffer, int index, long offsetWidth) {
     long requiredBytes = ((long) index + 2L) * offsetWidth;
     long capacity = offsetBuffer.capacity();
     if (capacity < requiredBytes) {

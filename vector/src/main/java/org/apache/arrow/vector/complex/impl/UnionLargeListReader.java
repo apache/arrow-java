@@ -54,13 +54,14 @@ public class UnionLargeListReader extends AbstractFieldReader {
   @Override
   public void setPosition(int index) {
     int valueCount = vector.getValueCount();
-    if (UnionListReaderBoundsChecker.isEmptyVectorPosition(index, valueCount)) {
+    if (valueCount == 0 && index == 0) {
       setEmptyPosition(index);
       return;
     }
 
-    UnionListReaderBoundsChecker.checkIndex(index, valueCount);
-    UnionListReaderBoundsChecker.checkOffsetBuffer(vector.getOffsetBuffer(), index, OFFSET_WIDTH);
+    UnionListReaderPositionValidator.checkIndex(index, valueCount);
+    UnionListReaderPositionValidator.checkOffsetBufferReadable(
+        vector.getOffsetBuffer(), index, OFFSET_WIDTH);
 
     super.setPosition(index);
     currentOffset = vector.getElementStartIndex(index) - 1;
