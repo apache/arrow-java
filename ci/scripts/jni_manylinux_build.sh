@@ -74,10 +74,7 @@ cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-linux \
-  -DCMAKE_INSTALL_PREFIX="${install_dir}" \
-  -DCMAKE_TOOLCHAIN_FILE="${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" \
-  -DVCPKG_TARGET_TRIPLET="${VCPKG_TARGET_TRIPLET}" \
-  -Dxsimd_SOURCE=BUNDLED
+  -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
 github_actions_group_end
