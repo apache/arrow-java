@@ -193,6 +193,10 @@ public class VectorSchemaRoot implements AutoCloseable {
   /**
    * Add vector to the record batch, producing a new VectorSchemaRoot.
    *
+   * <p>Buffer ownership is transferred to the returned root via {@link TransferPair}. After this
+   * operation, the vectors in this root and the added vector are left in a transferred (empty)
+   * state. This root can be reused by calling {@link #allocateNew()}.
+   *
    * @param index field index
    * @param vector vector to be added.
    * @return out VectorSchemaRoot with vector added
@@ -201,22 +205,32 @@ public class VectorSchemaRoot implements AutoCloseable {
     Preconditions.checkNotNull(vector);
     Preconditions.checkArgument(index >= 0 && index <= fieldVectors.size());
     List<FieldVector> newVectors = new ArrayList<>();
-    if (index == fieldVectors.size()) {
-      newVectors.addAll(fieldVectors);
-      newVectors.add(vector);
-    } else {
-      for (int i = 0; i < fieldVectors.size(); i++) {
-        if (i == index) {
-          newVectors.add(vector);
-        }
-        newVectors.add(fieldVectors.get(i));
+    for (int i = 0; i < fieldVectors.size(); i++) {
+      if (i == index) {
+        TransferPair addPair = vector.getTransferPair(vector.getAllocator());
+        addPair.transfer();
+        newVectors.add((FieldVector) addPair.getTo());
       }
+      FieldVector v = fieldVectors.get(i);
+      TransferPair transferPair = v.getTransferPair(v.getAllocator());
+      transferPair.transfer();
+      newVectors.add((FieldVector) transferPair.getTo());
+    }
+    if (index == fieldVectors.size()) {
+      TransferPair addPair = vector.getTransferPair(vector.getAllocator());
+      addPair.transfer();
+      newVectors.add((FieldVector) addPair.getTo());
     }
     return new VectorSchemaRoot(newVectors);
   }
 
   /**
    * Remove vector from the record batch, producing a new VectorSchemaRoot.
+   *
+   * <p>Buffer ownership is transferred to the returned root via {@link TransferPair}. After this
+   * operation, the vectors in this root are left in a transferred (empty) state. The removed
+   * vector's data is not transferred and is released. This root can be reused by calling {@link
+   * #allocateNew()}.
    *
    * @param index field index
    * @return out VectorSchemaRoot with vector removed
@@ -226,7 +240,10 @@ public class VectorSchemaRoot implements AutoCloseable {
     List<FieldVector> newVectors = new ArrayList<>();
     for (int i = 0; i < fieldVectors.size(); i++) {
       if (i != index) {
-        newVectors.add(fieldVectors.get(i));
+        FieldVector v = fieldVectors.get(i);
+        TransferPair transferPair = v.getTransferPair(v.getAllocator());
+        transferPair.transfer();
+        newVectors.add((FieldVector) transferPair.getTo());
       }
     }
     return new VectorSchemaRoot(newVectors);
