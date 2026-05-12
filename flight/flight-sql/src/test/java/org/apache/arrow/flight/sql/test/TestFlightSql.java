@@ -1636,7 +1636,7 @@ public class TestFlightSql {
           params.setRowCount(1);
           ps.setParameters(params);
           ps.execute(); // DoPut → server returns updatedHandle in DoPutPreparedStatementResult
-        } 
+        }
 
         assertAll(
             () ->
