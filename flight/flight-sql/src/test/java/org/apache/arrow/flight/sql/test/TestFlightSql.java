@@ -1651,6 +1651,44 @@ public class TestFlightSql {
     }
   }
 
+  @Test
+  public void testPreparedStatementHandleUnchangedWithoutDoPut() throws Exception {
+    final ByteString originalHandle = ByteString.copyFromUtf8("original-handle");
+    final ByteString updatedHandle = ByteString.copyFromUtf8("updated-handle");
+
+    try (BufferAllocator testAllocator = new RootAllocator(Integer.MAX_VALUE)) {
+      final UpdatedHandleFlightSqlProducer mockProducer =
+          new UpdatedHandleFlightSqlProducer(
+              testAllocator, originalHandle, updatedHandle, new Schema(emptyList()));
+
+      try (FlightServer testServer =
+              FlightServer.builder(
+                      testAllocator, Location.forGrpcInsecure(LOCALHOST, 0), mockProducer)
+                  .build()
+                  .start();
+          FlightSqlClient testClient =
+              new FlightSqlClient(
+                  FlightClient.builder(
+                          testAllocator, Location.forGrpcInsecure(LOCALHOST, testServer.getPort()))
+                      .build())) {
+
+        try (PreparedStatement ps = testClient.prepare("SELECT 1")) {
+          ps.execute(); // no parameters set → GetFlightInfo only, no DoPut
+        } // close() called here via try-with-resources
+
+        assertAll(
+            () ->
+                assertThat(mockProducer.executeHandle)
+                    .as("getFlightInfoPreparedStatement must use the original handle")
+                    .isEqualTo(originalHandle),
+            () ->
+                assertThat(mockProducer.closeHandle)
+                    .as("ClosePreparedStatement must use the original handle")
+                    .isEqualTo(originalHandle));
+      }
+    }
+  }
+
   /**
    * Minimal producer that returns an updated prepared-statement handle in the {@code
    * CommandPreparedStatementQuery} used with {@code DoPut} and records which handle is used in
