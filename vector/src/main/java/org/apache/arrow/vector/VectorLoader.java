@@ -121,31 +121,33 @@ public class VectorLoader {
     int bufferLayoutCount =
         (int) (variadicBufferLayoutCount + TypeLayout.getTypeBufferCount(field.getType()));
     List<ArrowBuf> ownBuffers = new ArrayList<>(bufferLayoutCount);
-    for (int j = 0; j < bufferLayoutCount; j++) {
-      if (!buffers.hasNext()) {
-        throw new IllegalArgumentException(
-            "no more buffers for field " + field + ". Expected " + bufferLayoutCount);
-      }
-      ArrowBuf nextBuf = buffers.next();
-      // for vectors without nulls, the buffer is empty, so there is no need to decompress it.
-      ArrowBuf bufferToAdd =
-          nextBuf.writerIndex() > 0 ? codec.decompress(vector.getAllocator(), nextBuf) : nextBuf;
-      ownBuffers.add(bufferToAdd);
-      if (decompressionNeeded) {
-        // decompression performed
-        nextBuf.getReferenceManager().retain();
-      }
-    }
     try {
-      vector.loadFieldBuffers(fieldNode, ownBuffers);
+      for (int j = 0; j < bufferLayoutCount; j++) {
+        if (!buffers.hasNext()) {
+          throw new IllegalArgumentException(
+              "no more buffers for field " + field + ". Expected " + bufferLayoutCount);
+        }
+        ArrowBuf nextBuf = buffers.next();
+        // for vectors without nulls, the buffer is empty, so there is no need to decompress it.
+        ArrowBuf bufferToAdd =
+            nextBuf.writerIndex() > 0 ? codec.decompress(vector.getAllocator(), nextBuf) : nextBuf;
+        ownBuffers.add(bufferToAdd);
+        if (decompressionNeeded) {
+          nextBuf.getReferenceManager().retain();
+        }
+      }
+      try {
+        vector.loadFieldBuffers(fieldNode, ownBuffers);
+      } catch (RuntimeException e) {
+        throw new IllegalArgumentException(
+            "Could not load buffers for field " + field + ". error message: " + e.getMessage(), e);
+      }
+    } finally {
       if (decompressionNeeded) {
         for (ArrowBuf buf : ownBuffers) {
           buf.close();
         }
       }
-    } catch (RuntimeException e) {
-      throw new IllegalArgumentException(
-          "Could not load buffers for field " + field + ". error message: " + e.getMessage(), e);
     }
     List<Field> children = field.getChildren();
     if (children.size() > 0) {
