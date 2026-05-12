@@ -1636,7 +1636,7 @@ public class TestFlightSql {
           params.setRowCount(1);
           ps.setParameters(params);
           ps.execute(); // DoPut → server returns updatedHandle in DoPutPreparedStatementResult
-        } // close() called here via try-with-resources
+        } 
 
         assertAll(
             () ->
@@ -1673,8 +1673,8 @@ public class TestFlightSql {
                       .build())) {
 
         try (PreparedStatement ps = testClient.prepare("SELECT 1")) {
-          ps.execute(); // no parameters set → GetFlightInfo only, no DoPut
-        } // close() called here via try-with-resources
+          ps.execute();
+        }
 
         assertAll(
             () ->
