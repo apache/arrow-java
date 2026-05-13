@@ -18,6 +18,8 @@ package org.apache.arrow.adapter.avro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -33,7 +35,13 @@ import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.Decoder;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.io.EncoderFactory;
 import org.junit.jupiter.api.Test;
 
 public class AvroToArrowTest extends AvroTestBase {
@@ -473,5 +481,28 @@ public class AvroToArrowTest extends AvroTestBase {
     FieldVector vector = root.getFieldVectors().get(0);
 
     checkPrimitiveResult(expected, vector);
+  }
+
+  @Test
+  public void testNullableStringTypeWithValidatingDecoder() throws Exception {
+    Schema schema = getSchema("test_nullable_string.avsc");
+
+    GenericRecord record = new GenericData.Record(schema);
+    record.put(0, "hello");
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(out, null);
+    DatumWriter<Object> writer = new GenericDatumWriter<>(schema);
+    writer.write(record, encoder);
+    encoder.flush();
+
+    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+    Decoder binaryDecoder = DecoderFactory.get().directBinaryDecoder(in, null);
+    Decoder validatingDecoder = DecoderFactory.get().validatingDecoder(schema, binaryDecoder);
+
+    VectorSchemaRoot root = AvroToArrow.avroToArrow(schema, validatingDecoder, config);
+    assertEquals(1, root.getRowCount());
+    FieldVector vector = root.getVector("f0");
+    assertEquals("hello", vector.getObject(0).toString());
   }
 }

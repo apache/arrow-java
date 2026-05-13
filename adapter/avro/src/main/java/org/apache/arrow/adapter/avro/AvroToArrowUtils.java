@@ -431,7 +431,7 @@ public class AvroToArrowUtils {
       case UNION:
         List<Consumer> unionDelegates =
             schema.getTypes().stream().map(s -> createSkipConsumer(s)).collect(Collectors.toList());
-        skipFunction = decoder -> unionDelegates.get(decoder.readInt()).consume(decoder);
+        skipFunction = decoder -> unionDelegates.get(decoder.readIndex()).consume(decoder);
 
         break;
       case ARRAY:
