@@ -111,7 +111,9 @@ public class ComplexCopier {
         if (reader.isSet()) {
           Object value = reader.readObject();
           if (value != null) {
-            writer.writeExtension(value, reader.getField().getType());
+            // Use getExtensionType() rather than getField().getType(): holder-backed
+            // readers carry their type on the ExtensionHolder and have no Field.
+            writer.writeExtension(value, reader.getExtensionType());
           }
         } else {
           writer.writeNull();
@@ -170,7 +172,7 @@ public class ComplexCopier {
     case LISTVIEW:
       return (FieldWriter) writer.listView(name);
     case EXTENSIONTYPE:
-      ExtensionWriter extensionWriter = writer.extension(name, reader.getField().getType());
+      ExtensionWriter extensionWriter = writer.extension(name, reader.getExtensionType());
       return (FieldWriter) extensionWriter;
     default:
       throw new UnsupportedOperationException(reader.getMinorType().toString());
@@ -197,7 +199,7 @@ public class ComplexCopier {
     case LISTVIEW:
       return (FieldWriter) writer.listView();
     case EXTENSIONTYPE:
-      ExtensionWriter extensionWriter = writer.extension(reader.getField().getType());
+      ExtensionWriter extensionWriter = writer.extension(reader.getExtensionType());
       return (FieldWriter) extensionWriter;
     default:
       throw new UnsupportedOperationException(reader.getMinorType().toString());
@@ -225,7 +227,7 @@ public class ComplexCopier {
       case MAP:
         return (FieldWriter) writer.map(false);
       case EXTENSIONTYPE:
-        ExtensionWriter extensionWriter = writer.extension(reader.getField().getType());
+        ExtensionWriter extensionWriter = writer.extension(reader.getExtensionType());
         return (FieldWriter) extensionWriter;
       default:
         throw new UnsupportedOperationException(reader.getMinorType().toString());
