@@ -207,19 +207,12 @@ public class VectorSchemaRoot implements AutoCloseable {
     List<FieldVector> newVectors = new ArrayList<>();
     for (int i = 0; i < fieldVectors.size(); i++) {
       if (i == index) {
-        TransferPair addPair = vector.getTransferPair(vector.getAllocator());
-        addPair.transfer();
-        newVectors.add((FieldVector) addPair.getTo());
+        newVectors.add(transferVector(vector));
       }
-      FieldVector v = fieldVectors.get(i);
-      TransferPair transferPair = v.getTransferPair(v.getAllocator());
-      transferPair.transfer();
-      newVectors.add((FieldVector) transferPair.getTo());
+      newVectors.add(transferVector(fieldVectors.get(i)));
     }
     if (index == fieldVectors.size()) {
-      TransferPair addPair = vector.getTransferPair(vector.getAllocator());
-      addPair.transfer();
-      newVectors.add((FieldVector) addPair.getTo());
+      newVectors.add(transferVector(vector));
     }
     return new VectorSchemaRoot(newVectors);
   }
@@ -240,13 +233,17 @@ public class VectorSchemaRoot implements AutoCloseable {
     List<FieldVector> newVectors = new ArrayList<>();
     for (int i = 0; i < fieldVectors.size(); i++) {
       if (i != index) {
-        FieldVector v = fieldVectors.get(i);
-        TransferPair transferPair = v.getTransferPair(v.getAllocator());
-        transferPair.transfer();
-        newVectors.add((FieldVector) transferPair.getTo());
+        newVectors.add(transferVector(fieldVectors.get(i)));
       }
     }
+    fieldVectors.get(index).clear();
     return new VectorSchemaRoot(newVectors);
+  }
+
+  private static FieldVector transferVector(FieldVector vector) {
+    TransferPair transferPair = vector.getTransferPair(vector.getAllocator());
+    transferPair.transfer();
+    return (FieldVector) transferPair.getTo();
   }
 
   public Schema getSchema() {

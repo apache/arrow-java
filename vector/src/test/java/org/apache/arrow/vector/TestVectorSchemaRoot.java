@@ -363,8 +363,7 @@ public class TestVectorSchemaRoot {
       intVector2.setValueCount(5);
       intVector3.setValueCount(5);
 
-      VectorSchemaRoot original =
-          new VectorSchemaRoot(Arrays.asList(intVector1, intVector2));
+      VectorSchemaRoot original = new VectorSchemaRoot(Arrays.asList(intVector1, intVector2));
       original.setRowCount(5);
 
       VectorSchemaRoot result = original.addVector(1, intVector3);
