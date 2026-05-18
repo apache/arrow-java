@@ -176,8 +176,7 @@ public class TestVectorOps {
     intVec.set(1, 8);
     intVec.setValueCount(2);
 
-    VectorSchemaRoot source =
-        new VectorSchemaRoot(Arrays.asList((FieldVector) intVec));
+    VectorSchemaRoot source = new VectorSchemaRoot(Arrays.asList((FieldVector) intVec));
     source.setRowCount(2);
 
     try (VectorSchemaRoot transferred = VectorOps.transferCopy(source)) {

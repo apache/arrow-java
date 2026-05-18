@@ -25,11 +25,10 @@ import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 
-
 /**
  * Generic utility operations for creating new vectors and roots from existing ones, without
- * requiring per-type implementations. These operations work by manipulating whole buffers via {@link
- * FieldVector#getFieldBuffers()} and {@link FieldVector#loadFieldBuffers}, rather than
+ * requiring per-type implementations. These operations work by manipulating whole buffers via
+ * {@link FieldVector#getFieldBuffers()} and {@link FieldVector#loadFieldBuffers}, rather than
  * type-specific internal logic.
  *
  * <p>Three modes of creation are provided:
@@ -66,8 +65,8 @@ public final class VectorOps {
 
   /**
    * Create a new vector sharing the same underlying memory as the source, associated with the given
-   * allocator. Reference counts are incremented so that the memory is only released when all sharing
-   * vectors have been closed. The source vector is not modified.
+   * allocator. Reference counts are incremented so that the memory is only released when all
+   * sharing vectors have been closed. The source vector is not modified.
    *
    * @param source the vector to share from
    * @param allocator the allocator for the new vector
@@ -93,9 +92,7 @@ public final class VectorOps {
    */
   public static VectorSchemaRoot shareCopy(VectorSchemaRoot source) {
     List<FieldVector> sharedVectors =
-        source.getFieldVectors().stream()
-            .map(v -> shareCopy(v))
-            .collect(Collectors.toList());
+        source.getFieldVectors().stream().map(v -> shareCopy(v)).collect(Collectors.toList());
     VectorSchemaRoot result = new VectorSchemaRoot(sharedVectors);
     result.setRowCount(source.getRowCount());
     return result;
@@ -161,9 +158,7 @@ public final class VectorOps {
    */
   public static VectorSchemaRoot transferCopy(VectorSchemaRoot source) {
     List<FieldVector> transferredVectors =
-        source.getFieldVectors().stream()
-            .map(v -> transferCopy(v))
-            .collect(Collectors.toList());
+        source.getFieldVectors().stream().map(v -> transferCopy(v)).collect(Collectors.toList());
     VectorSchemaRoot result = new VectorSchemaRoot(transferredVectors);
     result.setRowCount(source.getRowCount());
     return result;
@@ -229,9 +224,7 @@ public final class VectorOps {
    */
   public static VectorSchemaRoot deepCopy(VectorSchemaRoot source) {
     List<FieldVector> copiedVectors =
-        source.getFieldVectors().stream()
-            .map(v -> deepCopy(v))
-            .collect(Collectors.toList());
+        source.getFieldVectors().stream().map(v -> deepCopy(v)).collect(Collectors.toList());
     VectorSchemaRoot result = new VectorSchemaRoot(copiedVectors);
     result.setRowCount(source.getRowCount());
     return result;
@@ -257,8 +250,7 @@ public final class VectorOps {
 
   private static void shareCopyInto(FieldVector source, FieldVector target) {
     List<ArrowBuf> sourceBuffers = source.getFieldBuffers();
-    ArrowFieldNode node =
-        new ArrowFieldNode(source.getValueCount(), source.getNullCount());
+    ArrowFieldNode node = new ArrowFieldNode(source.getValueCount(), source.getNullCount());
     target.loadFieldBuffers(node, sourceBuffers);
 
     List<FieldVector> sourceChildren = source.getChildrenFromFields();
@@ -284,8 +276,7 @@ public final class VectorOps {
       copy.writerIndex(size);
       copiedBuffers.add(copy);
     }
-    ArrowFieldNode node =
-        new ArrowFieldNode(source.getValueCount(), source.getNullCount());
+    ArrowFieldNode node = new ArrowFieldNode(source.getValueCount(), source.getNullCount());
     target.loadFieldBuffers(node, copiedBuffers);
     for (ArrowBuf buf : copiedBuffers) {
       buf.close();
