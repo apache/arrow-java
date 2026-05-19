@@ -404,7 +404,7 @@ public class TestDictionaryVector {
   }
 
   @Test
-  public void testVarcharEquals() {
+  public void testVarCharEquals() {
     try (final VarCharVector vector1 = new VarCharVector("varchar", allocator);
         final VarCharVector vector2 = new VarCharVector("varchar", allocator)) {
 
@@ -1303,6 +1303,37 @@ public class TestDictionaryVector {
           }
         }
       }
+    }
+  }
+
+  /**
+   * Test related to Issue #1158 - it was possible to decode an encoded value 1 index outside the Dictionary's range.
+   */
+  @Test
+  public void testReferencingIndexOutOfBounds() {
+    // Index at which the original value will be stored at in the dictionary
+    int encodedIndex = 0;
+    // The encoded value that references an index in the dictionary
+    int indexReferenced = 1;
+
+    try (final IntVector encodedVector = new IntVector("encodings", allocator);
+         final VarCharVector dictionaryVector = newVarCharVector("dict", allocator); ) {
+      String originalValue = "Foo";
+      dictionaryVector.allocateNew(1);
+      dictionaryVector.setValueCount(1);
+      dictionaryVector.set(encodedIndex, originalValue.getBytes(StandardCharsets.UTF_8));
+
+      encodedVector.allocateNew(1);
+      encodedVector.setValueCount(1);
+      encodedVector.set(0, indexReferenced);
+
+      Dictionary dictionary = new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> DictionaryEncoder.decode(encodedVector, dictionary),
+          "Expected decode to throw when referencing index out of bounds."
+      );
     }
   }
 
