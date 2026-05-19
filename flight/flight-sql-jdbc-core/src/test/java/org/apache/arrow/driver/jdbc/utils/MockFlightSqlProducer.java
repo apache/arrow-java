@@ -103,6 +103,12 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   private final Map<String, List<List<Object>>> expectedParameterValues = new HashMap<>();
 
   private final Map<String, Integer> actionTypeCounter = new HashMap<>();
+  private final Map<String, Integer> commandTypeCounter = new HashMap<>();
+
+  public static final String COMMAND_STATEMENT_QUERY = "statement_query";
+  public static final String COMMAND_STATEMENT_UPDATE = "statement_update";
+  public static final String COMMAND_PREPARED_STATEMENT_QUERY = "prepared_statement_query";
+  public static final String COMMAND_PREPARED_STATEMENT_UPDATE = "prepared_statement_update";
 
   private static FlightInfo getFlightInfoExportedAndImportedKeys(
       final Message message, final FlightDescriptor descriptor) {
@@ -269,6 +275,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CommandStatementQuery commandStatementQuery,
       final CallContext callContext,
       final FlightDescriptor flightDescriptor) {
+    incrementCommandTypeCounter(COMMAND_STATEMENT_QUERY);
     final String query = commandStatementQuery.getQuery();
     final Entry<Schema, List<UUID>> queryInfo =
         Preconditions.checkNotNull(
@@ -289,6 +296,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CommandPreparedStatementQuery commandPreparedStatementQuery,
       final CallContext callContext,
       final FlightDescriptor flightDescriptor) {
+    incrementCommandTypeCounter(COMMAND_PREPARED_STATEMENT_QUERY);
     final ByteString preparedStatementHandle =
         commandPreparedStatementQuery.getPreparedStatementHandle();
 
@@ -356,6 +364,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CallContext callContext,
       final FlightStream flightStream,
       final StreamListener<PutResult> streamListener) {
+    incrementCommandTypeCounter(COMMAND_STATEMENT_UPDATE);
     return () -> {
       final String query = commandStatementUpdate.getQuery();
       final BiConsumer<FlightStream, StreamListener<PutResult>> resultProvider =
@@ -429,6 +438,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final CallContext callContext,
       final FlightStream flightStream,
       final StreamListener<PutResult> streamListener) {
+    incrementCommandTypeCounter(COMMAND_PREPARED_STATEMENT_UPDATE);
     final ByteString handle = commandPreparedStatementUpdate.getPreparedStatementHandle();
     final String query =
         Preconditions.checkNotNull(
@@ -651,8 +661,20 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
     actionTypeCounter.clear();
   }
 
+  public void clearCommandTypeCounter() {
+    commandTypeCounter.clear();
+  }
+
   public Map<String, Integer> getActionTypeCounter() {
     return actionTypeCounter;
+  }
+
+  public Map<String, Integer> getCommandTypeCounter() {
+    return commandTypeCounter;
+  }
+
+  private void incrementCommandTypeCounter(String commandType) {
+    commandTypeCounter.put(commandType, commandTypeCounter.getOrDefault(commandType, 0) + 1);
   }
 
   private void getStreamCatalogFunctions(
