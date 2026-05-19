@@ -18,9 +18,7 @@ package org.apache.arrow.flight;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.io.ByteStreams;
 import com.google.protobuf.ByteString;
-import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.WireFormat;
 import io.grpc.Drainable;
@@ -38,10 +36,11 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import org.apache.arrow.flight.FlightDataParser.ArrowBufReader;
+import org.apache.arrow.flight.FlightDataParser.FlightDataReader;
+import org.apache.arrow.flight.FlightDataParser.InputStreamReader;
 import org.apache.arrow.flight.grpc.AddWritableBuffer;
-import org.apache.arrow.flight.grpc.GetReadableBuffer;
 import org.apache.arrow.flight.impl.Flight.FlightData;
 import org.apache.arrow.flight.impl.Flight.FlightDescriptor;
 import org.apache.arrow.memory.ArrowBuf;
@@ -55,9 +54,13 @@ import org.apache.arrow.vector.ipc.message.MessageMetadataResult;
 import org.apache.arrow.vector.ipc.message.MessageSerializer;
 import org.apache.arrow.vector.types.MetadataVersion;
 import org.apache.arrow.vector.types.pojo.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** The in-memory representation of FlightData used to manage a stream of Arrow messages. */
 class ArrowMessage implements AutoCloseable {
+
+  private static final Logger LOG = LoggerFactory.getLogger(ArrowMessage.class);
 
   // If true, deserialize Arrow data by giving Arrow a reference to the underlying gRPC buffer
   // instead of copying the data. Defaults to true.
@@ -75,18 +78,9 @@ class ArrowMessage implements AutoCloseable {
     if (zeroCopyWriteFlag == null) {
       zeroCopyWriteFlag = System.getenv("ARROW_FLIGHT_ENABLE_ZERO_COPY_WRITE");
     }
-    ENABLE_ZERO_COPY_READ = !"false".equalsIgnoreCase(zeroCopyReadFlag);
+    ENABLE_ZERO_COPY_READ = true; // !"false".equalsIgnoreCase(zeroCopyReadFlag);
     ENABLE_ZERO_COPY_WRITE = "true".equalsIgnoreCase(zeroCopyWriteFlag);
   }
-
-  private static final int DESCRIPTOR_TAG =
-      (FlightData.FLIGHT_DESCRIPTOR_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-  private static final int BODY_TAG =
-      (FlightData.DATA_BODY_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-  private static final int HEADER_TAG =
-      (FlightData.DATA_HEADER_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
-  private static final int APP_METADATA_TAG =
-      (FlightData.APP_METADATA_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
 
   private static final Marshaller<FlightData> NO_BODY_MARSHALLER =
       ProtoUtils.marshaller(FlightData.getDefaultInstance());
@@ -143,6 +137,8 @@ class ArrowMessage implements AutoCloseable {
   private final ArrowBuf appMetadata;
   private final List<ArrowBuf> bufs;
   private final boolean tryZeroCopyWrite;
+  // For zero-copy reads, this releases the message-scoped allocator after local buffers close.
+  private final BufferAllocator messageAllocator;
 
   public ArrowMessage(FlightDescriptor descriptor, Schema schema, IpcOption option) {
     this.writeOption = option;
@@ -153,6 +149,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = descriptor;
     this.appMetadata = null;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
   /**
@@ -172,6 +169,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = null;
     this.appMetadata = appMetadata;
     this.tryZeroCopyWrite = tryZeroCopy;
+    this.messageAllocator = null;
   }
 
   public ArrowMessage(ArrowDictionaryBatch batch, IpcOption option) {
@@ -185,6 +183,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = null;
     this.appMetadata = null;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
   /**
@@ -200,6 +199,7 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = null;
     this.appMetadata = appMetadata;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
   public ArrowMessage(FlightDescriptor descriptor) {
@@ -210,13 +210,23 @@ class ArrowMessage implements AutoCloseable {
     this.descriptor = descriptor;
     this.appMetadata = null;
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = null;
   }
 
-  private ArrowMessage(
+  ArrowMessage(
       FlightDescriptor descriptor,
       MessageMetadataResult message,
       ArrowBuf appMetadata,
       ArrowBuf buf) {
+    this(descriptor, message, appMetadata, buf, null);
+  }
+
+  ArrowMessage(
+      FlightDescriptor descriptor,
+      MessageMetadataResult message,
+      ArrowBuf appMetadata,
+      ArrowBuf buf,
+      BufferAllocator messageAllocator) {
     // No need to take IpcOption as this is used for deserialized ArrowMessage coming from the wire.
     this.writeOption =
         message != null
@@ -229,6 +239,7 @@ class ArrowMessage implements AutoCloseable {
     this.appMetadata = appMetadata;
     this.bufs = buf == null ? ImmutableList.of() : ImmutableList.of(buf);
     this.tryZeroCopyWrite = false;
+    this.messageAllocator = messageAllocator;
   }
 
   public MessageMetadataResult asSchemaMessage() {
@@ -269,6 +280,7 @@ class ArrowMessage implements AutoCloseable {
         bufs.size() == 1, "A batch can only be consumed if it contains a single ArrowBuf.");
     Preconditions.checkArgument(getMessageType() == HeaderType.DICTIONARY_BATCH);
     ArrowBuf underlying = bufs.get(0);
+
     // Retain a reference to keep the batch alive when the message is closed
     underlying.getReferenceManager().retain();
     // Do not set drained - we still want to release our reference
@@ -280,101 +292,16 @@ class ArrowMessage implements AutoCloseable {
   }
 
   private static ArrowMessage frame(BufferAllocator allocator, final InputStream stream) {
-
-    try {
-      FlightDescriptor descriptor = null;
-      MessageMetadataResult header = null;
-      ArrowBuf body = null;
-      ArrowBuf appMetadata = null;
-      while (stream.available() > 0) {
-        final int tagFirstByte = stream.read();
-        if (tagFirstByte == -1) {
-          break;
-        }
-        int tag = readRawVarint32(tagFirstByte, stream);
-        switch (tag) {
-          case DESCRIPTOR_TAG:
-            {
-              int size = readRawVarint32(stream);
-              byte[] bytes = new byte[size];
-              ByteStreams.readFully(stream, bytes);
-              descriptor = FlightDescriptor.parseFrom(bytes);
-              break;
-            }
-          case HEADER_TAG:
-            {
-              int size = readRawVarint32(stream);
-              byte[] bytes = new byte[size];
-              ByteStreams.readFully(stream, bytes);
-              header = MessageMetadataResult.create(ByteBuffer.wrap(bytes), size);
-              break;
-            }
-          case APP_METADATA_TAG:
-            {
-              int size = readRawVarint32(stream);
-              appMetadata = allocator.buffer(size);
-              GetReadableBuffer.readIntoBuffer(stream, appMetadata, size, ENABLE_ZERO_COPY_READ);
-              break;
-            }
-          case BODY_TAG:
-            if (body != null) {
-              // only read last body.
-              body.getReferenceManager().release();
-              body = null;
-            }
-            int size = readRawVarint32(stream);
-            body = allocator.buffer(size);
-            GetReadableBuffer.readIntoBuffer(stream, body, size, ENABLE_ZERO_COPY_READ);
-            break;
-
-          default:
-            // ignore unknown fields.
-        }
+    FlightDataReader reader;
+    if (ENABLE_ZERO_COPY_READ) {
+      reader = ArrowBufReader.tryArrowBufReader(allocator, stream);
+      if (reader != null) {
+        return reader.toMessage();
       }
-      // Protobuf implementations can omit empty fields, such as body; for some message types, like
-      // RecordBatch,
-      // this will fail later as we still expect an empty buffer. In those cases only, fill in an
-      // empty buffer here -
-      // in other cases, like Schema, having an unexpected empty buffer will also cause failures.
-      // We don't fill in defaults for fields like header, for which there is no reasonable default,
-      // or for appMetadata
-      // or descriptor, which are intended to be empty in some cases.
-      if (header != null) {
-        switch (HeaderType.getHeader(header.headerType())) {
-          case SCHEMA:
-            // Ignore 0-length buffers in case a Protobuf implementation wrote it out
-            if (body != null && body.capacity() == 0) {
-              body.close();
-              body = null;
-            }
-            break;
-          case DICTIONARY_BATCH:
-          case RECORD_BATCH:
-            // A Protobuf implementation can skip 0-length bodies, so ensure we fill it in here
-            if (body == null) {
-              body = allocator.getEmpty();
-            }
-            break;
-          case NONE:
-          case TENSOR:
-          default:
-            // Do nothing
-            break;
-        }
-      }
-      return new ArrowMessage(descriptor, header, appMetadata, body);
-    } catch (Exception ioe) {
-      throw new RuntimeException(ioe);
     }
-  }
 
-  private static int readRawVarint32(InputStream is) throws IOException {
-    int firstByte = is.read();
-    return readRawVarint32(firstByte, is);
-  }
-
-  private static int readRawVarint32(int firstByte, InputStream is) throws IOException {
-    return CodedInputStream.readRawVarint32(firstByte, is);
+    reader = new InputStreamReader(allocator, stream);
+    return reader.toMessage();
   }
 
   /**
@@ -586,6 +513,7 @@ class ArrowMessage implements AutoCloseable {
 
   @Override
   public void close() throws Exception {
-    AutoCloseables.close(Iterables.concat(bufs, Collections.singletonList(appMetadata)));
+    AutoCloseables.close(
+        Iterables.concat(bufs, AutoCloseables.iter(appMetadata, messageAllocator)));
   }
 }
