@@ -165,7 +165,7 @@ public class DictionaryEncoder {
     for (int i = start; i < end; i++) {
       if (!indices.isNull(i)) {
         int indexAsInt = (int) indices.getValueAsLong(i);
-        if (indexAsInt > dictionaryCount) {
+        if (indexAsInt >= dictionaryCount) {
           throw new IllegalArgumentException(
               "Provided dictionary does not contain value for index " + indexAsInt);
         }
