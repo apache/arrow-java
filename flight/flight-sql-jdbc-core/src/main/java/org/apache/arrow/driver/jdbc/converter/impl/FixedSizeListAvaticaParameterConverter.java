@@ -66,7 +66,10 @@ public class FixedSizeListAvaticaParameterConverter extends BaseAvaticaParameter
               .getType()
               .accept(
                   new AvaticaParameterBinder.BinderVisitor(
-                      childVector, TypedValue.ofSerial(typedValue.componentType, val), childIndex));
+                      childVector,
+                      TypedValue.ofSerial(typedValue.componentType, val),
+                      childIndex,
+                      null));
         }
       }
       listVector.setValueCount(index + 1);
