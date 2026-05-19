@@ -37,6 +37,9 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.ListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.complex.writer.BigIntWriter;
 import org.apache.arrow.vector.complex.writer.IntWriter;
+import org.apache.arrow.vector.compression.CompressionCodec;
+import org.apache.arrow.vector.compression.CompressionUtil;
+import org.apache.arrow.vector.ipc.message.ArrowBodyCompression;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -347,5 +350,65 @@ public class TestVectorUnloadLoad {
     List<FieldVector> fields = root.getChildrenFromFields();
     VectorSchemaRoot vsr = new VectorSchemaRoot(schema.getFields(), fields, valueCount);
     return new VectorUnloader(vsr);
+  }
+
+  @Test
+  public void testLoadReleasesBuffersOnDecompressionFailure() {
+    Schema schema = new Schema(asList(Field.nullable("int", new ArrowType.Int(32, true))));
+    CompressionCodec.Factory failingFactory =
+        new CompressionCodec.Factory() {
+          @Override
+          public CompressionCodec createCodec(CompressionUtil.CodecType codecType) {
+            return new CompressionCodec() {
+              @Override
+              public ArrowBuf compress(BufferAllocator allocator, ArrowBuf uncompressedBuffer) {
+                throw new UnsupportedOperationException();
+              }
+
+              @Override
+              public ArrowBuf decompress(BufferAllocator allocator, ArrowBuf compressedBuffer) {
+                throw new RuntimeException("simulated decompression failure");
+              }
+
+              @Override
+              public CompressionUtil.CodecType getCodecType() {
+                return codecType;
+              }
+            };
+          }
+
+          @Override
+          public CompressionCodec createCodec(
+              CompressionUtil.CodecType codecType, int compressionLevel) {
+            return createCodec(codecType);
+          }
+        };
+
+    try (BufferAllocator testAllocator =
+        allocator.newChildAllocator("test", 0, Integer.MAX_VALUE)) {
+      try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, testAllocator)) {
+        VectorLoader loader = new VectorLoader(root, failingFactory);
+        ArrowBodyCompression compression =
+            new ArrowBodyCompression(
+                CompressionUtil.CodecType.LZ4_FRAME.getType(),
+                org.apache.arrow.flatbuf.BodyCompressionMethod.BUFFER);
+        List<ArrowFieldNode> nodes = asList(new ArrowFieldNode(1, 0));
+        ArrowBuf validityBuf = testAllocator.buffer(8);
+        validityBuf.writerIndex(8);
+        ArrowBuf dataBuf = testAllocator.buffer(4);
+        dataBuf.writerIndex(4);
+        try (ArrowRecordBatch batch =
+            new ArrowRecordBatch(1, nodes, asList(validityBuf, dataBuf), compression)) {
+          RuntimeException ex =
+              org.junit.jupiter.api.Assertions.assertThrows(
+                  RuntimeException.class, () -> loader.load(batch));
+          assertTrue(ex.getMessage().contains("simulated decompression failure"));
+        } finally {
+          validityBuf.close();
+          dataBuf.close();
+        }
+      }
+      assertEquals(0, testAllocator.getAllocatedMemory());
+    }
   }
 }
