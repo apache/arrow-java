@@ -26,10 +26,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.memory.util.CommonUtil;
+import org.apache.arrow.vector.BaseLargeVariableWidthVector;
 import org.apache.arrow.vector.BaseValueVector;
+import org.apache.arrow.vector.BaseVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
@@ -53,6 +56,7 @@ import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.holders.NullableBigIntHolder;
 import org.apache.arrow.vector.holders.NullableFloat4Holder;
 import org.apache.arrow.vector.holders.NullableIntHolder;
+import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.testing.ValueVectorDataPopulator;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -173,6 +177,82 @@ public class TestVectorAppender {
         ValueVectorDataPopulator.setVector(
             expected, "a0", "a1", "a2", "a3", null, "a5", "a6", "a7", "a8", "a9", "a10", "a11",
             "a12", "a13", null);
+        assertVectorsEqual(expected, target);
+      }
+    }
+  }
+
+  @Test
+  public void testAppendVariableWidthVectorWithNonZeroStartOffset() {
+    try (VarCharVector target = new VarCharVector("", allocator);
+        VarCharVector delta = new VarCharVector("", allocator)) {
+
+      target.allocateNew(64, 4);
+      ValueVectorDataPopulator.setVector(target, "a0", "a1");
+
+      // Build a delta vector whose offset buffer does not start at zero, as produced e.g. by
+      // importing a sliced array through the C data interface. The values are "BBBB" and
+      // "CCCC"; the data buffer additionally holds 4 bytes of unreferenced prefix ("AAAA").
+      try (ArrowBuf validity = allocator.buffer(1);
+          ArrowBuf offsets = allocator.buffer(12);
+          ArrowBuf data = allocator.buffer(12)) {
+        validity.setByte(0, 0b11);
+        offsets.setInt(0, 4);
+        offsets.setInt(4, 8);
+        offsets.setInt(8, 12);
+        data.setBytes(0, "AAAABBBBCCCC".getBytes(StandardCharsets.UTF_8));
+        delta.loadFieldBuffers(new ArrowFieldNode(2, 0), Arrays.asList(validity, offsets, data));
+      }
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      // the unreferenced prefix must not be appended
+      assertEquals(
+          4 + 8,
+          target
+              .getOffsetBuffer()
+              .getInt((long) target.getValueCount() * BaseVariableWidthVector.OFFSET_WIDTH));
+
+      try (VarCharVector expected = new VarCharVector("expected", allocator)) {
+        expected.allocateNew();
+        ValueVectorDataPopulator.setVector(expected, "a0", "a1", "BBBB", "CCCC");
+        assertVectorsEqual(expected, target);
+      }
+    }
+  }
+
+  @Test
+  public void testAppendLargeVariableWidthVectorWithNonZeroStartOffset() {
+    try (LargeVarCharVector target = new LargeVarCharVector("", allocator);
+        LargeVarCharVector delta = new LargeVarCharVector("", allocator)) {
+
+      target.allocateNew(64, 4);
+      ValueVectorDataPopulator.setVector(target, "a0", "a1");
+
+      try (ArrowBuf validity = allocator.buffer(1);
+          ArrowBuf offsets = allocator.buffer(24);
+          ArrowBuf data = allocator.buffer(12)) {
+        validity.setByte(0, 0b11);
+        offsets.setLong(0, 4);
+        offsets.setLong(8, 8);
+        offsets.setLong(16, 12);
+        data.setBytes(0, "AAAABBBBCCCC".getBytes(StandardCharsets.UTF_8));
+        delta.loadFieldBuffers(new ArrowFieldNode(2, 0), Arrays.asList(validity, offsets, data));
+      }
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      assertEquals(
+          4 + 8,
+          target
+              .getOffsetBuffer()
+              .getLong((long) target.getValueCount() * BaseLargeVariableWidthVector.OFFSET_WIDTH));
+
+      try (LargeVarCharVector expected = new LargeVarCharVector("expected", allocator)) {
+        expected.allocateNew();
+        ValueVectorDataPopulator.setVector(expected, "a0", "a1", "BBBB", "CCCC");
         assertVectorsEqual(expected, target);
       }
     }
