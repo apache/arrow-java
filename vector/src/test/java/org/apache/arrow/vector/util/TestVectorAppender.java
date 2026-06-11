@@ -512,6 +512,115 @@ public class TestVectorAppender {
   }
 
   @Test
+  public void testAppendListVectorWithNonZeroStartOffset() {
+    try (ListVector target = ListVector.empty("target", allocator);
+        ListVector delta = ListVector.empty("delta", allocator)) {
+
+      target.allocateNew();
+      ValueVectorDataPopulator.setVector(target, Arrays.asList(0, 1), Arrays.asList(2, 3));
+
+      // Build a delta vector whose offset buffer does not start at zero, as produced e.g. by
+      // importing a sliced array through the C data interface: lists [10, 11] and [12, 13],
+      // with one unreferenced prefix element (9) in the data vector.
+      delta.addOrGetVector(FieldType.nullable(Types.MinorType.INT.getType()));
+      IntVector deltaDataVector = (IntVector) delta.getDataVector();
+      deltaDataVector.allocateNew(5);
+      for (int i = 0; i < 5; i++) {
+        deltaDataVector.set(i, 9 + i);
+      }
+      deltaDataVector.setValueCount(5);
+      try (ArrowBuf validity = allocator.buffer(1);
+          ArrowBuf offsets = allocator.buffer(12)) {
+        validity.setByte(0, 0b11);
+        offsets.setInt(0, 1);
+        offsets.setInt(4, 3);
+        offsets.setInt(8, 5);
+        delta.loadFieldBuffers(new ArrowFieldNode(2, 0), Arrays.asList(validity, offsets));
+      }
+      assertEquals(Arrays.asList(10, 11), delta.getObject(0));
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      assertEquals(4, target.getValueCount());
+      // the unreferenced prefix element must not be appended
+      assertEquals(
+          4 + 4,
+          target.getOffsetBuffer().getInt((long) target.getValueCount() * ListVector.OFFSET_WIDTH));
+      assertEquals(Arrays.asList(0, 1), target.getObject(0));
+      assertEquals(Arrays.asList(2, 3), target.getObject(1));
+      assertEquals(Arrays.asList(10, 11), target.getObject(2));
+      assertEquals(Arrays.asList(12, 13), target.getObject(3));
+    }
+  }
+
+  @Test
+  public void testAppendLargeListVector() {
+    try (LargeListVector target = LargeListVector.empty("target", allocator);
+        LargeListVector delta = LargeListVector.empty("delta", allocator)) {
+
+      target.allocateNew();
+      ValueVectorDataPopulator.setVector(target, Arrays.asList(0, 1), null, Arrays.asList(4, 5));
+
+      delta.allocateNew();
+      ValueVectorDataPopulator.setVector(delta, Arrays.asList(10, 11, 12), Arrays.asList(13, 14));
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      assertEquals(5, target.getValueCount());
+      assertEquals(Arrays.asList(0, 1), target.getObject(0));
+      assertTrue(target.isNull(1));
+      assertEquals(Arrays.asList(4, 5), target.getObject(2));
+      assertEquals(Arrays.asList(10, 11, 12), target.getObject(3));
+      assertEquals(Arrays.asList(13, 14), target.getObject(4));
+    }
+  }
+
+  @Test
+  public void testAppendLargeListVectorWithNonZeroStartOffset() {
+    try (LargeListVector target = LargeListVector.empty("target", allocator);
+        LargeListVector delta = LargeListVector.empty("delta", allocator)) {
+
+      target.allocateNew();
+      ValueVectorDataPopulator.setVector(target, Arrays.asList(0, 1), Arrays.asList(2, 3));
+
+      // same as testAppendListVectorWithNonZeroStartOffset, with 8-byte offsets
+      delta.addOrGetVector(FieldType.nullable(Types.MinorType.INT.getType()));
+      IntVector deltaDataVector = (IntVector) delta.getDataVector();
+      deltaDataVector.allocateNew(5);
+      for (int i = 0; i < 5; i++) {
+        deltaDataVector.set(i, 9 + i);
+      }
+      deltaDataVector.setValueCount(5);
+      try (ArrowBuf validity = allocator.buffer(1);
+          ArrowBuf offsets = allocator.buffer(24)) {
+        validity.setByte(0, 0b11);
+        offsets.setLong(0, 1);
+        offsets.setLong(8, 3);
+        offsets.setLong(16, 5);
+        delta.loadFieldBuffers(new ArrowFieldNode(2, 0), Arrays.asList(validity, offsets));
+      }
+      assertEquals(Arrays.asList(10, 11), delta.getObject(0));
+
+      VectorAppender appender = new VectorAppender(target);
+      delta.accept(appender, null);
+
+      assertEquals(4, target.getValueCount());
+      // the unreferenced prefix element must not be appended
+      assertEquals(
+          4 + 4,
+          target
+              .getOffsetBuffer()
+              .getLong((long) target.getValueCount() * LargeListVector.OFFSET_WIDTH));
+      assertEquals(Arrays.asList(0, 1), target.getObject(0));
+      assertEquals(Arrays.asList(2, 3), target.getObject(1));
+      assertEquals(Arrays.asList(10, 11), target.getObject(2));
+      assertEquals(Arrays.asList(12, 13), target.getObject(3));
+    }
+  }
+
+  @Test
   public void testAppendEmptyListVector() {
     try (ListVector target = ListVector.empty("target", allocator);
         ListVector delta = ListVector.empty("delta", allocator)) {
