@@ -56,7 +56,6 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.arrow.vector.util.JsonStringHashMap;
-import org.apache.arrow.vector.util.ObjectMapperFactory;
 import org.apache.arrow.vector.util.Text;
 
 /**
@@ -295,7 +294,7 @@ public class JdbcToArrowTestHelper {
   public static Map<String, String>[] getMapValues(String[] values, String dataType) {
     String[] dataArr = getValues(values, dataType);
     Map<String, String>[] maps = new Map[dataArr.length];
-    ObjectMapper objectMapper = ObjectMapperFactory.newObjectMapper();
+    ObjectMapper objectMapper = new ObjectMapper();
     TypeReference<Map<String, String>> typeReference = new TypeReference<Map<String, String>>() {};
     for (int idx = 0; idx < dataArr.length; idx++) {
       String jsonString = dataArr[idx].replace("|", ",");

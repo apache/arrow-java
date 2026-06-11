@@ -16,9 +16,9 @@
  */
 package org.apache.arrow.vector.types.pojo;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
 import org.apache.arrow.vector.types.pojo.ArrowType.Int;
 
@@ -37,11 +37,7 @@ public class DictionaryEncoding {
    * @param indexType (nullable). The integer type to use for indexing in the dictionary. Defaults
    *     to a signed 32 bit integer.
    */
-  @JsonCreator
-  public DictionaryEncoding(
-      @JsonProperty("id") long id,
-      @JsonProperty("isOrdered") boolean ordered,
-      @JsonProperty("indexType") Int indexType) {
+  public DictionaryEncoding(long id, boolean ordered, Int indexType) {
     this.id = id;
     this.ordered = ordered;
     this.indexType = indexType == null ? new Int(32, true) : indexType;
@@ -51,13 +47,38 @@ public class DictionaryEncoding {
     return id;
   }
 
-  @JsonGetter("isOrdered")
   public boolean isOrdered() {
     return ordered;
   }
 
   public Int getIndexType() {
     return indexType;
+  }
+
+  /** Serializes this encoding to JSON. */
+  void serialize(JsonGenerator generator) throws IOException {
+    generator.writeStartObject();
+    generator.writeNumberField("id", id);
+    generator.writeBooleanField("isOrdered", ordered);
+    generator.writeFieldName("indexType");
+    indexType.writeJson(generator);
+    generator.writeEndObject();
+  }
+
+  /** Builds a DictionaryEncoding from a parsed JSON object. */
+  @SuppressWarnings("unchecked")
+  static DictionaryEncoding fromJson(Map<String, Object> object) {
+    Object indexTypeObj = object.get("indexType");
+    Int indexType = null;
+    if (indexTypeObj != null) {
+      Map<String, Object> indexTypeMap = (Map<String, Object>) indexTypeObj;
+      indexType =
+          (Int) ArrowType.getArrowType(JsonValues.asString(indexTypeMap.get("name")), indexTypeMap);
+    }
+    return new DictionaryEncoding(
+        JsonValues.asLong(object.get("id")),
+        JsonValues.asBoolean(object.get("isOrdered")),
+        indexType);
   }
 
   @Override
