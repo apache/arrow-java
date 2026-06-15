@@ -19,8 +19,11 @@ name: Test
 
 on:
   push:
-    branches: [main]
-    tags: ['**']
+    branches:
+      - '**'
+      - '!dependabot/**'
+    tags:
+      - '**'
   pull_request:
 
 concurrency:
