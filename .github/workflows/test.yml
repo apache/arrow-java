@@ -19,11 +19,8 @@ name: Test
 
 on:
   push:
-    branches:
-      - '**'
-      - '!dependabot/**'
-    tags:
-      - '**'
+    branches: [main]
+    tags: ['**']
   pull_request:
 
 concurrency:
@@ -32,6 +29,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: read
 
 env:
   DOCKER_VOLUME_PREFIX: ".docker/"
@@ -66,7 +64,7 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .docker
-          key: maven-${{ matrix.jdk }}-${{ matrix.maven }}-${{ hashFiles('compose.yaml', '**/pom.xml', '**/*.java') }}
+          key: maven-${{ matrix.jdk }}-${{ matrix.maven }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
           restore-keys: maven-${{ matrix.jdk }}-${{ matrix.maven }}-
       - name: Execute Docker Build
         env:
@@ -94,16 +92,17 @@ jobs:
             jdk: 17
             macos: latest
     steps:
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.jdk }}
       - name: Checkout Arrow
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.jdk }}
+          cache: 'maven'
       - name: Build
         shell: bash
         env:
@@ -125,16 +124,17 @@ jobs:
       matrix:
         jdk: [17]
     steps:
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          java-version: ${{ matrix.jdk }}
-          distribution: 'temurin'
       - name: Checkout Arrow
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
+          cache: 'maven'
       - name: Build
         shell: bash
         env:
@@ -149,59 +149,111 @@ jobs:
   integration:
     name: AMD64 integration
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 60
     steps:
+      - name: Check integration relevance
+        id: integration-changes
+        uses: actions/github-script@v8
+        with:
+          script: |
+            if (context.eventName !== 'pull_request') {
+              core.setOutput('should_run', 'true');
+              return;
+            }
+
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.payload.pull_request.number,
+                per_page: 100,
+              }
+            );
+
+            const relevant = files.some(({ filename }) =>
+              filename === 'compose.yaml' ||
+              filename === 'pom.xml' ||
+              filename === '.github/workflows/test.yml' ||
+              filename.startsWith('c/') ||
+              filename.startsWith('flight/') ||
+              filename.startsWith('format/') ||
+              filename.startsWith('vector/') ||
+              filename.startsWith('ci/scripts/') ||
+              filename.startsWith('testing/data/') ||
+              filename.endsWith('/pom.xml')
+            );
+
+            core.setOutput('should_run', relevant ? 'true' : 'false');
+            core.notice(
+              relevant
+                ? 'Integration-relevant changes detected; running integration tests.'
+                : 'No integration-relevant changes detected; skipping integration tests.'
+            );
       - name: Checkout Arrow
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
           repository: apache/arrow
           submodules: recursive
       - name: Checkout Arrow Rust
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           repository: apache/arrow-rs
           path: rust
       - name: Checkout Arrow nanoarrow
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           repository: apache/arrow-nanoarrow
           path: nanoarrow
       - name: Checkout Arrow .NET
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           repository: apache/arrow-dotnet
           path: dotnet
       - name: Checkout Arrow Go
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           repository: apache/arrow-go
           path: go
       - name: Checkout Arrow Java
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           path: java
       - name: Checkout Arrow JavaScript
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/checkout@v6
         with:
           repository: apache/arrow-js
           path: js
       - name: Free up disk space
+        if: steps.integration-changes.outputs.should_run == 'true'
         run: |
           ci/scripts/util_free_space.sh
       - name: Cache Docker Volumes
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/cache@v5
         with:
           path: .docker
           key: integration-conda-${{ hashFiles('cpp/**') }}
           restore-keys: integration-conda-
       - name: Setup Python
+        if: steps.integration-changes.outputs.should_run == 'true'
         uses: actions/setup-python@v6
         with:
           python-version: 3.12
       - name: Setup Archery
+        if: steps.integration-changes.outputs.should_run == 'true'
         run: pip install -e dev/archery[docker]
       - name: Execute Docker Build
+        if: steps.integration-changes.outputs.should_run == 'true'
         run: |
           source ci/scripts/util_enable_core_dumps.sh
           archery docker run \

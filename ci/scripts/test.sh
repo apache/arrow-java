@@ -37,7 +37,7 @@ mvn="${mvn} -T 2C"
 
 pushd "${build_dir}"
 
-${mvn} -Darrow.test.dataRoot="${source_dir}/testing/data" clean test
+${mvn} -Darrow.test.dataRoot="${source_dir}/testing/data" test
 
 projects=()
 if [ "${ARROW_JAVA_JNI}" = "ON" ]; then
@@ -46,7 +46,7 @@ if [ "${ARROW_JAVA_JNI}" = "ON" ]; then
   projects+=(gandiva)
 fi
 if [ "${#projects[@]}" -gt 0 ]; then
-  ${mvn} clean test \
+  ${mvn} test \
     -Parrow-jni \
     -pl "$(
       IFS=,
@@ -56,7 +56,7 @@ if [ "${#projects[@]}" -gt 0 ]; then
 fi
 
 if [ "${ARROW_JAVA_CDATA}" = "ON" ]; then
-  ${mvn} clean test -Parrow-c-data -pl c -Darrow.c.jni.dist.dir="${java_jni_dist_dir}"
+  ${mvn} test -Parrow-c-data -pl c -Darrow.c.jni.dist.dir="${java_jni_dist_dir}"
 fi
 
 popd
