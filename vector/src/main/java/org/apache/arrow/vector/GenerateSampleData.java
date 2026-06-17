@@ -33,6 +33,12 @@ public class GenerateSampleData {
       writeIntData((IntVector) vector, valueCount);
     } else if (vector instanceof DecimalVector) {
       writeDecimalData((DecimalVector) vector, valueCount);
+    } else if (vector instanceof Decimal32Vector) {
+      writeDecimal32Data((Decimal32Vector) vector, valueCount);
+    } else if (vector instanceof Decimal64Vector) {
+      writeDecimal64Data((Decimal64Vector) vector, valueCount);
+    } else if (vector instanceof Decimal256Vector) {
+      writeDecimal256Data((Decimal256Vector) vector, valueCount);
     } else if (vector instanceof BitVector) {
       writeBooleanData((BitVector) vector, valueCount);
     } else if (vector instanceof VarCharVector) {
@@ -108,6 +114,47 @@ public class GenerateSampleData {
   private static void writeDecimalData(DecimalVector vector, int valueCount) {
     final BigDecimal even = new BigDecimal("0.0543278923");
     final BigDecimal odd = new BigDecimal("2.0543278923");
+    for (int i = 0; i < valueCount; i++) {
+      if (i % 2 == 0) {
+        vector.setSafe(i, even);
+      } else {
+        vector.setSafe(i, odd);
+      }
+    }
+    vector.setValueCount(valueCount);
+  }
+
+  // The narrow and wide decimal sample values are derived from the vector's own scale (rather than
+  // hardcoded) so they fit any precision/scale, including the precision-9 Decimal32 limit.
+  private static void writeDecimal32Data(Decimal32Vector vector, int valueCount) {
+    final BigDecimal even = BigDecimal.valueOf(1, vector.getScale());
+    final BigDecimal odd = BigDecimal.valueOf(2, vector.getScale());
+    for (int i = 0; i < valueCount; i++) {
+      if (i % 2 == 0) {
+        vector.setSafe(i, even);
+      } else {
+        vector.setSafe(i, odd);
+      }
+    }
+    vector.setValueCount(valueCount);
+  }
+
+  private static void writeDecimal64Data(Decimal64Vector vector, int valueCount) {
+    final BigDecimal even = BigDecimal.valueOf(1, vector.getScale());
+    final BigDecimal odd = BigDecimal.valueOf(2, vector.getScale());
+    for (int i = 0; i < valueCount; i++) {
+      if (i % 2 == 0) {
+        vector.setSafe(i, even);
+      } else {
+        vector.setSafe(i, odd);
+      }
+    }
+    vector.setValueCount(valueCount);
+  }
+
+  private static void writeDecimal256Data(Decimal256Vector vector, int valueCount) {
+    final BigDecimal even = BigDecimal.valueOf(1, vector.getScale());
+    final BigDecimal odd = BigDecimal.valueOf(2, vector.getScale());
     for (int i = 0; i < valueCount; i++) {
       if (i % 2 == 0) {
         vector.setSafe(i, even);

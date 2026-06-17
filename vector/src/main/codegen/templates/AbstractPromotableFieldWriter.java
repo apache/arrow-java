@@ -120,46 +120,27 @@ abstract class AbstractPromotableFieldWriter extends AbstractFieldWriter {
 
   <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
     <#assign fields = minor.fields!type.fields />
-  <#if minor.class == "Decimal">
+  <#if minor.class?starts_with("Decimal")>
+  <#if minor.class == "Decimal"><#assign startType = "int" /><#else><#assign startType = "long" /></#if>
   @Override
-  public void write(DecimalHolder holder) {
-    getWriter(MinorType.DECIMAL).write(holder);
+  public void write(${name}Holder holder) {
+    getWriter(MinorType.${name?upper_case}).write(holder);
   }
 
-  public void writeDecimal(int start, ArrowBuf buffer, ArrowType arrowType) {
-    getWriter(MinorType.DECIMAL).writeDecimal(start, buffer, arrowType);
+  public void write${name}(${startType} start, ArrowBuf buffer, ArrowType arrowType) {
+    getWriter(MinorType.${name?upper_case}).write${name}(start, buffer, arrowType);
   }
 
-  public void writeDecimal(int start, ArrowBuf buffer) {
-    getWriter(MinorType.DECIMAL).writeDecimal(start, buffer);
+  public void write${name}(${startType} start, ArrowBuf buffer) {
+    getWriter(MinorType.${name?upper_case}).write${name}(start, buffer);
   }
 
-  public void writeBigEndianBytesToDecimal(byte[] value, ArrowType arrowType) {
-    getWriter(MinorType.DECIMAL).writeBigEndianBytesToDecimal(value, arrowType);
+  public void writeBigEndianBytesTo${name}(byte[] value, ArrowType arrowType) {
+    getWriter(MinorType.${name?upper_case}).writeBigEndianBytesTo${name}(value, arrowType);
   }
 
-  public void writeBigEndianBytesToDecimal(byte[] value) {
-    getWriter(MinorType.DECIMAL).writeBigEndianBytesToDecimal(value);
-  }
-  <#elseif minor.class == "Decimal256">
-  @Override
-  public void write(Decimal256Holder holder) {
-    getWriter(MinorType.DECIMAL256).write(holder);
-  }
-
-  public void writeDecimal256(long start, ArrowBuf buffer, ArrowType arrowType) {
-    getWriter(MinorType.DECIMAL256).writeDecimal256(start, buffer, arrowType);
-  }
-
-  public void writeDecimal256(long start, ArrowBuf buffer) {
-    getWriter(MinorType.DECIMAL256).writeDecimal256(start, buffer);
-  }
-  public void writeBigEndianBytesToDecimal256(byte[] value, ArrowType arrowType) {
-    getWriter(MinorType.DECIMAL256).writeBigEndianBytesToDecimal256(value, arrowType);
-  }
-
-  public void writeBigEndianBytesToDecimal256(byte[] value) {
-    getWriter(MinorType.DECIMAL256).writeBigEndianBytesToDecimal256(value);
+  public void writeBigEndianBytesTo${name}(byte[] value) {
+    getWriter(MinorType.${name?upper_case}).writeBigEndianBytesTo${name}(value);
   }
   <#elseif is_timestamp_tz(minor.class)>
   @Override

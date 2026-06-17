@@ -165,6 +165,38 @@
         }
       ]
     },
+    {
+      major: "Fixed",
+      width: 8,
+      javaType: "ArrowBuf",
+      boxedType: "ArrowBuf",
+
+      minor: [
+        {
+          class: "Decimal64",
+          maxPrecisionDigits: 18, nDecimalDigits: 2, friendlyType: "BigDecimal",
+          typeParams: [ {name: "scale", type: "int"}, { name: "precision", type: "int"}],
+          arrowType: "org.apache.arrow.vector.types.pojo.ArrowType.Decimal",
+          fields: [{name: "start", type: "long"}, {name: "buffer", type: "ArrowBuf"}]
+        }
+      ]
+    },
+    {
+      major: "Fixed",
+      width: 4,
+      javaType: "ArrowBuf",
+      boxedType: "ArrowBuf",
+
+      minor: [
+        {
+          class: "Decimal32",
+          maxPrecisionDigits: 9, nDecimalDigits: 1, friendlyType: "BigDecimal",
+          typeParams: [ {name: "scale", type: "int"}, { name: "precision", type: "int"}],
+          arrowType: "org.apache.arrow.vector.types.pojo.ArrowType.Decimal",
+          fields: [{name: "start", type: "long"}, {name: "buffer", type: "ArrowBuf"}]
+        }
+      ]
+    },
 
     {
       major: "Fixed",

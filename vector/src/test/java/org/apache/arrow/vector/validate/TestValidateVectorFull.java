@@ -318,7 +318,7 @@ public class TestValidateVectorFull {
   public void testValidateDecimal256() {
     try (final Decimal256Vector vector =
         new Decimal256Vector(
-            Field.nullable("v", new ArrowType.Decimal(2, 0, DecimalVector.TYPE_WIDTH * 8)),
+            Field.nullable("v", new ArrowType.Decimal(2, 0, Decimal256Vector.TYPE_WIDTH * 8)),
             allocator)) {
       vector.validateFull();
       setVector(vector, 1L);
