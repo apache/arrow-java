@@ -540,6 +540,26 @@ public class TestVariableWidthViewVector {
     }
   }
 
+  @ParameterizedTest
+  @MethodSource({"vectorCreatorProvider"})
+  public void testSetSafeEmptyValueAtViewBufferBoundary(
+      Function<BufferAllocator, BaseVariableWidthViewVector> vectorCreator) {
+    try (final BaseVariableWidthViewVector vector = vectorCreator.apply(allocator)) {
+      final byte[] emptyValue = new byte[0];
+      vector.allocateNew();
+      final int valueCapacity = vector.getValueCapacity();
+
+      for (int i = 0; i <= valueCapacity; i++) {
+        vector.setSafe(i, emptyValue);
+      }
+
+      vector.setValueCount(valueCapacity + 1);
+      assertTrue(vector.getValueCapacity() > valueCapacity);
+      assertEquals(0, vector.getValueLength(valueCapacity));
+      assertArrayEquals(emptyValue, vector.get(valueCapacity));
+    }
+  }
+
   @Test
   public void testNullableVarType1() {
 
