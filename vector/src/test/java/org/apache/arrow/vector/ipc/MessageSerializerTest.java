@@ -31,7 +31,9 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -241,5 +243,43 @@ public class MessageSerializerTest {
     assertEquals(2, buffers.size());
     assertArrayEquals(validity, MessageSerializerTest.array(buffers.get(0)));
     assertArrayEquals(values, MessageSerializerTest.array(buffers.get(1)));
+  }
+
+  @Test
+  public void testRecordBatchCustomMetadata() throws Exception {
+    byte[] validity = new byte[] {(byte) 255, 0};
+    byte[] values = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+
+    BufferAllocator alloc = new RootAllocator(Long.MAX_VALUE);
+    ArrowBuf validityb = buf(alloc, validity);
+    ArrowBuf valuesb = buf(alloc, values);
+
+    Map<String, String> customMetadata = new HashMap<>();
+    customMetadata.put("key1", "value1");
+    customMetadata.put("key2", "value2");
+
+    ArrowRecordBatch batch =
+        new ArrowRecordBatch(
+            16, asList(new ArrowFieldNode(16, 8)), asList(validityb, valuesb), customMetadata);
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    MessageSerializer.serialize(new WriteChannel(Channels.newChannel(out)), batch);
+
+    ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+    ReadChannel channel = new ReadChannel(Channels.newChannel(in));
+    ArrowMessage deserialized = MessageSerializer.deserializeMessageBatch(channel, alloc);
+
+    assertEquals(ArrowRecordBatch.class, deserialized.getClass());
+    ArrowRecordBatch deserializedBatch = (ArrowRecordBatch) deserialized;
+    verifyBatch(deserializedBatch, validity, values);
+
+    Map<String, String> deserializedMetadata = deserializedBatch.getCustomMetadata();
+    assertEquals(customMetadata, deserializedMetadata);
+
+    validityb.close();
+    valuesb.close();
+    batch.close();
+    deserialized.close();
+    alloc.close();
   }
 }
