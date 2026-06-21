@@ -55,7 +55,10 @@ public class LargeListAvaticaParameterConverter extends BaseAvaticaParameterConv
               .getType()
               .accept(
                   new AvaticaParameterBinder.BinderVisitor(
-                      childVector, TypedValue.ofSerial(typedValue.componentType, val), childIndex));
+                      childVector,
+                      TypedValue.ofSerial(typedValue.componentType, val),
+                      childIndex,
+                      null));
         }
       }
       listVector.endValue(index, values.size());

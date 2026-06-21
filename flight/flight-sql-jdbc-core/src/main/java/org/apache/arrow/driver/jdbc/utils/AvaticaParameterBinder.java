@@ -16,7 +16,10 @@
  */
 package org.apache.arrow.driver.jdbc.utils;
 
+import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler.PreparedStatement;
 import org.apache.arrow.driver.jdbc.converter.impl.BinaryAvaticaParameterConverter;
 import org.apache.arrow.driver.jdbc.converter.impl.BinaryViewAvaticaParameterConverter;
@@ -81,7 +84,7 @@ public class AvaticaParameterBinder {
    * @param typedValues The parameter values.
    */
   public void bind(List<TypedValue> typedValues) {
-    bind(typedValues, 0);
+    bind(typedValues, 0, Collections.emptyMap());
   }
 
   /**
@@ -91,6 +94,18 @@ public class AvaticaParameterBinder {
    * @param index index for parameter.
    */
   public void bind(List<TypedValue> typedValues, int index) {
+    bind(typedValues, index, Collections.emptyMap());
+  }
+
+  /**
+   * Bind the given Avatica values to the prepared statement at the given index, with optional raw
+   * java.sql.Timestamp values that preserve sub-millisecond precision.
+   *
+   * @param typedValues The parameter values.
+   * @param index index for parameter.
+   * @param rawTimestamps Raw java.sql.Timestamp objects keyed by 1-based parameter index.
+   */
+  public void bind(List<TypedValue> typedValues, int index, Map<Integer, Timestamp> rawTimestamps) {
     if (preparedStatement.getParameterSchema().getFields().size() != typedValues.size()) {
       throw new IllegalStateException(
           String.format(
@@ -99,7 +114,9 @@ public class AvaticaParameterBinder {
     }
 
     for (int i = 0; i < typedValues.size(); i++) {
-      bind(parameters.getVector(i), typedValues.get(i), index);
+      // rawTimestamps uses 1-based JDBC parameter indices
+      Timestamp rawTs = rawTimestamps.get(i + 1);
+      bind(parameters.getVector(i), typedValues.get(i), index, rawTs);
     }
 
     if (!typedValues.isEmpty()) {
@@ -114,8 +131,13 @@ public class AvaticaParameterBinder {
    * @param vector FieldVector to bind to.
    * @param typedValue TypedValue to bind to the vector.
    * @param index Vector index to bind the value at.
+   * @param rawTimestamp Optional raw java.sql.Timestamp with sub-millisecond precision.
    */
-  private void bind(FieldVector vector, @Nullable TypedValue typedValue, int index) {
+  private void bind(
+      FieldVector vector,
+      @Nullable TypedValue typedValue,
+      int index,
+      @Nullable Timestamp rawTimestamp) {
     try {
       if (typedValue == null || typedValue.value == null) {
         if (vector.getField().isNullable()) {
@@ -126,7 +148,7 @@ public class AvaticaParameterBinder {
       } else if (!vector
           .getField()
           .getType()
-          .accept(new BinderVisitor(vector, typedValue, index))) {
+          .accept(new BinderVisitor(vector, typedValue, index, rawTimestamp))) {
         throw new UnsupportedOperationException(
             String.format("Binding to vector type %s is not yet supported", vector.getClass()));
       }
@@ -146,6 +168,7 @@ public class AvaticaParameterBinder {
     private final FieldVector vector;
     private final TypedValue typedValue;
     private final int index;
+    @Nullable private final Timestamp rawTimestamp;
 
     /**
      * Instantiate a new BinderVisitor.
@@ -153,11 +176,14 @@ public class AvaticaParameterBinder {
      * @param vector FieldVector to bind values to.
      * @param value TypedValue to bind.
      * @param index Vector index (0-based) to bind the value to.
+     * @param rawTimestamp Optional raw java.sql.Timestamp preserving sub-millisecond precision.
      */
-    public BinderVisitor(FieldVector vector, TypedValue value, int index) {
+    public BinderVisitor(
+        FieldVector vector, TypedValue value, int index, @Nullable Timestamp rawTimestamp) {
       this.vector = vector;
       this.typedValue = value;
       this.index = index;
+      this.rawTimestamp = rawTimestamp;
     }
 
     @Override
@@ -266,7 +292,8 @@ public class AvaticaParameterBinder {
 
     @Override
     public Boolean visit(ArrowType.Timestamp type) {
-      return new TimestampAvaticaParameterConverter(type).bindParameter(vector, typedValue, index);
+      return new TimestampAvaticaParameterConverter(type)
+          .bindParameter(vector, typedValue, index, rawTimestamp);
     }
 
     @Override
