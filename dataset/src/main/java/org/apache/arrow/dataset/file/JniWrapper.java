@@ -77,4 +77,32 @@ public class JniWrapper {
       String[] partitionColumns,
       int maxPartitions,
       String baseNameTemplate);
+
+  /**
+   * Create a Parquet writer instance.
+   *
+   * @param outputStream the Java OutputStream to write Parquet data to
+   * @param arrowSchemaPtr the native pointer to ArrowSchema
+   * @param properties optional writer properties (can be null for defaults)
+   * @return the native pointer of the ParquetWriterHolder instance
+   */
+  public native long nativeCreateParquetWriter(
+      java.io.OutputStream outputStream, long arrowSchemaPtr, ParquetWriterProperties properties);
+
+  /**
+   * Write a RecordBatch to Parquet file.
+   *
+   * @param nativePtr the native pointer of the ParquetWriterHolder instance
+   * @param arrowArrayPtr the native pointer to ArrowArray
+   * @return 1 on success, 0 on failure
+   */
+  public native int nativeWriteParquetBatch(long nativePtr, long arrowArrayPtr);
+
+  /**
+   * Close a Parquet writer instance.
+   *
+   * @param nativePtr the native pointer of the ParquetWriterHolder instance
+   * @return 1 on success, 0 on failure
+   */
+  public native int nativeCloseParquetWriter(long nativePtr);
 }
