@@ -65,7 +65,7 @@ jobs:
               $artifact
           done
       - name: Checkout for publishing docs
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: site
       - name: Publish docs

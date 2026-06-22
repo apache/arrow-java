@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: Prepare for tag
@@ -113,17 +113,17 @@ jobs:
           ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow
           path: arrow
       - name: Checkout apache/arrow-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow-testing
           path: arrow/testing
       - name: Checkout apache/parquet-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/parquet-testing
           path: arrow/cpp/submodules/parquet-testing
@@ -180,17 +180,17 @@ jobs:
           ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow
           path: arrow
       - name: Checkout apache/arrow-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow-testing
           path: arrow/testing
       - name: Checkout apache/parquet-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/parquet-testing
           path: arrow/cpp/submodules/parquet-testing
@@ -310,7 +310,7 @@ jobs:
           ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow
           path: arrow
@@ -409,7 +409,7 @@ jobs:
           test -f jni/arrow_dataset_jni/x86_64/arrow_dataset_jni.dll
           test -f jni/arrow_orc_jni/x86_64/arrow_orc_jni.dll
       - name: Checkout apache/arrow-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow-testing
           path: testing
@@ -497,7 +497,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: site
       - name: Prepare branch
