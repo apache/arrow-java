@@ -529,7 +529,7 @@ public class StructVector extends NonNullableStructVector
     super.reAlloc();
   }
 
-  private void reallocValidityBuffer() {
+  protected void reallocValidityBuffer() {
     final int currentBufferCapacity = checkedCastToInt(validityBuffer.capacity());
     long newAllocationSize = getNewAllocationSize(currentBufferCapacity);
 
