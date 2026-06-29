@@ -394,7 +394,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      * @return {@code true} if this is an update statement, {@code false} if it's a query, or {@code
      *     null} if the server did not provide this information.
      */
-    Boolean isUpdate();
+    @Nullable Boolean isUpdate();
 
     void setParameters(VectorSchemaRoot parameters);
 
