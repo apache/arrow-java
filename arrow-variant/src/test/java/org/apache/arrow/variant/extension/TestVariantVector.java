@@ -30,6 +30,7 @@ import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.variant.Variant;
 import org.apache.arrow.variant.holders.NullableVariantHolder;
 import org.apache.arrow.variant.holders.VariantHolder;
+import org.apache.arrow.variant.impl.NullableVariantHolderReaderImpl;
 import org.apache.arrow.variant.impl.VariantReaderImpl;
 import org.apache.arrow.variant.impl.VariantWriterImpl;
 import org.apache.arrow.vector.holders.ExtensionHolder;
@@ -840,5 +841,17 @@ class TestVariantVector {
       // After clear, vector should be empty
       assertEquals(0, vector.getValueCount());
     }
+  }
+
+  /**
+   * Holder readers must expose their extension {@link ArrowType} via {@code getExtensionType()} so
+   * callers (notably {@code ComplexCopier}) can route values through union/promotable writers
+   * without depending on {@code getField()}, which is undefined for holder-backed readers.
+   */
+  @Test
+  void testNullableVariantHolderReaderImplGetExtensionType() {
+    NullableVariantHolder holder = new NullableVariantHolder();
+    NullableVariantHolderReaderImpl reader = new NullableVariantHolderReaderImpl(holder);
+    assertEquals(VariantType.INSTANCE, reader.getExtensionType());
   }
 }
