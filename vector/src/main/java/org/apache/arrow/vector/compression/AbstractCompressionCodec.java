@@ -29,11 +29,8 @@ public abstract class AbstractCompressionCodec implements CompressionCodec {
 
   @Override
   public ArrowBuf compress(BufferAllocator allocator, ArrowBuf uncompressedBuffer) {
-    // Capture the uncompressed length once upfront to avoid any inconsistency from
-    // re-reading writerIndex() at different points. Since the uncompressedBuffer may be
-    // a shared reference to a vector's internal buffer, reading writerIndex() only once
-    // ensures the same value is used for the empty-buffer check, compression, size
-    // comparison, and the 8-byte uncompressed-length prefix.
+    // GH-1116: capture writerIndex() once so the empty-buffer check, size
+    // comparison, and uncompressed-length prefix all see the same value.
     long uncompressedLength = uncompressedBuffer.writerIndex();
 
     if (uncompressedLength == 0L) {
