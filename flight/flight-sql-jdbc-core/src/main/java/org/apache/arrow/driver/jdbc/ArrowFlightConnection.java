@@ -19,6 +19,8 @@ package org.apache.arrow.driver.jdbc;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.replaceSemiColons;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -256,5 +258,36 @@ public final class ArrowFlightConnection extends AvaticaConnection {
 
   public ArrowFlightMetaImpl getMeta() {
     return (ArrowFlightMetaImpl) this.meta;
+  }
+
+  @Override
+  public PreparedStatement prepareStatement(final String sql) throws SQLException {
+    checkOpen();
+    return prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+  }
+
+  @Override
+  public PreparedStatement prepareStatement(
+      final String sql, final int resultSetType, final int resultSetConcurrency)
+      throws SQLException {
+    checkOpen();
+    return prepareStatement(sql, resultSetType, resultSetConcurrency, getHoldability());
+  }
+
+  @Override
+  public PreparedStatement prepareStatement(
+      final String sql,
+      final int resultSetType,
+      final int resultSetConcurrency,
+      final int resultSetHoldability)
+      throws SQLException {
+    checkOpen();
+    return ArrowFlightPreparedStatement.builder(this)
+        .withQuery(sql)
+        .withGeneratedHandle()
+        .withResultSetType(resultSetType)
+        .withResultSetConcurrency(resultSetConcurrency)
+        .withResultSetHoldability(resultSetHoldability)
+        .build();
   }
 }

@@ -18,10 +18,13 @@ package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -135,6 +138,34 @@ public class ArrowFlightStatementExecuteTest {
     assertThat(
         (long) statement.getUpdateCount(),
         is(allOf(equalTo(statement.getLargeUpdateCount()), equalTo(-1L))));
+  }
+
+  @Test
+  public void testExecuteReplacesStatementMapEntryWithPreparedStatement() throws SQLException {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+
+    final Object preparedStatement = arrowConnection.statementMap.get(arrowStatement.handle.id);
+
+    assertNotNull(preparedStatement);
+    assertSame(preparedStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
+    assertThat(preparedStatement, instanceOf(ArrowFlightPreparedStatement.class));
+  }
+
+  @Test
+  public void testExecuteQueryRestoresStatementMapEntryWithStatement() throws SQLException {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+
+    try (ResultSet resultSet = statement.executeQuery(SAMPLE_QUERY_CMD)) {
+      assertThat(resultSet.next(), is(true));
+    }
+
+    assertSame(arrowStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
   }
 
   @Test
