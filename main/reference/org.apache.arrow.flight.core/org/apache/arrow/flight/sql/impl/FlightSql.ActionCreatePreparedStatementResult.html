@@ -160,11 +160,14 @@ implements <a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html"
 <div class="col-second even-row-color"><code><a href="#DATASET_SCHEMA_FIELD_NUMBER" class="member-name-link">DATASET_SCHEMA_FIELD_NUMBER</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>static final int</code></div>
-<div class="col-second odd-row-color"><code><a href="#PARAMETER_SCHEMA_FIELD_NUMBER" class="member-name-link">PARAMETER_SCHEMA_FIELD_NUMBER</a></code></div>
+<div class="col-second odd-row-color"><code><a href="#IS_UPDATE_FIELD_NUMBER" class="member-name-link">IS_UPDATE_FIELD_NUMBER</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>static final int</code></div>
-<div class="col-second even-row-color"><code><a href="#PREPARED_STATEMENT_HANDLE_FIELD_NUMBER" class="member-name-link">PREPARED_STATEMENT_HANDLE_FIELD_NUMBER</a></code></div>
+<div class="col-second even-row-color"><code><a href="#PARAMETER_SCHEMA_FIELD_NUMBER" class="member-name-link">PARAMETER_SCHEMA_FIELD_NUMBER</a></code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>static final int</code></div>
+<div class="col-second odd-row-color"><code><a href="#PREPARED_STATEMENT_HANDLE_FIELD_NUMBER" class="member-name-link">PREPARED_STATEMENT_HANDLE_FIELD_NUMBER</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <div class="inherited-list">
 <h3 id="fields-inherited-from-class-com.google.protobuf.GeneratedMessage">Fields inherited from class&nbsp;com.google.protobuf.GeneratedMessage</h3>
@@ -210,28 +213,42 @@ implements <a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html"
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.Descriptors.Descriptor</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDescriptorForType()" class="member-name-link">getDescriptorForType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.ByteString</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameterSchema()" class="member-name-link">getParameterSchema</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIsUpdate()" class="member-name-link">getIsUpdate</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.ByteString</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameterSchema()" class="member-name-link">getParameterSchema</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">
  If the query provided contained parameters, parameter_schema contains the
  schema of the expected parameters.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.Parser&lt;<a href="FlightSql.ActionCreatePreparedStatementResult.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParserForType()" class="member-name-link">getParserForType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.ByteString</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPreparedStatementHandle()" class="member-name-link">getPreparedStatementHandle</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.Parser&lt;<a href="FlightSql.ActionCreatePreparedStatementResult.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParserForType()" class="member-name-link">getParserForType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.ByteString</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPreparedStatementHandle()" class="member-name-link">getPreparedStatementHandle</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">
  Opaque handle for the prepared statement on the server.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSerializedSize()" class="member-name-link">getSerializedSize</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getSerializedSize()" class="member-name-link">getSerializedSize</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode()" class="member-name-link">hashCode</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasIsUpdate()" class="member-name-link">hasIsUpdate</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
+</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.google.protobuf.GeneratedMessage.FieldAccessorTable</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#internalGetFieldAccessorTable()" class="member-name-link">internalGetFieldAccessorTable</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
@@ -375,6 +392,20 @@ implements <a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html"
 </dl>
 </section>
 </li>
+<li>
+<section class="detail" id="IS_UPDATE_FIELD_NUMBER">
+<h3>IS_UPDATE_FIELD_NUMBER</h3>
+<div class="member-signature"><span class="modifiers">public static final</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">IS_UPDATE_FIELD_NUMBER</span></div>
+<dl class="notes">
+<dt>See Also:</dt>
+<dd>
+<ul class="see-list">
+<li><a href="../../../../../../../constant-values.html#org.apache.arrow.flight.sql.impl.FlightSql.ActionCreatePreparedStatementResult.IS_UPDATE_FIELD_NUMBER">Constant Field Values</a></li>
+</ul>
+</dd>
+</dl>
+</section>
+</li>
 </ul>
 </section>
 </li>
@@ -464,6 +495,44 @@ implements <a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html"
 <dd><code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html#getParameterSchema()">getParameterSchema</a></code>&nbsp;in interface&nbsp;<code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html" title="interface in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResultOrBuilder</a></code></dd>
 <dt>Returns:</dt>
 <dd>The parameterSchema.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasIsUpdate()">
+<h3>hasIsUpdate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasIsUpdate</span>()</div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html#hasIsUpdate()">hasIsUpdate</a></code>&nbsp;in interface&nbsp;<code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html" title="interface in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResultOrBuilder</a></code></dd>
+<dt>Returns:</dt>
+<dd>Whether the isUpdate field is set.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getIsUpdate()">
+<h3>getIsUpdate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getIsUpdate</span>()</div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html#getIsUpdate()">getIsUpdate</a></code>&nbsp;in interface&nbsp;<code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html" title="interface in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResultOrBuilder</a></code></dd>
+<dt>Returns:</dt>
+<dd>The isUpdate.</dd>
 </dl>
 </section>
 </li>

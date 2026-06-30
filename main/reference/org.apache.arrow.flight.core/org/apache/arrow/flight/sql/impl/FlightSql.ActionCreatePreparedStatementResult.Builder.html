@@ -139,34 +139,48 @@ implements <a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html"
  schema of the result set.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearParameterSchema()" class="member-name-link">clearParameterSchema</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearIsUpdate()" class="member-name-link">clearIsUpdate</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearParameterSchema()" class="member-name-link">clearParameterSchema</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">
  If the query provided contained parameters, parameter_schema contains the
  schema of the expected parameters.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearPreparedStatementHandle()" class="member-name-link">clearPreparedStatementHandle</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#clearPreparedStatementHandle()" class="member-name-link">clearPreparedStatementHandle</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">
  Opaque handle for the prepared statement on the server.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.ByteString</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDatasetSchema()" class="member-name-link">getDatasetSchema</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.ByteString</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDatasetSchema()" class="member-name-link">getDatasetSchema</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">
  If a result set generating query was provided, dataset_schema contains the
  schema of the result set.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDefaultInstanceForType()" class="member-name-link">getDefaultInstanceForType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static final com.google.protobuf.Descriptors.Descriptor</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getDescriptor()" class="member-name-link">getDescriptor</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.Descriptors.Descriptor</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDescriptorForType()" class="member-name-link">getDescriptorForType</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDefaultInstanceForType()" class="member-name-link">getDefaultInstanceForType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static final com.google.protobuf.Descriptors.Descriptor</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getDescriptor()" class="member-name-link">getDescriptor</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.Descriptors.Descriptor</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDescriptorForType()" class="member-name-link">getDescriptorForType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getIsUpdate()" class="member-name-link">getIsUpdate</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
+</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.protobuf.ByteString</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParameterSchema()" class="member-name-link">getParameterSchema</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
@@ -180,28 +194,42 @@ implements <a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html"
 <div class="block">
  Opaque handle for the prepared statement on the server.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.google.protobuf.GeneratedMessage.FieldAccessorTable</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#internalGetFieldAccessorTable()" class="member-name-link">internalGetFieldAccessorTable</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isInitialized()" class="member-name-link">isInitialized</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hasIsUpdate()" class="member-name-link">hasIsUpdate</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected com.google.protobuf.GeneratedMessage.FieldAccessorTable</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#internalGetFieldAccessorTable()" class="member-name-link">internalGetFieldAccessorTable</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mergeFrom(com.google.protobuf.CodedInputStream,com.google.protobuf.ExtensionRegistryLite)" class="member-name-link">mergeFrom</a><wbr>(com.google.protobuf.CodedInputStream&nbsp;input,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isInitialized()" class="member-name-link">isInitialized</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mergeFrom(com.google.protobuf.CodedInputStream,com.google.protobuf.ExtensionRegistryLite)" class="member-name-link">mergeFrom</a><wbr>(com.google.protobuf.CodedInputStream&nbsp;input,
  com.google.protobuf.ExtensionRegistryLite&nbsp;extensionRegistry)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mergeFrom(com.google.protobuf.Message)" class="member-name-link">mergeFrom</a><wbr>(com.google.protobuf.Message&nbsp;other)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mergeFrom(org.apache.arrow.flight.sql.impl.FlightSql.ActionCreatePreparedStatementResult)" class="member-name-link">mergeFrom</a><wbr>(<a href="FlightSql.ActionCreatePreparedStatementResult.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult</a>&nbsp;other)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mergeFrom(com.google.protobuf.Message)" class="member-name-link">mergeFrom</a><wbr>(com.google.protobuf.Message&nbsp;other)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDatasetSchema(com.google.protobuf.ByteString)" class="member-name-link">setDatasetSchema</a><wbr>(com.google.protobuf.ByteString&nbsp;value)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#mergeFrom(org.apache.arrow.flight.sql.impl.FlightSql.ActionCreatePreparedStatementResult)" class="member-name-link">mergeFrom</a><wbr>(<a href="FlightSql.ActionCreatePreparedStatementResult.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult</a>&nbsp;other)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDatasetSchema(com.google.protobuf.ByteString)" class="member-name-link">setDatasetSchema</a><wbr>(com.google.protobuf.ByteString&nbsp;value)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">
  If a result set generating query was provided, dataset_schema contains the
  schema of the result set.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIsUpdate(boolean)" class="member-name-link">setIsUpdate</a><wbr>(boolean&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setParameterSchema(com.google.protobuf.ByteString)" class="member-name-link">setParameterSchema</a><wbr>(com.google.protobuf.ByteString&nbsp;value)</code></div>
@@ -535,6 +563,80 @@ implements <a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html"
  </pre>
 
  <code>bytes parameter_schema = 3;</code></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>This builder for chaining.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasIsUpdate()">
+<h3>hasIsUpdate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">hasIsUpdate</span>()</div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html#hasIsUpdate()">hasIsUpdate</a></code>&nbsp;in interface&nbsp;<code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html" title="interface in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResultOrBuilder</a></code></dd>
+<dt>Returns:</dt>
+<dd>Whether the isUpdate field is set.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getIsUpdate()">
+<h3>getIsUpdate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">getIsUpdate</span>()</div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
+<dl class="notes">
+<dt>Specified by:</dt>
+<dd><code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html#getIsUpdate()">getIsUpdate</a></code>&nbsp;in interface&nbsp;<code><a href="FlightSql.ActionCreatePreparedStatementResultOrBuilder.html" title="interface in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResultOrBuilder</a></code></dd>
+<dt>Returns:</dt>
+<dd>The isUpdate.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setIsUpdate(boolean)">
+<h3>setIsUpdate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></span>&nbsp;<span class="element-name">setIsUpdate</span><wbr><span class="parameters">(boolean&nbsp;value)</span></div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>value</code> - The isUpdate to set.</dd>
+<dt>Returns:</dt>
+<dd>This builder for chaining.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="clearIsUpdate()">
+<h3>clearIsUpdate</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="FlightSql.ActionCreatePreparedStatementResult.Builder.html" title="class in org.apache.arrow.flight.sql.impl">FlightSql.ActionCreatePreparedStatementResult.Builder</a></span>&nbsp;<span class="element-name">clearIsUpdate</span>()</div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>This builder for chaining.</dd>

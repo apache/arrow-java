@@ -111,18 +111,32 @@ extends com.google.protobuf.MessageOrBuilder</span></div>
  If a result set generating query was provided, dataset_schema contains the
  schema of the result set.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>com.google.protobuf.ByteString</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getParameterSchema()" class="member-name-link">getParameterSchema</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getIsUpdate()" class="member-name-link">getIsUpdate</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>com.google.protobuf.ByteString</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getParameterSchema()" class="member-name-link">getParameterSchema</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">
  If the query provided contained parameters, parameter_schema contains the
  schema of the expected parameters.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>com.google.protobuf.ByteString</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPreparedStatementHandle()" class="member-name-link">getPreparedStatementHandle</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>com.google.protobuf.ByteString</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getPreparedStatementHandle()" class="member-name-link">getPreparedStatementHandle</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">
  Opaque handle for the prepared statement on the server.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#hasIsUpdate()" class="member-name-link">hasIsUpdate</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.</div>
 </div>
 </div>
 </div>
@@ -191,6 +205,40 @@ extends com.google.protobuf.MessageOrBuilder</span></div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>The parameterSchema.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="hasIsUpdate()">
+<h3>hasIsUpdate</h3>
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">hasIsUpdate</span>()</div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>Whether the isUpdate field is set.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getIsUpdate()">
+<h3>getIsUpdate</h3>
+<div class="member-signature"><span class="return-type">boolean</span>&nbsp;<span class="element-name">getIsUpdate</span>()</div>
+<div class="block"><pre>
+ When set to true, the query should be executed with CommandPreparedStatementUpdate,
+ when set to false, the query should be executed with CommandPreparedStatementQuery.
+ If not set, the client can choose how to execute the query.
+ </pre>
+
+ <code>optional bool is_update = 4;</code></div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>The isUpdate.</dd>
 </dl>
 </section>
 </li>
