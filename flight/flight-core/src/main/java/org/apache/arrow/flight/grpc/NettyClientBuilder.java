@@ -19,8 +19,8 @@ package org.apache.arrow.flight.grpc;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.NettyChannelBuilder;
+import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.ServerChannel;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import java.io.InputStream;
@@ -151,7 +151,7 @@ public class NettyClientBuilder {
               // Linux
               builder.channelType(
                   Class.forName("io.netty.channel.epoll.EpollDomainSocketChannel")
-                      .asSubclass(ServerChannel.class));
+                      .asSubclass(Channel.class));
               final EventLoopGroup elg =
                   Class.forName("io.netty.channel.epoll.EpollEventLoopGroup")
                       .asSubclass(EventLoopGroup.class)
@@ -162,7 +162,7 @@ public class NettyClientBuilder {
               // BSD
               builder.channelType(
                   Class.forName("io.netty.channel.kqueue.KQueueDomainSocketChannel")
-                      .asSubclass(ServerChannel.class));
+                      .asSubclass(Channel.class));
               final EventLoopGroup elg =
                   Class.forName("io.netty.channel.kqueue.KQueueEventLoopGroup")
                       .asSubclass(EventLoopGroup.class)
