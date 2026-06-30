@@ -101,7 +101,7 @@ public class ArrowFlightStatementExecuteTest {
     PRODUCER.addUpdateQuery(SAMPLE_LARGE_UPDATE_QUERY, SAMPLE_LARGE_UPDATE_COUNT);
 
     // V2 queries with is_update field set
-    PRODUCER.addSelectQueryV2(
+    PRODUCER.addSelectQuery(
         SAMPLE_QUERY_CMD_V2,
         SAMPLE_QUERY_SCHEMA,
         Collections.singletonList(
@@ -121,8 +121,9 @@ public class ArrowFlightStatementExecuteTest {
               } finally {
                 listener.completed();
               }
-            }));
-    PRODUCER.addUpdateQueryV2(SAMPLE_LARGE_UPDATE_QUERY_V2, SAMPLE_LARGE_UPDATE_COUNT);
+            }),
+        false);
+    PRODUCER.addUpdateQuery(SAMPLE_LARGE_UPDATE_QUERY_V2, SAMPLE_LARGE_UPDATE_COUNT, true);
   }
 
   @BeforeEach

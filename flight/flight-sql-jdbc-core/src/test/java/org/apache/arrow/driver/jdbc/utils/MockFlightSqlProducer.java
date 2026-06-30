@@ -87,6 +87,7 @@ import org.apache.arrow.vector.ipc.message.MessageSerializer;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.calcite.avatica.Meta.StatementType;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** An ad-hoc {@link FlightSqlProducer} for tests. */
 public final class MockFlightSqlProducer implements FlightSqlProducer {
@@ -178,29 +179,37 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   }
 
   /**
-   * Registers a new {@link StatementType#SELECT} SQL query with is_update field set.
+   * Registers a new {@link StatementType#SELECT} SQL query, optionally setting the is_update field.
    *
    * @param sqlCommand the SQL command under which to register the new query.
    * @param schema the schema to use for the query result.
    * @param resultProviders the result provider for this query.
+   * @param isUpdate value to report for the is_update field, or {@code null} to leave it unset.
    */
-  public void addSelectQueryV2(
+  public void addSelectQuery(
       final String sqlCommand,
       final Schema schema,
-      final List<Consumer<ServerStreamListener>> resultProviders) {
+      final List<Consumer<ServerStreamListener>> resultProviders,
+      final @Nullable Boolean isUpdate) {
     addSelectQuery(sqlCommand, schema, resultProviders);
-    isUpdateMap.put(sqlCommand, false);
+    if (isUpdate != null) {
+      isUpdateMap.put(sqlCommand, isUpdate);
+    }
   }
 
   /**
-   * Registers a new {@link StatementType#UPDATE} SQL query with is_update field set.
+   * Registers a new {@link StatementType#UPDATE} SQL query, optionally setting the is_update field.
    *
    * @param sqlCommand the SQL command.
    * @param updatedRows the number of rows affected.
+   * @param isUpdate value to report for the is_update field, or {@code null} to leave it unset.
    */
-  public void addUpdateQueryV2(final String sqlCommand, final long updatedRows) {
+  public void addUpdateQuery(
+      final String sqlCommand, final long updatedRows, final @Nullable Boolean isUpdate) {
     addUpdateQuery(sqlCommand, updatedRows);
-    isUpdateMap.put(sqlCommand, true);
+    if (isUpdate != null) {
+      isUpdateMap.put(sqlCommand, isUpdate);
+    }
   }
 
   /**

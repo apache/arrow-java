@@ -103,7 +103,7 @@ public class ArrowFlightPreparedStatementTest {
     final String query = "SELECT * FROM TEST_V2";
     final Schema schema =
         new Schema(Collections.singletonList(Field.nullable("", Types.MinorType.INT.getType())));
-    PRODUCER.addSelectQueryV2(
+    PRODUCER.addSelectQuery(
         query,
         schema,
         Collections.singletonList(
@@ -118,7 +118,8 @@ public class ArrowFlightPreparedStatementTest {
               } finally {
                 listener.completed();
               }
-            }));
+            }),
+        false);
     try (final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
       boolean isResultSet = preparedStatement.execute();
       assertTrue(isResultSet);
@@ -239,7 +240,7 @@ public class ArrowFlightPreparedStatementTest {
   @Test
   public void testUpdateQueryWithExecuteV2() throws SQLException {
     String query = "Fake update with execute V2";
-    PRODUCER.addUpdateQueryV2(query, /*updatedRows*/ 99);
+    PRODUCER.addUpdateQuery(query, /*updatedRows*/ 99, true);
     try (final PreparedStatement stmt = connection.prepareStatement(query)) {
       boolean isResultSet = stmt.execute();
       assertFalse(isResultSet);
