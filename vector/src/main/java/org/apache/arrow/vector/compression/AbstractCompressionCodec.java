@@ -29,7 +29,11 @@ public abstract class AbstractCompressionCodec implements CompressionCodec {
 
   @Override
   public ArrowBuf compress(BufferAllocator allocator, ArrowBuf uncompressedBuffer) {
-    if (uncompressedBuffer.writerIndex() == 0L) {
+    // GH-1116: capture writerIndex() once so the empty-buffer check, size
+    // comparison, and uncompressed-length prefix all see the same value.
+    long uncompressedLength = uncompressedBuffer.writerIndex();
+
+    if (uncompressedLength == 0L) {
       // shortcut for empty buffer
       ArrowBuf compressedBuffer = allocator.buffer(CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
       compressedBuffer.setLong(0, 0);
@@ -41,7 +45,6 @@ public abstract class AbstractCompressionCodec implements CompressionCodec {
     ArrowBuf compressedBuffer = doCompress(allocator, uncompressedBuffer);
     long compressedLength =
         compressedBuffer.writerIndex() - CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH;
-    long uncompressedLength = uncompressedBuffer.writerIndex();
 
     if (compressedLength > uncompressedLength) {
       // compressed buffer is larger, send the raw buffer
