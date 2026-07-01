@@ -26,4 +26,5 @@ open module org.apache.arrow.gandiva {
   requires org.apache.arrow.memory.core;
   requires org.apache.arrow.vector;
   requires org.slf4j;
+  requires com.sun.jna;
 }
