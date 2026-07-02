@@ -16,11 +16,6 @@
  */
 package org.apache.arrow.vector.util;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import java.io.DataInput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -39,7 +34,6 @@ import java.util.Optional;
  * A simplified byte wrapper similar to Hadoop's Text class without all the dependencies. Lifted
  * from Hadoop 2.7.1
  */
-@JsonSerialize(using = Text.TextSerializer.class)
 public class Text extends ReusableByteArray {
 
   private static ThreadLocal<CharsetEncoder> ENCODER_FACTORY =
@@ -857,20 +851,5 @@ public class Text extends ReusableByteArray {
       ch = iter.next();
     }
     return size;
-  }
-
-  /** JSON serializer for {@link Text}. */
-  public static class TextSerializer extends StdSerializer<Text> {
-
-    public TextSerializer() {
-      super(Text.class);
-    }
-
-    @Override
-    public void serialize(
-        Text text, JsonGenerator jsonGenerator, SerializerProvider serializerProvider)
-        throws IOException, JsonGenerationException {
-      jsonGenerator.writeString(text.toString());
-    }
   }
 }

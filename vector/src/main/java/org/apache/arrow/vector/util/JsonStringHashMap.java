@@ -16,8 +16,6 @@
  */
 package org.apache.arrow.vector.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 
 /**
@@ -29,14 +27,12 @@ import java.util.LinkedHashMap;
  */
 public class JsonStringHashMap<K, V> extends LinkedHashMap<K, V> {
 
-  private static final ObjectMapper MAPPER = ObjectMapperFactory.newObjectMapper();
+  // Pinned to the value implicitly generated before the jackson-databind removal, to preserve
+  // Java serialization compatibility for instances persisted by earlier versions.
+  private static final long serialVersionUID = -7486716413378679089L;
 
   @Override
   public final String toString() {
-    try {
-      return MAPPER.writeValueAsString(this);
-    } catch (JsonProcessingException e) {
-      throw new IllegalStateException("Cannot serialize hash map to JSON string", e);
-    }
+    return JsonStringSerializer.serialize(this);
   }
 }

@@ -21,12 +21,9 @@ import static org.apache.arrow.vector.complex.BaseRepeatedValueVector.DATA_VECTO
 import static org.apache.arrow.vector.types.pojo.ArrowType.getTypeForField;
 import static org.apache.arrow.vector.types.pojo.Schema.convertMetadata;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.google.flatbuffers.FlatBufferBuilder;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -76,15 +73,33 @@ public class Field {
     this(name, new FieldType(nullable, type, dictionary, metadata), children);
   }
 
-  @JsonCreator
-  private Field(
-      @JsonProperty("name") String name,
-      @JsonProperty("nullable") boolean nullable,
-      @JsonProperty("type") ArrowType type,
-      @JsonProperty("dictionary") DictionaryEncoding dictionary,
-      @JsonProperty("children") List<Field> children,
-      @JsonProperty("metadata") List<Map<String, String>> metadata) {
-    this(name, new FieldType(nullable, type, dictionary, convertMetadata(metadata)), children);
+  /** Builds a Field from a parsed JSON object. */
+  @SuppressWarnings("unchecked")
+  static Field fromJson(Map<String, Object> object) {
+    String name = JsonValues.asString(object.get("name"));
+    boolean nullable = JsonValues.asBoolean(object.get("nullable"));
+
+    Map<String, Object> typeObject = (Map<String, Object>) object.get("type");
+    ArrowType type =
+        ArrowType.getArrowType(JsonValues.asString(typeObject.get("name")), typeObject);
+
+    DictionaryEncoding dictionary = null;
+    Object dictionaryObject = object.get("dictionary");
+    if (dictionaryObject != null) {
+      dictionary = DictionaryEncoding.fromJson((Map<String, Object>) dictionaryObject);
+    }
+
+    List<Field> children = new ArrayList<>();
+    Object childrenObject = object.get("children");
+    if (childrenObject != null) {
+      for (Object child : (List<Object>) childrenObject) {
+        children.add(fromJson((Map<String, Object>) child));
+      }
+    }
+
+    Map<String, String> metadata =
+        convertMetadata((List<Map<String, String>>) object.get("metadata"));
+    return new Field(name, nullable, type, dictionary, children, metadata);
   }
 
   /**
@@ -240,12 +255,10 @@ public class Field {
     return fieldType.getType();
   }
 
-  @JsonIgnore
   public FieldType getFieldType() {
     return fieldType;
   }
 
-  @JsonInclude(Include.NON_NULL)
   public DictionaryEncoding getDictionary() {
     return fieldType.getDictionary();
   }
@@ -254,15 +267,36 @@ public class Field {
     return children;
   }
 
-  @JsonIgnore
   public Map<String, String> getMetadata() {
     return fieldType.getMetadata();
   }
 
-  @JsonProperty("metadata")
-  @JsonInclude(Include.NON_EMPTY)
   List<Map<String, String>> getMetadataForJson() {
     return convertMetadata(getMetadata());
+  }
+
+  /** Serializes this field to JSON. */
+  void serialize(JsonGenerator generator) throws IOException {
+    generator.writeStartObject();
+    generator.writeStringField("name", name);
+    generator.writeBooleanField("nullable", isNullable());
+    generator.writeFieldName("type");
+    getType().writeJson(generator);
+    DictionaryEncoding dictionary = getDictionary();
+    if (dictionary != null) {
+      generator.writeFieldName("dictionary");
+      dictionary.serialize(generator);
+    }
+    generator.writeArrayFieldStart("children");
+    for (Field child : children) {
+      child.serialize(generator);
+    }
+    generator.writeEndArray();
+    List<Map<String, String>> metadata = getMetadataForJson();
+    if (metadata != null && !metadata.isEmpty()) {
+      Schema.serializeMetadata(generator, metadata);
+    }
+    generator.writeEndObject();
   }
 
   @Override

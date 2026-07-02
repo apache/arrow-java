@@ -16,10 +16,12 @@
  */
 package org.apache.arrow.vector.extension;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -72,6 +74,7 @@ import org.apache.arrow.vector.types.pojo.FieldType;
  */
 public class OpaqueType extends ArrowType.ExtensionType {
   private static final AtomicBoolean registered = new AtomicBoolean(false);
+  private static final JsonFactory JSON_FACTORY = new JsonFactory();
   public static final String EXTENSION_NAME = "arrow.opaque";
   private final ArrowType storageType;
   private final String typeName;
@@ -128,41 +131,85 @@ public class OpaqueType extends ArrowType.ExtensionType {
 
   @Override
   public String serialize() {
-    ObjectMapper mapper = new ObjectMapper();
-    ObjectNode object = mapper.createObjectNode();
-    object.put("type_name", typeName);
-    object.put("vendor_name", vendorName);
-    try {
-      return mapper.writeValueAsString(object);
-    } catch (JsonProcessingException e) {
+    try (StringWriter writer = new StringWriter();
+        JsonGenerator generator = JSON_FACTORY.createGenerator(writer)) {
+      generator.writeStartObject();
+      generator.writeStringField("type_name", typeName);
+      generator.writeStringField("vendor_name", vendorName);
+      generator.writeEndObject();
+      generator.flush();
+      return writer.toString();
+    } catch (IOException e) {
       throw new RuntimeException("Could not serialize " + this, e);
     }
   }
 
   @Override
   public ArrowType deserialize(ArrowType storageType, String serializedData) {
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode object;
+    java.util.Map<String, Object> object;
     try {
-      object = mapper.readTree(serializedData);
-    } catch (JsonProcessingException e) {
+      object = parseObject(serializedData);
+    } catch (IOException e) {
       throw new InvalidExtensionMetadataException("Extension metadata is invalid", e);
     }
-    JsonNode typeName = object.get("type_name");
-    JsonNode vendorName = object.get("vendor_name");
-    if (typeName == null) {
+    if (object == null) {
+      throw new InvalidExtensionMetadataException("Extension metadata is invalid");
+    }
+    if (!object.containsKey("type_name")) {
       throw new InvalidExtensionMetadataException("typeName is missing");
     }
-    if (vendorName == null) {
+    if (!object.containsKey("vendor_name")) {
       throw new InvalidExtensionMetadataException("vendorName is missing");
     }
-    if (!typeName.isTextual()) {
+    Object typeName = object.get("type_name");
+    Object vendorName = object.get("vendor_name");
+    if (!(typeName instanceof String)) {
       throw new InvalidExtensionMetadataException("typeName should be string, was " + typeName);
     }
-    if (!vendorName.isTextual()) {
+    if (!(vendorName instanceof String)) {
       throw new InvalidExtensionMetadataException("vendorName should be string, was " + vendorName);
     }
-    return new OpaqueType(storageType, typeName.asText(), vendorName.asText());
+    return new OpaqueType(storageType, (String) typeName, (String) vendorName);
+  }
+
+  /** Parses a JSON object into a generic map, or returns null if the root is not an object. */
+  private static java.util.Map<String, Object> parseObject(String serializedData)
+      throws IOException {
+    try (JsonParser parser = JSON_FACTORY.createParser(serializedData)) {
+      if (parser.nextToken() != JsonToken.START_OBJECT) {
+        return null;
+      }
+      java.util.Map<String, Object> result = new java.util.LinkedHashMap<>();
+      while (parser.nextToken() != JsonToken.END_OBJECT) {
+        String name = parser.currentName();
+        result.put(name, readScalarOrSkip(parser));
+      }
+      return result;
+    }
+  }
+
+  private static Object readScalarOrSkip(JsonParser parser) throws IOException {
+    JsonToken token = parser.nextToken();
+    switch (token) {
+      case VALUE_STRING:
+        return parser.getValueAsString();
+      case VALUE_NUMBER_INT:
+        return parser.getLongValue();
+      case VALUE_NUMBER_FLOAT:
+        return parser.getDoubleValue();
+      case VALUE_TRUE:
+        return Boolean.TRUE;
+      case VALUE_FALSE:
+        return Boolean.FALSE;
+      case VALUE_NULL:
+        return null;
+      case START_OBJECT:
+      case START_ARRAY:
+        parser.skipChildren();
+        return new Object();
+      default:
+        return null;
+    }
   }
 
   @Override

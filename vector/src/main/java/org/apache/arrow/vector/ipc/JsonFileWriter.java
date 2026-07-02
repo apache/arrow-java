@@ -19,10 +19,10 @@ package org.apache.arrow.vector.ipc;
 import static org.apache.arrow.vector.BufferLayout.BufferType.*;
 
 import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter.NopIndenter;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Set;
 import org.apache.arrow.memory.ArrowBuf;
@@ -82,7 +83,6 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.arrow.vector.util.DictionaryUtility;
-import org.apache.commons.codec.binary.Hex;
 
 /**
  * A writer that converts binary Vectors into an <em>internal, unstable</em> JSON format suitable
@@ -123,7 +123,7 @@ public class JsonFileWriter implements AutoCloseable {
 
   /** Constructs a new writer that will output to <code>outputFile</code> with the given options. */
   public JsonFileWriter(File outputFile, JSONWriteConfig config) throws IOException {
-    MappingJsonFactory jsonFactory = new MappingJsonFactory();
+    JsonFactory jsonFactory = new JsonFactory();
     this.generator = jsonFactory.createGenerator(outputFile, JsonEncoding.UTF8);
     if (config.pretty) {
       DefaultPrettyPrinter prettyPrinter = new DefaultPrettyPrinter();
@@ -147,7 +147,8 @@ public class JsonFileWriter implements AutoCloseable {
     Schema updatedSchema = new Schema(fields, schema.getCustomMetadata());
 
     generator.writeStartObject();
-    generator.writeObjectField("schema", updatedSchema);
+    generator.writeFieldName("schema");
+    updatedSchema.serialize(generator);
 
     // Write all dictionaries that were used
     if (!dictionaryIdsUsed.isEmpty()) {
@@ -164,7 +165,7 @@ public class JsonFileWriter implements AutoCloseable {
     generator.writeArrayFieldStart("dictionaries");
     for (Long id : dictionaryIdsUsed) {
       generator.writeStartObject();
-      generator.writeObjectField("id", id);
+      generator.writeNumberField("id", id);
 
       generator.writeFieldName("data");
       Dictionary dictionary = provider.lookup(id);
@@ -190,7 +191,7 @@ public class JsonFileWriter implements AutoCloseable {
   private void writeBatch(VectorSchemaRoot recordBatch) throws IOException {
     generator.writeStartObject();
     {
-      generator.writeObjectField("count", recordBatch.getRowCount());
+      generator.writeNumberField("count", recordBatch.getRowCount());
       generator.writeArrayFieldStart("columns");
       for (Field field : recordBatch.getSchema().getFields()) {
         FieldVector vector = recordBatch.getVector(field);
@@ -220,9 +221,9 @@ public class JsonFileWriter implements AutoCloseable {
 
     generator.writeStartObject();
     {
-      generator.writeObjectField("name", field.getName());
+      generator.writeStringField("name", field.getName());
       int valueCount = vector.getValueCount();
-      generator.writeObjectField("count", valueCount);
+      generator.writeNumberField("count", valueCount);
 
       for (int v = 0; v < vectorTypes.size(); v++) {
         BufferType bufferType = vectorTypes.get(v);
@@ -375,7 +376,7 @@ public class JsonFileWriter implements AutoCloseable {
           viewBuffer.getInt(
               ((long) index * elementSize) + lengthWidth + prefixWidth + bufIndexWidth);
       generator.writeFieldName("PREFIX_HEX");
-      generator.writeString(Hex.encodeHexString(prefix));
+      generator.writeString(HexFormat.of().formatHex(prefix));
       generator.writeFieldName("BUFFER_INDEX");
       generator.writeObject(bufferIndex);
       generator.writeFieldName("OFFSET");
@@ -385,7 +386,7 @@ public class JsonFileWriter implements AutoCloseable {
       if (vector.getMinorType() == MinorType.VIEWVARCHAR) {
         generator.writeString(new String(b, "UTF-8"));
       } else {
-        generator.writeString(Hex.encodeHexString(b));
+        generator.writeString(HexFormat.of().formatHex(b));
       }
     }
     generator.writeEndObject();
@@ -403,7 +404,7 @@ public class JsonFileWriter implements AutoCloseable {
         byte[] result = new byte[(int) dataBuf.writerIndex()];
         dataBuf.getBytes(0, result);
         if (result != null) {
-          generator.writeString(Hex.encodeHexString(result));
+          generator.writeString(HexFormat.of().formatHex(result));
         }
       }
     }
@@ -527,16 +528,16 @@ public class JsonFileWriter implements AutoCloseable {
           break;
         case INTERVALDAY:
           generator.writeStartObject();
-          generator.writeObjectField("days", IntervalDayVector.getDays(buffer, index));
-          generator.writeObjectField(
+          generator.writeNumberField("days", IntervalDayVector.getDays(buffer, index));
+          generator.writeNumberField(
               "milliseconds", IntervalDayVector.getMilliseconds(buffer, index));
           generator.writeEndObject();
           break;
         case INTERVALMONTHDAYNANO:
           generator.writeStartObject();
-          generator.writeObjectField("months", IntervalMonthDayNanoVector.getMonths(buffer, index));
-          generator.writeObjectField("days", IntervalMonthDayNanoVector.getDays(buffer, index));
-          generator.writeObjectField(
+          generator.writeNumberField("months", IntervalMonthDayNanoVector.getMonths(buffer, index));
+          generator.writeNumberField("days", IntervalMonthDayNanoVector.getDays(buffer, index));
+          generator.writeNumberField(
               "nanoseconds", IntervalMonthDayNanoVector.getNanoseconds(buffer, index));
           generator.writeEndObject();
           break;
@@ -547,14 +548,14 @@ public class JsonFileWriter implements AutoCloseable {
           {
             Preconditions.checkNotNull(offsetBuffer);
             String hexString =
-                Hex.encodeHexString(BaseVariableWidthVector.get(buffer, offsetBuffer, index));
+                HexFormat.of().formatHex(BaseVariableWidthVector.get(buffer, offsetBuffer, index));
             generator.writeObject(hexString);
             break;
           }
         case FIXEDSIZEBINARY:
           int byteWidth = ((FixedSizeBinaryVector) vector).getByteWidth();
           String fixedSizeHexString =
-              Hex.encodeHexString(FixedSizeBinaryVector.get(buffer, index, byteWidth));
+              HexFormat.of().formatHex(FixedSizeBinaryVector.get(buffer, index, byteWidth));
           generator.writeObject(fixedSizeHexString);
           break;
         case VARCHAR:
