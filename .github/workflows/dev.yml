@@ -19,7 +19,9 @@ name: Dev
 
 on:
   pull_request: {}
-  push: {}
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.repository }}-${{ github.ref }}-${{ github.workflow }}
