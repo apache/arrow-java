@@ -26,6 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.protobuf.Message;
+import java.io.IOException;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.Driver;
@@ -33,8 +38,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
@@ -766,6 +773,41 @@ public class ConnectionTest {
     // assert the ResultSets are closed
     for (int i = 0; i < numResultSets; i++) {
       assertTrue(resultSets[i].isClosed());
+    }
+  }
+
+  @Test
+  public void testJdbcDriverConsultsProxySelectorForTcpConnections() throws Exception {
+    AtomicBoolean consulted = new AtomicBoolean(false);
+    ProxySelector original = ProxySelector.getDefault();
+    ProxySelector.setDefault(
+        new ProxySelector() {
+          @Override
+          public List<Proxy> select(URI uri) {
+            consulted.set(true);
+            return original.select(uri);
+          }
+
+          @Override
+          public void connectFailed(URI uri, SocketAddress sa, IOException e) {}
+        });
+
+    try {
+      final Properties properties = new Properties();
+      properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+      properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+      properties.put("useEncryption", false);
+
+      DriverManager.getConnection(
+              "jdbc:arrow-flight-sql://localhost:" + FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+              properties)
+          .close();
+
+      assertTrue(
+          consulted.get(),
+          "JDBC driver must consult ProxySelector so JVM proxy settings are respected");
+    } finally {
+      ProxySelector.setDefault(original);
     }
   }
 }

@@ -139,7 +139,9 @@ public class NettyClientBuilder {
       case LocationSchemes.GRPC_INSECURE:
       case LocationSchemes.GRPC_TLS:
         {
-          builder = NettyChannelBuilder.forAddress(location.toSocketAddress());
+          builder =
+              NettyChannelBuilder.forAddress(
+                  location.getUri().getHost(), location.getUri().getPort());
           break;
         }
       case LocationSchemes.GRPC_DOMAIN_SOCKET:
