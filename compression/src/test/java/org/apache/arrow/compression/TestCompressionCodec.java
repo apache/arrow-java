@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -59,6 +60,7 @@ import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.ByteArrayReadableSeekableByteChannel;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -229,6 +231,26 @@ class TestCompressionCodec {
 
     newVec.close();
     AutoCloseables.close(decompressedBuffers);
+  }
+
+  @Test
+  void testLz4DecompressRejectsWrongLength() {
+    byte[] data = new byte[512]; // all zeros, highly compressible
+    ArrowBuf orig = allocator.buffer(data.length);
+    orig.setBytes(0, data);
+    orig.writerIndex(data.length);
+
+    CompressionCodec codec = new Lz4CompressionCodec();
+    ArrowBuf compressed = codec.compress(allocator, orig);
+
+    // tamper with the 8-byte uncompressed-length prefix so it no longer matches
+    // the real decompressed size
+    compressed.setLong(0, 1_000_000L);
+
+    RuntimeException e =
+        assertThrows(RuntimeException.class, () -> codec.decompress(allocator, compressed));
+    assertTrue(e.getMessage().contains("decompressed length"));
+    compressed.close();
   }
 
   private static Stream<CompressionUtil.CodecType> codecTypes() {
