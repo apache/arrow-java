@@ -80,6 +80,13 @@ public class Lz4CompressionCodec extends AbstractCompressionCodec {
     }
 
     byte[] outBytes = out.toByteArray();
+    if (outBytes.length != decompressedLength) {
+      throw new RuntimeException(
+          "Expected != actual decompressed length: "
+              + decompressedLength
+              + " != "
+              + outBytes.length);
+    }
     ArrowBuf decompressedBuffer = allocator.buffer(outBytes.length);
     decompressedBuffer.setBytes(/* index= */ 0, outBytes);
     decompressedBuffer.writerIndex(decompressedLength);
