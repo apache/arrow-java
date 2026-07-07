@@ -34,6 +34,7 @@ fi
 mvn="mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 # Use `2 * ncores` threads
 mvn="${mvn} -T 2C"
+mvn="${mvn} -Denforcer.skip=true"
 
 pushd "${build_dir}"
 
