@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.converter.impl;
 
+import java.util.concurrent.TimeUnit;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.FieldVector;
@@ -33,7 +34,7 @@ public class DateAvaticaParameterConverter extends BaseAvaticaParameterConverter
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
     int value = (int) typedValue.toLocal();
     if (vector instanceof DateMilliVector) {
-      ((DateMilliVector) vector).setSafe(index, value);
+      ((DateMilliVector) vector).setSafe(index, TimeUnit.DAYS.toMillis(value));
       return true;
     } else if (vector instanceof DateDayVector) {
       ((DateDayVector) vector).setSafe(index, value);

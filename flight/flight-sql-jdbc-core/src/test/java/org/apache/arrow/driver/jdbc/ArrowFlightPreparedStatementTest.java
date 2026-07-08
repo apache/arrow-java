@@ -25,9 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +40,7 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -172,6 +175,49 @@ public class ArrowFlightPreparedStatementTest {
       preparedStatement.setString(1, "foo");
       preparedStatement.setArray(
           2, connection.createArrayOf("INTEGER", new Integer[] {1, 2, null}));
+
+      try (final ResultSet resultSet = preparedStatement.executeQuery()) {
+        resultSet.next();
+        assert true;
+      }
+    }
+  }
+
+  @Test
+  public void testQueryWithDateMillisecondParameterBinding() throws SQLException {
+    final String query = "Fake query with date millisecond parameter";
+    final Schema schema =
+        new Schema(Collections.singletonList(Field.nullable("", Types.MinorType.INT.getType())));
+    final Schema parameterSchema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullable("", new ArrowType.Date(DateUnit.MILLISECOND))));
+    final LocalDate date = LocalDate.of(2000, 1, 1);
+    final List<List<Object>> expected =
+        Collections.singletonList(Collections.singletonList(date.atStartOfDay()));
+
+    PRODUCER.addSelectQuery(
+        query,
+        schema,
+        Collections.singletonList(
+            listener -> {
+              try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+                  final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+                ((IntVector) root.getVector(0)).setSafe(0, 10);
+                root.setRowCount(1);
+                listener.start(root);
+                listener.putNext();
+              } catch (final Throwable throwable) {
+                listener.error(throwable);
+              } finally {
+                listener.completed();
+              }
+            }));
+
+    PRODUCER.addExpectedParameters(query, parameterSchema, expected);
+
+    try (final PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+      preparedStatement.setDate(1, Date.valueOf(date));
 
       try (final ResultSet resultSet = preparedStatement.executeQuery()) {
         resultSet.next();
