@@ -66,7 +66,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker
-          key: maven-${{ matrix.jdk }}-${{ matrix.maven }}-${{ hashFiles('compose.yaml', '**/pom.xml', '**/*.java') }}
+          key: maven-${{ matrix.jdk }}-${{ matrix.maven }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
           restore-keys: maven-${{ matrix.jdk }}-${{ matrix.maven }}-
       - name: Execute Docker Build
         env:
@@ -94,16 +94,17 @@ jobs:
             jdk: 17
             macos: latest
     steps:
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.jdk }}
       - name: Checkout Arrow
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.jdk }}
+          cache: 'maven'
       - name: Build
         shell: bash
         env:
@@ -125,16 +126,17 @@ jobs:
       matrix:
         jdk: [17]
     steps:
-      - name: Set up Java
-        uses: actions/setup-java@v5
-        with:
-          java-version: ${{ matrix.jdk }}
-          distribution: 'temurin'
       - name: Checkout Arrow
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
+          cache: 'maven'
       - name: Build
         shell: bash
         env:
