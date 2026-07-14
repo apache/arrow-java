@@ -1405,7 +1405,8 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
   }
 
   protected final void handleSafe(int index, int dataLength) {
-    // The view buffer stores one fixed-width view per value; payload bytes are allocated separately.
+    // The view buffer stores one fixed-width view per value; payload bytes are allocated
+    // separately.
     final long targetCapacity = roundUpToMultipleOf16(((long) index + 1) * ELEMENT_SIZE);
     if (viewBuffer.capacity() < targetCapacity) {
       reallocViewBuffer(targetCapacity);
