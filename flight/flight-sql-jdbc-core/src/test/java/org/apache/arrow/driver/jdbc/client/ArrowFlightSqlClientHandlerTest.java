@@ -18,23 +18,72 @@ package org.apache.arrow.driver.jdbc.client;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import org.apache.arrow.flight.CallOption;
 import org.apache.arrow.flight.CallStatus;
 import org.apache.arrow.flight.CloseSessionRequest;
+import org.apache.arrow.flight.FlightDescriptor;
+import org.apache.arrow.flight.FlightEndpoint;
+import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.flight.FlightStatusCode;
+import org.apache.arrow.flight.Location;
+import org.apache.arrow.flight.Ticket;
 import org.apache.arrow.flight.sql.FlightSqlClient;
+import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.types.pojo.Schema;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 public class ArrowFlightSqlClientHandlerTest {
+
+  @Test
+  public void testGetStreamsRejectsUnencryptedEndpointOnEncryptedConnection() throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      final ArrowFlightSqlClientHandler.Builder builder =
+          new ArrowFlightSqlClientHandler.Builder()
+              .withHost("localhost")
+              .withPort(443)
+              .withEncryption(true)
+              .withUsername("user")
+              .withPassword("password")
+              .withBufferAllocator(allocator);
+
+      final ArrowFlightSqlClientHandler handler =
+          new ArrowFlightSqlClientHandler(
+              "cacheKey", sqlClient, builder, new ArrayList<>(), Optional.empty(), null);
+
+      // A server-supplied location that asks the driver to drop back to plaintext.
+      final FlightInfo flightInfo =
+          new FlightInfo(
+              new Schema(Collections.emptyList()),
+              FlightDescriptor.command(new byte[0]),
+              Collections.singletonList(
+                  new FlightEndpoint(
+                      new Ticket(new byte[0]),
+                      Location.forGrpcInsecure("other.example.com", 443))),
+              -1,
+              -1);
+
+      final SQLException ex =
+          assertThrows(SQLException.class, () -> handler.getStreams(flightInfo));
+      assertTrue(ex.getMessage().contains("without encryption"), ex.getMessage());
+      // The credentials must not have been sent anywhere.
+      verifyNoInteractions(sqlClient);
+    }
+  }
 
   @ParameterizedTest
   @MethodSource
