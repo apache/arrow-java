@@ -21,6 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.DecimalVector;
@@ -36,6 +38,7 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.DecimalHolder;
+import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -204,6 +207,53 @@ public class TestComplexCopier {
 
       // validate equals
       assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyListOfFixedSizeBinary() {
+    final int byteWidth = 4;
+    try (ListVector from = ListVector.empty("v", allocator);
+        ListVector to = ListVector.empty("v", allocator);
+        ArrowBuf buf = allocator.buffer(byteWidth)) {
+
+      from.addOrGetVector(FieldType.nullable(new ArrowType.FixedSizeBinary(byteWidth)));
+
+      UnionListWriter listWriter = from.getWriter();
+      listWriter.allocate();
+
+      FixedSizeBinaryHolder holder = new FixedSizeBinaryHolder();
+      holder.byteWidth = byteWidth;
+      holder.buffer = buf;
+
+      for (int i = 0; i < COUNT; i++) {
+        listWriter.setPosition(i);
+        listWriter.startList();
+
+        buf.setBytes(0, new byte[] {1, 2, 3, 4});
+        listWriter.fixedSizeBinary().write(holder);
+
+        buf.setBytes(0, new byte[] {5, 6, 7, 8});
+        listWriter.fixedSizeBinary().write(holder);
+
+        listWriter.endList();
+      }
+      from.setValueCount(COUNT);
+
+      // copy values — this currently throws UnsupportedOperationException: FIXEDSIZEBINARY
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      UnsupportedOperationException e =
+          assertThrows(
+              UnsupportedOperationException.class,
+              () -> {
+                for (int i = 0; i < COUNT; i++) {
+                  in.setPosition(i);
+                  out.setPosition(i);
+                  ComplexCopier.copy(in, out);
+                }
+              });
+      assertTrue(e.getMessage().contains("FIXEDSIZEBINARY"));
     }
   }
 
