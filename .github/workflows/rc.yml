@@ -195,7 +195,7 @@ jobs:
           repository: apache/parquet-testing
           path: arrow/cpp/submodules/parquet-testing
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           cache: 'pip'
           python-version: 3.12
@@ -446,7 +446,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           cache: 'pip'
       - name: Download source archive
