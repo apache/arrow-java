@@ -64,9 +64,9 @@ final class ReferenceCountedArrowArray {
    */
   ArrowBuf unsafeAssociateAllocation(
       BufferAllocator trackingAllocator, long capacity, long memoryAddress) {
-    // Retain AFTER wrap: wrapForeignAllocation throws OutOfMemoryException when the allocator is
-    // over its limit, and a retain() before that throw would leave the count elevated with no
-    // matching release0(), preventing the array's release callback from ever firing.
+    // Retain only after wrapForeignAllocation succeeds. On the allocator-limit OOM path,
+    // wrapForeignAllocation throws before the ForeignAllocation is associated, so release0()
+    // is not called; retaining first would leave the count elevated with no matching release0().
     ArrowBuf buf =
         trackingAllocator.wrapForeignAllocation(
             new ForeignAllocation(capacity, memoryAddress) {

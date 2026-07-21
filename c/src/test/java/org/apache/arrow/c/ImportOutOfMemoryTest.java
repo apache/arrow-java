@@ -38,8 +38,8 @@ import org.junit.jupiter.api.Test;
  *
  * <p>A "producer" allocator owns the exported batch; if the C Data release callback fires, the
  * producer drains to zero. A too-small consumer allocator forces an OOM part-way through the
- * import. The test asserts the producer drains, confirming the release callback fired despite
- * the failure.
+ * import. The test asserts the producer drains, confirming the release callback fired despite the
+ * failure.
  */
 final class ImportOutOfMemoryTest {
   private static final int ROWS = 1024;
@@ -66,40 +66,37 @@ final class ImportOutOfMemoryTest {
     // separate allocator (they are consumed/closed by import, which would otherwise muddy the
     // producer's balance). So producer draining to zero is an exact signal that the array's release
     // callback fired.
-    BufferAllocator producer = root.newChildAllocator("producer", 0, Long.MAX_VALUE);
-    BufferAllocator structs = root.newChildAllocator("structs", 0, Long.MAX_VALUE);
-    try (ArrowArray array = ArrowArray.allocateNew(structs);
-        ArrowSchema schema = ArrowSchema.allocateNew(structs)) {
-      exportBatch(producer, array, schema);
-      assertTrue(
-          producer.getAllocatedMemory() > 0, "producer holds the exported batch before import");
+    try (BufferAllocator producer = root.newChildAllocator("producer", 0, Long.MAX_VALUE);
+        BufferAllocator structs = root.newChildAllocator("structs", 0, Long.MAX_VALUE)) {
+      try (ArrowArray array = ArrowArray.allocateNew(structs);
+          ArrowSchema schema = ArrowSchema.allocateNew(structs)) {
+        exportBatch(producer, array, schema);
+        assertTrue(
+            producer.getAllocatedMemory() > 0, "producer holds the exported batch before import");
 
-      // A consumer allocator far too small to hold the batch: the import throws part-way through.
-      BufferAllocator consumer = root.newChildAllocator("consumer", 0, TINY_LIMIT);
-      try (CDataDictionaryProvider provider = new CDataDictionaryProvider()) {
-        Schema importSchema = Data.importSchema(consumer, schema, provider);
-        try (VectorSchemaRoot importRoot = VectorSchemaRoot.create(importSchema, consumer)) {
-          Exception thrown =
-              assertThrows(
-                  Exception.class,
-                  () -> Data.importIntoVectorSchemaRoot(consumer, array, importRoot, provider));
-          assertTrue(
-              hasOutOfMemoryCause(thrown),
-              "mid-import failure must be an allocator OOM: " + thrown);
+        // A consumer allocator far too small to hold the batch: the import throws part-way through.
+        try (BufferAllocator consumer = root.newChildAllocator("consumer", 0, TINY_LIMIT);
+            CDataDictionaryProvider provider = new CDataDictionaryProvider()) {
+          Schema importSchema = Data.importSchema(consumer, schema, provider);
+          try (VectorSchemaRoot importRoot = VectorSchemaRoot.create(importSchema, consumer)) {
+            Exception thrown =
+                assertThrows(
+                    Exception.class,
+                    () -> Data.importIntoVectorSchemaRoot(consumer, array, importRoot, provider));
+            assertTrue(
+                hasOutOfMemoryCause(thrown),
+                "mid-import failure must be an allocator OOM: " + thrown);
+          }
         }
-      }
-      consumer.close();
 
-      // The array's release callback must have fired despite the mid-import OOM, freeing the whole
-      // exported batch. On the unfixed retain-before-wrap code the batch is stranded instead.
-      assertEquals(
-          0L,
-          producer.getAllocatedMemory(),
-          "import OOM leaked the exported batch (producer not drained)");
+        // The array's release callback must have fired despite the mid-import OOM, freeing the
+        // whole exported batch. On the unfixed retain-before-wrap code the batch is stranded.
+        assertEquals(
+            0L,
+            producer.getAllocatedMemory(),
+            "import OOM leaked the exported batch (producer not drained)");
+      }
     }
-    // Closing these (and the RootAllocator in tearDown) additionally asserts nothing leaked at all.
-    producer.close();
-    structs.close();
   }
 
   /** True if {@code t} is, or is caused by, an Arrow {@link OutOfMemoryException}. */
