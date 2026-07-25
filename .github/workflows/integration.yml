@@ -26,7 +26,6 @@ on:
       - '**'
     paths:
       - '.github/workflows/integration.yml'
-      - 'pom.xml'
       - '**/pom.xml'
       - 'c/**'
       - 'ci/scripts/**'
@@ -38,7 +37,6 @@ on:
   pull_request:
     paths:
       - '.github/workflows/integration.yml'
-      - 'pom.xml'
       - '**/pom.xml'
       - 'c/**'
       - 'ci/scripts/**'
