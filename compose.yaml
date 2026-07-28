@@ -30,6 +30,14 @@ volumes:
     name: ccache-cache
   maven-cache:
     name: maven-cache
+  java-build:
+    name: java-build
+  jni-dist:
+    name: jni-dist
+  cdata-build:
+    name: cdata-build
+  cdata-jni-dist:
+    name: cdata-jni-dist
 
 services:
   ubuntu:
@@ -49,6 +57,33 @@ services:
       /bin/bash -c "
         /arrow-java/ci/scripts/build.sh /arrow-java /build /jni &&
         /arrow-java/ci/scripts/test.sh /arrow-java /build /jni"
+
+  ubuntu-artifacts:
+    # Builds reusable pure Java artifacts for CI test jobs.
+    image: ${ARCH}/maven:${MAVEN}-eclipse-temurin-${JDK}
+    volumes:
+      - .:/arrow-java:delegated
+      - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
+      - ${DOCKER_VOLUME_PREFIX}java-build:/build-output:delegated
+      - ${DOCKER_VOLUME_PREFIX}jni-dist:/jni:delegated
+    command:
+      /bin/bash -c "
+        rm -rf /build-output/build &&
+        find /jni -mindepth 1 -maxdepth 1 -exec rm -rf {} + &&
+        /arrow-java/ci/scripts/build.sh /arrow-java /build-output/build /jni"
+
+  ubuntu-test-prebuilt:
+    # Runs pure Java tests against prebuilt CI artifacts on Ubuntu.
+    image: ${ARCH}/maven:${MAVEN}-eclipse-temurin-${JDK}
+    volumes:
+      - .:/arrow-java:delegated
+      - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
+      - ${DOCKER_VOLUME_PREFIX}java-build:/build-output:delegated
+      - ${DOCKER_VOLUME_PREFIX}jni-dist:/jni:delegated
+    environment:
+      ARROW_JAVA_TEST_PREBUILT: "ON"
+    command:
+      /bin/bash -c "/arrow-java/ci/scripts/test.sh /arrow-java /build-output/build /jni"
 
   conda-jni-cdata:
     # Builds and tests just the C Data Interface JNI library and JARs.
@@ -83,6 +118,56 @@ services:
         /arrow-java/ci/scripts/jni_build.sh /arrow-java /build/jni /build /jni &&
         /arrow-java/ci/scripts/build.sh /arrow-java /build /jni &&
         /arrow-java/ci/scripts/test.sh /arrow-java /build /jni"
+
+  cdata-artifacts:
+    # Builds reusable C Data Interface JNI artifacts for CI test jobs.
+    image: ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
+    build:
+      context: .
+      dockerfile: ci/docker/conda-jni.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
+      args:
+        jdk: ${JDK}
+        maven: ${MAVEN}
+    user: root
+    volumes:
+      - .:/arrow-java:delegated
+      - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
+      - ${DOCKER_VOLUME_PREFIX}cdata-build:/build-output:delegated
+      - ${DOCKER_VOLUME_PREFIX}cdata-jni-dist:/jni:delegated
+    environment:
+      ARROW_JAVA_CDATA: "ON"
+    command:
+      /bin/bash -c "
+        rm -rf /build-output/build &&
+        find /jni -mindepth 1 -maxdepth 1 -exec rm -rf {} + &&
+        /arrow-java/ci/scripts/jni_build.sh /arrow-java /tmp/cdata-jni /tmp/cdata-native /jni &&
+        /arrow-java/ci/scripts/build.sh /arrow-java /build-output/build /jni"
+
+  cdata-test-prebuilt:
+    # Runs C Data Interface tests against prebuilt CI artifacts.
+    image: ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
+    build:
+      context: .
+      dockerfile: ci/docker/conda-jni.dockerfile
+      cache_from:
+        - ${REPO}:${ARCH}-conda-java-${JDK}-maven-${MAVEN}-jni-integration
+      args:
+        jdk: ${JDK}
+        maven: ${MAVEN}
+    user: root
+    volumes:
+      - .:/arrow-java:delegated
+      - ${DOCKER_VOLUME_PREFIX}maven-cache:/root/.m2:delegated
+      - ${DOCKER_VOLUME_PREFIX}cdata-build:/build-output:delegated
+      - ${DOCKER_VOLUME_PREFIX}cdata-jni-dist:/jni:delegated
+    environment:
+      ARROW_JAVA_CDATA: "ON"
+      ARROW_JAVA_TEST_BASE: "OFF"
+      ARROW_JAVA_TEST_PREBUILT: "ON"
+    command:
+      /bin/bash -c "/arrow-java/ci/scripts/test.sh /arrow-java /build-output/build /jni"
 
   vcpkg-jni:
     # Builds all the JNI libraries, but not the JARs.

@@ -37,25 +37,11 @@ env:
   DOCKER_VOLUME_PREFIX: ".docker/"
 
 jobs:
-  ubuntu:
-    name: AMD64 ${{ matrix.name }} JDK ${{ matrix.jdk }} Maven ${{ matrix.maven }}
+  build-java:
+    name: Build Java artifacts
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        jdk: [17, 21, 25]
-        maven: [3.9.16]
-        image: [ubuntu, conda-jni-cdata]
-        include:
-          - image: ubuntu
-            name: "Ubuntu"
-          - image: conda-jni-cdata
-            name: "Conda JNI"
-    env:
-      JDK: ${{ matrix.jdk }}
-      MAVEN: ${{ matrix.maven }}
     steps:
       - name: Checkout Arrow
         uses: actions/checkout@v7
@@ -65,85 +51,229 @@ jobs:
       - name: Cache Docker Volumes
         uses: actions/cache@v6
         with:
-          path: .docker
-          key: maven-${{ matrix.jdk }}-${{ matrix.maven }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: maven-${{ matrix.jdk }}-${{ matrix.maven }}-
-      - name: Execute Docker Build
+          path: .docker/maven-cache
+          key: java-build-17-3.9.9-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-build-17-3.9.9-
+      - name: Build without tests
+        shell: bash
         env:
-          # Enables build caching, but not strictly required
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          JDK: 17
+          MAVEN: 3.9.9
+        run: |
+          docker compose run \
+            --rm \
+            -e CI=true \
+            -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
+            ubuntu-artifacts
+          if [ -d .docker ]; then
+            sudo chown -R "$(id -u):$(id -g)" .docker
+          fi
+      - name: Pack reusable artifacts
+        shell: bash
+        run: |
+          tar -czf java-build.tgz \
+            .docker/java-build \
+            .docker/jni-dist \
+            .docker/maven-cache/repository/org/apache/arrow
+      - name: Upload reusable artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: java-build
+          path: java-build.tgz
+          retention-days: 1
+
+  test-java:
+    name: ${{ matrix.name || format('AMD64 Ubuntu JDK {0} Maven {1}', matrix.jdk, matrix.maven) }}
+    needs: build-java
+    runs-on: ${{ matrix.os }}
+    if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [ubuntu]
+        jdk: [17, 21, 23]
+        maven: [3.9.9]
+        include:
+          - target: ubuntu
+            os: ubuntu-latest
+            compose_service: ubuntu-test-prebuilt
+          - target: macos-intel
+            name: AMD64 macOS 15-intel Java JDK 17
+            os: macos-15-intel
+            jdk: 17
+            maven: 3.9.9
+            compose_service: ''
+          - target: macos-arm
+            name: AArch64 macOS latest Java JDK 17
+            os: macos-latest
+            jdk: 17
+            maven: 3.9.9
+            compose_service: ''
+          - target: windows
+            name: AMD64 Windows Server 2022 Java JDK 17
+            os: windows-latest
+            jdk: 17
+            maven: 3.9.9
+            compose_service: ''
+    env:
+      JDK: ${{ matrix.jdk }}
+      MAVEN: ${{ matrix.maven }}
+    steps:
+      - name: Checkout Arrow
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Set up Java
+        if: ${{ matrix.compose_service == '' }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.jdk }}
+          cache: 'maven'
+      - name: Cache Docker Volumes
+        if: ${{ matrix.compose_service != '' }}
+        uses: actions/cache@v6
+        with:
+          path: .docker/maven-cache
+          key: java-build-17-3.9.9-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-build-17-3.9.9-
+      - name: Download reusable artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: java-build
+      - name: Restore reusable artifacts
+        shell: bash
+        run: |
+          mkdir -p .docker
+          rm -rf \
+            .docker/java-build \
+            .docker/jni-dist \
+            .docker/maven-cache/repository/org/apache/arrow
+          tar -xzf java-build.tgz
+      - name: Restore reusable artifacts for hosted runner
+        if: ${{ matrix.compose_service == '' }}
+        shell: bash
+        run: |
+          rm -rf build jni
+          cp -a .docker/java-build/build build
+          cp -a .docker/jni-dist jni
+          mkdir -p "${HOME}/.m2/repository/org/apache"
+          cp -a .docker/maven-cache/repository/org/apache/arrow "${HOME}/.m2/repository/org/apache/"
+      - name: Test prebuilt artifacts on macOS/Windows
+        if: ${{ matrix.compose_service == '' }}
+        shell: bash
+        env:
+          ARROW_JAVA_TEST_PREBUILT: "ON"
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+        run: ci/scripts/test.sh . build jni
+      - name: Test prebuilt artifacts on Ubuntu Docker
+        if: ${{ matrix.compose_service != '' }}
+        shell: bash
+        env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: |
           docker compose run \
+            --rm \
             -e CI=true \
             -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
-            ${{ matrix.image }}
+            ${{ matrix.compose_service }}
 
-  macos:
-    name: ${{ matrix.arch }} macOS ${{ matrix.macos }} Java JDK ${{ matrix.jdk }}
-    runs-on: macos-${{ matrix.macos }}
+  build-cdata:
+    name: Build C Data artifacts
+    runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: AMD64
-            jdk: 17
-            macos: 15-intel
-          - arch: AArch64
-            jdk: 17
-            macos: latest
+    env:
+      JDK: 17
+      MAVEN: 3.9.9
     steps:
       - name: Checkout Arrow
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
-      - name: Set up Java
-        uses: actions/setup-java@v6
+      - name: Cache Docker Volumes
+        uses: actions/cache@v6
         with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.jdk }}
-          cache: 'maven'
-      - name: Build
+          path: .docker/maven-cache
+          key: cdata-${{ env.JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: cdata-${{ env.JDK }}-${{ env.MAVEN }}-
+      - name: Build C Data without tests
         shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/build.sh . build jni
-      - name: Test
+        run: |
+          docker compose run \
+            --rm \
+            -e CI=true \
+            -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
+            cdata-artifacts
+          if [ -d .docker ]; then
+            sudo chown -R "$(id -u):$(id -g)" .docker
+          fi
+      - name: Pack reusable C Data artifacts
         shell: bash
-        env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/test.sh . build jni
+        run: |
+          tar -czf cdata-build.tgz \
+            .docker/cdata-build \
+            .docker/cdata-jni-dist \
+            .docker/maven-cache/repository/org/apache/arrow
+      - name: Upload reusable C Data artifacts
+        uses: actions/upload-artifact@v5
+        with:
+          name: cdata-build
+          path: cdata-build.tgz
+          retention-days: 1
 
-  windows:
-    name: AMD64 Windows Server 2022 Java JDK ${{ matrix.jdk }}
-    runs-on: windows-latest
+  test-cdata:
+    name: AMD64 Conda JNI JDK ${{ matrix.jdk }} Maven ${{ matrix.maven }}
+    needs: build-cdata
+    runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        jdk: [17]
+        jdk: [17, 21, 23]
+        maven: [3.9.9]
+    env:
+      JDK: ${{ matrix.jdk }}
+      MAVEN: ${{ matrix.maven }}
     steps:
       - name: Checkout Arrow
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
-      - name: Set up Java
-        uses: actions/setup-java@v6
+      - name: Cache Docker Volumes
+        uses: actions/cache@v5
         with:
-          java-version: ${{ matrix.jdk }}
-          distribution: 'temurin'
-          cache: 'maven'
-      - name: Build
+          path: .docker/maven-cache
+          key: cdata-17-3.9.9-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: cdata-17-3.9.9-
+      - name: Download reusable C Data artifacts
+        uses: actions/download-artifact@v6
+        with:
+          name: cdata-build
+      - name: Restore reusable C Data artifacts
+        shell: bash
+        run: |
+          mkdir -p .docker
+          rm -rf \
+            .docker/cdata-build \
+            .docker/cdata-jni-dist \
+            .docker/maven-cache/repository/org/apache/arrow
+          tar -xzf cdata-build.tgz
+      - name: Test C Data without compiler lifecycle
         shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/build.sh . build jni
-      - name: Test
-        shell: bash
-        env:
-          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-        run: ci/scripts/test.sh . build jni
+        run: |
+          docker compose run \
+            --rm \
+            -e CI=true \
+            -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
+            cdata-test-prebuilt
