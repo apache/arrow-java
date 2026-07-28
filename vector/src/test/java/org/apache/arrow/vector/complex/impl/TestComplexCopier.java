@@ -16,12 +16,14 @@
  */
 package org.apache.arrow.vector.complex.impl;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
-
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -218,6 +220,7 @@ public class TestComplexCopier {
         ArrowBuf buf = allocator.buffer(byteWidth)) {
 
       from.addOrGetVector(FieldType.nullable(new ArrowType.FixedSizeBinary(byteWidth)));
+      to.addOrGetVector(FieldType.nullable(new ArrowType.FixedSizeBinary(byteWidth)));
 
       UnionListWriter listWriter = from.getWriter();
       listWriter.allocate();
@@ -240,20 +243,26 @@ public class TestComplexCopier {
       }
       from.setValueCount(COUNT);
 
-      // copy values — this currently throws UnsupportedOperationException: FIXEDSIZEBINARY
       FieldReader in = from.getReader();
       FieldWriter out = to.getWriter();
-      UnsupportedOperationException e =
-          assertThrows(
-              UnsupportedOperationException.class,
-              () -> {
-                for (int i = 0; i < COUNT; i++) {
-                  in.setPosition(i);
-                  out.setPosition(i);
-                  ComplexCopier.copy(in, out);
-                }
-              });
-      assertTrue(e.getMessage().contains("FIXEDSIZEBINARY"));
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
+      for (int i = 0; i < COUNT; i++) {
+        @SuppressWarnings("unchecked")
+        List<byte[]> expected = (List<byte[]>) from.getObject(i);
+        @SuppressWarnings("unchecked")
+        List<byte[]> actual = (List<byte[]>) to.getObject(i);
+
+        assertEquals(expected.size(), actual.size());
+        for (int j = 0; j < expected.size(); j++) {
+          assertArrayEquals(expected.get(j), actual.get(j));
+        }
+      }
     }
   }
 
