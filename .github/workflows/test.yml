@@ -35,6 +35,7 @@ permissions:
 
 env:
   DOCKER_VOLUME_PREFIX: ".docker/"
+  MAVEN: 3.9.9
 
 jobs:
   build-java:
@@ -52,29 +53,23 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: java-build-17-3.9.9-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: java-build-17-3.9.9-
+          key: java-build-17-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-build-17-${{ env.MAVEN }}-
       - name: Build without tests
-        shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
           JDK: 17
-          MAVEN: 3.9.9
         run: |
           docker compose run \
             --rm \
             -e CI=true \
             -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
             ubuntu-artifacts
-          if [ -d .docker ]; then
-            sudo chown -R "$(id -u):$(id -g)" .docker
-          fi
+          sudo chown -R "$(id -u):$(id -g)" .docker
       - name: Pack reusable artifacts
-        shell: bash
         run: |
           tar -czf java-build.tgz \
             .docker/java-build \
-            .docker/jni-dist \
             .docker/maven-cache/repository/org/apache/arrow
       - name: Upload reusable artifacts
         uses: actions/upload-artifact@v5
@@ -84,7 +79,7 @@ jobs:
           retention-days: 1
 
   test-java:
-    name: ${{ matrix.name || format('AMD64 Ubuntu JDK {0} Maven {1}', matrix.jdk, matrix.maven) }}
+    name: ${{ matrix.name || format('AMD64 Ubuntu JDK {0} Maven 3.9.9', matrix.jdk) }}
     needs: build-java
     runs-on: ${{ matrix.os }}
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
@@ -92,34 +87,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [ubuntu]
         jdk: [17, 21, 23]
-        maven: [3.9.9]
+        os: [ubuntu-latest]
         include:
-          - target: ubuntu
-            os: ubuntu-latest
+          - os: ubuntu-latest
             compose_service: ubuntu-test-prebuilt
-          - target: macos-intel
-            name: AMD64 macOS 15-intel Java JDK 17
+          - name: AMD64 macOS 15-intel Java JDK 17
             os: macos-15-intel
             jdk: 17
-            maven: 3.9.9
-            compose_service: ''
-          - target: macos-arm
-            name: AArch64 macOS latest Java JDK 17
+          - name: AArch64 macOS latest Java JDK 17
             os: macos-latest
             jdk: 17
-            maven: 3.9.9
-            compose_service: ''
-          - target: windows
-            name: AMD64 Windows Server 2022 Java JDK 17
+          - name: AMD64 Windows Server 2022 Java JDK 17
             os: windows-latest
             jdk: 17
-            maven: 3.9.9
-            compose_service: ''
     env:
       JDK: ${{ matrix.jdk }}
-      MAVEN: ${{ matrix.maven }}
     steps:
       - name: Checkout Arrow
         uses: actions/checkout@v7
@@ -127,19 +110,19 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: Set up Java
-        if: ${{ matrix.compose_service == '' }}
+        if: ${{ !matrix.compose_service }}
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
           cache: 'maven'
       - name: Cache Docker Volumes
-        if: ${{ matrix.compose_service != '' }}
+        if: ${{ matrix.compose_service }}
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: java-build-17-3.9.9-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: java-build-17-3.9.9-
+          key: java-build-17-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-build-17-${{ env.MAVEN }}-
       - name: Download reusable artifacts
         uses: actions/download-artifact@v6
         with:
@@ -147,30 +130,26 @@ jobs:
       - name: Restore reusable artifacts
         shell: bash
         run: |
-          mkdir -p .docker
           rm -rf \
             .docker/java-build \
-            .docker/jni-dist \
             .docker/maven-cache/repository/org/apache/arrow
           tar -xzf java-build.tgz
       - name: Restore reusable artifacts for hosted runner
-        if: ${{ matrix.compose_service == '' }}
+        if: ${{ !matrix.compose_service }}
         shell: bash
         run: |
-          rm -rf build jni
           cp -a .docker/java-build/build build
-          cp -a .docker/jni-dist jni
           mkdir -p "${HOME}/.m2/repository/org/apache"
           cp -a .docker/maven-cache/repository/org/apache/arrow "${HOME}/.m2/repository/org/apache/"
       - name: Test prebuilt artifacts on macOS/Windows
-        if: ${{ matrix.compose_service == '' }}
+        if: ${{ !matrix.compose_service }}
         shell: bash
         env:
           ARROW_JAVA_TEST_PREBUILT: "ON"
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: ci/scripts/test.sh . build jni
       - name: Test prebuilt artifacts on Ubuntu Docker
-        if: ${{ matrix.compose_service != '' }}
+        if: ${{ matrix.compose_service }}
         shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
@@ -188,7 +167,6 @@ jobs:
     timeout-minutes: 30
     env:
       JDK: 17
-      MAVEN: 3.9.9
     steps:
       - name: Checkout Arrow
         uses: actions/checkout@v7
@@ -202,7 +180,6 @@ jobs:
           key: cdata-${{ env.JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
           restore-keys: cdata-${{ env.JDK }}-${{ env.MAVEN }}-
       - name: Build C Data without tests
-        shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: |
@@ -211,11 +188,8 @@ jobs:
             -e CI=true \
             -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
             cdata-artifacts
-          if [ -d .docker ]; then
-            sudo chown -R "$(id -u):$(id -g)" .docker
-          fi
+          sudo chown -R "$(id -u):$(id -g)" .docker
       - name: Pack reusable C Data artifacts
-        shell: bash
         run: |
           tar -czf cdata-build.tgz \
             .docker/cdata-build \
@@ -229,7 +203,7 @@ jobs:
           retention-days: 1
 
   test-cdata:
-    name: AMD64 Conda JNI JDK ${{ matrix.jdk }} Maven ${{ matrix.maven }}
+    name: AMD64 Conda JNI JDK ${{ matrix.jdk }} Maven 3.9.9
     needs: build-cdata
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
@@ -238,10 +212,8 @@ jobs:
       fail-fast: false
       matrix:
         jdk: [17, 21, 23]
-        maven: [3.9.9]
     env:
       JDK: ${{ matrix.jdk }}
-      MAVEN: ${{ matrix.maven }}
     steps:
       - name: Checkout Arrow
         uses: actions/checkout@v6
@@ -252,23 +224,20 @@ jobs:
         uses: actions/cache@v5
         with:
           path: .docker/maven-cache
-          key: cdata-17-3.9.9-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: cdata-17-3.9.9-
+          key: cdata-17-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: cdata-17-${{ env.MAVEN }}-
       - name: Download reusable C Data artifacts
         uses: actions/download-artifact@v6
         with:
           name: cdata-build
       - name: Restore reusable C Data artifacts
-        shell: bash
         run: |
-          mkdir -p .docker
           rm -rf \
             .docker/cdata-build \
             .docker/cdata-jni-dist \
             .docker/maven-cache/repository/org/apache/arrow
           tar -xzf cdata-build.tgz
       - name: Test C Data without compiler lifecycle
-        shell: bash
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
         run: |
