@@ -17,7 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -ex
+set -exo pipefail
 
 if [[ "${ARROW_JAVA_TEST:-ON}" != "ON" ]]; then
   exit
@@ -41,45 +41,41 @@ mvn=(
 )
 
 run_tests() {
-  local log_name=$1
-  shift
-
   if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
-    run_prebuilt_tests "${log_name}" "${@}" -DfailIfNoTests=false surefire:test
+    run_prebuilt_tests "${@}" -DfailIfNoTests=false surefire:test
   else
     "${@}" test
   fi
 }
 
 run_prebuilt_tests() {
-  local log_name=$1
-  shift
+  local log
+  log=$(mktemp)
 
-  set -o pipefail
-  "${@}" | tee "${source_dir}/${log_name}"
+  "${@}" | tee "${log}"
 
-  if grep -E "Compiling [0-9]+ source files?" "${source_dir}/${log_name}"; then
+  if grep -E "Compiling [0-9]+ source files?" "${log}"; then
     echo "Unexpected compilation occurred while running prebuilt tests."
     exit 1
   fi
 
-  if ! grep -q "Tests run:" "${source_dir}/${log_name}"; then
+  if ! grep -q "Tests run:" "${log}"; then
     echo "No surefire test summary found; tests may have been skipped."
     exit 1
   fi
+
+  rm -f "${log}"
 }
 
 pushd "${build_dir}"
 
 if [[ "${ARROW_JAVA_TEST_BASE:-ON}" = "ON" ]]; then
   run_tests \
-    surefire.log \
     "${mvn[@]}" \
     -Darrow.test.dataRoot="${source_dir}/testing/data"
 
   if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
     run_prebuilt_tests \
-      opens-surefire.log \
       "${mvn[@]}" \
       -DfailIfNoTests=false \
       -pl memory/memory-core \
@@ -95,7 +91,6 @@ if [ "${ARROW_JAVA_JNI}" = "ON" ]; then
 fi
 if [ "${#projects[@]}" -gt 0 ]; then
   run_tests \
-    jni-surefire.log \
     "${mvn[@]}" \
     -Parrow-jni \
     -pl "$(
@@ -107,7 +102,6 @@ fi
 
 if [ "${ARROW_JAVA_CDATA}" = "ON" ]; then
   run_tests \
-    cdata-surefire.log \
     "${mvn[@]}" \
     -Parrow-c-data \
     -pl c \
