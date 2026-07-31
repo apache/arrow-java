@@ -70,16 +70,30 @@ run_prebuilt_tests() {
 pushd "${build_dir}"
 
 if [[ "${ARROW_JAVA_TEST_BASE:-ON}" = "ON" ]]; then
-  run_tests \
-    "${mvn[@]}" \
-    -Darrow.test.dataRoot="${source_dir}/testing/data"
-
   if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
+    run_prebuilt_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data" \
+      -DfailIfNoTests=false \
+      -pl "!vector" \
+      surefire:test
+    for execution in default-test run-unsafe; do
+      run_prebuilt_tests \
+        "${mvn[@]}" \
+        -Darrow.test.dataRoot="${source_dir}/testing/data" \
+        -DfailIfNoTests=false \
+        -pl vector \
+        "org.apache.maven.plugins:maven-surefire-plugin:test@${execution}"
+    done
     run_prebuilt_tests \
       "${mvn[@]}" \
       -DfailIfNoTests=false \
       -pl memory/memory-core \
       org.apache.maven.plugins:maven-surefire-plugin:test@opens-tests
+  else
+    run_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data"
   fi
 fi
 
