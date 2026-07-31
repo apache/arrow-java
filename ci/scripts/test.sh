@@ -77,14 +77,19 @@ if [[ "${ARROW_JAVA_TEST_BASE:-ON}" = "ON" ]]; then
       -DfailIfNoTests=false \
       -pl "!vector" \
       surefire:test
-    for execution in default-test run-unsafe; do
-      run_prebuilt_tests \
-        "${mvn[@]}" \
-        -Darrow.test.dataRoot="${source_dir}/testing/data" \
-        -DfailIfNoTests=false \
-        -pl vector \
-        "org.apache.maven.plugins:maven-surefire-plugin:test@${execution}"
-    done
+    # Direct Surefire skips Vector's lifecycle-bound allocator test passes.
+    run_prebuilt_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data" \
+      -DfailIfNoTests=false \
+      -pl vector \
+      org.apache.maven.plugins:maven-surefire-plugin:test@default-test
+    run_prebuilt_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data" \
+      -DfailIfNoTests=false \
+      -pl vector \
+      org.apache.maven.plugins:maven-surefire-plugin:test@run-unsafe
     run_prebuilt_tests \
       "${mvn[@]}" \
       -DfailIfNoTests=false \
