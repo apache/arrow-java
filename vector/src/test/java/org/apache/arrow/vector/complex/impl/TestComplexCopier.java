@@ -765,6 +765,43 @@ public class TestComplexCopier {
   }
 
   @Test
+  public void testCopyStructOfFixedSizeBinary() {
+    final int byteWidth = 4;
+    try (final StructVector from = StructVector.empty("v", allocator);
+        final StructVector to = StructVector.empty("v", allocator);
+        ArrowBuf buf = allocator.buffer(byteWidth)) {
+      from.allocateNewSafe();
+      NullableStructWriter structWriter = from.getWriter();
+
+      FixedSizeBinaryHolder holder = new FixedSizeBinaryHolder();
+      holder.byteWidth = byteWidth;
+      holder.buffer = buf;
+
+      for (int i = 0; i < COUNT; i++) {
+        structWriter.setPosition(i);
+        structWriter.start();
+        buf.setBytes(0, new byte[] {(byte) i, (byte) (i + 1), (byte) (i + 2), (byte) (i + 3)});
+        structWriter.fixedSizeBinary("fsb", byteWidth).write(holder);
+        structWriter.end();
+      }
+      from.setValueCount(COUNT);
+
+      // copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
+      // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
   public void testCopyDecimalVectorWrongScale() {
     try (FixedSizeListVector from = FixedSizeListVector.empty("v", 3, allocator);
         FixedSizeListVector to = FixedSizeListVector.empty("v", 3, allocator)) {
