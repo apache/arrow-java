@@ -28,9 +28,14 @@ import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Regression test for the native {@code FromSchemaByteArray} helper (GH-1205). Passing malformed
- * serialized schema bytes to {@code JniWrapper#createDataset} must surface a Java exception rather
- * than crash, and repeated failures must not leak the pinned/copied Java byte-array elements
- * acquired via {@code GetByteArrayElements}.
+ * serialized schema bytes to {@code JniWrapper#createDataset} exercises the former leak branch in
+ * {@code FromSchemaByteArray} (where {@code ReleaseByteArrayElements} was skipped on error) and
+ * asserts it fails gracefully with a Java exception rather than crashing.
+ *
+ * <p>This guards the error path; it does not directly assert that the native byte-array elements
+ * were released. The leaked bytes are a JVM-internal copy made by {@code GetByteArrayElements},
+ * which is not tracked by {@code NativeMemoryPool} nor observable through any portable Java API, so
+ * a deterministic leak assertion isn't feasible here. See the PR #1249 discussion for details.
  */
 public class TestFromSchemaByteArray extends TestNativeDataset {
 
@@ -60,8 +65,8 @@ public class TestFromSchemaByteArray extends TestNativeDataset {
       // error path of FromSchemaByteArray is taken.
       final byte[] malformedSchemaBytes = new byte[] {0, 1, 2, 3, 4, 5, 6, 7};
 
-      // Repeat many times: before the fix each failed call leaked the acquired array elements.
-      // The loop keeps the test meaningful as a leak regression while asserting graceful failure.
+      // Repeat many times to keep hitting the error path that previously skipped the element
+      // release; each iteration must fail gracefully rather than crash.
       for (int i = 0; i < 1000; i++) {
         assertThrows(
             RuntimeException.class,
