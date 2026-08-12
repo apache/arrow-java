@@ -82,7 +82,7 @@ public class PooledByteBufAllocatorL {
   }
 
   public long getNormalBufferCount() {
-    return normalBufferSize.get();
+    return normalBufferCount.get();
   }
 
   private static class AccountedUnsafeDirectLittleEndian extends UnsafeDirectLittleEndian {
