@@ -172,7 +172,7 @@ public class PooledByteBufAllocatorL {
           // within chunk, use arena.
           ByteBuf buf = directArena.allocate(cache, initialCapacity, maxCapacity);
           if (!(buf instanceof PooledUnsafeDirectByteBuf)) {
-            fail();
+            throw fail();
           }
 
           if (!AssertionUtil.ASSERT_ENABLED) {
