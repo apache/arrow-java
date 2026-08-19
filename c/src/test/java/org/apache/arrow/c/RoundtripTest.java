@@ -1052,6 +1052,27 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testImportArrayWithNonZeroOffset() {
+    try (IntVector source = new IntVector("source", allocator);
+        IntVector destination = new IntVector("destination", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      setVector(source, 1, 2, 3);
+      Data.exportVector(allocator, source, null, array);
+
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      snapshot.offset = 1;
+      array.save(snapshot);
+
+      Exception e =
+          assertThrows(
+              IllegalStateException.class,
+              () -> Data.importIntoVector(allocator, array, destination, null));
+      assertEquals(
+          "ArrowArray struct has non-zero offset (1), which is not supported", e.getMessage());
+    }
+  }
+
+  @Test
   public void testArrayStructReuse() {
     // Consumer allocates empty structures
     try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
