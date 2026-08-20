@@ -33,15 +33,48 @@ public class TimeAvaticaParameterConverter extends BaseAvaticaParameterConverter
 
   @Override
   public boolean bindParameter(FieldVector vector, TypedValue typedValue, int index) {
-    int value = (int) typedValue.toLocal();
-    if (vector instanceof TimeMicroVector) {
-      ((TimeMicroVector) vector).setSafe(index, value);
+    Object value = typedValue.value;
+    if (value instanceof String) {
+      return bindTimeAsString(vector, (String) value, index);
+    } else if (value instanceof Integer) {
+      return bindTimeAsInt(vector, (int) value, index);
+    } else {
+      return false;
+    }
+  }
+
+  private boolean bindTimeAsString(FieldVector vector, String value, int index) {
+    java.time.LocalTime localTime = java.time.LocalTime.parse(value);
+    long nanos = localTime.toNanoOfDay();
+    if (vector instanceof TimeMilliVector) {
+      int v = (int) (nanos / 1_000_000);
+      ((TimeMilliVector) vector).setSafe(index, v);
       return true;
-    } else if (vector instanceof TimeMilliVector) {
-      ((TimeMilliVector) vector).setSafe(index, value);
+    } else if (vector instanceof TimeMicroVector) {
+      long v = nanos / 1_000;
+      ((TimeMicroVector) vector).setSafe(index, v);
       return true;
     } else if (vector instanceof TimeNanoVector) {
-      ((TimeNanoVector) vector).setSafe(index, value);
+      long v = nanos;
+      ((TimeNanoVector) vector).setSafe(index, v);
+      return true;
+    } else if (vector instanceof TimeSecVector) {
+      int v = (int) (nanos / 1_000_000_000);
+      ((TimeSecVector) vector).setSafe(index, v);
+      return true;
+    }
+    return false;
+  }
+
+  private boolean bindTimeAsInt(FieldVector vector, int value, int index) {
+    if (vector instanceof TimeMilliVector) {
+      ((TimeMilliVector) vector).setSafe(index, value);
+      return true;
+    } else if (vector instanceof TimeMicroVector) {
+      ((TimeMicroVector) vector).setSafe(index, (long) value);
+      return true;
+    } else if (vector instanceof TimeNanoVector) {
+      ((TimeNanoVector) vector).setSafe(index, (long) value);
       return true;
     } else if (vector instanceof TimeSecVector) {
       ((TimeSecVector) vector).setSafe(index, value);
