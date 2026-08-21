@@ -73,29 +73,20 @@ cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-macos \
+  -Dabsl_SOURCE=BUNDLED \
   -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp" --target install
 github_actions_group_end
 
-absl_build_dir="${build_dir}/cpp/_deps/absl-build"
-absl_cmake_dir=""
-if [ -d "${absl_build_dir}" ]; then
-  github_actions_group_begin "Installing bundled Abseil"
-  cmake --build "${build_dir}/cpp" --target _deps/absl-build/all --config Release
-  cmake --install "${absl_build_dir}" --prefix "${install_dir}" --config Release
-  absl_cmake_dir="${install_dir}/lib/cmake/absl"
-  if [ ! -f "${absl_cmake_dir}/abslConfig.cmake" ]; then
-    echo "Bundled Abseil CMake package was not installed in ${absl_cmake_dir}" >&2
-    exit 1
-  fi
-  github_actions_group_end
+absl_include_dir="${build_dir}/cpp/_deps/absl-src"
+if [ ! -d "${absl_include_dir}/absl" ]; then
+  echo "Bundled Abseil headers were not found in ${absl_include_dir}" >&2
+  exit 1
 fi
 
 JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/_deps/protobuf-build"
 JAVA_JNI_CMAKE_ARGS+=" -DProtobuf_SRC_ROOT_FOLDER=${build_dir}/cpp/_deps/protobuf-src"
-if [ -n "${absl_cmake_dir}" ]; then
-  JAVA_JNI_CMAKE_ARGS+=" -Dabsl_DIR=${absl_cmake_dir}"
-fi
+JAVA_JNI_CMAKE_ARGS+=" -DARROW_JAVA_JNI_ABSL_INCLUDE_DIR=${absl_include_dir}"
 export JAVA_JNI_CMAKE_ARGS
 "${source_dir}/ci/scripts/jni_build.sh" \
   "${source_dir}" \
