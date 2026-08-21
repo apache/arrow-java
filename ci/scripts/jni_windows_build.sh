@@ -84,6 +84,7 @@ cmake \
   -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}" \
   -DCMAKE_INSTALL_PREFIX="${install_dir}" \
   -DCMAKE_UNITY_BUILD="${CMAKE_UNITY_BUILD}" \
+  -Dsimdjson_SOURCE=BUNDLED \
   -GNinja
 cmake --build "${build_dir}/cpp"
 cmake --install "${build_dir}/cpp"
