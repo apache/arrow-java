@@ -391,7 +391,7 @@ Allocator<span class="o">(</span>ROOT<span class="o">)</span><span class="w"> </
 <p>Enabling the debug mode, we get more details:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="m">11</span>:56:48.944<span class="w"> </span><span class="o">[</span>main<span class="o">]</span><span class="w"> </span>INFO<span class="w">  </span>o.apache.arrow.memory.BaseAllocator<span class="w"> </span>-<span class="w"> </span>Debug<span class="w"> </span>mode<span class="w"> </span>enabled.
 ArrowBuf<span class="o">[</span><span class="m">2</span><span class="o">]</span>,<span class="w"> </span>address:140437894463488,<span class="w"> </span>length:4096
-Exception<span class="w"> </span><span class="k">in</span><span class="w"> </span>thread<span class="w"> </span><span class="s2">&quot;main&quot;</span><span class="w"> </span>java.lang.IllegalStateException:<span class="w"> </span>Allocator<span class="o">[</span>ROOT<span class="o">]</span><span class="w"> </span>closed<span class="w"> </span>with<span class="w"> </span>outstanding<span class="w"> </span>buffers<span class="w"> </span>allocated<span class="w"> </span><span class="o">(</span><span class="m">1</span><span class="o">)</span>.
+Exception<span class="w"> </span><span class="k">in</span><span class="w"> </span>thread<span class="w"> </span><span class="s2">"main"</span><span class="w"> </span>java.lang.IllegalStateException:<span class="w"> </span>Allocator<span class="o">[</span>ROOT<span class="o">]</span><span class="w"> </span>closed<span class="w"> </span>with<span class="w"> </span>outstanding<span class="w"> </span>buffers<span class="w"> </span>allocated<span class="w"> </span><span class="o">(</span><span class="m">1</span><span class="o">)</span>.
 Allocator<span class="o">(</span>ROOT<span class="o">)</span><span class="w"> </span><span class="m">0</span>/4096/4096/8192<span class="w"> </span><span class="o">(</span>res/actual/peak/limit<span class="o">)</span>
 <span class="w">  </span>child<span class="w"> </span>allocators:<span class="w"> </span><span class="m">0</span>
 <span class="w">  </span>ledgers:<span class="w"> </span><span class="m">1</span>
@@ -454,7 +454,7 @@ This will include information about allocation operations on the buffer with sta
 <span class="kn">import</span><span class="w"> </span><span class="nn">org.slf4j.LoggerFactory</span><span class="p">;</span>
 
 <span class="c1">// Set log level to TRACE to get tracebacks</span>
-<span class="p">((</span><span class="n">Logger</span><span class="p">)</span><span class="w"> </span><span class="n">LoggerFactory</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="s">&quot;org.apache.arrow&quot;</span><span class="p">)).</span><span class="na">setLevel</span><span class="p">(</span><span class="n">Level</span><span class="p">.</span><span class="na">TRACE</span><span class="p">);</span>
+<span class="p">((</span><span class="n">Logger</span><span class="p">)</span><span class="w"> </span><span class="n">LoggerFactory</span><span class="p">.</span><span class="na">getLogger</span><span class="p">(</span><span class="s">"org.apache.arrow"</span><span class="p">)).</span><span class="na">setLevel</span><span class="p">(</span><span class="n">Level</span><span class="p">.</span><span class="na">TRACE</span><span class="p">);</span>
 <span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="kd">final</span><span class="w"> </span><span class="n">BufferAllocator</span><span class="w"> </span><span class="n">allocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RootAllocator</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
 <span class="w">  </span><span class="c1">// Leak buffer</span>
 <span class="w">  </span><span class="n">allocator</span><span class="p">.</span><span class="na">buffer</span><span class="p">(</span><span class="mi">1024</span><span class="p">);</span>
@@ -525,7 +525,7 @@ right before program shutdown.</p></li>
 <span class="p">...</span>
 <span class="c1">//3</span>
 <span class="kd">private</span><span class="w"> </span><span class="kd">static</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="nf">nextChildName</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;Allocator-Child-&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">childNumber</span><span class="p">.</span><span class="na">incrementAndGet</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s">"Allocator-Child-"</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">childNumber</span><span class="p">.</span><span class="na">incrementAndGet</span><span class="p">();</span>
 <span class="p">}</span>
 <span class="p">...</span>
 <span class="c1">//4: Business code</span>
