@@ -174,15 +174,11 @@ jobs:
       - name: Extract source archive
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
-        if: github.event_name != 'schedule'
-        run: |
-          ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
-        if: github.event_name == 'schedule'
         uses: actions/checkout@v7
         with:
           repository: apache/arrow
+          ref: main
           path: arrow
       - name: Checkout apache/arrow-testing
         uses: actions/checkout@v7
@@ -303,16 +299,11 @@ jobs:
         shell: bash
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
-        if: github.event_name != 'schedule'
-        shell: bash
-        run: |
-          ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
-        if: github.event_name == 'schedule'
         uses: actions/checkout@v7
         with:
           repository: apache/arrow
+          ref: main
           path: arrow
       - name: Set up Java
         uses: actions/setup-java@v5

@@ -54,6 +54,10 @@ add_library(arrow_java_jni_gandiva SHARED
             src/main/cpp/jni_common.cc
             ${GANDIVA_PROTO_OUTPUT_FILES})
 set_property(TARGET arrow_java_jni_gandiva PROPERTY OUTPUT_NAME "gandiva_jni")
+if(ARROW_JAVA_JNI_ABSL_INCLUDE_DIR)
+  target_include_directories(arrow_java_jni_gandiva SYSTEM
+                             PRIVATE "${ARROW_JAVA_JNI_ABSL_INCLUDE_DIR}")
+endif()
 target_link_libraries(arrow_java_jni_gandiva
                       arrow_java_jni_gandiva_headers
                       jni
