@@ -87,6 +87,7 @@ import org.apache.arrow.vector.ipc.message.MessageSerializer;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.JsonStringArrayList;
 import org.apache.calcite.avatica.Meta.StatementType;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /** An ad-hoc {@link FlightSqlProducer} for tests. */
 public final class MockFlightSqlProducer implements FlightSqlProducer {
@@ -101,6 +102,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   private final SqlInfoBuilder sqlInfoBuilder = new SqlInfoBuilder();
   private final Map<String, Schema> parameterSchemas = new HashMap<>();
   private final Map<String, List<List<Object>>> expectedParameterValues = new HashMap<>();
+  private final Map<String, Boolean> isUpdateMap = new HashMap<>();
 
   private final Map<String, Integer> actionTypeCounter = new HashMap<>();
 
@@ -177,6 +179,40 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   }
 
   /**
+   * Registers a new {@link StatementType#SELECT} SQL query, optionally setting the is_update field.
+   *
+   * @param sqlCommand the SQL command under which to register the new query.
+   * @param schema the schema to use for the query result.
+   * @param resultProviders the result provider for this query.
+   * @param isUpdate value to report for the is_update field, or {@code null} to leave it unset.
+   */
+  public void addSelectQuery(
+      final String sqlCommand,
+      final Schema schema,
+      final List<Consumer<ServerStreamListener>> resultProviders,
+      final @Nullable Boolean isUpdate) {
+    addSelectQuery(sqlCommand, schema, resultProviders);
+    if (isUpdate != null) {
+      isUpdateMap.put(sqlCommand, isUpdate);
+    }
+  }
+
+  /**
+   * Registers a new {@link StatementType#UPDATE} SQL query, optionally setting the is_update field.
+   *
+   * @param sqlCommand the SQL command.
+   * @param updatedRows the number of rows affected.
+   * @param isUpdate value to report for the is_update field, or {@code null} to leave it unset.
+   */
+  public void addUpdateQuery(
+      final String sqlCommand, final long updatedRows, final @Nullable Boolean isUpdate) {
+    addUpdateQuery(sqlCommand, updatedRows);
+    if (isUpdate != null) {
+      isUpdateMap.put(sqlCommand, isUpdate);
+    }
+  }
+
+  /**
    * Adds a catalog query to the results.
    *
    * @param message the {@link Message} corresponding to the catalog query request type to register.
@@ -245,6 +281,12 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
         MessageSerializer.serialize(
             new WriteChannel(Channels.newChannel(outputStream)), parameterSchema);
         resultBuilder.setParameterSchema(ByteString.copyFrom(outputStream.toByteArray()));
+      }
+
+      // Set is_update field if present
+      final Boolean isUpdate = isUpdateMap.get(query);
+      if (isUpdate != null) {
+        resultBuilder.setIsUpdate(isUpdate);
       }
 
       listener.onNext(new Result(pack(resultBuilder.build()).toByteArray()));

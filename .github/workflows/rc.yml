@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           submodules: recursive
       - name: Prepare for tag
@@ -71,7 +71,7 @@ jobs:
         run: |
           dev/release/run_rat.sh "${TAR_GZ}"
       - name: Upload source archive
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-source
           path: |
@@ -113,27 +113,27 @@ jobs:
           ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow
           path: arrow
       - name: Checkout apache/arrow-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow-testing
           path: arrow/testing
       - name: Checkout apache/parquet-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/parquet-testing
           path: arrow/cpp/submodules/parquet-testing
-      - uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Cache
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .docker
           key: jni-linux-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
@@ -148,7 +148,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-linux-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: jni-linux-${{ matrix.platform.arch }}
           path: jni-linux-${{ matrix.platform.arch }}.tar.gz
@@ -174,28 +174,24 @@ jobs:
       - name: Extract source archive
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
-        if: github.event_name != 'schedule'
-        run: |
-          ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
-        if: github.event_name == 'schedule'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow
+          ref: main
           path: arrow
       - name: Checkout apache/arrow-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow-testing
           path: arrow/testing
       - name: Checkout apache/parquet-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/parquet-testing
           path: arrow/cpp/submodules/parquet-testing
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           cache: 'pip'
           python-version: 3.12
@@ -264,7 +260,7 @@ jobs:
         run: |
           echo "CCACHE_DIR=${PWD}/ccache" >> ${GITHUB_ENV}
       - name: Cache ccache
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ccache
           key: jni-macos-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
@@ -278,7 +274,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: jni-macos-${{ matrix.platform.arch }}
           path: jni-macos-${{ matrix.platform.arch }}.tar.gz
@@ -303,16 +299,11 @@ jobs:
         shell: bash
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
-        if: github.event_name != 'schedule'
-        shell: bash
-        run: |
-          ci/scripts/download_cpp.sh
       - name: Checkout Apache Arrow C++
-        if: github.event_name == 'schedule'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow
+          ref: main
           path: arrow
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -340,7 +331,7 @@ jobs:
         run: |
           echo "CCACHE_DIR=${PWD}/ccache" >> ${GITHUB_ENV}
       - name: Cache ccache
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ccache
           key: jni-windows-${{ matrix.platform.arch }}-${{ hashFiles('arrow/cpp/**') }}
@@ -356,7 +347,7 @@ jobs:
         shell: bash
         run: tar -cvzf jni-windows-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: jni-windows-${{ matrix.platform.arch }}
           path: jni-windows-${{ matrix.platform.arch }}.tar.gz
@@ -409,12 +400,12 @@ jobs:
           test -f jni/arrow_dataset_jni/x86_64/arrow_dataset_jni.dll
           test -f jni/arrow_orc_jni/x86_64/arrow_orc_jni.dll
       - name: Checkout apache/arrow-testing
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: apache/arrow-testing
           path: testing
       - name: Cache ~/.m2
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.m2
           key: binaries-build-${{ hashFiles('**/*.java', '**/pom.xml') }}
@@ -428,12 +419,12 @@ jobs:
           cp -a target/site/apidocs reference
           tar -cvzf reference.tar.gz reference
       - name: Upload binaries
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-binaries
           path: binaries/*
       - name: Upload docs
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: reference
           path: reference.tar.gz
@@ -446,7 +437,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           cache: 'pip'
       - name: Download source archive
@@ -471,7 +462,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf html.tar.gz -C docs/build html
       - name: Upload artifacts
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-html
           path: html.tar.gz
@@ -497,7 +488,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: site
       - name: Prepare branch

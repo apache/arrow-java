@@ -73,7 +73,7 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
     final TimeZone timeZone = TimeZone.getDefault();
     final QueryState state = new QueryState();
 
-    final Meta.Signature signature = ArrowFlightMetaImpl.newSignature(null, null, null);
+    final Meta.Signature signature = ArrowFlightMetaImpl.newSignature(null, null, null, null);
 
     final AvaticaResultSetMetaData resultSetMetaData =
         new AvaticaResultSetMetaData(null, null, signature);
@@ -128,7 +128,7 @@ public class ArrowFlightJdbcVectorSchemaRootResultSet extends AvaticaResultSet {
     if (metaData.type.id == Types.TIMESTAMP_WITH_TIMEZONE) {
       return accessor.getTimestamp(localCalendar);
     } else {
-      return AvaticaSite.get(accessor, metaData.type.id, localCalendar);
+      return AvaticaSite.get(accessor, metaData.type.id, true, localCalendar);
     }
   }
 

@@ -37,6 +37,10 @@ option(ARROW_JAVA_JNI_ENABLE_C "Enable C data interface" ${ARROW_JAVA_JNI_ENABLE
 option(ARROW_JAVA_JNI_ENABLE_DATASET "Enable dataset" ${ARROW_JAVA_JNI_ENABLE_DEFAULT})
 option(ARROW_JAVA_JNI_ENABLE_GANDIVA "Enable Gandiva" ${ARROW_JAVA_JNI_ENABLE_DEFAULT})
 option(ARROW_JAVA_JNI_ENABLE_ORC "Enable ORC" ${ARROW_JAVA_JNI_ENABLE_DEFAULT})
+set(ARROW_JAVA_JNI_ABSL_INCLUDE_DIR
+    ""
+    CACHE PATH "Path to Abseil source headers for the Gandiva JNI build")
+mark_as_advanced(ARROW_JAVA_JNI_ABSL_INCLUDE_DIR)
 
 include(GNUInstallDirs)
 

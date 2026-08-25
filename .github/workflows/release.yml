@@ -32,7 +32,7 @@ jobs:
   publish:
     name: Publish
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
     steps:
       - name: Download RC contents
         run: |
@@ -65,7 +65,7 @@ jobs:
               $artifact
           done
       - name: Checkout for publishing docs
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: site
       - name: Publish docs
