@@ -53,6 +53,9 @@ Note that the command has changed from Arrow 15 and earlier. If you are still us
 (``--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED``) you will see the
 ``module java.base does not "opens java.nio" to org.apache.arrow.memory.core`` error.
 
+For more information on these flags, see the `Netty documentation
+<https://netty.io/wiki/java-24-and-sun.misc.unsafe.html>`_.
+
 If you are using flight-core or dependent modules, you will need to mark that flight-core can read unnamed modules.
 Modifying the command above for Flight:
 
