@@ -725,42 +725,6 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-        <configuration>
-          <pom>
-            <licenseHeader>
-              <file>${maven.multiModuleProjectDirectory}/dev/license/asf-xml.license</file>
-              <delimiter>(&lt;configuration|&lt;project)</delimiter>
-            </licenseHeader>
-            <sortPom/>
-          </pom>
-          <java>
-            <googleJavaFormat>
-              <version>1.36.1</version>
-              <style>GOOGLE</style>
-            </googleJavaFormat>
-            <licenseHeader>
-              <file>${maven.multiModuleProjectDirectory}/dev/license/asf-java.license</file>
-              <delimiter>package</delimiter>
-            </licenseHeader>
-            <excludes>
-              <exclude>**/Preconditions.java</exclude>
-              <exclude>**/IntObjectMap.java</exclude>
-              <exclude>**/IntObjectHashMap.java</exclude>
-            </excludes>
-          </java>
-        </configuration>
-        <executions>
-          <execution>
-            <id>spotless-check</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
     <extensions>
       <!-- provides os.detected.classifier (i.e. linux-x86_64, osx-x86_64) property -->
@@ -840,6 +804,54 @@ under the License.
       <properties>
         <arrow.vector.classifier>shade-format-flatbuffers</arrow.vector.classifier>
       </properties>
+    </profile>
+
+    <profile>
+      <!-- google-java-format now requires Java 21+ -->
+      <id>spotless</id>
+      <activation>
+        <jdk>[21,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <configuration>
+              <pom>
+                <licenseHeader>
+                  <file>${maven.multiModuleProjectDirectory}/dev/license/asf-xml.license</file>
+                  <delimiter>(&lt;configuration|&lt;project)</delimiter>
+                </licenseHeader>
+                <sortPom/>
+              </pom>
+              <java>
+                <googleJavaFormat>
+                  <version>1.36.1</version>
+                  <style>GOOGLE</style>
+                </googleJavaFormat>
+                <licenseHeader>
+                  <file>${maven.multiModuleProjectDirectory}/dev/license/asf-java.license</file>
+                  <delimiter>package</delimiter>
+                </licenseHeader>
+                <excludes>
+                  <exclude>**/Preconditions.java</exclude>
+                  <exclude>**/IntObjectMap.java</exclude>
+                  <exclude>**/IntObjectHashMap.java</exclude>
+                </excludes>
+              </java>
+            </configuration>
+            <executions>
+              <execution>
+                <id>spotless-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
     <profile>
