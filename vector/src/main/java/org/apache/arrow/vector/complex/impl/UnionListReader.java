@@ -53,7 +53,9 @@ public class UnionListReader extends AbstractFieldReader {
   @Override
   public void setPosition(int index) {
     int valueCount = vector.getValueCount();
-    if (valueCount == 0 && index == 0) {
+    if (valueCount == 0
+        && index == 0
+        && vector.getOffsetBuffer().capacity() < 2L * OFFSET_WIDTH) {
       setEmptyPosition(index);
       return;
     }

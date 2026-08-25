@@ -30,7 +30,9 @@ final class UnionListReaderPositionValidator {
 
   /** Check if the given index is within the current value count of the vector. */
   static void checkIndex(int index, int valueCount) {
-    if (index < 0 || index >= valueCount) {
+    // Writers may populate the buffers before the caller finalizes valueCount. Preserve the
+    // historical ability to read those buffers while still rejecting negative positions.
+    if (index < 0 || (valueCount > 0 && index >= valueCount)) {
       throw new IndexOutOfBoundsException(
           String.format("index: %s, expected range [0, %s)", index, valueCount));
     }

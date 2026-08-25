@@ -54,7 +54,10 @@ public class UnionListViewReader extends AbstractFieldReader {
   @Override
   public void setPosition(int index) {
     int valueCount = vector.getValueCount();
-    if (valueCount == 0 && index == 0) {
+    if (valueCount == 0
+        && index == 0
+        && (vector.getOffsetBuffer().capacity() < ListViewVector.OFFSET_WIDTH
+            || vector.getSizeBuffer().capacity() < ListViewVector.SIZE_WIDTH)) {
       setEmptyPosition(index);
       return;
     }
