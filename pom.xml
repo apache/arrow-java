@@ -117,7 +117,7 @@ under the License.
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
     <!-- List of add-opens arg line arguments for tests -->
-    <surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</surefire.add-opens.argLine>
+    <surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED --enable-native-access=io.netty.common --sun-misc-unsafe-memory-access=allow</surefire.add-opens.argLine>
     <!-- org.apache:apache overrides -->
     <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
     <maven.compiler.source>17</maven.compiler.source>

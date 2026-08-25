@@ -28,10 +28,13 @@ Java Compatibility
 ==================
 
 Java modules are compatible with JDK 17 and above. Currently, JDK versions
-17, 21, and latest are tested in CI.
+17, 21, and 25 are tested in CI.
 
-Note that some JDK internals must be exposed by
-adding ``--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED`` to the ``java`` command:
+Note that some JDK internals must be exposed by adding these flags to the ``java`` command:
+
+- ``--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED`` (always required)
+- ``--enable-native-access=io.netty.common`` (Java 25+, when using ``arrow-memory-netty``)
+- ``--sun-misc-unsafe-memory-access=allow`` (Java 25+; not stricly necessary, but suppresses certain warnings)
 
 .. code-block:: shell
 
@@ -40,9 +43,11 @@ adding ``--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED
    # Indirectly via environment variables
    $ env JDK_JAVA_OPTIONS="--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED" java -jar ...
 
-Otherwise, you may see errors like ``module java.base does not "opens
-java.nio" to unnamed module`` or ``module java.base does not "opens
-java.nio" to org.apache.arrow.memory.core``
+Otherwise, you may see errors and/or warnings like these:
+- ``module java.base does not "opens java.nio" to unnamed module``
+- ``module java.base does not "opens java.nio" to org.apache.arrow.memory.core``
+- ``Native access (restricted methods) is not enabled for the io.netty.common module.``
+- ``A terminally deprecated method in sun.misc.Unsafe has been called``
 
 Note that the command has changed from Arrow 15 and earlier. If you are still using the flags from that version
 (``--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED``) you will see the
