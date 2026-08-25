@@ -116,9 +116,9 @@ under the License.
     <logback.version>1.6.3</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
-    <!-- List of add-opens arg line arguments for tests -->
-    <surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED --enable-native-access=io.netty.common ${surefire.unsafe-memory-access.argLine}</surefire.add-opens.argLine>
-    <surefire.unsafe-memory-access.argLine/>
+    <surefire.argLine.extend/>
+    <surefire.argLine.jdkSpecific/>
+    <surefire.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED --enable-native-access=io.netty.common ${surefire.argLine.extend} ${surefire.argLine.jdkSpecific}</surefire.argLine>
     <!-- org.apache:apache overrides -->
     <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
     <maven.compiler.source>17</maven.compiler.source>
@@ -323,7 +323,7 @@ under the License.
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <argLine>${surefire.add-opens.argLine}</argLine>
+            <argLine>${surefire.argLine}</argLine>
             <enableAssertions>true</enableAssertions>
             <childDelegation>true</childDelegation>
             <forkCount>${forkCount}</forkCount>
@@ -342,7 +342,7 @@ under the License.
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
           <configuration>
-            <argLine>${surefire.add-opens.argLine}</argLine>
+            <argLine>${surefire.argLine}</argLine>
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               <io.netty.tryReflectionSetAccessible>true</io.netty.tryReflectionSetAccessible>
@@ -786,7 +786,7 @@ under the License.
         <jdk>[24,)</jdk>
       </activation>
       <properties>
-        <surefire.unsafe-memory-access.argLine>--sun-misc-unsafe-memory-access=allow</surefire.unsafe-memory-access.argLine>
+        <surefire.argLine.jdkSpecific>--sun-misc-unsafe-memory-access=allow</surefire.argLine.jdkSpecific>
       </properties>
     </profile>
 

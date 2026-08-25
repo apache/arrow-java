@@ -32,6 +32,10 @@ under the License.
   <description>(Contrib/Experimental)A library for converting JDBC data to Arrow data.</description>
   <url>http://maven.apache.org</url>
 
+  <properties>
+    <surefire.argLine.extend>--add-reads=org.apache.arrow.adapter.jdbc=com.fasterxml.jackson.dataformat.yaml</surefire.argLine.extend>
+  </properties>
+
   <dependencies>
 
     <dependency>
@@ -108,13 +112,6 @@ under the License.
             </configuration>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration combine.self="override">
-          <argLine>--add-reads=org.apache.arrow.adapter.jdbc=com.fasterxml.jackson.dataformat.yaml --add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED -Duser.timezone=UTC</argLine>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
