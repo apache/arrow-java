@@ -1217,6 +1217,7 @@ public class FlightSqlClient implements AutoCloseable {
   public static class PreparedStatement implements AutoCloseable {
     private final FlightClient client;
     private final ActionCreatePreparedStatementResult preparedStatementResult;
+    private ByteString handle;
     private VectorSchemaRoot parameterBindingRoot;
     private boolean isClosed;
     private Schema resultSetSchema;
@@ -1229,6 +1230,7 @@ public class FlightSqlClient implements AutoCloseable {
       preparedStatementResult =
           FlightSqlUtils.unpackAndParseOrThrow(
               preparedStatementResults.next().getBody(), ActionCreatePreparedStatementResult.class);
+      handle = preparedStatementResult.getPreparedStatementHandle();
       isClosed = false;
     }
 
@@ -1305,8 +1307,7 @@ public class FlightSqlClient implements AutoCloseable {
           FlightDescriptor.command(
               Any.pack(
                       CommandPreparedStatementQuery.newBuilder()
-                          .setPreparedStatementHandle(
-                              preparedStatementResult.getPreparedStatementHandle())
+                          .setPreparedStatementHandle(handle)
                           .build())
                   .toByteArray());
       return client.getSchema(descriptor, options);
@@ -1337,8 +1338,7 @@ public class FlightSqlClient implements AutoCloseable {
           FlightDescriptor.command(
               Any.pack(
                       CommandPreparedStatementQuery.newBuilder()
-                          .setPreparedStatementHandle(
-                              preparedStatementResult.getPreparedStatementHandle())
+                          .setPreparedStatementHandle(handle)
                           .build())
                   .toByteArray());
 
@@ -1352,12 +1352,16 @@ public class FlightSqlClient implements AutoCloseable {
               try (final ArrowBuf metadata = read.getApplicationMetadata()) {
                 final FlightSql.DoPutPreparedStatementResult doPutPreparedStatementResult =
                     FlightSql.DoPutPreparedStatementResult.parseFrom(metadata.nioBuffer());
+                final ByteString updatedHandle =
+                    doPutPreparedStatementResult.getPreparedStatementHandle();
+                if (!updatedHandle.isEmpty()) {
+                  handle = updatedHandle;
+                }
                 descriptor =
                     FlightDescriptor.command(
                         Any.pack(
                                 CommandPreparedStatementQuery.newBuilder()
-                                    .setPreparedStatementHandle(
-                                        doPutPreparedStatementResult.getPreparedStatementHandle())
+                                    .setPreparedStatementHandle(handle)
                                     .build())
                             .toByteArray());
               }
@@ -1409,8 +1413,7 @@ public class FlightSqlClient implements AutoCloseable {
           FlightDescriptor.command(
               Any.pack(
                       CommandPreparedStatementUpdate.newBuilder()
-                          .setPreparedStatementHandle(
-                              preparedStatementResult.getPreparedStatementHandle())
+                          .setPreparedStatementHandle(handle)
                           .build())
                   .toByteArray());
       setParameters(parameterBindingRoot == null ? VectorSchemaRoot.of() : parameterBindingRoot);
@@ -1447,8 +1450,7 @@ public class FlightSqlClient implements AutoCloseable {
               FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(),
               Any.pack(
                       ActionClosePreparedStatementRequest.newBuilder()
-                          .setPreparedStatementHandle(
-                              preparedStatementResult.getPreparedStatementHandle())
+                          .setPreparedStatementHandle(handle)
                           .build())
                   .toByteArray());
       final Iterator<Result> closePreparedStatementResults = client.doAction(action, options);
