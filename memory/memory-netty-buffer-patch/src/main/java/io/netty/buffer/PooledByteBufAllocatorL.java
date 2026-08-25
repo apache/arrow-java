@@ -82,7 +82,7 @@ public class PooledByteBufAllocatorL {
   }
 
   public long getNormalBufferCount() {
-    return normalBufferSize.get();
+    return normalBufferCount.get();
   }
 
   private static class AccountedUnsafeDirectLittleEndian extends UnsafeDirectLittleEndian {
@@ -172,7 +172,7 @@ public class PooledByteBufAllocatorL {
           // within chunk, use arena.
           ByteBuf buf = directArena.allocate(cache, initialCapacity, maxCapacity);
           if (!(buf instanceof PooledUnsafeDirectByteBuf)) {
-            fail();
+            throw fail();
           }
 
           if (!AssertionUtil.ASSERT_ENABLED) {
