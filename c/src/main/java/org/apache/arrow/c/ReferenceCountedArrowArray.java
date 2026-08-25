@@ -64,13 +64,18 @@ final class ReferenceCountedArrowArray {
    */
   ArrowBuf unsafeAssociateAllocation(
       BufferAllocator trackingAllocator, long capacity, long memoryAddress) {
+    // Retain only after wrapForeignAllocation succeeds. On the allocator-limit OOM path,
+    // wrapForeignAllocation throws before the ForeignAllocation is associated, so release0()
+    // is not called; retaining first would leave the count elevated with no matching release0().
+    ArrowBuf buf =
+        trackingAllocator.wrapForeignAllocation(
+            new ForeignAllocation(capacity, memoryAddress) {
+              @Override
+              protected void release0() {
+                ReferenceCountedArrowArray.this.release();
+              }
+            });
     retain();
-    return trackingAllocator.wrapForeignAllocation(
-        new ForeignAllocation(capacity, memoryAddress) {
-          @Override
-          protected void release0() {
-            ReferenceCountedArrowArray.this.release();
-          }
-        });
+    return buf;
   }
 }

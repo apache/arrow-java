@@ -1284,6 +1284,19 @@ public class FlightSqlClient implements AutoCloseable {
       return parameterSchema;
     }
 
+    /**
+     * Returns whether the server indicated this prepared statement is an update query.
+     *
+     * @return true if the server indicated this is an update query, false if the server indicated
+     *     this is a select query, or null if the server did not provide this information.
+     */
+    public Boolean isUpdate() {
+      if (preparedStatementResult.hasIsUpdate()) {
+        return preparedStatementResult.getIsUpdate();
+      }
+      return null;
+    }
+
     /** Get the schema of the result set (should be identical to {@link #getResultSetSchema()}). */
     public SchemaResult fetchSchema(CallOption... options) {
       checkOpen();

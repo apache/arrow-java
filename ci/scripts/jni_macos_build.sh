@@ -73,12 +73,21 @@ cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-macos \
+  -Dabsl_SOURCE=BUNDLED \
+  -Dsimdjson_SOURCE=BUNDLED \
   -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp" --target install
 github_actions_group_end
 
+absl_include_dir="${build_dir}/cpp/_deps/absl-src"
+if [ ! -d "${absl_include_dir}/absl" ]; then
+  echo "Bundled Abseil headers were not found in ${absl_include_dir}" >&2
+  exit 1
+fi
+
 JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/_deps/protobuf-build"
 JAVA_JNI_CMAKE_ARGS+=" -DProtobuf_SRC_ROOT_FOLDER=${build_dir}/cpp/_deps/protobuf-src"
+JAVA_JNI_CMAKE_ARGS+=" -DARROW_JAVA_JNI_ABSL_INCLUDE_DIR=${absl_include_dir}"
 export JAVA_JNI_CMAKE_ARGS
 "${source_dir}/ci/scripts/jni_build.sh" \
   "${source_dir}" \

@@ -53,7 +53,8 @@ public class ArrowFlightMetaImpl extends MetaImpl {
   }
 
   /** Construct a signature. */
-  static Signature newSignature(final String sql, Schema resultSetSchema, Schema parameterSchema) {
+  static Signature newSignature(
+      final String sql, Schema resultSetSchema, Schema parameterSchema, Boolean isUpdate) {
     List<ColumnMetaData> columnMetaData =
         resultSetSchema == null
             ? new ArrayList<>()
@@ -62,10 +63,17 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         parameterSchema == null
             ? new ArrayList<>()
             : ConvertUtils.convertArrowFieldsToAvaticaParameters(parameterSchema.getFields());
-    StatementType statementType =
-        resultSetSchema == null || resultSetSchema.getFields().isEmpty()
-            ? StatementType.IS_DML
-            : StatementType.SELECT;
+    // If the server provided the is_update field, use it to determine the statement type
+    StatementType statementType;
+    if (isUpdate != null) {
+      statementType = isUpdate ? StatementType.IS_DML : StatementType.SELECT;
+    } else {
+      // Fall back to the legacy logic: check if the result set schema is empty
+      statementType =
+          resultSetSchema == null || resultSetSchema.getFields().isEmpty()
+              ? StatementType.IS_DML
+              : StatementType.SELECT;
+    }
     return new Signature(
         columnMetaData,
         sql,
@@ -178,7 +186,10 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         ((ArrowFlightConnection) connection).getClientHandler().prepare(query);
     handle.signature =
         newSignature(
-            query, preparedStatement.getDataSetSchema(), preparedStatement.getParameterSchema());
+            query,
+            preparedStatement.getDataSetSchema(),
+            preparedStatement.getParameterSchema(),
+            preparedStatement.isUpdate());
     statementHandlePreparedStatementMap.put(new StatementHandleKey(handle), preparedStatement);
     return preparedStatement;
   }

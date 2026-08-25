@@ -221,7 +221,7 @@ DataTypePtr ProtoTypeToDataType(const gandiva::types::ExtGandivaType& ext_type) 
       return arrow::date64();
     case gandiva::types::DECIMAL:
       // TODO: error handling
-      return arrow::decimal(ext_type.precision(), ext_type.scale());
+      return arrow::decimal128(ext_type.precision(), ext_type.scale());
     case gandiva::types::TIME32:
       return ProtoTypeToTime32(ext_type);
     case gandiva::types::TIME64:
