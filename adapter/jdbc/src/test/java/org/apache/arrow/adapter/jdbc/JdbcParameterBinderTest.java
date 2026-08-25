@@ -42,6 +42,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -444,6 +446,28 @@ public class JdbcParameterBinderTest {
         FixedSizeBinaryVector::setSafe,
         FixedSizeBinaryVector::setNull,
         Arrays.asList(new byte[3], new byte[] {1, 2, -4}, new byte[] {-1, 127, -128}));
+  }
+
+  @Test
+  void decimal32() throws SQLException {
+    testSimpleType(
+        new ArrowType.Decimal(/*precision*/ 9, /*scale*/ 3, 32),
+        Types.DECIMAL,
+        Decimal32Vector::setSafe,
+        Decimal32Vector::setNull,
+        Arrays.asList(
+            new BigDecimal("120.429"), new BigDecimal("-10590.123"), new BigDecimal("0.000")));
+  }
+
+  @Test
+  void decimal64() throws SQLException {
+    testSimpleType(
+        new ArrowType.Decimal(/*precision*/ 18, /*scale*/ 3, 64),
+        Types.DECIMAL,
+        Decimal64Vector::setSafe,
+        Decimal64Vector::setNull,
+        Arrays.asList(
+            new BigDecimal("120.429"), new BigDecimal("-10590.123"), new BigDecimal("0.000")));
   }
 
   @Test

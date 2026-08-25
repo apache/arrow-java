@@ -22,9 +22,14 @@ import java.util.function.IntSupplier;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessor;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 
-/** Accessor for {@link DecimalVector} and {@link Decimal256Vector}. */
+/**
+ * Accessor for {@link Decimal32Vector}, {@link Decimal64Vector}, {@link DecimalVector} and {@link
+ * Decimal256Vector}.
+ */
 public class ArrowFlightJdbcDecimalVectorAccessor extends ArrowFlightJdbcAccessor {
 
   private final Getter getter;
@@ -33,6 +38,22 @@ public class ArrowFlightJdbcDecimalVectorAccessor extends ArrowFlightJdbcAccesso
   @FunctionalInterface
   interface Getter {
     BigDecimal getObject(int index);
+  }
+
+  public ArrowFlightJdbcDecimalVectorAccessor(
+      Decimal32Vector vector,
+      IntSupplier currentRowSupplier,
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+    super(currentRowSupplier, setCursorWasNull);
+    this.getter = vector::getObject;
+  }
+
+  public ArrowFlightJdbcDecimalVectorAccessor(
+      Decimal64Vector vector,
+      IntSupplier currentRowSupplier,
+      ArrowFlightJdbcAccessorFactory.WasNullConsumer setCursorWasNull) {
+    super(currentRowSupplier, setCursorWasNull);
+    this.getter = vector::getObject;
   }
 
   public ArrowFlightJdbcDecimalVectorAccessor(
