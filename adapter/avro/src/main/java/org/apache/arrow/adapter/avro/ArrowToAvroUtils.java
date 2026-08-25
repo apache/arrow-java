@@ -601,7 +601,7 @@ public class ArrowToAvroUtils {
       case VARCHAR:
         return new AvroStringProducer((VarCharVector) vector);
 
-        // Logical types
+      // Logical types
 
       case DECIMAL:
         return new AvroDecimalProducer((DecimalVector) vector);
@@ -636,7 +636,7 @@ public class ArrowToAvroUtils {
       case TIMESTAMPNANOTZ:
         return new AvroTimestampNanoTzProducer((TimeStampNanoTZVector) vector);
 
-        // Complex types
+      // Complex types
 
       case STRUCT:
         StructVector structVector = (StructVector) vector;
@@ -679,9 +679,9 @@ public class ArrowToAvroUtils {
             new AvroStructProducer(entryVector, new Producer<?>[] {keyProducer, valueProducer});
         return new AvroMapProducer(mapVector, entryProducer);
 
-        // Support for UNION and DENSEUNION is not currently available
-        // This is pending fixes in the implementation of the union vectors themselves
-        // https://github.com/apache/arrow-java/issues/108
+      // Support for UNION and DENSEUNION is not currently available
+      // This is pending fixes in the implementation of the union vectors themselves
+      // https://github.com/apache/arrow-java/issues/108
 
       default:
         // Not all Arrow types are supported for encoding (yet)!

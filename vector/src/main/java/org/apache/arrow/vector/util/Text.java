@@ -488,7 +488,7 @@ public class Text extends ReusableByteArray {
           if (leadByte == 0xED && aByte > 0x9F) {
             return Optional.of(count);
           }
-          // falls through to regular trail-byte test!!
+        // falls through to regular trail-byte test!!
         case TRAIL_BYTE:
           if (aByte < 0x80 || aByte > 0xBF) {
             return Optional.of(count);
@@ -793,23 +793,23 @@ public class Text extends ReusableByteArray {
       case 5:
         ch += (bytes.get() & 0xFF);
         ch <<= 6; /* remember, illegal UTF-8 */
-        // fall through
+      // fall through
       case 4:
         ch += (bytes.get() & 0xFF);
         ch <<= 6; /* remember, illegal UTF-8 */
-        // fall through
+      // fall through
       case 3:
         ch += (bytes.get() & 0xFF);
         ch <<= 6;
-        // fall through
+      // fall through
       case 2:
         ch += (bytes.get() & 0xFF);
         ch <<= 6;
-        // fall through
+      // fall through
       case 1:
         ch += (bytes.get() & 0xFF);
         ch <<= 6;
-        // fall through
+      // fall through
       case 0:
         ch += (bytes.get() & 0xFF);
         break;

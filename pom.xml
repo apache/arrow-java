@@ -738,7 +738,7 @@ under the License.
           </pom>
           <java>
             <googleJavaFormat>
-              <version>1.17.0</version>
+              <version>1.36.1</version>
               <style>GOOGLE</style>
             </googleJavaFormat>
             <licenseHeader>
