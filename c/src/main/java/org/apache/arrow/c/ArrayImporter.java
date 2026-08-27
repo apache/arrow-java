@@ -53,10 +53,6 @@ final class ArrayImporter {
   void importArray(ArrowArray src) {
     ArrowArray.Snapshot snapshot = src.snapshot();
     checkState(snapshot.release != NULL, "Cannot import released ArrowArray");
-    checkState(
-        snapshot.offset == 0,
-        "ArrowArray struct has non-zero offset (%s), which is not supported",
-        snapshot.offset);
 
     // Move imported array
     ArrowArray ownedArray = ArrowArray.allocateNew(allocator);
@@ -87,6 +83,11 @@ final class ArrayImporter {
   }
 
   private void doImport(ArrowArray.Snapshot snapshot) {
+    checkState(
+        snapshot.offset == 0 || snapshot.length == 0,
+        "ArrowArray struct has non-zero offset (%s), which is not supported",
+        snapshot.offset);
+
     // First import children (required for reconstituting parent array data)
     long[] children =
         NativeUtil.toJavaArray(snapshot.children, checkedCastToInt(snapshot.n_children));
