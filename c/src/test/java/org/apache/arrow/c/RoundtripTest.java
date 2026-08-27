@@ -1073,6 +1073,24 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testImportEmptyArrayWithNonZeroOffset() {
+    try (IntVector source = new IntVector("source", allocator);
+        IntVector destination = new IntVector("destination", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      setVector(source, 1, 2, 3);
+      Data.exportVector(allocator, source, null, array);
+
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      snapshot.offset = source.getValueCount();
+      snapshot.length = 0;
+      array.save(snapshot);
+
+      Data.importIntoVector(allocator, array, destination, null);
+      assertEquals(0, destination.getValueCount());
+    }
+  }
+
+  @Test
   public void testArrayStructReuse() {
     // Consumer allocates empty structures
     try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
