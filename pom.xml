@@ -116,8 +116,9 @@ under the License.
     <logback.version>1.6.3</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
-    <!-- List of add-opens arg line arguments for tests -->
-    <surefire.add-opens.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED</surefire.add-opens.argLine>
+    <surefire.argLine.extend/>
+    <surefire.argLine.jdkSpecific/>
+    <surefire.argLine>--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED --enable-native-access=io.netty.common ${surefire.argLine.extend} ${surefire.argLine.jdkSpecific}</surefire.argLine>
     <!-- org.apache:apache overrides -->
     <minimalJavaBuildVersion>17</minimalJavaBuildVersion>
     <maven.compiler.source>17</maven.compiler.source>
@@ -322,7 +323,7 @@ under the License.
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <argLine>${surefire.add-opens.argLine}</argLine>
+            <argLine>${surefire.argLine}</argLine>
             <enableAssertions>true</enableAssertions>
             <childDelegation>true</childDelegation>
             <forkCount>${forkCount}</forkCount>
@@ -341,7 +342,7 @@ under the License.
         <plugin>
           <artifactId>maven-failsafe-plugin</artifactId>
           <configuration>
-            <argLine>${surefire.add-opens.argLine}</argLine>
+            <argLine>${surefire.argLine}</argLine>
             <systemPropertyVariables>
               <java.io.tmpdir>${project.build.directory}</java.io.tmpdir>
               <io.netty.tryReflectionSetAccessible>true</io.netty.tryReflectionSetAccessible>
@@ -725,42 +726,6 @@ under the License.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
       </plugin>
-      <plugin>
-        <groupId>com.diffplug.spotless</groupId>
-        <artifactId>spotless-maven-plugin</artifactId>
-        <configuration>
-          <pom>
-            <licenseHeader>
-              <file>${maven.multiModuleProjectDirectory}/dev/license/asf-xml.license</file>
-              <delimiter>(&lt;configuration|&lt;project)</delimiter>
-            </licenseHeader>
-            <sortPom/>
-          </pom>
-          <java>
-            <googleJavaFormat>
-              <version>1.17.0</version>
-              <style>GOOGLE</style>
-            </googleJavaFormat>
-            <licenseHeader>
-              <file>${maven.multiModuleProjectDirectory}/dev/license/asf-java.license</file>
-              <delimiter>package</delimiter>
-            </licenseHeader>
-            <excludes>
-              <exclude>**/Preconditions.java</exclude>
-              <exclude>**/IntObjectMap.java</exclude>
-              <exclude>**/IntObjectHashMap.java</exclude>
-            </excludes>
-          </java>
-        </configuration>
-        <executions>
-          <execution>
-            <id>spotless-check</id>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
     <extensions>
       <!-- provides os.detected.classifier (i.e. linux-x86_64, osx-x86_64) property -->
@@ -815,6 +780,17 @@ under the License.
 
   <profiles>
     <profile>
+      <!-- Certain flags are required on newer JDK but not recognized on earlier JDK -->
+      <id>jdk24</id>
+      <activation>
+        <jdk>[24,)</jdk>
+      </activation>
+      <properties>
+        <surefire.argLine.jdkSpecific>--sun-misc-unsafe-memory-access=allow</surefire.argLine.jdkSpecific>
+      </properties>
+    </profile>
+
+    <profile>
       <!-- C data interface depends on building a native library -->
       <id>arrow-c-data</id>
       <modules>
@@ -840,6 +816,54 @@ under the License.
       <properties>
         <arrow.vector.classifier>shade-format-flatbuffers</arrow.vector.classifier>
       </properties>
+    </profile>
+
+    <profile>
+      <!-- google-java-format now requires Java 21+ -->
+      <id>spotless</id>
+      <activation>
+        <jdk>[21,)</jdk>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.diffplug.spotless</groupId>
+            <artifactId>spotless-maven-plugin</artifactId>
+            <configuration>
+              <pom>
+                <licenseHeader>
+                  <file>${maven.multiModuleProjectDirectory}/dev/license/asf-xml.license</file>
+                  <delimiter>(&lt;configuration|&lt;project)</delimiter>
+                </licenseHeader>
+                <sortPom/>
+              </pom>
+              <java>
+                <googleJavaFormat>
+                  <version>1.36.1</version>
+                  <style>GOOGLE</style>
+                </googleJavaFormat>
+                <licenseHeader>
+                  <file>${maven.multiModuleProjectDirectory}/dev/license/asf-java.license</file>
+                  <delimiter>package</delimiter>
+                </licenseHeader>
+                <excludes>
+                  <exclude>**/Preconditions.java</exclude>
+                  <exclude>**/IntObjectMap.java</exclude>
+                  <exclude>**/IntObjectHashMap.java</exclude>
+                </excludes>
+              </java>
+            </configuration>
+            <executions>
+              <execution>
+                <id>spotless-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
     <profile>

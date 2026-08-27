@@ -53,10 +53,8 @@ import org.apache.arrow.vector.util.ValueVectorUtility;
  * <p>This interface "should" strive to guarantee this order of operation:
  *
  * <blockquote>
- *
  * allocate &gt; mutate &gt; setvaluecount &gt; access &gt; clear (or allocate to start the process
  * over).
- *
  * </blockquote>
  */
 public interface ValueVector extends Closeable, Iterable<ValueVector> {

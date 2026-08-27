@@ -31,6 +31,7 @@ under the License.
   <description>Java implementation of Arrow Dataset API/Framework</description>
 
   <properties>
+    <surefire.argLine.extend>--add-reads=org.apache.arrow.dataset=com.fasterxml.jackson.databind --add-opens=java.base/java.nio=org.apache.arrow.dataset</surefire.argLine.extend>
     <arrow.cpp.build.dir>../../../cpp/release-build/</arrow.cpp.build.dir>
     <parquet.version>1.17.1</parquet.version>
     <avro.version>1.12.1</avro.version>
@@ -180,7 +181,6 @@ under the License.
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <argLine combine.self="override">--add-reads=org.apache.arrow.dataset=com.fasterxml.jackson.databind --add-opens=java.base/java.nio=org.apache.arrow.dataset,org.apache.arrow.memory.core,ALL-UNNAMED</argLine>
           <enableAssertions>false</enableAssertions>
           <systemPropertyVariables>
             <arrow.test.dataRoot>${project.basedir}/../testing/data</arrow.test.dataRoot>
