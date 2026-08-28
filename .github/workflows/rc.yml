@@ -236,13 +236,29 @@ jobs:
             brew uninstall pkg-config@0.29.2 || :
           fi
 
-          brew bundle --file=arrow/cpp/Brewfile
+          # We don't use Homebrew's aws-sdk-cpp and gRPC. See the
+          # "brew uninstall" calls below for details. So we don't install
+          # them instead of installing and uninstalling them.
+          #
+          # This is also needed because Homebrew doesn't provide bottles
+          # for them on x86_64 macOS. Homebrew treats x86_64 macOS as a
+          # tier 3 configuration and rarely builds bottles for it:
+          #
+          #   https://docs.brew.sh/Support-Tiers#tier-3
+          #
+          # "brew bundle" fails with "no bottle available!" without this
+          # because it doesn't build them from source.
+          HOMEBREW_BUNDLE_BREW_SKIP="aws-sdk-cpp grpc" \
+            brew bundle --file=arrow/cpp/Brewfile
           # We want to link aws-sdk-cpp statically but Homebrew's
           # aws-sdk-cpp provides only shared library. If we have
           # Homebrew's aws-sdk-cpp, our build mix Homebrew's
           # aws-sdk-cpp and bundled aws-sdk-cpp. We uninstall Homebrew's
           # aws-sdk-cpp to ensure using only bundled aws-sdk-cpp.
-          brew uninstall aws-sdk-cpp
+          #
+          # Homebrew's aws-sdk-cpp may be pre-installed on GitHub Actions
+          # runner images even if we skip installing it above.
+          brew uninstall aws-sdk-cpp || :
           # We want to use bundled RE2 for static linking. If
           # Homebrew's RE2 is installed, its header file may be used.
           # We uninstall Homebrew's RE2 to ensure using bundled RE2.
