@@ -67,6 +67,8 @@ public final class CoreMockedSqlProducers {
   public static final String LEGACY_METADATA_SQL_CMD = "SELECT * FROM METADATA";
   public static final String LEGACY_CANCELLATION_SQL_CMD = "SELECT * FROM TAKES_FOREVER";
   public static final String LEGACY_REGULAR_WITH_EMPTY_SQL_CMD = "SELECT * FROM TEST_EMPTIES";
+  public static final String LEGACY_REGULAR_NO_ENDPOINTS_SQL_CMD =
+      "SELECT * FROM TEST_NO_ENDPOINTS";
 
   public static final String UUID_SQL_CMD = "SELECT * FROM UUID_TABLE";
   public static final String UUID_PREPARED_SELECT_SQL_CMD =
@@ -100,10 +102,20 @@ public final class CoreMockedSqlProducers {
     addLegacyMetadataSqlCmdSupport(producer);
     addLegacyCancellationSqlCmdSupport(producer);
     addQueryWithEmbeddedEmptyRoot(producer);
+    addQueryWithNoEndpoints(producer);
     addUuidSqlCmdSupport(producer);
     addUuidPreparedSelectSqlCmdSupport(producer);
     addUuidPreparedUpdateSqlCmdSupport(producer);
     return producer;
+  }
+
+  private static void addQueryWithNoEndpoints(final MockFlightSqlProducer producer) {
+    final Schema querySchema =
+        new Schema(
+            ImmutableList.of(
+                new Field("ID", new FieldType(true, new ArrowType.Int(64, true), null), null)));
+    producer.addSelectQuery(
+        LEGACY_REGULAR_NO_ENDPOINTS_SQL_CMD, querySchema, Collections.emptyList());
   }
 
   /**
