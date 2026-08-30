@@ -403,7 +403,7 @@ public class TestDictionaryVector {
   }
 
   @Test
-  public void testVarcharEquals() {
+  public void testVarCharEquals() {
     try (final VarCharVector vector1 = new VarCharVector("varchar", allocator);
         final VarCharVector vector2 = new VarCharVector("varchar", allocator)) {
 
@@ -1061,7 +1061,7 @@ public class TestDictionaryVector {
       try (final StructVector decode = StructSubfieldEncoder.decode(indices, provider, allocator)) {
         fail("There should be an exception when decoding");
       } catch (Exception e) {
-        assertEquals("Provided dictionary does not contain value for index 3", e.getMessage());
+        assertEquals("Provided dictionary does not contain value for index 1", e.getMessage());
       }
     }
     assertEquals(0, allocator.getAllocatedMemory(), "struct decode memory leak");
@@ -1193,6 +1193,37 @@ public class TestDictionaryVector {
             assertArrayEquals("255".getBytes(StandardCharsets.UTF_8), decodedVector.get(0));
           }
         }
+      }
+    }
+  }
+
+  /**
+   * Test related to Issue #1158 - it was possible to decode an encoded value 1 index outside the Dictionary's range.
+   */
+  @Test
+  public void testReferencingIndexOutOfBounds() {
+    // Index at which the original value will be stored at in the dictionary
+    int encodedIndex = 0;
+    // The encoded value that references an index in the dictionary
+    int indexReferenced = 1;
+
+    try (final IntVector encodedVector = new IntVector("encodings", allocator);
+         final VarCharVector dictionaryVector = newVarCharVector("dict", allocator); ) {
+      String originalValue = "Foo";
+      dictionaryVector.allocateNew(1);
+      dictionaryVector.setValueCount(1);
+      dictionaryVector.set(encodedIndex, originalValue.getBytes(StandardCharsets.UTF_8));
+
+      encodedVector.allocateNew(1);
+      encodedVector.setValueCount(1);
+      encodedVector.set(0, indexReferenced);
+
+      Dictionary dictionary = new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+
+      try (ValueVector decoded = DictionaryEncoder.decode(encodedVector, dictionary)) {
+        fail("There should be an exception when decoding index outside dictionary's range.");
+      } catch (Exception e) {
+        assertEquals("Provided dictionary does not contain value for index " + indexReferenced, e.getMessage());
       }
     }
   }
