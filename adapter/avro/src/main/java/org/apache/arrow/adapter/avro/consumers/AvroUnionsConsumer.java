@@ -42,7 +42,7 @@ public class AvroUnionsConsumer extends BaseAvroConsumer<UnionVector> {
 
   @Override
   public void consume(Decoder decoder) throws IOException {
-    int fieldIndex = decoder.readInt();
+    int fieldIndex = decoder.readIndex();
 
     ensureInnerVectorCapacity(currentIndex + 1, fieldIndex);
     Consumer delegate = delegates[fieldIndex];
