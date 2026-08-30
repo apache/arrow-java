@@ -130,7 +130,7 @@ public class ConnectionTest {
    * connection should fail if a token is passed in.
    */
   @Test
-  public void testTokenOverridesUsernameAndPasswordAuth() {
+  public void testTokenOverridesUsernameAndPasswordAuth() throws Exception {
     final Properties properties = new Properties();
 
     properties.put(ArrowFlightConnectionProperty.HOST.camelName(), "localhost");

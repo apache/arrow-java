@@ -161,7 +161,7 @@ public class OAuthIntegrationTest {
             .build());
   }
 
-  private Properties createBaseProperties() {
+  private Properties createBaseProperties() throws SQLException {
     Properties props = new Properties();
     props.put(ArrowFlightConnectionProperty.HOST.camelName(), "localhost");
     props.put(
@@ -170,7 +170,7 @@ public class OAuthIntegrationTest {
     return props;
   }
 
-  private String getJdbcUrl() {
+  private String getJdbcUrl() throws SQLException {
     return String.format(
         "jdbc:arrow-flight-sql://localhost:%d", FLIGHT_SERVER_TEST_EXTENSION.getPort());
   }
@@ -408,7 +408,7 @@ public class OAuthIntegrationTest {
   // ==================== Error Handling Tests ====================
 
   @Test
-  public void testMissingRequiredParametersClientCredentials() {
+  public void testMissingRequiredParametersClientCredentials() throws Exception {
     Properties props = createBaseProperties();
     props.put(ArrowFlightConnectionProperty.OAUTH_FLOW.camelName(), "client_credentials");
     props.put(ArrowFlightConnectionProperty.OAUTH_TOKEN_URI.camelName(), tokenEndpoint.toString());
@@ -418,7 +418,7 @@ public class OAuthIntegrationTest {
   }
 
   @Test
-  public void testMissingRequiredParametersTokenExchange() {
+  public void testMissingRequiredParametersTokenExchange() throws Exception {
     Properties props = createBaseProperties();
     props.put(ArrowFlightConnectionProperty.OAUTH_FLOW.camelName(), "token_exchange");
     props.put(ArrowFlightConnectionProperty.OAUTH_TOKEN_URI.camelName(), tokenEndpoint.toString());
@@ -428,7 +428,7 @@ public class OAuthIntegrationTest {
   }
 
   @Test
-  public void testInvalidOAuthFlow() {
+  public void testInvalidOAuthFlow() throws Exception {
     Properties props = createBaseProperties();
     props.put(ArrowFlightConnectionProperty.OAUTH_FLOW.camelName(), "invalid_flow");
     props.put(ArrowFlightConnectionProperty.OAUTH_TOKEN_URI.camelName(), tokenEndpoint.toString());
@@ -437,7 +437,7 @@ public class OAuthIntegrationTest {
   }
 
   @Test
-  public void testMalformedTokenEndpoint() {
+  public void testMalformedTokenEndpoint() throws Exception {
     Properties props = createBaseProperties();
     props.put(ArrowFlightConnectionProperty.OAUTH_FLOW.camelName(), "client_credentials");
     props.put(ArrowFlightConnectionProperty.OAUTH_TOKEN_URI.camelName(), "not-a-valid-uri://");
