@@ -35,6 +35,7 @@ import org.apache.arrow.vector.compare.util.ValueEpsilonEqualizers;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.TransferPair;
+import org.apache.arrow.vector.util.VectorOps;
 
 /**
  * Holder for a set of vectors to be loaded/unloaded. A VectorSchemaRoot is a container that can
@@ -193,6 +194,10 @@ public class VectorSchemaRoot implements AutoCloseable {
   /**
    * Add vector to the record batch, producing a new VectorSchemaRoot.
    *
+   * <p>The returned root shares the underlying memory of this root's vectors and the added vector
+   * via {@link VectorOps#shareCopy}. Both this root and the returned root remain usable; the
+   * underlying memory is only released when all sharing roots have been closed.
+   *
    * @param index field index
    * @param vector vector to be added.
    * @return out VectorSchemaRoot with vector added
@@ -201,22 +206,24 @@ public class VectorSchemaRoot implements AutoCloseable {
     Preconditions.checkNotNull(vector);
     Preconditions.checkArgument(index >= 0 && index <= fieldVectors.size());
     List<FieldVector> newVectors = new ArrayList<>();
-    if (index == fieldVectors.size()) {
-      newVectors.addAll(fieldVectors);
-      newVectors.add(vector);
-    } else {
-      for (int i = 0; i < fieldVectors.size(); i++) {
-        if (i == index) {
-          newVectors.add(vector);
-        }
-        newVectors.add(fieldVectors.get(i));
+    for (int i = 0; i < fieldVectors.size(); i++) {
+      if (i == index) {
+        newVectors.add(VectorOps.shareCopy(vector));
       }
+      newVectors.add(VectorOps.shareCopy(fieldVectors.get(i)));
+    }
+    if (index == fieldVectors.size()) {
+      newVectors.add(VectorOps.shareCopy(vector));
     }
     return new VectorSchemaRoot(newVectors);
   }
 
   /**
    * Remove vector from the record batch, producing a new VectorSchemaRoot.
+   *
+   * <p>The returned root shares the underlying memory of this root's retained vectors via {@link
+   * VectorOps#shareCopy}. Both this root and the returned root remain usable; the underlying memory
+   * is only released when all sharing roots have been closed.
    *
    * @param index field index
    * @return out VectorSchemaRoot with vector removed
@@ -226,7 +233,7 @@ public class VectorSchemaRoot implements AutoCloseable {
     List<FieldVector> newVectors = new ArrayList<>();
     for (int i = 0; i < fieldVectors.size(); i++) {
       if (i != index) {
-        newVectors.add(fieldVectors.get(i));
+        newVectors.add(VectorOps.shareCopy(fieldVectors.get(i)));
       }
     }
     return new VectorSchemaRoot(newVectors);
