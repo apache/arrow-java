@@ -183,11 +183,22 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                       sqlClient.getStream(endpoint.getTicket(), getOptions()), null);
               break;
             }
+            final boolean encryptEndpoint =
+                endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS);
+            if (builder.useEncryption && !encryptEndpoint) {
+              exceptions.add(
+                  new SQLException(
+                      String.format(
+                          "Refusing to connect to endpoint location %s without encryption "
+                              + "because the connection to %s is encrypted.",
+                          endpointUri, builder.getLocation().getUri())));
+              continue;
+            }
             final Builder builderForEndpoint =
                 new Builder(ArrowFlightSqlClientHandler.this.builder)
                     .withHost(endpointUri.getHost())
                     .withPort(endpointUri.getPort())
-                    .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS))
+                    .withEncryption(encryptEndpoint)
                     .withClientCache(flightClientCache)
                     .withConnectTimeout(builder.connectTimeout);
 
