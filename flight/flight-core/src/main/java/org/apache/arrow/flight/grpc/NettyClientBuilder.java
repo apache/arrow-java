@@ -140,9 +140,9 @@ public class NettyClientBuilder {
       case LocationSchemes.GRPC_TLS:
         {
           final int port = location.getUri().getPort();
-          if (port < 1 || port > 65535) {
+          if (port < 0 || port > 65535) {
             throw new IllegalArgumentException(
-                "Invalid port " + port + ": must be between 1 and 65535.");
+                "Invalid port " + port + ": must be between 0 and 65535.");
           }
           builder = NettyChannelBuilder.forAddress(location.getUri().getHost(), port);
           break;
