@@ -211,7 +211,7 @@ public class FlightServerTestExtension
    *
    * @return the port value.
    */
-  public int getPort() throws SQLException {
+  public int getPort() {
     return config.getPort();
   }
 

@@ -72,7 +72,7 @@ public final class ArrowFlightConnectionConfigImplTest {
   }
 
   public static Stream<Arguments> provideParameters() {
-    int port = RANDOM.nextInt(65535) + 1;
+    int port = RANDOM.nextInt(Short.toUnsignedInt(Short.MAX_VALUE));
     boolean useEncryption = RANDOM.nextBoolean();
     int threadPoolSize = RANDOM.nextInt(getRuntime().availableProcessors());
     return Stream.of(
@@ -87,13 +87,7 @@ public final class ArrowFlightConnectionConfigImplTest {
             port,
             port,
             (Function<ArrowFlightConnectionConfigImpl, ?>)
-                config -> {
-                  try {
-                    return config.getPort();
-                  } catch (java.sql.SQLException e) {
-                    throw new RuntimeException(e);
-                  }
-                }),
+                ArrowFlightConnectionConfigImpl::getPort),
         Arguments.of(
             USER,
             "user",

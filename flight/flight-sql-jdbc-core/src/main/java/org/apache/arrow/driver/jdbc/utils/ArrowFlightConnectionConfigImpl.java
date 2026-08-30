@@ -55,12 +55,8 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
    *
    * @return the port.
    */
-  public int getPort() throws SQLException {
-    final int port = ArrowFlightConnectionProperty.PORT.getInteger(properties);
-    if (port < 1 || port > 65535) {
-      throw new SQLException("Invalid port " + port + ": must be between 1 and 65535.");
-    }
-    return port;
+  public int getPort() {
+    return ArrowFlightConnectionProperty.PORT.getInteger(properties);
   }
 
   /**
