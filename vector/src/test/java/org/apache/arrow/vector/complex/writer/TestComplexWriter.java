@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -29,6 +30,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +50,9 @@ import org.apache.arrow.vector.SchemaChangeCallBack;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.ViewVarCharVector;
+import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
+import org.apache.arrow.vector.complex.LargeListVector;
+import org.apache.arrow.vector.complex.LargeListViewVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.ListViewVector;
 import org.apache.arrow.vector.complex.MapVector;
@@ -59,6 +64,8 @@ import org.apache.arrow.vector.complex.impl.NullableStructReaderImpl;
 import org.apache.arrow.vector.complex.impl.NullableStructWriter;
 import org.apache.arrow.vector.complex.impl.SingleStructReaderImpl;
 import org.apache.arrow.vector.complex.impl.SingleStructWriter;
+import org.apache.arrow.vector.complex.impl.UnionLargeListReader;
+import org.apache.arrow.vector.complex.impl.UnionLargeListViewReader;
 import org.apache.arrow.vector.complex.impl.UnionListReader;
 import org.apache.arrow.vector.complex.impl.UnionListViewReader;
 import org.apache.arrow.vector.complex.impl.UnionListViewWriter;
@@ -89,6 +96,7 @@ import org.apache.arrow.vector.holders.NullableTimeStampNanoTZHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
+import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -2052,6 +2060,199 @@ public class TestComplexWriter {
         }
       }
     }
+  }
+
+  @Test
+  public void testUnionListReaderSetPositionOnEmptyIpcOffsetBuffer() {
+    try (ListVector listVector = ListVector.empty("list", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(0);
+        ArrowBuf offsetBuffer = allocator.buffer(BaseRepeatedValueVector.OFFSET_WIDTH)) {
+      offsetBuffer.setInt(0, 0);
+      offsetBuffer.writerIndex(BaseRepeatedValueVector.OFFSET_WIDTH);
+      listVector.loadFieldBuffers(
+          new ArrowFieldNode(0, 0), Arrays.asList(validityBuffer, offsetBuffer));
+
+      assertEquals(0, listVector.getValueCount());
+      assertEquals(BaseRepeatedValueVector.OFFSET_WIDTH, listVector.getOffsetBuffer().capacity());
+      assertEmptyPosition(new UnionListReader(listVector));
+    }
+  }
+
+  @Test
+  public void testUnionLargeListReaderSetPositionOnEmptyIpcOffsetBuffer() {
+    try (LargeListVector listVector = LargeListVector.empty("largeList", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(0);
+        ArrowBuf offsetBuffer = allocator.buffer(LargeListVector.OFFSET_WIDTH)) {
+      offsetBuffer.setLong(0, 0);
+      offsetBuffer.writerIndex(LargeListVector.OFFSET_WIDTH);
+      listVector.loadFieldBuffers(
+          new ArrowFieldNode(0, 0), Arrays.asList(validityBuffer, offsetBuffer));
+
+      assertEquals(0, listVector.getValueCount());
+      assertEquals(LargeListVector.OFFSET_WIDTH, listVector.getOffsetBuffer().capacity());
+      assertEmptyPosition(new UnionLargeListReader(listVector));
+    }
+  }
+
+  @Test
+  public void testUnionListViewReaderSetPositionOnEmptyIpcBuffers() {
+    try (ListViewVector listViewVector = ListViewVector.empty("listView", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(0);
+        ArrowBuf offsetBuffer = allocator.buffer(0);
+        ArrowBuf sizeBuffer = allocator.buffer(0)) {
+      listViewVector.loadFieldBuffers(
+          new ArrowFieldNode(0, 0), Arrays.asList(validityBuffer, offsetBuffer, sizeBuffer));
+
+      assertEquals(0, listViewVector.getValueCount());
+      assertEquals(0, listViewVector.getOffsetBuffer().capacity());
+      assertEquals(0, listViewVector.getSizeBuffer().capacity());
+      assertEmptyPosition(new UnionListViewReader(listViewVector));
+    }
+  }
+
+  @Test
+  public void testUnionLargeListViewReaderSetPositionOnEmptyIpcBuffers() {
+    try (LargeListViewVector listViewVector =
+            LargeListViewVector.empty("largeListView", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(0);
+        ArrowBuf offsetBuffer = allocator.buffer(0);
+        ArrowBuf sizeBuffer = allocator.buffer(0)) {
+      listViewVector.loadFieldBuffers(
+          new ArrowFieldNode(0, 0), Arrays.asList(validityBuffer, offsetBuffer, sizeBuffer));
+
+      assertEquals(0, listViewVector.getValueCount());
+      assertEquals(0, listViewVector.getOffsetBuffer().capacity());
+      assertEquals(0, listViewVector.getSizeBuffer().capacity());
+      assertEmptyPosition(new UnionLargeListViewReader(listViewVector));
+    }
+  }
+
+  @Test
+  public void testUnionListReaderSetPositionChecksIpcOffsetBuffer() {
+    try (ListVector listVector = ListVector.empty("list", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(1);
+        ArrowBuf offsetBuffer = allocator.buffer(BaseRepeatedValueVector.OFFSET_WIDTH)) {
+      validityBuffer.setByte(0, 1);
+      validityBuffer.writerIndex(1);
+      offsetBuffer.setInt(0, 0);
+      offsetBuffer.writerIndex(BaseRepeatedValueVector.OFFSET_WIDTH);
+      listVector.loadFieldBuffers(
+          new ArrowFieldNode(1, 0), Arrays.asList(validityBuffer, offsetBuffer));
+
+      IndexOutOfBoundsException exception =
+          assertThrows(
+              IndexOutOfBoundsException.class,
+              () -> new UnionListReader(listVector).setPosition(0));
+      assertTrue(exception.getMessage().contains("Offset buffer has capacity"));
+    }
+  }
+
+  @Test
+  public void testUnionLargeListReaderSetPositionChecksIpcOffsetBuffer() {
+    try (LargeListVector listVector = LargeListVector.empty("largeList", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(1);
+        ArrowBuf offsetBuffer = allocator.buffer(LargeListVector.OFFSET_WIDTH)) {
+      validityBuffer.setByte(0, 1);
+      validityBuffer.writerIndex(1);
+      offsetBuffer.setLong(0, 0);
+      offsetBuffer.writerIndex(LargeListVector.OFFSET_WIDTH);
+      listVector.loadFieldBuffers(
+          new ArrowFieldNode(1, 0), Arrays.asList(validityBuffer, offsetBuffer));
+
+      IndexOutOfBoundsException exception =
+          assertThrows(
+              IndexOutOfBoundsException.class,
+              () -> new UnionLargeListReader(listVector).setPosition(0));
+      assertTrue(exception.getMessage().contains("Offset buffer has capacity"));
+    }
+  }
+
+  @Test
+  public void testUnionListViewReaderSetPositionChecksIpcBuffers() {
+    try (ListViewVector listViewVector = ListViewVector.empty("listView", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(1);
+        ArrowBuf offsetBuffer = allocator.buffer(0);
+        ArrowBuf sizeBuffer = allocator.buffer(ListViewVector.SIZE_WIDTH)) {
+      validityBuffer.setByte(0, 1);
+      validityBuffer.writerIndex(1);
+      sizeBuffer.setInt(0, 0);
+      sizeBuffer.writerIndex(ListViewVector.SIZE_WIDTH);
+      listViewVector.loadFieldBuffers(
+          new ArrowFieldNode(1, 0), Arrays.asList(validityBuffer, offsetBuffer, sizeBuffer));
+
+      IndexOutOfBoundsException exception =
+          assertThrows(
+              IndexOutOfBoundsException.class,
+              () -> new UnionListViewReader(listViewVector).setPosition(0));
+      assertTrue(exception.getMessage().contains("Offset buffer has capacity"));
+    }
+
+    try (ListViewVector listViewVector = ListViewVector.empty("listView", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(1);
+        ArrowBuf offsetBuffer = allocator.buffer(ListViewVector.OFFSET_WIDTH);
+        ArrowBuf sizeBuffer = allocator.buffer(0)) {
+      validityBuffer.setByte(0, 1);
+      validityBuffer.writerIndex(1);
+      offsetBuffer.setInt(0, 0);
+      offsetBuffer.writerIndex(ListViewVector.OFFSET_WIDTH);
+      listViewVector.loadFieldBuffers(
+          new ArrowFieldNode(1, 0), Arrays.asList(validityBuffer, offsetBuffer, sizeBuffer));
+
+      IndexOutOfBoundsException exception =
+          assertThrows(
+              IndexOutOfBoundsException.class,
+              () -> new UnionListViewReader(listViewVector).setPosition(0));
+      assertTrue(exception.getMessage().contains("Size buffer has capacity"));
+    }
+  }
+
+  @Test
+  public void testUnionLargeListViewReaderSetPositionChecksIpcBuffers() {
+    try (LargeListViewVector listViewVector =
+            LargeListViewVector.empty("largeListView", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(1);
+        ArrowBuf offsetBuffer = allocator.buffer(0);
+        ArrowBuf sizeBuffer = allocator.buffer(LargeListViewVector.SIZE_WIDTH)) {
+      validityBuffer.setByte(0, 1);
+      validityBuffer.writerIndex(1);
+      sizeBuffer.setLong(0, 0);
+      sizeBuffer.writerIndex(LargeListViewVector.SIZE_WIDTH);
+      listViewVector.loadFieldBuffers(
+          new ArrowFieldNode(1, 0), Arrays.asList(validityBuffer, offsetBuffer, sizeBuffer));
+
+      IndexOutOfBoundsException exception =
+          assertThrows(
+              IndexOutOfBoundsException.class,
+              () -> new UnionLargeListViewReader(listViewVector).setPosition(0));
+      assertTrue(exception.getMessage().contains("Offset buffer has capacity"));
+    }
+
+    try (LargeListViewVector listViewVector =
+            LargeListViewVector.empty("largeListView", allocator);
+        ArrowBuf validityBuffer = allocator.buffer(1);
+        ArrowBuf offsetBuffer = allocator.buffer(LargeListViewVector.OFFSET_WIDTH);
+        ArrowBuf sizeBuffer = allocator.buffer(0)) {
+      validityBuffer.setByte(0, 1);
+      validityBuffer.writerIndex(1);
+      offsetBuffer.setLong(0, 0);
+      offsetBuffer.writerIndex(LargeListViewVector.OFFSET_WIDTH);
+      listViewVector.loadFieldBuffers(
+          new ArrowFieldNode(1, 0), Arrays.asList(validityBuffer, offsetBuffer, sizeBuffer));
+
+      IndexOutOfBoundsException exception =
+          assertThrows(
+              IndexOutOfBoundsException.class,
+              () -> new UnionLargeListViewReader(listViewVector).setPosition(0));
+      assertTrue(exception.getMessage().contains("Size buffer has capacity"));
+    }
+  }
+
+  private void assertEmptyPosition(FieldReader reader) {
+    reader.setPosition(0);
+    assertEquals(0, reader.size());
+    assertFalse(reader.next());
+    assertThrows(IndexOutOfBoundsException.class, () -> reader.setPosition(-1));
+    assertThrows(IndexOutOfBoundsException.class, () -> reader.setPosition(1));
   }
 
   @Test
