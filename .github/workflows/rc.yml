@@ -248,7 +248,10 @@ jobs:
           #
           # "brew bundle" fails with "no bottle available!" without this
           # because it doesn't build them from source.
-          HOMEBREW_BUNDLE_BREW_SKIP="aws-sdk-cpp grpc" \
+          #
+          # We don't use Homebrew's Node.js too. Homebrew doesn't provide
+          # a bottle for it on x86_64 macOS for the same reason.
+          HOMEBREW_BUNDLE_BREW_SKIP="aws-sdk-cpp grpc node" \
             brew bundle --file=arrow/cpp/Brewfile
           # We want to link aws-sdk-cpp statically but Homebrew's
           # aws-sdk-cpp provides only shared library. If we have
