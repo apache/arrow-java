@@ -33,7 +33,7 @@ under the License.
   <properties>
     <surefire.argLine.extend>--add-reads=org.apache.arrow.dataset=com.fasterxml.jackson.databind --add-opens=java.base/java.nio=org.apache.arrow.dataset</surefire.argLine.extend>
     <arrow.cpp.build.dir>../../../cpp/release-build/</arrow.cpp.build.dir>
-    <parquet.version>1.17.1</parquet.version>
+    <parquet.version>1.18.0</parquet.version>
     <avro.version>1.12.1</avro.version>
   </properties>
 
