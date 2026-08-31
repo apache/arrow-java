@@ -493,7 +493,7 @@ under the License.
         <plugin>
           <groupId>com.diffplug.spotless</groupId>
           <artifactId>spotless-maven-plugin</artifactId>
-          <version>3.8.0</version>
+          <version>3.10.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
