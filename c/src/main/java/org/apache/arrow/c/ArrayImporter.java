@@ -30,6 +30,7 @@ import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
 
 /** Importer for {@link ArrowArray}. */
@@ -83,8 +84,12 @@ final class ArrayImporter {
   }
 
   private void doImport(ArrowArray.Snapshot snapshot) {
+    // A non-zero offset is only meaningful for arrays that have buffers to offset into.
+    // Null arrays carry no buffers, so their offset is inert and safe to ignore.
     checkState(
-        snapshot.offset == 0 || snapshot.length == 0,
+        snapshot.offset == 0
+            || snapshot.length == 0
+            || vector.getField().getType().getTypeID() == ArrowType.ArrowTypeID.Null,
         "ArrowArray struct has non-zero offset (%s), which is not supported",
         snapshot.offset);
 

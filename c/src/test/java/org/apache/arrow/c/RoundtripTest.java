@@ -1091,6 +1091,26 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testImportNullArrayWithNonZeroOffset() {
+    try (NullVector source = new NullVector("source", 10);
+        NullVector destination = new NullVector("destination");
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      Data.exportVector(allocator, source, null, array);
+
+      // Mimic a sliced null array. Arrow C++ propagates the slice offset onto the struct
+      // even for null arrays, which export no buffers at all (n_buffers == 0), so there is
+      // nothing for the offset to apply to and the import is safe.
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      snapshot.offset = 2;
+      snapshot.length = 8;
+      array.save(snapshot);
+
+      Data.importIntoVector(allocator, array, destination, null);
+      assertEquals(8, destination.getValueCount());
+    }
+  }
+
+  @Test
   public void testArrayStructReuse() {
     // Consumer allocates empty structures
     try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
