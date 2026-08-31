@@ -35,7 +35,8 @@ import org.apache.arrow.vector.types.pojo.Schema;
 /**
  * Functions for working with the C data interface.
  *
- * <p>This API is EXPERIMENTAL. Note that currently only 64bit systems are supported.
+ * <p>This API is EXPERIMENTAL. Note that currently only 64bit systems are supported. Importing
+ * {@link ArrowArray ArrowArrays} with a non-zero offset is not supported.
  */
 public final class Data {
 
