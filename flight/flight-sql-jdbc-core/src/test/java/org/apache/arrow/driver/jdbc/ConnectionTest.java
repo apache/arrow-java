@@ -207,7 +207,7 @@ public class ConnectionTest {
 
   /**
    * Checks if a SQLException is thrown when trying to establish an unencrypted connection with an
-   * invalid port (out-of-range or reserved port 0).
+   * invalid port.
    */
   @ParameterizedTest
   @ValueSource(ints = {0, -1, 65536, 65537})
