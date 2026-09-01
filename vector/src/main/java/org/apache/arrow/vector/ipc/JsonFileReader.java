@@ -29,13 +29,11 @@ import static org.apache.arrow.vector.BufferLayout.BufferType.VALIDITY;
 import static org.apache.arrow.vector.BufferLayout.BufferType.VARIADIC_DATA_BUFFERS;
 import static org.apache.arrow.vector.BufferLayout.BufferType.VIEWS;
 
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -46,6 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -81,8 +80,6 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.DecimalUtility;
 import org.apache.arrow.vector.util.DictionaryUtility;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 
 /**
  * A reader for JSON files that translates them into vectors. This reader is used for integration
@@ -108,11 +105,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
       throws JsonParseException, IOException {
     super();
     this.allocator = allocator;
-    MappingJsonFactory jsonFactory =
-        new MappingJsonFactory(
-            new ObjectMapper()
-                // ignore case for enums
-                .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true));
+    JsonFactory jsonFactory = new JsonFactory();
     this.parser = jsonFactory.createParser(inputFile);
     // Allow reading NaN for floating point values
     this.parser.configure(Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
@@ -294,7 +287,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
       parser.nextToken();
       final byte[] value;
 
-      String variadicStr = parser.readValueAs(String.class);
+      String variadicStr = parser.getValueAsString();
       if (variadicStr == null) {
         value = new byte[0];
       } else {
@@ -390,7 +383,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
 
             for (int i = 0; i < count; i++) {
               parser.nextToken();
-              BitVectorHelper.setValidityBit(buf, i, parser.readValueAs(Boolean.class) ? 1 : 0);
+              BitVectorHelper.setValidityBit(buf, i, parser.getValueAsBoolean() ? 1 : 0);
             }
 
             buf.writerIndex(bufferSize);
@@ -606,7 +599,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
 
             for (int i = 0; i < count; i++) {
               parser.nextToken();
-              BigDecimal decimalValue = new BigDecimal(parser.readValueAs(String.class));
+              BigDecimal decimalValue = new BigDecimal(parser.getValueAsString());
               DecimalUtility.writeBigDecimalToArrowBuf(
                   decimalValue, buf, i, DecimalVector.TYPE_WIDTH);
             }
@@ -625,7 +618,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
 
             for (int i = 0; i < count; i++) {
               parser.nextToken();
-              BigDecimal decimalValue = new BigDecimal(parser.readValueAs(String.class));
+              BigDecimal decimalValue = new BigDecimal(parser.getValueAsString());
               DecimalUtility.writeBigDecimalToArrowBuf(
                   decimalValue, buf, i, Decimal256Vector.TYPE_WIDTH);
             }
@@ -640,7 +633,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
       long bufferSize = 0L;
       for (int i = 0; i < count; i++) {
         parser.nextToken();
-        final byte[] value = decodeHexSafe(parser.readValueAs(String.class));
+        final byte[] value = decodeHexSafe(parser.getValueAsString());
         values.add(value);
         bufferSize += value.length;
       }
@@ -952,8 +945,8 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
 
   private byte[] decodeHexSafe(String hexString) throws IOException {
     try {
-      return Hex.decodeHex(hexString.toCharArray());
-    } catch (DecoderException e) {
+      return HexFormat.of().parseHex(hexString);
+    } catch (IllegalArgumentException e) {
       throw new IOException("Unable to decode hex string: " + hexString, e);
     }
   }
@@ -972,7 +965,23 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
       throws IOException, JsonParseException {
     nextFieldIs(expectedFieldName);
     parser.nextToken();
-    return parser.readValueAs(c);
+    return readValueAs(c);
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> T readValueAs(Class<T> c) throws IOException {
+    if (c == String.class) {
+      return (T) parser.getValueAsString();
+    } else if (c == Integer.class) {
+      return (T) Integer.valueOf(parser.getIntValue());
+    } else if (c == Long.class) {
+      return (T) Long.valueOf(parser.getLongValue());
+    } else if (c == Boolean.class) {
+      return (T) Boolean.valueOf(parser.getBooleanValue());
+    } else if (c == Schema.class) {
+      return (T) Schema.fromJson(parser);
+    }
+    throw new UnsupportedOperationException("Cannot read JSON value of type " + c);
   }
 
   private void nextFieldIs(String expectedFieldName) throws IOException, JsonParseException {

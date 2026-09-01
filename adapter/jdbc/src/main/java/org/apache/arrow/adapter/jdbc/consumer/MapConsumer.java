@@ -27,7 +27,6 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.impl.UnionMapWriter;
-import org.apache.arrow.vector.util.ObjectMapperFactory;
 
 /**
  * Consumer which consume map type values from {@link ResultSet}. Write the data into {@link
@@ -36,7 +35,7 @@ import org.apache.arrow.vector.util.ObjectMapperFactory;
 public class MapConsumer extends BaseConsumer<MapVector> {
 
   private final UnionMapWriter writer;
-  private final ObjectMapper objectMapper = ObjectMapperFactory.newObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper();
   private final TypeReference<Map<String, String>> typeReference =
       new TypeReference<Map<String, String>>() {};
   private int currentRow;

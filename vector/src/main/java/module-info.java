@@ -35,18 +35,11 @@ module org.apache.arrow.vector {
   exports org.apache.arrow.vector.util;
   exports org.apache.arrow.vector.validate;
 
-  opens org.apache.arrow.vector.types.pojo to
-      com.fasterxml.jackson.databind;
-
-  requires com.fasterxml.jackson.annotation;
   requires com.fasterxml.jackson.core;
-  requires com.fasterxml.jackson.databind;
-  requires com.fasterxml.jackson.datatype.jsr310;
   requires flatbuffers.java;
   requires jdk.unsupported;
   requires org.apache.arrow.format;
   requires org.apache.arrow.memory.core;
-  requires org.apache.commons.codec;
   requires org.slf4j;
 
   uses org.apache.arrow.vector.compression.CompressionCodec.Factory;

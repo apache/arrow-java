@@ -23,6 +23,8 @@ package org.apache.arrow.vector.types.pojo;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 
+import java.io.IOException;
+import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.arrow.flatbuf.Type;
@@ -32,25 +34,12 @@ import org.apache.arrow.vector.types.*;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.ValueVector;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
 
 /**
  * Arrow types
  * Source code generated using FreeMarker template ${.template_name}
  **/
-@JsonTypeInfo(
-  use = JsonTypeInfo.Id.NAME,
-  include = JsonTypeInfo.As.PROPERTY,
-  property = "name")
-@JsonSubTypes({
-<#list arrowTypes.types as type>
-  @JsonSubTypes.Type(value = ArrowType.${type.name?remove_ending("_")}.class, name = "${type.name?remove_ending("_")?lower_case}"),
-</#list>
-})
 public abstract class ArrowType {
 
   public static abstract class PrimitiveType extends ArrowType {
@@ -93,12 +82,47 @@ public abstract class ArrowType {
     }
   }
 
-  @JsonIgnore
   public abstract ArrowTypeID getTypeID();
-  @JsonIgnore
   public abstract boolean isComplex();
   public abstract int getType(FlatBufferBuilder builder);
   public abstract <T> T accept(ArrowTypeVisitor<T> visitor);
+
+  /** The lower-case type name used as the JSON discriminator for this type. */
+  String getNameAsString() {
+    return getTypeID().name().toLowerCase(Locale.ROOT);
+  }
+
+  /** Serializes this type to JSON, as a {@code {"name": ..., ...}} object. */
+  void writeJson(JsonGenerator generator) throws IOException {
+    generator.writeStartObject();
+    generator.writeStringField("name", getNameAsString());
+    writeJsonFields(generator);
+    generator.writeEndObject();
+  }
+
+  /** Writes the type-specific fields (everything except the discriminator) to JSON. */
+  void writeJsonFields(JsonGenerator generator) throws IOException {
+  }
+
+  /** Constructs an ArrowType from its JSON discriminator name and parsed fields. */
+  static ArrowType getArrowType(String name, java.util.Map<String, Object> fields) {
+    switch (name) {
+    <#list arrowTypes.types as type>
+    <#assign typeName = type.name?remove_ending("_")>
+    case "${type.name?remove_ending("_")?lower_case}":
+      <#if type.name == "Decimal">
+      return new Decimal(
+          JsonValues.asInt(fields.get("precision")),
+          JsonValues.asInt(fields.get("scale")),
+          fields.get("bitWidth") == null ? 128 : JsonValues.asInt(fields.get("bitWidth")));
+      <#else>
+      return new ${typeName}(<#list type.fields as field><#if field.valueType??>JsonValues.parseEnum(${field.valueType}.class, fields.get("${field.name}"))<#elseif field.type == "int">JsonValues.asInt(fields.get("${field.name}"))<#elseif field.type == "boolean">JsonValues.asBoolean(fields.get("${field.name}"))<#elseif field.type == "int[]">JsonValues.asIntArray(fields.get("${field.name}"))<#else>JsonValues.asString(fields.get("${field.name}"))</#if><#if field_has_next>, </#if></#list>);
+      </#if>
+    </#list>
+    default:
+      throw new IllegalArgumentException("Unknown type: " + name);
+    }
+  }
 
   /**
    * to visit the ArrowTypes
@@ -170,11 +194,10 @@ public abstract class ArrowType {
 
     <#if type.name == "Decimal">
     // Needed to support golden file integration tests.
-    @JsonCreator
     public static Decimal createDecimal(
-      @JsonProperty("precision") int precision,
-      @JsonProperty("scale") int scale,
-      @JsonProperty("bitWidth") Integer bitWidth) {
+      int precision,
+      int scale,
+      Integer bitWidth) {
 
       return new Decimal(precision, scale, bitWidth == null ? 128 : bitWidth);
     }
@@ -192,13 +215,11 @@ public abstract class ArrowType {
       this(precision, scale, 128);
     }
 
-    <#else>
-    @JsonCreator
     </#if>
     public ${type.name}(
     <#list type.fields as field>
     <#assign fieldType = field.valueType!field.type>
-      @JsonProperty("${field.name}") ${fieldType} ${field.name}<#if field_has_next>, </#if>
+      ${fieldType} ${field.name}<#if field_has_next>, </#if>
     </#list>
     ) {
       <#list type.fields as field>
@@ -212,6 +233,29 @@ public abstract class ArrowType {
       return ${field.name};
     }
     </#list>
+
+    @Override
+    void writeJsonFields(JsonGenerator generator) throws IOException {
+      <#list type.fields as field>
+      <#if field.valueType??>
+      generator.writeStringField("${field.name}", ${field.name} == null ? null : ${field.name}.name());
+      <#elseif field.type == "int">
+      generator.writeNumberField("${field.name}", ${field.name});
+      <#elseif field.type == "boolean">
+      generator.writeBooleanField("${field.name}", ${field.name});
+      <#elseif field.type == "int[]">
+      generator.writeArrayFieldStart("${field.name}");
+      if (${field.name} != null) {
+        for (int value : ${field.name}) {
+          generator.writeNumber(value);
+        }
+      }
+      generator.writeEndArray();
+      <#else>
+      generator.writeStringField("${field.name}", ${field.name});
+      </#if>
+      </#list>
+    }
     </#if>
 
     @Override
@@ -310,6 +354,11 @@ public abstract class ArrowType {
     @Override
     public int getType(FlatBufferBuilder builder) {
       return storageType().getType(builder);
+    }
+
+    @Override
+    void writeJson(JsonGenerator generator) throws IOException {
+      storageType().writeJson(generator);
     }
 
     public String toString() {

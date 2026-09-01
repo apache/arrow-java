@@ -18,22 +18,18 @@ package org.apache.arrow.vector.types.pojo;
 
 import static org.apache.arrow.vector.types.pojo.Field.convertField;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.util.ByteBufferBackedInputStream;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -74,13 +70,42 @@ public class Schema {
   static final String METADATA_KEY = "key";
   static final String METADATA_VALUE = "value";
 
-  private static final ObjectMapper mapper = new ObjectMapper();
-  private static final ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-  private static final ObjectReader reader = mapper.readerFor(Schema.class);
+  private static final JsonFactory JSON_FACTORY = new JsonFactory();
   private static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 
+  /** Parses a Schema from its JSON representation. */
+  @SuppressWarnings("unchecked")
   public static Schema fromJSON(String json) throws IOException {
-    return reader.readValue(Preconditions.checkNotNull(json));
+    Preconditions.checkNotNull(json);
+    try (JsonParser parser = JSON_FACTORY.createParser(json)) {
+      parser.nextToken();
+      Map<String, Object> object = (Map<String, Object>) JsonValues.readValue(parser);
+      return fromJson(object);
+    }
+  }
+
+  /**
+   * Reads a Schema from the current position of the given JSON parser. The parser must be
+   * positioned at the schema's opening object token.
+   */
+  @SuppressWarnings("unchecked")
+  public static Schema fromJson(JsonParser parser) throws IOException {
+    return fromJson((Map<String, Object>) JsonValues.readValue(parser));
+  }
+
+  /** Builds a Schema from a parsed JSON object. */
+  @SuppressWarnings("unchecked")
+  static Schema fromJson(Map<String, Object> object) {
+    List<Field> fields = new ArrayList<>();
+    Object fieldsObject = object.get("fields");
+    if (fieldsObject != null) {
+      for (Object field : (List<Object>) fieldsObject) {
+        fields.add(Field.fromJson((Map<String, Object>) field));
+      }
+    }
+    Map<String, String> metadata =
+        convertMetadata((List<Map<String, String>>) object.get("metadata"));
+    return new Schema(fields, metadata);
   }
 
   /**
@@ -101,12 +126,39 @@ public class Schema {
    * @return The deserialized schema.
    */
   public static Schema deserializeMessage(ByteBuffer buffer) {
-    ByteBufferBackedInputStream stream = new ByteBufferBackedInputStream(buffer);
-    try (ReadChannel channel = new ReadChannel(Channels.newChannel(stream))) {
+    try (ReadChannel channel = new ReadChannel(byteBufferChannel(buffer))) {
       return MessageSerializer.deserializeSchema(channel);
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
+  }
+
+  private static ReadableByteChannel byteBufferChannel(ByteBuffer buffer) {
+    return new ReadableByteChannel() {
+      private boolean open = true;
+
+      @Override
+      public int read(ByteBuffer dst) {
+        if (!buffer.hasRemaining()) {
+          return -1;
+        }
+        int count = Math.min(dst.remaining(), buffer.remaining());
+        for (int i = 0; i < count; i++) {
+          dst.put(buffer.get());
+        }
+        return count;
+      }
+
+      @Override
+      public boolean isOpen() {
+        return open;
+      }
+
+      @Override
+      public void close() {
+        open = false;
+      }
+    };
   }
 
   /** Converts a flatbuffer schema to its POJO representation. */
@@ -139,14 +191,6 @@ public class Schema {
         true,
         Collections2.toImmutableList(fields),
         metadata == null ? Collections.emptyMap() : Collections2.immutableMapCopy(metadata));
-  }
-
-  /** Constructor used for JSON deserialization. */
-  @JsonCreator
-  private Schema(
-      @JsonProperty("fields") Iterable<Field> fields,
-      @JsonProperty("metadata") List<Map<String, String>> metadata) {
-    this(fields, convertMetadata(metadata));
   }
 
   /**
@@ -190,13 +234,10 @@ public class Schema {
     return fields;
   }
 
-  @JsonIgnore
   public Map<String, String> getCustomMetadata() {
     return metadata;
   }
 
-  @JsonProperty("metadata")
-  @JsonInclude(Include.NON_EMPTY)
   List<Map<String, String>> getCustomMetadataForJson() {
     return convertMetadata(getCustomMetadata());
   }
@@ -214,12 +255,45 @@ public class Schema {
 
   /** Returns the JSON string representation of this schema. */
   public String toJson() {
-    try {
-      return writer.writeValueAsString(this);
-    } catch (JsonProcessingException e) {
+    try (StringWriter stringWriter = new StringWriter();
+        JsonGenerator generator = JSON_FACTORY.createGenerator(stringWriter)) {
+      generator.setPrettyPrinter(new DefaultPrettyPrinter());
+      serialize(generator);
+      generator.flush();
+      return stringWriter.toString();
+    } catch (IOException e) {
       // this should not happen
       throw new RuntimeException(e);
     }
+  }
+
+  /** Serializes this schema to JSON. */
+  /** Serializes this schema as a JSON object using the given generator. */
+  public void serialize(JsonGenerator generator) throws IOException {
+    generator.writeStartObject();
+    generator.writeArrayFieldStart("fields");
+    for (Field field : fields) {
+      field.serialize(generator);
+    }
+    generator.writeEndArray();
+    List<Map<String, String>> jsonMetadata = getCustomMetadataForJson();
+    if (jsonMetadata != null && !jsonMetadata.isEmpty()) {
+      serializeMetadata(generator, jsonMetadata);
+    }
+    generator.writeEndObject();
+  }
+
+  /** Writes a list of key/value metadata entries to JSON as a {@code "metadata"} array. */
+  static void serializeMetadata(JsonGenerator generator, List<Map<String, String>> metadata)
+      throws IOException {
+    generator.writeArrayFieldStart("metadata");
+    for (Map<String, String> entry : metadata) {
+      generator.writeStartObject();
+      generator.writeStringField(METADATA_KEY, entry.get(METADATA_KEY));
+      generator.writeStringField(METADATA_VALUE, entry.get(METADATA_VALUE));
+      generator.writeEndObject();
+    }
+    generator.writeEndArray();
   }
 
   /** Adds this schema to the builder returning the size of the builder after adding. */
