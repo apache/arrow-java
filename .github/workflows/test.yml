@@ -139,6 +139,7 @@ jobs:
         shell: bash
         run: |
           cp -a .docker/java-build/build build
+          rm -rf "${HOME}/.m2/repository/org/apache/arrow"
           mkdir -p "${HOME}/.m2/repository/org/apache"
           cp -a .docker/maven-cache/repository/org/apache/arrow "${HOME}/.m2/repository/org/apache/"
       - name: Test prebuilt artifacts on macOS/Windows
