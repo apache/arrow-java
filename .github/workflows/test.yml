@@ -35,7 +35,7 @@ permissions:
 
 env:
   DOCKER_VOLUME_PREFIX: ".docker/"
-  MAVEN: 3.9.9
+  MAVEN: 3.9.16
 
 jobs:
   build-java:
@@ -79,7 +79,7 @@ jobs:
           retention-days: 1
 
   test-java:
-    name: ${{ matrix.name || format('AMD64 Ubuntu JDK {0} Maven 3.9.9', matrix.jdk) }}
+    name: ${{ matrix.name || format('AMD64 Ubuntu JDK {0} Maven 3.9.16', matrix.jdk) }}
     needs: build-java
     runs-on: ${{ matrix.os }}
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
@@ -87,7 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [17, 21, 23]
+        jdk: [17, 21, 25]
         os: [ubuntu-latest]
         include:
           - os: ubuntu-latest
@@ -203,7 +203,7 @@ jobs:
           retention-days: 1
 
   test-cdata:
-    name: AMD64 Conda JNI JDK ${{ matrix.jdk }} Maven 3.9.9
+    name: AMD64 Conda JNI JDK ${{ matrix.jdk }} Maven 3.9.16
     needs: build-cdata
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
@@ -211,7 +211,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [17, 21, 23]
+        jdk: [17, 21, 25]
     env:
       JDK: ${{ matrix.jdk }}
     steps:
