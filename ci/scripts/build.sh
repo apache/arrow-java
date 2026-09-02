@@ -79,9 +79,6 @@ fi
 # Use `2 * ncores` threads
 ${mvn} -T 2C clean install
 
-# Prebuilt test jobs use this to verify that test classes survived artifact restore.
-find . -type d -path "*/target/test-classes" -print | LC_ALL=C sort > .arrow-java-prebuilt-test-classes
-
 if [ "${ARROW_JAVA_BUILD_DOCS:-OFF}" == "ON" ]; then
   # HTTP pooling is turned off to avoid download issues:
   # https://github.com/apache/arrow/issues/27496

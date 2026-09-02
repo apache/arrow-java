@@ -42,7 +42,7 @@ mvn=(
 
 run_tests() {
   if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
-    run_prebuilt_tests "${@}" -DfailIfNoTests=false surefire:test
+    run_prebuilt_tests "${@}" surefire:test
   else
     "${@}" test
   fi
@@ -67,53 +67,28 @@ run_prebuilt_tests() {
   rm -f "${log}"
 }
 
-verify_prebuilt_test_classes() {
-  local manifest=.arrow-java-prebuilt-test-classes
-  local test_classes
-
-  if [[ ! -s "${manifest}" ]]; then
-    echo "No prebuilt test-class manifest found."
-    exit 1
-  fi
-
-  while IFS= read -r test_classes; do
-    if [[ ! -d "${test_classes}" ]]; then
-      echo "Missing prebuilt test classes: ${test_classes}"
-      exit 1
-    fi
-  done < "${manifest}"
-}
-
 pushd "${build_dir}"
-
-if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
-  verify_prebuilt_test_classes
-fi
 
 if [[ "${ARROW_JAVA_TEST_BASE:-ON}" = "ON" ]]; then
   if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
     run_prebuilt_tests \
       "${mvn[@]}" \
       -Darrow.test.dataRoot="${source_dir}/testing/data" \
-      -DfailIfNoTests=false \
       -pl "!vector" \
       surefire:test
     # Direct Surefire skips Vector's lifecycle-bound allocator test passes.
     run_prebuilt_tests \
       "${mvn[@]}" \
       -Darrow.test.dataRoot="${source_dir}/testing/data" \
-      -DfailIfNoTests=false \
       -pl vector \
       org.apache.maven.plugins:maven-surefire-plugin:test@default-test
     run_prebuilt_tests \
       "${mvn[@]}" \
       -Darrow.test.dataRoot="${source_dir}/testing/data" \
-      -DfailIfNoTests=false \
       -pl vector \
       org.apache.maven.plugins:maven-surefire-plugin:test@run-unsafe
     run_prebuilt_tests \
       "${mvn[@]}" \
-      -DfailIfNoTests=false \
       -pl memory/memory-core \
       org.apache.maven.plugins:maven-surefire-plugin:test@opens-tests
   else
