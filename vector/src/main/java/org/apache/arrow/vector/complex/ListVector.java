@@ -263,10 +263,12 @@ public class ListVector extends BaseRepeatedValueVector
 
   /** Set the reader and writer indexes for the inner buffers. */
   private void setReaderAndWriterIndex() {
+    final long requiredOffsetBufferCapacity = (long) (valueCount + 1) * OFFSET_WIDTH;
     validityBuffer.readerIndex(0);
     offsetBuffer.readerIndex(0);
     if (valueCount == 0) {
       validityBuffer.writerIndex(0);
+      ensureEmptyOffsetBufferCapacity(requiredOffsetBufferCapacity);
     } else {
       validityBuffer.writerIndex(BitVectorHelper.getValidityBufferSizeFromCount(valueCount));
     }
@@ -274,7 +276,28 @@ public class ListVector extends BaseRepeatedValueVector
     // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
     // in other libraries. According to Arrow spec, we should still output the offset buffer which
     // is [0].
-    offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
+    offsetBuffer.writerIndex(requiredOffsetBufferCapacity);
+  }
+
+  private void ensureEmptyOffsetBufferCapacity(long requiredCapacity) {
+    if (offsetBuffer.capacity() >= requiredCapacity) {
+      return;
+    }
+    long previousOffsetAllocationSizeInBytes = offsetAllocationSizeInBytes;
+    ArrowBuf oldOffsetBuffer = offsetBuffer;
+    offsetBuffer = allocateOffsetBuffer(requiredCapacity);
+    final long bytesToCopy = Math.min(oldOffsetBuffer.capacity(), requiredCapacity);
+    offsetBuffer.setBytes(0, oldOffsetBuffer, 0, bytesToCopy);
+
+    final int copiedOffsets = (int) (bytesToCopy / OFFSET_WIDTH);
+    final int requiredOffsets = (int) (requiredCapacity / OFFSET_WIDTH);
+    final int lastCopiedOffset =
+        copiedOffsets == 0 ? 0 : offsetBuffer.getInt((copiedOffsets - 1) * OFFSET_WIDTH);
+    for (int i = copiedOffsets; i < requiredOffsets; i++) {
+      offsetBuffer.setInt(i * OFFSET_WIDTH, lastCopiedOffset);
+    }
+    offsetAllocationSizeInBytes = previousOffsetAllocationSizeInBytes;
+    oldOffsetBuffer.getReferenceManager().release();
   }
 
   /**
@@ -572,6 +595,10 @@ public class ListVector extends BaseRepeatedValueVector
         dataTransferPair.splitAndTransfer(startPoint, sliceLength);
         to.lastSet = length - 1;
         to.setValueCount(length);
+      } else {
+        to.ensureEmptyOffsetBufferCapacity(OFFSET_WIDTH);
+        dataTransferPair.splitAndTransfer(0, 0);
+        to.setValueCount(0);
       }
     }
 
