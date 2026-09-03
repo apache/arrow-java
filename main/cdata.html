@@ -266,6 +266,11 @@
 <h1>C Data Interface<a class="headerlink" href="#c-data-interface" title="Link to this heading">¶</a></h1>
 <p>Arrow supports exchanging data without copying or serialization within the same process
 through <a class="reference external" href="https://arrow.apache.org/docs/format/CDataInterface.html#c-data-interface" title="(in Apache Arrow v25.0.1)"><span>The Arrow C data interface</span></a>, even between different language runtimes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Arrow Java C Data Interface implementation does not support importing arrays with
+a non-zero offset.</p>
+</div>
 <section id="java-to-python">
 <h2>Java to Python<a class="headerlink" href="#java-to-python" title="Link to this heading">¶</a></h2>
 <p>See <a class="reference external" href="https://arrow.apache.org/docs/python/integration/python_java.html" title="(in Apache Arrow v25.0.1)"><span>Integrating PyArrow with Java</span></a> to implement Java to

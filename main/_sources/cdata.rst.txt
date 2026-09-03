@@ -22,6 +22,11 @@ C Data Interface
 Arrow supports exchanging data without copying or serialization within the same process
 through :external+arrow:ref:`c-data-interface`, even between different language runtimes.
 
+.. note::
+
+   The Arrow Java C Data Interface implementation does not support importing arrays with
+   a non-zero offset.
+
 Java to Python
 --------------
 
