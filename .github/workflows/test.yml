@@ -110,7 +110,6 @@ jobs:
       - name: Checkout Arrow
         uses: actions/checkout@v7
         with:
-          fetch-depth: 1
           submodules: recursive
       - name: Set up Java
         if: ${{ !matrix.compose_service }}
@@ -227,7 +226,6 @@ jobs:
       - name: Checkout Arrow
         uses: actions/checkout@v7
         with:
-          fetch-depth: 1
           submodules: recursive
       - name: Cache Docker Volumes
         uses: actions/cache@v6
