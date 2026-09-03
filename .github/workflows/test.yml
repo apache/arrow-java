@@ -34,6 +34,7 @@ permissions:
   contents: read
 
 env:
+  BUILD_JDK: 17
   DOCKER_VOLUME_PREFIX: ".docker/"
   MAVEN: 3.9.16
 
@@ -53,12 +54,12 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: java-build-17-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: java-build-17-${{ env.MAVEN }}-
+          key: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Build without tests
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
-          JDK: 17
+          JDK: ${{ env.BUILD_JDK }}
         run: |
           docker compose run \
             --rm \
@@ -77,6 +78,8 @@ jobs:
           name: java-build
           path: java-build.tgz
           retention-days: 1
+      - name: Exclude reactor artifacts from Maven dependency cache
+        run: rm -rf .docker/maven-cache/repository/org/apache/arrow
 
   test-java:
     name: ${{ matrix.name || format('AMD64 Ubuntu JDK {0} Maven 3.9.16', matrix.jdk) }}
@@ -107,7 +110,7 @@ jobs:
       - name: Checkout Arrow
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
       - name: Set up Java
         if: ${{ !matrix.compose_service }}
@@ -121,8 +124,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: java-build-17-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: java-build-17-${{ env.MAVEN }}-
+          key: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Download reusable artifacts
         uses: actions/download-artifact@v6
         with:
@@ -160,6 +163,10 @@ jobs:
             -e CI=true \
             -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
             ${{ matrix.compose_service }}
+      - name: Exclude reactor artifacts from hosted Maven dependency cache
+        if: ${{ !matrix.compose_service && always() }}
+        shell: bash
+        run: rm -rf "${HOME}/.m2/repository/org/apache/arrow"
 
   build-cdata:
     name: Build C Data artifacts
@@ -167,7 +174,7 @@ jobs:
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 30
     env:
-      JDK: 17
+      JDK: ${{ env.BUILD_JDK }}
     steps:
       - name: Checkout Arrow
         uses: actions/checkout@v7
@@ -178,8 +185,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: cdata-${{ env.JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: cdata-${{ env.JDK }}-${{ env.MAVEN }}-
+          key: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Build C Data without tests
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
@@ -202,6 +209,8 @@ jobs:
           name: cdata-build
           path: cdata-build.tgz
           retention-days: 1
+      - name: Exclude reactor artifacts from Maven dependency cache
+        run: rm -rf .docker/maven-cache/repository/org/apache/arrow
 
   test-cdata:
     name: AMD64 Conda JNI JDK ${{ matrix.jdk }} Maven 3.9.16
@@ -219,14 +228,14 @@ jobs:
       - name: Checkout Arrow
         uses: actions/checkout@v7
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: recursive
       - name: Cache Docker Volumes
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: cdata-17-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: cdata-17-${{ env.MAVEN }}-
+          key: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Download reusable C Data artifacts
         uses: actions/download-artifact@v6
         with:
