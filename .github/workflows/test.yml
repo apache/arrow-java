@@ -173,8 +173,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 30
-    env:
-      JDK: ${{ env.BUILD_JDK }}
     steps:
       - name: Checkout Arrow
         uses: actions/checkout@v7
@@ -190,6 +188,7 @@ jobs:
       - name: Build C Data without tests
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          JDK: ${{ env.BUILD_JDK }}
         run: |
           docker compose run \
             --rm \
