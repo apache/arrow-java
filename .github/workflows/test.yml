@@ -54,8 +54,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
+          key: java-build-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-build-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Build without tests
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
@@ -124,8 +124,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: java-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
+          key: java-build-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-build-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Download reusable artifacts
         uses: actions/download-artifact@v6
         with:
@@ -183,8 +183,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
+          key: cdata-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: cdata-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Build C Data without tests
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
@@ -233,8 +233,8 @@ jobs:
         uses: actions/cache@v6
         with:
           path: .docker/maven-cache
-          key: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
-          restore-keys: cdata-deps-v2-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
+          key: cdata-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: cdata-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Download reusable C Data artifacts
         uses: actions/download-artifact@v6
         with:
