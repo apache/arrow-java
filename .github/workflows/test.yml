@@ -34,7 +34,7 @@ permissions:
   contents: read
 
 env:
-  BUILD_JDK: 17
+  BUILD_JDK: "17"
   DOCKER_VOLUME_PREFIX: ".docker/"
   MAVEN: 3.9.16
 
