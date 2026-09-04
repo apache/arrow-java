@@ -113,7 +113,7 @@ jobs:
           submodules: recursive
       - name: Set up Java
         if: ${{ !matrix.compose_service }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.jdk }}
