@@ -56,6 +56,13 @@ public class ITDriverJarValidation {
   public static final Set<String> ALLOWED_PREFIXES =
       ImmutableSet.of(
           "org/apache/arrow/driver/jdbc/", // Driver code
+          // zstd-jni classes and native libraries must keep their original names
+          "com/github/luben/zstd/",
+          "aix/",
+          "darwin/",
+          "freebsd/",
+          "linux/",
+          "win/",
           "META-INF/maven/", // Maven metadata (useful for security scanner
           "META-INF/services/", // ServiceLoader implementations
           "META-INF/license/",
