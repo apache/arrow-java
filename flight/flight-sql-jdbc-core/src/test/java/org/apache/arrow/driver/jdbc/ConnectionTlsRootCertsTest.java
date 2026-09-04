@@ -135,6 +135,7 @@ public class ConnectionTlsRootCertsTest {
     try (ArrowFlightSqlClientHandler client =
         new ArrowFlightSqlClientHandler.Builder()
             .withHost(FLIGHT_SERVER_TEST_EXTENSION.getHost())
+            .withPort(FLIGHT_SERVER_TEST_EXTENSION.getPort())
             .withTlsRootCertificates(tlsRootCertsPath)
             .withBufferAllocator(allocator)
             .withEncryption(true)

@@ -63,6 +63,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /** Tests for {@link Connection}. */
 public class ConnectionTest {
@@ -204,13 +206,12 @@ public class ConnectionTest {
   }
 
   /**
-   * Checks if the exception IllegalArgumentException is thrown when trying to establish an
-   * unencrypted connection providing with an invalid port.
-   *
-   * @throws SQLException on error.
+   * Checks if a SQLException is thrown when trying to establish an unencrypted connection with an
+   * invalid port.
    */
-  @Test
-  public void testUnencryptedConnectionProvidingInvalidPort() throws Exception {
+  @ParameterizedTest
+  @ValueSource(ints = {0, -1, 65536, 65537})
+  public void testUnencryptedConnectionProvidingInvalidPort(int invalidPort) {
     final Properties properties = new Properties();
 
     properties.put(ArrowFlightConnectionProperty.HOST.camelName(), "localhost");
@@ -218,7 +219,7 @@ public class ConnectionTest {
     properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
     properties.put(ArrowFlightConnectionProperty.USE_ENCRYPTION.camelName(), false);
     final String invalidUrl =
-        "jdbc:arrow-flight-sql://" + FLIGHT_SERVER_TEST_EXTENSION.getHost() + ":" + 65537;
+        "jdbc:arrow-flight-sql://" + FLIGHT_SERVER_TEST_EXTENSION.getHost() + ":" + invalidPort;
 
     assertThrows(
         SQLException.class,
@@ -240,6 +241,7 @@ public class ConnectionTest {
     try (ArrowFlightSqlClientHandler client =
         new ArrowFlightSqlClientHandler.Builder()
             .withHost(FLIGHT_SERVER_TEST_EXTENSION.getHost())
+            .withPort(FLIGHT_SERVER_TEST_EXTENSION.getPort())
             .withBufferAllocator(allocator)
             .withEncryption(false)
             .build()) {

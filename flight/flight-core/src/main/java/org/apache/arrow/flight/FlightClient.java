@@ -822,7 +822,13 @@ public class FlightClient implements AutoCloseable {
       return this;
     }
 
-    /** Create the client from this builder. */
+    /**
+     * Create the client from this builder.
+     *
+     * @throws IllegalArgumentException if the location uses a TCP-based scheme ({@code grpc},
+     *     {@code grpc+tcp}, {@code grpc+tls}) and the location contains no port, or a port outside
+     *     the range [1, 65535].
+     */
     public FlightClient build() {
       final NettyChannelBuilder channelBuilder = builder.build();
       return new FlightClient(builder.allocator(), channelBuilder.build(), builder.middleware());
