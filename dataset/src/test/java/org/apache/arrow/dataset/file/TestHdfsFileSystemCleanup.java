@@ -65,8 +65,7 @@ public class TestHdfsFileSystemCleanup {
   @Test
   void testJvmExitsWithCleanup() throws Exception {
     Process child = forkChildProcess(true);
-    assertTrue(
-        waitForExit(child), "JVM should exit when FileSystemDatasetFactory cleanup runs");
+    assertTrue(waitForExit(child), "JVM should exit when FileSystemDatasetFactory cleanup runs");
     assertEquals(0, child.exitValue(), "Child process should exit cleanly (exit code 0)");
   }
 

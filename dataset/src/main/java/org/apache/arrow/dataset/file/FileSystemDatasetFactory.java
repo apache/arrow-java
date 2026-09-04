@@ -18,6 +18,7 @@ package org.apache.arrow.dataset.file;
 
 import java.lang.reflect.Method;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -25,9 +26,13 @@ import org.apache.arrow.dataset.jni.NativeDatasetFactory;
 import org.apache.arrow.dataset.jni.NativeMemoryPool;
 import org.apache.arrow.dataset.scanner.FragmentScanOptions;
 import org.apache.arrow.memory.BufferAllocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Java binding of the C++ FileSystemDatasetFactory. */
 public class FileSystemDatasetFactory extends NativeDatasetFactory {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemDatasetFactory.class);
 
   private final Set<URI> hdfsFileSystems;
 
@@ -78,11 +83,10 @@ public class FileSystemDatasetFactory extends NativeDatasetFactory {
   }
 
   /**
-   * For each {@code hdfs://} URI, close the cached Hadoop FileSystem.
-   * When Arrow C++ accesses HDFS via libhdfs, the Hadoop Java client creates cached FileSystem
-   * instances with non-daemon threads (IPC connections, lease renewers) that prevent JVM exit.
-   * Closing the FileSystem terminates these connections. Uses reflection to avoid a compile-time
-   * dependency on hadoop-common.
+   * For each {@code hdfs://} URI, close the cached Hadoop FileSystem. When Arrow C++ accesses HDFS
+   * via libhdfs, the Hadoop Java client creates cached FileSystem instances with non-daemon threads
+   * (IPC connections, lease renewers) that prevent JVM exit. Closing the FileSystem terminates
+   * these connections. Uses reflection to avoid a compile-time dependency on hadoop-common.
    */
   static void closeHadoopFileSystemsIfHdfs(String... uris) {
     toHdfsFileSystems(uris).forEach(FileSystemDatasetFactory::closeHadoopFileSystem);
@@ -94,13 +98,16 @@ public class FileSystemDatasetFactory extends NativeDatasetFactory {
       return hdfsFileSystems;
     }
     for (String uri : uris) {
+      if (uri == null) {
+        continue;
+      }
       try {
         URI parsedUri = new URI(uri);
         if ("hdfs".equalsIgnoreCase(parsedUri.getScheme())) {
           hdfsFileSystems.add(
               new URI(parsedUri.getScheme(), parsedUri.getAuthority(), null, null, null));
         }
-      } catch (Exception e) {
+      } catch (URISyntaxException e) {
         // Ignore here; native factory creation reports invalid user URIs.
       }
     }
@@ -117,7 +124,8 @@ public class FileSystemDatasetFactory extends NativeDatasetFactory {
       Method closeMethod = fsClass.getMethod("close");
       closeMethod.invoke(fs);
     } catch (Exception e) {
-      // Best-effort cleanup; Hadoop may not be on classpath or FileSystem already closed
+      // Best-effort cleanup; Hadoop may not be on classpath or FileSystem already closed.
+      LOGGER.debug("Failed to close Hadoop FileSystem for {}", hdfsUri, e);
     }
   }
 
