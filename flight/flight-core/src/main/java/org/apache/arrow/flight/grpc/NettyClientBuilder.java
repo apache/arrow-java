@@ -130,7 +130,13 @@ public class NettyClientBuilder {
     return this;
   }
 
-  /** Create the client from this builder. */
+  /**
+   * Create the client from this builder.
+   *
+   * @throws IllegalArgumentException if the URI uses a TCP-based scheme ({@code grpc}, {@code
+   *     grpc+tcp}, {@code grpc+tls}) and the URI contains no port, or a port outside the range [1,
+   *     65535].
+   */
   public NettyChannelBuilder build() {
     final NettyChannelBuilder builder;
 
@@ -140,6 +146,10 @@ public class NettyClientBuilder {
       case LocationSchemes.GRPC_TLS:
         {
           final int port = location.getUri().getPort();
+          if (port == -1) {
+            throw new IllegalArgumentException(
+                "No port specified in location URI: " + location.getUri());
+          }
           if (port < 1 || port > 65535) {
             throw new IllegalArgumentException(
                 "Invalid port " + port + ": must be between 1 and 65535.");
