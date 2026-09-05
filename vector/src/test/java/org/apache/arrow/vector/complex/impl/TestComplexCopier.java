@@ -142,6 +142,18 @@ public class TestComplexCopier {
         mapWriter.key().decimal().writeDecimal(BigDecimal.valueOf(i * 2));
         mapWriter.value().decimal().writeDecimal(BigDecimal.valueOf(i * 2));
         mapWriter.endEntry();
+        mapWriter.startEntry();
+        mapWriter.key().decimal32().writeDecimal32(BigDecimal.valueOf(i * 3, 2));
+        mapWriter.value().decimal32().writeDecimal32(BigDecimal.valueOf(-i * 3, 2));
+        mapWriter.endEntry();
+        mapWriter.startEntry();
+        mapWriter.key().decimal64().writeDecimal64(BigDecimal.valueOf(i * 4, 3));
+        mapWriter.value().decimal64().writeDecimal64(BigDecimal.valueOf(-i * 4, 3));
+        mapWriter.endEntry();
+        mapWriter.startEntry();
+        mapWriter.key().decimal256().writeDecimal256(BigDecimal.valueOf(i * 5, 4));
+        mapWriter.value().decimal256().writeDecimal256(BigDecimal.valueOf(-i * 5, 4));
+        mapWriter.endEntry();
         mapWriter.endMap();
       }
 
