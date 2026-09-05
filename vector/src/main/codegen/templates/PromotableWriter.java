@@ -320,6 +320,7 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
     return type == MinorType.DECIMAL
         || type == MinorType.DECIMAL32
         || type == MinorType.DECIMAL64
+        || type == MinorType.DECIMAL256
         || type == MinorType.MAP
         || type == MinorType.DURATION
         || type == MinorType.FIXEDSIZEBINARY

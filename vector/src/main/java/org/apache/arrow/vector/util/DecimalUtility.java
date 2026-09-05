@@ -175,7 +175,9 @@ public class DecimalUtility {
           "DecimalUtility.writeLongToArrowBuf() currently supports "
               + "32-bit, 64-bit, 128-bit or 256-bit width data");
     }
-    final long addressOfValue = bytebuf.memoryAddress() + (long) index * byteWidth;
+    final long startIndex = (long) index * byteWidth;
+    bytebuf.checkBytes(startIndex, startIndex + byteWidth);
+    final long addressOfValue = bytebuf.memoryAddress() + startIndex;
     if (byteWidth == 4) {
       if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
         throw new UnsupportedOperationException(
