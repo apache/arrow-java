@@ -390,6 +390,12 @@ loadScripts(document, 'script');</script>
 <h3>build</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">io.grpc.netty.NettyChannelBuilder</span>&nbsp;<span class="element-name">build</span>()</div>
 <div class="block">Create the client from this builder.</div>
+<dl class="notes">
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the URI uses a TCP-based scheme (<code>grpc</code>, <code>
+     grpc+tcp</code>, <code>grpc+tls</code>) and the URI contains no port, or a port outside the range [1,
+     65535].</dd>
+</dl>
 </section>
 </li>
 </ul>
