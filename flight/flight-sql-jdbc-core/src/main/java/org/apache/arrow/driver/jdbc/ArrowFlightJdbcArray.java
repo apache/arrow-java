@@ -90,7 +90,7 @@ public class ArrowFlightJdbcArray implements Array {
   }
 
   private void checkBoundaries(long index, int count) {
-    if (index < 0 || index + count > this.startOffset + this.valuesCount) {
+    if (index < 0 || index + count > this.valuesCount) {
       throw new ArrayIndexOutOfBoundsException();
     }
   }
