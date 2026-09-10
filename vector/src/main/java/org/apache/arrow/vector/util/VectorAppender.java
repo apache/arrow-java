@@ -601,8 +601,8 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     UnionVector targetUnionVector = (UnionVector) targetVector;
     int newValueCount = targetVector.getValueCount() + deltaVector.getValueCount();
 
-    // make sure there is enough capacity
-    while (targetUnionVector.getValueCapacity() < newValueCount) {
+    // Child vectors are created and expanded below; an empty union has zero value capacity.
+    while (targetUnionVector.getTypeBuffer().capacity() / UnionVector.TYPE_WIDTH < newValueCount) {
       targetUnionVector.reAlloc();
     }
 
