@@ -38,6 +38,9 @@ public class FormatTest {
     assertEquals("d:1,1", Format.asString(new ArrowType.Decimal(1, 1, 128)));
     assertEquals("d:1,1,1", Format.asString(new ArrowType.Decimal(1, 1, 1)));
     assertEquals("d:9,1,1", Format.asString(new ArrowType.Decimal(9, 1, 1)));
+    assertEquals("d:5,2,32", Format.asString(new ArrowType.Decimal(5, 2, 32)));
+    assertEquals("d:5,2,64", Format.asString(new ArrowType.Decimal(5, 2, 64)));
+    assertEquals("d:5,2,256", Format.asString(new ArrowType.Decimal(5, 2, 256)));
     assertEquals("tDs", Format.asString(new ArrowType.Duration(TimeUnit.SECOND)));
     assertEquals("tDm", Format.asString(new ArrowType.Duration(TimeUnit.MILLISECOND)));
     assertEquals("tDu", Format.asString(new ArrowType.Duration(TimeUnit.MICROSECOND)));
@@ -134,6 +137,9 @@ public class FormatTest {
     assertEquals(new ArrowType.Decimal(1, 1, 128), Format.asType("d:1,1", 0L));
     assertEquals(new ArrowType.Decimal(1, 1, 1), Format.asType("d:1,1,1", 0L));
     assertEquals(new ArrowType.Decimal(9, 1, 1), Format.asType("d:9,1,1", 0L));
+    assertEquals(new ArrowType.Decimal(5, 2, 32), Format.asType("d:5,2,32", 0L));
+    assertEquals(new ArrowType.Decimal(5, 2, 64), Format.asType("d:5,2,64", 0L));
+    assertEquals(new ArrowType.Decimal(5, 2, 256), Format.asType("d:5,2,256", 0L));
     assertEquals(new ArrowType.FixedSizeBinary(1), Format.asType("w:1", 0L));
     assertEquals(new ArrowType.FixedSizeList(3), Format.asType("+w:3", 0L));
     assertEquals(

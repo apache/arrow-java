@@ -200,6 +200,28 @@ public class ArrowFlightJdbcAccessorFactoryTest {
   }
 
   @Test
+  public void createAccessorForDecimal32Vector() {
+    try (ValueVector valueVector = rootAllocatorTestExtension.createDecimal32Vector()) {
+      ArrowFlightJdbcAccessor accessor =
+          ArrowFlightJdbcAccessorFactory.createAccessor(
+              valueVector, GET_CURRENT_ROW, (boolean wasNull) -> {});
+
+      assertTrue(accessor instanceof ArrowFlightJdbcDecimalVectorAccessor);
+    }
+  }
+
+  @Test
+  public void createAccessorForDecimal64Vector() {
+    try (ValueVector valueVector = rootAllocatorTestExtension.createDecimal64Vector()) {
+      ArrowFlightJdbcAccessor accessor =
+          ArrowFlightJdbcAccessorFactory.createAccessor(
+              valueVector, GET_CURRENT_ROW, (boolean wasNull) -> {});
+
+      assertTrue(accessor instanceof ArrowFlightJdbcDecimalVectorAccessor);
+    }
+  }
+
+  @Test
   public void createAccessorForDecimal256Vector() {
     try (ValueVector valueVector = rootAllocatorTestExtension.createDecimal256Vector()) {
       ArrowFlightJdbcAccessor accessor =

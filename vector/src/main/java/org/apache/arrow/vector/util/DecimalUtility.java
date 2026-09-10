@@ -45,9 +45,17 @@ public class DecimalUtility {
    */
   public static BigDecimal getBigDecimalFromArrowBuf(
       ArrowBuf bytebuf, int index, int scale, int byteWidth) {
+    return getBigDecimalFromArrowBufAtOffset(bytebuf, (long) index * byteWidth, scale, byteWidth);
+  }
+
+  /**
+   * Read an ArrowType.Decimal at the given byte offset in the ArrowBuf and convert to a BigDecimal
+   * with the given scale.
+   */
+  public static BigDecimal getBigDecimalFromArrowBufAtOffset(
+      ArrowBuf bytebuf, long startIndex, int scale, int byteWidth) {
     byte[] value = new byte[byteWidth];
     byte temp;
-    final long startIndex = (long) index * byteWidth;
 
     bytebuf.getBytes(startIndex, value, 0, byteWidth);
     if (LITTLE_ENDIAN) {
@@ -118,7 +126,7 @@ public class DecimalUtility {
    */
   public static boolean checkPrecisionAndScaleNoThrow(
       BigDecimal value, int vectorPrecision, int vectorScale) {
-    return value.scale() == vectorScale && value.precision() < vectorPrecision;
+    return value.scale() == vectorScale && value.precision() <= vectorPrecision;
   }
 
   /**
@@ -159,15 +167,25 @@ public class DecimalUtility {
 
   /**
    * Write the given long to the ArrowBuf at the given value index. This routine extends the
-   * original sign bit to a new upper area in 128-bit or 256-bit.
+   * original sign bit to a new upper area in 64-bit, 128-bit or 256-bit.
    */
   public static void writeLongToArrowBuf(long value, ArrowBuf bytebuf, int index, int byteWidth) {
-    if (byteWidth != 16 && byteWidth != 32) {
+    if (byteWidth != 4 && byteWidth != 8 && byteWidth != 16 && byteWidth != 32) {
       throw new UnsupportedOperationException(
           "DecimalUtility.writeLongToArrowBuf() currently supports "
-              + "128-bit or 256-bit width data");
+              + "32-bit, 64-bit, 128-bit or 256-bit width data");
     }
-    final long addressOfValue = bytebuf.memoryAddress() + (long) index * byteWidth;
+    final long startIndex = (long) index * byteWidth;
+    bytebuf.checkBytes(startIndex, startIndex + byteWidth);
+    final long addressOfValue = bytebuf.memoryAddress() + startIndex;
+    if (byteWidth == 4) {
+      if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
+        throw new UnsupportedOperationException(
+            "Decimal value does not fit in 32-bit width: " + value);
+      }
+      MemoryUtil.putInt(addressOfValue, (int) value);
+      return;
+    }
     final long padValue = Long.signum(value) == -1 ? -1L : 0L;
     if (LITTLE_ENDIAN) {
       MemoryUtil.putLong(addressOfValue, value);

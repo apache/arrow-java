@@ -26,6 +26,8 @@ import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
 import org.apache.arrow.driver.jdbc.utils.AccessorTestUtils;
 import org.apache.arrow.driver.jdbc.utils.RootAllocatorTestExtension;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.ValueVector;
 import org.hamcrest.CoreMatchers;
@@ -49,7 +51,13 @@ public class ArrowFlightJdbcDecimalVectorAccessorTest {
           (vector, getCurrentRow) -> {
             ArrowFlightJdbcAccessorFactory.WasNullConsumer noOpWasNullConsumer =
                 (boolean wasNull) -> {};
-            if (vector instanceof DecimalVector) {
+            if (vector instanceof Decimal32Vector) {
+              return new ArrowFlightJdbcDecimalVectorAccessor(
+                  (Decimal32Vector) vector, getCurrentRow, noOpWasNullConsumer);
+            } else if (vector instanceof Decimal64Vector) {
+              return new ArrowFlightJdbcDecimalVectorAccessor(
+                  (Decimal64Vector) vector, getCurrentRow, noOpWasNullConsumer);
+            } else if (vector instanceof DecimalVector) {
               return new ArrowFlightJdbcDecimalVectorAccessor(
                   (DecimalVector) vector, getCurrentRow, noOpWasNullConsumer);
             } else if (vector instanceof Decimal256Vector) {
@@ -64,6 +72,12 @@ public class ArrowFlightJdbcDecimalVectorAccessorTest {
 
   public static Stream<Arguments> data() {
     return Stream.of(
+        Arguments.of(
+            (Supplier<ValueVector>) () -> rootAllocatorTestExtension.createDecimal32Vector(),
+            "Decimal32Vector"),
+        Arguments.of(
+            (Supplier<ValueVector>) () -> rootAllocatorTestExtension.createDecimal64Vector(),
+            "Decimal64Vector"),
         Arguments.of(
             (Supplier<ValueVector>) () -> rootAllocatorTestExtension.createDecimalVector(),
             "DecimalVector"),

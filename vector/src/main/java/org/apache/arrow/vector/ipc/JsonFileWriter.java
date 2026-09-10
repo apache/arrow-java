@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.util.Preconditions;
+import org.apache.arrow.vector.BaseFixedWidthVector;
 import org.apache.arrow.vector.BaseLargeVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
@@ -42,8 +43,6 @@ import org.apache.arrow.vector.BitVectorHelper;
 import org.apache.arrow.vector.BufferLayout.BufferType;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
-import org.apache.arrow.vector.Decimal256Vector;
-import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -78,6 +77,7 @@ import org.apache.arrow.vector.complex.BaseRepeatedValueViewVector;
 import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.types.Types.MinorType;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.DecimalUtility;
@@ -564,22 +564,15 @@ public class JsonFileWriter implements AutoCloseable {
             generator.writeString(new String(b, "UTF-8"));
             break;
           }
+        case DECIMAL32:
+        case DECIMAL64:
         case DECIMAL:
-          {
-            int scale = ((DecimalVector) vector).getScale();
-            BigDecimal decimalValue =
-                DecimalUtility.getBigDecimalFromArrowBuf(
-                    buffer, index, scale, DecimalVector.TYPE_WIDTH);
-            // We write the unscaled value, because the scale is stored in the type metadata.
-            generator.writeString(decimalValue.unscaledValue().toString());
-            break;
-          }
         case DECIMAL256:
           {
-            int scale = ((Decimal256Vector) vector).getScale();
+            int scale = ((ArrowType.Decimal) vector.getField().getType()).getScale();
+            int typeWidth = ((BaseFixedWidthVector) vector).getTypeWidth();
             BigDecimal decimalValue =
-                DecimalUtility.getBigDecimalFromArrowBuf(
-                    buffer, index, scale, Decimal256Vector.TYPE_WIDTH);
+                DecimalUtility.getBigDecimalFromArrowBuf(buffer, index, scale, typeWidth);
             // We write the unscaled value, because the scale is stored in the type metadata.
             generator.writeString(decimalValue.unscaledValue().toString());
             break;

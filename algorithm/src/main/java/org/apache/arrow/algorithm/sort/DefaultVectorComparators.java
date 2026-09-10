@@ -22,12 +22,15 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import org.apache.arrow.memory.util.ArrowBufPointer;
 import org.apache.arrow.memory.util.ByteFunctionHelpers;
+import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.BaseFixedWidthVector;
 import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -92,6 +95,10 @@ public class DefaultVectorComparators {
         return (VectorValueComparator<T>) new DateDayComparator();
       } else if (vector instanceof DateMilliVector) {
         return (VectorValueComparator<T>) new DateMilliComparator();
+      } else if (vector instanceof Decimal32Vector) {
+        return (VectorValueComparator<T>) new Decimal32Comparator();
+      } else if (vector instanceof Decimal64Vector) {
+        return (VectorValueComparator<T>) new Decimal64Comparator();
       } else if (vector instanceof Decimal256Vector) {
         return (VectorValueComparator<T>) new Decimal256Comparator();
       } else if (vector instanceof DecimalVector) {
@@ -456,6 +463,76 @@ public class DefaultVectorComparators {
     @Override
     public VectorValueComparator<DateMilliVector> createNew() {
       return new DateMilliComparator();
+    }
+  }
+
+  /**
+   * Default comparator for Decimal32 type. The comparison is based on values, with null comes
+   * first. Values are compared by their unscaled representation, so both vectors must have the same
+   * scale.
+   */
+  public static class Decimal32Comparator extends VectorValueComparator<Decimal32Vector> {
+
+    public Decimal32Comparator() {
+      super(Decimal32Vector.TYPE_WIDTH);
+    }
+
+    @Override
+    public void attachVectors(Decimal32Vector vector1, Decimal32Vector vector2) {
+      Preconditions.checkArgument(
+          vector1.getScale() == vector2.getScale(),
+          "Cannot compare Decimal32 vectors with different scales: %s and %s",
+          vector1.getScale(),
+          vector2.getScale());
+      super.attachVectors(vector1, vector2);
+    }
+
+    @Override
+    public int compareNotNull(int index1, int index2) {
+      int value1 = vector1.getDataBuffer().getInt((long) index1 * Decimal32Vector.TYPE_WIDTH);
+      int value2 = vector2.getDataBuffer().getInt((long) index2 * Decimal32Vector.TYPE_WIDTH);
+
+      return Integer.compare(value1, value2);
+    }
+
+    @Override
+    public VectorValueComparator<Decimal32Vector> createNew() {
+      return new Decimal32Comparator();
+    }
+  }
+
+  /**
+   * Default comparator for Decimal64 type. The comparison is based on values, with null comes
+   * first. Values are compared by their unscaled representation, so both vectors must have the same
+   * scale.
+   */
+  public static class Decimal64Comparator extends VectorValueComparator<Decimal64Vector> {
+
+    public Decimal64Comparator() {
+      super(Decimal64Vector.TYPE_WIDTH);
+    }
+
+    @Override
+    public void attachVectors(Decimal64Vector vector1, Decimal64Vector vector2) {
+      Preconditions.checkArgument(
+          vector1.getScale() == vector2.getScale(),
+          "Cannot compare Decimal64 vectors with different scales: %s and %s",
+          vector1.getScale(),
+          vector2.getScale());
+      super.attachVectors(vector1, vector2);
+    }
+
+    @Override
+    public int compareNotNull(int index1, int index2) {
+      long value1 = vector1.getDataBuffer().getLong((long) index1 * Decimal64Vector.TYPE_WIDTH);
+      long value2 = vector2.getDataBuffer().getLong((long) index2 * Decimal64Vector.TYPE_WIDTH);
+
+      return Long.compare(value1, value2);
+    }
+
+    @Override
+    public VectorValueComparator<Decimal64Vector> createNew() {
+      return new Decimal64Comparator();
     }
   }
 

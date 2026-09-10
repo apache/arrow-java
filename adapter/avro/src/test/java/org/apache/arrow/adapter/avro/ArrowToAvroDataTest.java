@@ -41,6 +41,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -1034,6 +1036,101 @@ public class ArrowToAvroDataTest {
               decimal256Vector1.getObject(row), decodeFixedDecimal(record, "decimal256_1"));
           assertEquals(
               decimal256Vector2.getObject(row), decodeFixedDecimal(record, "decimal256_2"));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteNarrowDecimals() throws Exception {
+
+    // Field definitions
+    FieldType decimal32Field = new FieldType(false, new ArrowType.Decimal(9, 3, 32), null);
+    FieldType decimal64Field = new FieldType(false, new ArrowType.Decimal(18, 6, 64), null);
+    FieldType nullableDecimal32Field = new FieldType(true, new ArrowType.Decimal(9, 3, 32), null);
+    FieldType nullableDecimal64Field = new FieldType(true, new ArrowType.Decimal(18, 6, 64), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    Decimal32Vector decimal32Vector =
+        new Decimal32Vector(new Field("decimal32", decimal32Field, null), allocator);
+    Decimal64Vector decimal64Vector =
+        new Decimal64Vector(new Field("decimal64", decimal64Field, null), allocator);
+    Decimal32Vector nullableDecimal32Vector =
+        new Decimal32Vector(
+            new Field("nullableDecimal32", nullableDecimal32Field, null), allocator);
+    Decimal64Vector nullableDecimal64Vector =
+        new Decimal64Vector(
+            new Field("nullableDecimal64", nullableDecimal64Field, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors =
+        Arrays.asList(
+            decimal32Vector, decimal64Vector, nullableDecimal32Vector, nullableDecimal64Vector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      decimal32Vector.setSafe(0, new BigDecimal("123456.789"));
+      decimal32Vector.setSafe(1, new BigDecimal("-999999.999"));
+      decimal32Vector.setSafe(2, new BigDecimal("0.001"));
+
+      decimal64Vector.setSafe(0, new BigDecimal("123456789012.345678"));
+      decimal64Vector.setSafe(1, new BigDecimal("-999999999999.999999"));
+      decimal64Vector.setSafe(2, new BigDecimal("0.000001"));
+
+      nullableDecimal32Vector.setSafe(0, new BigDecimal("-1.500"));
+      nullableDecimal32Vector.setNull(1);
+      nullableDecimal32Vector.setSafe(2, new BigDecimal("42.000"));
+
+      nullableDecimal64Vector.setNull(0);
+      nullableDecimal64Vector.setSafe(1, new BigDecimal("-1.500000"));
+      nullableDecimal64Vector.setSafe(2, new BigDecimal("42.000000"));
+
+      File dataFile = new File(TMP, "testWriteNarrowDecimals.avro");
+
+      // Write an AVRO block using the producer classes
+      try (FileOutputStream fos = new FileOutputStream(dataFile)) {
+        BinaryEncoder encoder = new EncoderFactory().directBinaryEncoder(fos, null);
+        CompositeAvroProducer producer = ArrowToAvroUtils.createCompositeProducer(vectors);
+        for (int row = 0; row < rowCount; row++) {
+          producer.produce(encoder);
+        }
+        encoder.flush();
+      }
+
+      // Set up reading the AVRO block as a GenericRecord
+      Schema schema = ArrowToAvroUtils.createAvroSchema(root.getSchema().getFields());
+      GenericDatumReader<GenericRecord> datumReader = new GenericDatumReader<>(schema);
+
+      try (InputStream inputStream = new FileInputStream(dataFile)) {
+
+        BinaryDecoder decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        GenericRecord record = null;
+
+        // Read and check values
+        for (int row = 0; row < rowCount; row++) {
+          record = datumReader.read(record, decoder);
+          assertEquals(decimal32Vector.getObject(row), decodeFixedDecimal(record, "decimal32"));
+          assertEquals(decimal64Vector.getObject(row), decodeFixedDecimal(record, "decimal64"));
+          if (nullableDecimal32Vector.isNull(row)) {
+            assertNull(record.get("nullableDecimal32"));
+          } else {
+            assertEquals(
+                nullableDecimal32Vector.getObject(row),
+                decodeFixedDecimal(record, "nullableDecimal32"));
+          }
+          if (nullableDecimal64Vector.isNull(row)) {
+            assertNull(record.get("nullableDecimal64"));
+          } else {
+            assertEquals(
+                nullableDecimal64Vector.getObject(row),
+                decodeFixedDecimal(record, "nullableDecimal64"));
+          }
         }
       }
     }

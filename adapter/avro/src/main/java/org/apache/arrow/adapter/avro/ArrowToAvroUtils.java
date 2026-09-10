@@ -50,6 +50,8 @@ import org.apache.arrow.adapter.avro.producers.Producer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDateDayProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDateMilliProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDecimal256Producer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroDecimal32Producer;
+import org.apache.arrow.adapter.avro.producers.logical.AvroDecimal64Producer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroDecimalProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMicroProducer;
 import org.apache.arrow.adapter.avro.producers.logical.AvroTimeMilliProducer;
@@ -70,6 +72,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -603,6 +607,10 @@ public class ArrowToAvroUtils {
 
       // Logical types
 
+      case DECIMAL32:
+        return new AvroDecimal32Producer((Decimal32Vector) vector);
+      case DECIMAL64:
+        return new AvroDecimal64Producer((Decimal64Vector) vector);
       case DECIMAL:
         return new AvroDecimalProducer((DecimalVector) vector);
       case DECIMAL256:
