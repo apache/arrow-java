@@ -83,8 +83,9 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
             String str = clob.getSubString(read, readSize);
             byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
 
-            while ((dataBuffer.writerIndex() + bytes.length) > dataBuffer.capacity()) {
+            while (dataBuffer.capacity() < startIndex + totalBytes + bytes.length) {
               vector.reallocDataBuffer();
+              dataBuffer = vector.getDataBuffer();
             }
             MemoryUtil.copyToMemory(
                 bytes, 0, dataBuffer.memoryAddress() + startIndex + totalBytes, bytes.length);
@@ -126,8 +127,9 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
           String str = clob.getSubString(read, readSize);
           byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
 
-          while ((dataBuffer.writerIndex() + bytes.length) > dataBuffer.capacity()) {
+          while (dataBuffer.capacity() < startIndex + totalBytes + bytes.length) {
             vector.reallocDataBuffer();
+            dataBuffer = vector.getDataBuffer();
           }
           MemoryUtil.copyToMemory(
               bytes, 0, dataBuffer.memoryAddress() + startIndex + totalBytes, bytes.length);
