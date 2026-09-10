@@ -284,6 +284,25 @@ public class TestDecimal256Vector {
   }
 
   @Test
+  public void setBigEndianOversizedDoesNotCorruptNeighbor() {
+    try (Decimal256Vector decimalVector =
+        TestUtils.newVector(
+            Decimal256Vector.class, "decimal", new ArrowType.Decimal(60, 0, 256), allocator)) {
+      decimalVector.allocateNew(2);
+
+      // A value whose low bytes are all non-zero, stored in the slot right after the target.
+      final BigInteger neighbor = new BigInteger("305419896"); // 0x12345678
+      decimalVector.setBigEndian(1, neighbor.toByteArray());
+
+      // A value longer than the 32-byte decimal must be rejected before anything is written.
+      assertThrows(
+          IllegalArgumentException.class, () -> decimalVector.setBigEndian(0, new byte[40]));
+
+      assertEquals(neighbor, decimalVector.getObject(1).unscaledValue());
+    }
+  }
+
+  @Test
   public void setUsingArrowBufOfLEInts() {
     try (Decimal256Vector decimalVector =
             TestUtils.newVector(

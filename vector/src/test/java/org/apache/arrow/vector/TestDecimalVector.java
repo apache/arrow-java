@@ -18,6 +18,7 @@ package org.apache.arrow.vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -276,6 +277,25 @@ public class TestDecimalVector {
       }
       assertTrue(decimalVector.isNull(outputIdx++));
       assertEquals(BigInteger.valueOf(0), decimalVector.getObject(outputIdx).unscaledValue());
+    }
+  }
+
+  @Test
+  public void setBigEndianOversizedDoesNotCorruptNeighbor() {
+    try (DecimalVector decimalVector =
+        TestUtils.newVector(
+            DecimalVector.class, "decimal", new ArrowType.Decimal(38, 0, 128), allocator)) {
+      decimalVector.allocateNew(2);
+
+      // A value whose low bytes are all non-zero, stored in the slot right after the target.
+      final BigInteger neighbor = new BigInteger("305419896"); // 0x12345678
+      decimalVector.setBigEndian(1, neighbor.toByteArray());
+
+      // A value longer than the 16-byte decimal must be rejected before anything is written.
+      assertThrows(
+          IllegalArgumentException.class, () -> decimalVector.setBigEndian(0, new byte[24]));
+
+      assertEquals(neighbor, decimalVector.getObject(1).unscaledValue());
     }
   }
 
