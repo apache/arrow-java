@@ -36,6 +36,7 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.DecimalHolder;
+import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -951,6 +952,68 @@ public class TestComplexCopier {
       to.setValueCount(COUNT);
 
       // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyListOfTimeStampNanoTZ() {
+    try (ListVector from = ListVector.empty("v", allocator);
+        ListVector to = ListVector.empty("v", allocator)) {
+      from.addOrGetVector(
+          FieldType.nullable(new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC")));
+      to.addOrGetVector(
+          FieldType.nullable(new ArrowType.Timestamp(TimeUnit.NANOSECOND, "UTC")));
+
+      UnionListWriter listWriter = from.getWriter();
+      listWriter.allocate();
+
+      for (int i = 0; i < COUNT; i++) {
+        listWriter.setPosition(i);
+        listWriter.startList();
+        listWriter.timeStampNanoTZ().writeTimeStampNanoTZ(i * 1_000_000L);
+        listWriter.timeStampNanoTZ().writeTimeStampNanoTZ(i * 2_000_000L);
+        listWriter.endList();
+      }
+      from.setValueCount(COUNT);
+
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyStructOfTimeStampNanoTZ() {
+    try (final StructVector from = StructVector.empty("v", allocator);
+        final StructVector to = StructVector.empty("v", allocator)) {
+      from.allocateNewSafe();
+      NullableStructWriter structWriter = from.getWriter();
+
+      for (int i = 0; i < COUNT; i++) {
+        structWriter.setPosition(i);
+        structWriter.start();
+        structWriter.timeStampNanoTZ("ts", "UTC").writeTimeStampNanoTZ(i * 1_000_000L);
+        structWriter.end();
+      }
+      from.setValueCount(COUNT);
+
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
       assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
     }
   }

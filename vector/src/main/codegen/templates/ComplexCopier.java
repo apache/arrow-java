@@ -30,6 +30,10 @@ package org.apache.arrow.vector.complex.impl;
 
 <#include "/@includes/vv_imports.ftl" />
 
+<#function is_timestamp_tz type>
+  <#return type?starts_with("TimeStamp") && type?ends_with("TZ")>
+</#function>
+
 /*
  * This class is generated using freemarker and the ${.template_name} template.
  */
@@ -121,7 +125,7 @@ public class ComplexCopier {
   <#assign fields = minor.fields!type.fields />
   <#assign uncappedName = name?uncap_first/>
 
-  <#if !minor.typeParams?? || minor.class?starts_with("Decimal") >
+  <#if !minor.typeParams?? || minor.class?starts_with("Decimal") || is_timestamp_tz(minor.class) >
 
       case ${name?upper_case}:
         if (reader.isSet()) {
@@ -158,6 +162,15 @@ public class ComplexCopier {
         return (FieldWriter) writer.${uncappedName}(name);
       }
     </#if>
+    <#if is_timestamp_tz(minor.class)>
+    case ${name?upper_case}:
+      if (reader.getField().getType() instanceof ArrowType.Timestamp) {
+        ArrowType.Timestamp type = (ArrowType.Timestamp) reader.getField().getType();
+        return (FieldWriter) writer.${uncappedName}(name, type.getTimezone());
+      } else {
+        return (FieldWriter) writer.${uncappedName}(name);
+      }
+    </#if>
 
     </#list></#list>
     case STRUCT:
@@ -182,7 +195,7 @@ public class ComplexCopier {
     <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
     <#assign fields = minor.fields!type.fields />
     <#assign uncappedName = name?uncap_first/>
-    <#if !minor.typeParams?? || minor.class?starts_with("Decimal") >
+    <#if !minor.typeParams?? || minor.class?starts_with("Decimal") || is_timestamp_tz(minor.class) >
     case ${name?upper_case}:
     return (FieldWriter) writer.<#if name == "Int">integer<#else>${uncappedName}</#if>();
     </#if>
@@ -209,7 +222,7 @@ public class ComplexCopier {
     <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
     <#assign fields = minor.fields!type.fields />
     <#assign uncappedName = name?uncap_first/>
-    <#if !minor.typeParams?? || minor.class?starts_with("Decimal") >
+    <#if !minor.typeParams?? || minor.class?starts_with("Decimal") || is_timestamp_tz(minor.class) >
       case ${name?upper_case}:
       return (FieldWriter) writer.<#if name == "Int">integer<#else>${uncappedName}</#if>();
     </#if>
