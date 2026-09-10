@@ -29,34 +29,34 @@ public abstract class AbstractCompressionCodec implements CompressionCodec {
 
   @Override
   public ArrowBuf compress(BufferAllocator allocator, ArrowBuf uncompressedBuffer) {
-    // GH-1116: capture writerIndex() once so the empty-buffer check, size
-    // comparison, and uncompressed-length prefix all see the same value.
-    long uncompressedLength = uncompressedBuffer.writerIndex();
+    try (uncompressedBuffer) {
+      // GH-1116: capture writerIndex() once so the empty-buffer check, size
+      // comparison, and uncompressed-length prefix all see the same value.
+      long uncompressedLength = uncompressedBuffer.writerIndex();
 
-    if (uncompressedLength == 0L) {
-      // shortcut for empty buffer
-      ArrowBuf compressedBuffer = allocator.buffer(CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
-      compressedBuffer.setLong(0, 0);
-      compressedBuffer.writerIndex(CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
-      uncompressedBuffer.close();
+      if (uncompressedLength == 0L) {
+        // shortcut for empty buffer
+        ArrowBuf compressedBuffer = allocator.buffer(CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
+        compressedBuffer.setLong(0, 0);
+        compressedBuffer.writerIndex(CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
+        return compressedBuffer;
+      }
+
+      ArrowBuf compressedBuffer = doCompress(allocator, uncompressedBuffer);
+      long compressedLength =
+          compressedBuffer.writerIndex() - CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH;
+
+      if (compressedLength > uncompressedLength) {
+        // compressed buffer is larger, send the raw buffer
+        compressedBuffer.close();
+        // XXX: this makes a copy of uncompressedBuffer
+        compressedBuffer = CompressionUtil.packageRawBuffer(allocator, uncompressedBuffer);
+      } else {
+        writeUncompressedLength(compressedBuffer, uncompressedLength);
+      }
+
       return compressedBuffer;
     }
-
-    ArrowBuf compressedBuffer = doCompress(allocator, uncompressedBuffer);
-    long compressedLength =
-        compressedBuffer.writerIndex() - CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH;
-
-    if (compressedLength > uncompressedLength) {
-      // compressed buffer is larger, send the raw buffer
-      compressedBuffer.close();
-      // XXX: this makes a copy of uncompressedBuffer
-      compressedBuffer = CompressionUtil.packageRawBuffer(allocator, uncompressedBuffer);
-    } else {
-      writeUncompressedLength(compressedBuffer, uncompressedLength);
-    }
-
-    uncompressedBuffer.close();
-    return compressedBuffer;
   }
 
   @Override
