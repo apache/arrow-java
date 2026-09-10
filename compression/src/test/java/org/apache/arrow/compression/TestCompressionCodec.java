@@ -37,6 +37,7 @@ import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.OutOfMemoryException;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.IntVector;
@@ -64,6 +65,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /** Test cases for {@link CompressionCodec}s. */
 class TestCompressionCodec {
@@ -77,6 +79,27 @@ class TestCompressionCodec {
   @AfterEach
   void terminate() {
     allocator.close();
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  void testCompressionAllocationFailureReleasesSource(boolean useZstd) {
+    CompressionCodec codec = useZstd ? new ZstdCompressionCodec() : new Lz4CompressionCodec();
+    try (IntVector vector = new IntVector("values", allocator);
+        VectorSchemaRoot root = VectorSchemaRoot.of(vector)) {
+      vector.allocateNew(1);
+      vector.set(0, 42);
+      root.setRowCount(1);
+      long allocatedBefore = allocator.getAllocatedMemory();
+      int referencesBefore = vector.getDataBuffer().getReferenceManager().getRefCount();
+      allocator.setLimit(allocatedBefore);
+      VectorUnloader unloader = new VectorUnloader(root, true, codec, true);
+
+      assertThrows(OutOfMemoryException.class, unloader::getRecordBatch);
+      assertEquals(allocatedBefore, allocator.getAllocatedMemory());
+      assertEquals(referencesBefore, vector.getDataBuffer().getReferenceManager().getRefCount());
+      assertEquals(42, vector.get(0));
+    }
   }
 
   static Collection<Arguments> codecs() {

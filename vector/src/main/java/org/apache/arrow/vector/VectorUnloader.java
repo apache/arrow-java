@@ -19,6 +19,7 @@ package org.apache.arrow.vector;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.arrow.memory.ArrowBuf;
+import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.compression.CompressionCodec;
 import org.apache.arrow.vector.compression.CompressionUtil;
 import org.apache.arrow.vector.compression.NoCompressionCodec;
@@ -78,18 +79,23 @@ public class VectorUnloader {
     List<ArrowFieldNode> nodes = new ArrayList<>();
     List<ArrowBuf> buffers = new ArrayList<>();
     List<Long> variadicBufferCounts = new ArrayList<>();
-    for (FieldVector vector : root.getFieldVectors()) {
-      appendNodes(vector, nodes, buffers, variadicBufferCounts);
+    try {
+      for (FieldVector vector : root.getFieldVectors()) {
+        appendNodes(vector, nodes, buffers, variadicBufferCounts);
+      }
+      // Do NOT retain buffers in ArrowRecordBatch constructor since we have already retained them.
+      return new ArrowRecordBatch(
+          root.getRowCount(),
+          nodes,
+          buffers,
+          CompressionUtil.createBodyCompression(codec),
+          variadicBufferCounts,
+          alignBuffers, /*retainBuffers*/
+          false);
+    } catch (RuntimeException | Error e) {
+      AutoCloseables.close(e, buffers);
+      throw e;
     }
-    // Do NOT retain buffers in ArrowRecordBatch constructor since we have already retained them.
-    return new ArrowRecordBatch(
-        root.getRowCount(),
-        nodes,
-        buffers,
-        CompressionUtil.createBodyCompression(codec),
-        variadicBufferCounts,
-        alignBuffers, /*retainBuffers*/
-        false);
   }
 
   private long getVariadicBufferCount(FieldVector vector) {
