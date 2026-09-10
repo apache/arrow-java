@@ -233,6 +233,35 @@ class TestCompressionCodec {
     AutoCloseables.close(decompressedBuffers);
   }
 
+  static Stream<CompressionCodec> compressingCodecs() {
+    return Stream.of(new Lz4CompressionCodec(), new ZstdCompressionCodec());
+  }
+
+  @ParameterizedTest
+  @MethodSource("compressingCodecs")
+  void testEmptyBufferWritesUncompressedSentinel(CompressionCodec codec) {
+    // GH-1196: an empty buffer must be encoded with the uncompressed-length
+    // sentinel (-1), not 0. A 0 prefix is undefined in the Arrow IPC format and
+    // is rejected by the C++ and Python implementations, even though Java itself
+    // accepts it on read.
+    ArrowBuf empty = allocator.buffer(1);
+    empty.writerIndex(0);
+
+    // compress() takes ownership of and closes the input buffer
+    ArrowBuf compressed = codec.compress(allocator, empty);
+
+    assertEquals(
+        CompressionUtil.NO_COMPRESSION_LENGTH,
+        compressed.getLong(0),
+        "empty buffer must use the -1 uncompressed sentinel, not 0");
+
+    // and it must still round-trip back to an empty buffer
+    ArrowBuf decompressed = codec.decompress(allocator, compressed);
+    assertEquals(0L, decompressed.writerIndex());
+
+    decompressed.close();
+  }
+
   @Test
   void testLz4DecompressRejectsWrongLength() {
     byte[] data = new byte[512]; // all zeros, highly compressible

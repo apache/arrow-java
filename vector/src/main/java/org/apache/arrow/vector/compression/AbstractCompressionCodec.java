@@ -36,7 +36,7 @@ public abstract class AbstractCompressionCodec implements CompressionCodec {
     if (uncompressedLength == 0L) {
       // shortcut for empty buffer
       ArrowBuf compressedBuffer = allocator.buffer(CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
-      compressedBuffer.setLong(0, 0);
+      compressedBuffer.setLong(0, CompressionUtil.NO_COMPRESSION_LENGTH);
       compressedBuffer.writerIndex(CompressionUtil.SIZE_OF_UNCOMPRESSED_LENGTH);
       uncompressedBuffer.close();
       return compressedBuffer;
