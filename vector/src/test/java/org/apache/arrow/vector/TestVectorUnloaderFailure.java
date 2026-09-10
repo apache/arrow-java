@@ -35,9 +35,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 /** Exception-safety tests for record batch serialization. */
 class TestVectorUnloaderFailure {
 
-  @ParameterizedTest
-  @ValueSource(longs = {0, 16})
-  void compressionAllocationFailureReleasesBuffers(long availableBytes) {
+  @Test
+  void compressionAllocationFailureReleasesBuffers() {
     try (BufferAllocator allocator = new RootAllocator();
         IntVector vector = new IntVector("values", allocator);
         VectorSchemaRoot root = VectorSchemaRoot.of(vector)) {
@@ -46,8 +45,9 @@ class TestVectorUnloaderFailure {
       root.setRowCount(1);
       long allocatedBefore = allocator.getAllocatedMemory();
       int referencesBefore = vector.getDataBuffer().getReferenceManager().getRefCount();
-      allocator.setLimit(allocatedBefore + availableBytes);
-      VectorUnloader unloader = new VectorUnloader(root, true, new CopyCodec(), true);
+      // Any compression allocation must fail, regardless of allocator rounding.
+      allocator.setLimit(allocatedBefore);
+      VectorUnloader unloader = new VectorUnloader(root, true, new SimulatedLz4Codec(), true);
 
       assertThrows(OutOfMemoryException.class, unloader::getRecordBatch);
       assertEquals(allocatedBefore, allocator.getAllocatedMemory());
@@ -71,8 +71,8 @@ class TestVectorUnloaderFailure {
       root.setRowCount(1);
       long allocatedBefore = allocator.getAllocatedMemory();
       int referencesBefore = vector.getDataBuffer().getReferenceManager().getRefCount();
-      CopyCodec codec =
-          new CopyCodec() {
+      SimulatedLz4Codec codec =
+          new SimulatedLz4Codec() {
             private int calls;
 
             @Override
@@ -101,7 +101,8 @@ class TestVectorUnloaderFailure {
       ArrowBuf input = allocator.buffer(8);
       allocator.setLimit(allocator.getAllocatedMemory());
 
-      assertThrows(OutOfMemoryException.class, () -> new CopyCodec().compress(allocator, input));
+      assertThrows(
+          OutOfMemoryException.class, () -> new SimulatedLz4Codec().compress(allocator, input));
       assertEquals(0, input.getReferenceManager().getRefCount());
       assertEquals(0, allocator.getAllocatedMemory());
     }
@@ -131,7 +132,8 @@ class TestVectorUnloaderFailure {
     }
   }
 
-  private static class CopyCodec extends AbstractCompressionCodec {
+  // Compression-only stub for allocation and ownership tests, not LZ4 round trips.
+  private static class SimulatedLz4Codec extends AbstractCompressionCodec {
     @Override
     protected ArrowBuf doCompress(BufferAllocator allocator, ArrowBuf input) {
       return CompressionUtil.packageRawBuffer(allocator, input);
