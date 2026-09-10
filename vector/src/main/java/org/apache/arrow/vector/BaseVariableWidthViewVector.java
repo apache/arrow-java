@@ -911,7 +911,8 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
         final int readBufOffset =
             viewBuffer.getInt(
                 ((long) i * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
-        final ArrowBuf dataBuf = dataBuffers.get(readBufIndex);
+        final ArrowBuf dataBuf =
+            getValidatedDataBuffer(dataBuffers, readBufIndex, readBufOffset, stringLength);
 
         // allocate data buffer
         ArrowBuf currentDataBuf = target.allocateOrGetLastDataBuffer(stringLength);
@@ -1474,7 +1475,9 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
                       + LENGTH_WIDTH
                       + PREFIX_WIDTH
                       + BUF_INDEX_WIDTH);
-      final ArrowBuf dataBuf = ((BaseVariableWidthViewVector) from).dataBuffers.get(bufIndex);
+      final ArrowBuf dataBuf =
+          getValidatedDataBuffer(
+              ((BaseVariableWidthViewVector) from).dataBuffers, bufIndex, dataOffset, viewLength);
       final ArrowBuf thisDataBuf = allocateOrGetLastDataBuffer(viewLength);
 
       viewBuffer.setBytes(start, from.getDataBuffer(), copyStart, LENGTH_WIDTH + PREFIX_WIDTH);
@@ -1509,7 +1512,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       } else {
         final int bufIndex =
             viewBuffer.getInt(((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH);
-        ArrowBuf dataBuf = dataBuffers.get(bufIndex);
+        ArrowBuf dataBuf = getValidatedDataBuffer(dataBuffers, bufIndex, 0, length);
         reuse.set(dataBuf, 0, length);
       }
     }
@@ -1536,9 +1539,38 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       final int dataOffset =
           viewBuffer.getInt(
               ((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
-      ArrowBuf dataBuf = dataBuffers.get(bufIndex);
+      ArrowBuf dataBuf = getValidatedDataBuffer(dataBuffers, bufIndex, dataOffset, length);
       return ByteFunctionHelpers.hash(hasher, dataBuf, dataOffset, dataOffset + length);
     }
+  }
+
+  /**
+   * Returns the out-of-line data buffer referenced by a view element, after checking that the
+   * element's buffer index, offset and length stay within that buffer. View and data buffers can
+   * come from an untrusted source (for example an IPC stream), so a corrupt view must not be able
+   * to dereference a missing buffer or read past the end of an existing one.
+   */
+  private static ArrowBuf getValidatedDataBuffer(
+      List<ArrowBuf> dataBuffers, int bufferIndex, int dataOffset, int dataLength) {
+    if (bufferIndex < 0 || bufferIndex >= dataBuffers.size()) {
+      throw new IllegalArgumentException(
+          "View element references data buffer "
+              + bufferIndex
+              + " but only "
+              + dataBuffers.size()
+              + " are present");
+    }
+    ArrowBuf dataBuf = dataBuffers.get(bufferIndex);
+    if (dataOffset < 0 || dataLength < 0 || (long) dataOffset + dataLength > dataBuf.capacity()) {
+      throw new IllegalArgumentException(
+          "View element data (offset "
+              + dataOffset
+              + ", length "
+              + dataLength
+              + ") is out of bounds for data buffer of capacity "
+              + dataBuf.capacity());
+    }
+    return dataBuf;
   }
 
   /**
@@ -1566,7 +1598,8 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       final int dataOffset =
           viewBuffer.getInt(
               ((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
-      dataBuffers.get(bufferIndex).getBytes(dataOffset, result, 0, dataLength);
+      getValidatedDataBuffer(dataBuffers, bufferIndex, dataOffset, dataLength)
+          .getBytes(dataOffset, result, 0, dataLength);
     } else {
       // data is in the view buffer
       viewBuffer.getBytes((long) index * ELEMENT_SIZE + BUF_INDEX_WIDTH, result, 0, dataLength);
@@ -1585,7 +1618,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       final int dataOffset =
           viewBuffer.getInt(
               ((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
-      ArrowBuf dataBuf = dataBuffers.get(bufferIndex);
+      ArrowBuf dataBuf = getValidatedDataBuffer(dataBuffers, bufferIndex, dataOffset, dataLength);
       buffer.set(dataBuf, dataOffset, dataLength);
     } else {
       // data is in the value buffer

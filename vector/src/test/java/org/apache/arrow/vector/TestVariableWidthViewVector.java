@@ -158,6 +158,43 @@ public class TestVariableWidthViewVector {
   }
 
   @Test
+  public void testGetRejectsOutOfBoundsViewOffset() {
+    // A view element longer than INLINE_SIZE keeps its data in a separate data buffer and encodes
+    // the buffer index and offset inline in the view buffer. Those fields are trusted verbatim when
+    // a vector is loaded from an IPC stream, so a corrupt offset must be rejected rather than used
+    // to read past the data buffer.
+    try (final ViewVarCharVector vector = new ViewVarCharVector("myvector", allocator)) {
+      vector.allocateNew(16, 1);
+      vector.setSafe(0, STR2);
+      vector.setValueCount(1);
+      assertArrayEquals(STR2, vector.get(0));
+
+      final long offsetPosition =
+          BaseVariableWidthViewVector.LENGTH_WIDTH
+              + BaseVariableWidthViewVector.PREFIX_WIDTH
+              + BaseVariableWidthViewVector.BUF_INDEX_WIDTH;
+      vector.viewBuffer.setInt(offsetPosition, Integer.MAX_VALUE);
+
+      assertThrows(IllegalArgumentException.class, () -> vector.get(0));
+    }
+  }
+
+  @Test
+  public void testGetRejectsOutOfBoundsViewBufferIndex() {
+    try (final ViewVarCharVector vector = new ViewVarCharVector("myvector", allocator)) {
+      vector.allocateNew(16, 1);
+      vector.setSafe(0, STR2);
+      vector.setValueCount(1);
+
+      final long bufIndexPosition =
+          BaseVariableWidthViewVector.LENGTH_WIDTH + BaseVariableWidthViewVector.PREFIX_WIDTH;
+      vector.viewBuffer.setInt(bufIndexPosition, 99);
+
+      assertThrows(IllegalArgumentException.class, () -> vector.get(0));
+    }
+  }
+
+  @Test
   public void testDataBufferBasedAllocationInSameBuffer() {
     try (final ViewVarCharVector viewVarCharVector = new ViewVarCharVector("myvector", allocator)) {
       viewVarCharVector.allocateNew(48, 4);
