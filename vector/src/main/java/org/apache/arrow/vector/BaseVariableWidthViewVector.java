@@ -912,6 +912,13 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
             viewBuffer.getInt(
                 ((long) i * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
         final ArrowBuf dataBuf = dataBuffers.get(readBufIndex);
+        if (readBufOffset < 0
+            || ((long) readBufOffset + (long) stringLength) > dataBuf.capacity()) {
+          throw new IndexOutOfBoundsException(
+              String.format(
+                  "index: %d, length: %d (expected: range(0, %d))",
+                  readBufOffset, stringLength, dataBuf.capacity()));
+        }
 
         // allocate data buffer
         ArrowBuf currentDataBuf = target.allocateOrGetLastDataBuffer(stringLength);
@@ -1432,7 +1439,7 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
       BitVectorHelper.unsetBit(validityBuffer, thisIndex);
     } else {
       final int viewLength = from.getDataBuffer().getInt((long) fromIndex * ELEMENT_SIZE);
-      copyFromNotNull(fromIndex, thisIndex, from, viewLength);
+      copyFromNotNull(from, fromIndex, thisIndex, viewLength);
     }
     lastSet = thisIndex;
   }
@@ -1454,39 +1461,35 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
     } else {
       final int viewLength = from.getDataBuffer().getInt((long) fromIndex * ELEMENT_SIZE);
       handleSafe(thisIndex, viewLength);
-      copyFromNotNull(fromIndex, thisIndex, from, viewLength);
+      copyFromNotNull(from, fromIndex, thisIndex, viewLength);
     }
     lastSet = thisIndex;
   }
 
-  private void copyFromNotNull(int fromIndex, int thisIndex, ValueVector from, int viewLength) {
+  private void copyFromNotNull(ValueVector from, int fromIndex, int thisIndex, int viewLength) {
     BitVectorHelper.setBit(validityBuffer, thisIndex);
     final int start = thisIndex * ELEMENT_SIZE;
     final int copyStart = fromIndex * ELEMENT_SIZE;
     if (viewLength > INLINE_SIZE) {
-      final int bufIndex =
-          from.getDataBuffer()
-              .getInt(((long) fromIndex * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH);
-      final int dataOffset =
-          from.getDataBuffer()
-              .getInt(
-                  ((long) fromIndex * ELEMENT_SIZE)
-                      + LENGTH_WIDTH
-                      + PREFIX_WIDTH
-                      + BUF_INDEX_WIDTH);
-      final ArrowBuf dataBuf = ((BaseVariableWidthViewVector) from).dataBuffers.get(bufIndex);
-      final ArrowBuf thisDataBuf = allocateOrGetLastDataBuffer(viewLength);
-
-      viewBuffer.setBytes(start, from.getDataBuffer(), copyStart, LENGTH_WIDTH + PREFIX_WIDTH);
-      int writePosition = start + LENGTH_WIDTH + PREFIX_WIDTH;
-      // set buf id
-      viewBuffer.setInt(writePosition, dataBuffers.size() - 1);
-      writePosition += BUF_INDEX_WIDTH;
-      // set offset
-      viewBuffer.setInt(writePosition, (int) thisDataBuf.writerIndex());
-
-      thisDataBuf.setBytes(thisDataBuf.writerIndex(), dataBuf, dataOffset, viewLength);
-      thisDataBuf.writerIndex(thisDataBuf.writerIndex() + viewLength);
+      BaseVariableWidthViewVector fromVector = (BaseVariableWidthViewVector) from;
+      fromVector.getData(
+          fromIndex,
+          (dataBuf, dataOffset, dataLength) -> {
+            assert dataLength == viewLength;
+            viewBuffer.setBytes(
+                start, fromVector.getDataBuffer(), copyStart, LENGTH_WIDTH + PREFIX_WIDTH);
+            //noinspection resource
+            final ArrowBuf thisDataBuf = allocateOrGetLastDataBuffer(viewLength);
+            int writePosition = start + LENGTH_WIDTH + PREFIX_WIDTH;
+            // set buf id
+            viewBuffer.setInt(writePosition, dataBuffers.size() - 1);
+            writePosition += BUF_INDEX_WIDTH;
+            // set offset
+            viewBuffer.setInt(writePosition, (int) thisDataBuf.writerIndex());
+            thisDataBuf.setBytes(thisDataBuf.writerIndex(), dataBuf, dataOffset, viewLength);
+            thisDataBuf.writerIndex(thisDataBuf.writerIndex() + viewLength);
+            return null;
+          });
     } else {
       from.getDataBuffer().getBytes(copyStart, viewBuffer, start, ELEMENT_SIZE);
     }
@@ -1502,16 +1505,12 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
     if (isNull(index)) {
       reuse.set(null, 0, 0);
     } else {
-      int length = getValueLength(index);
-      if (length < INLINE_SIZE) {
-        int start = index * ELEMENT_SIZE + LENGTH_WIDTH;
-        reuse.set(viewBuffer, start, length);
-      } else {
-        final int bufIndex =
-            viewBuffer.getInt(((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH);
-        ArrowBuf dataBuf = dataBuffers.get(bufIndex);
-        reuse.set(dataBuf, 0, length);
-      }
+      getData(
+          index,
+          (buf, offset, length) -> {
+            reuse.set(buf, offset, length);
+            return null;
+          });
     }
     return reuse;
   }
@@ -1526,19 +1525,45 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
     if (isNull(index)) {
       return ArrowBufPointer.NULL_HASH_CODE;
     }
-    final int length = getValueLength(index);
-    if (length < INLINE_SIZE) {
-      int start = index * ELEMENT_SIZE + LENGTH_WIDTH;
-      return ByteFunctionHelpers.hash(hasher, this.getDataBuffer(), start, start + length);
-    } else {
-      final int bufIndex =
+    return getData(
+        index,
+        (buf, offset, length) -> ByteFunctionHelpers.hash(hasher, buf, offset, offset + length));
+  }
+
+  @FunctionalInterface
+  protected interface ViewElementConsumer<T> {
+    T consume(ArrowBuf buf, int offset, int length);
+  }
+
+  /** Helper to get a single view value with sanity checking. */
+  protected <T> T getData(int index, ViewElementConsumer<T> consumer) {
+    final int dataLength = getValueLength(index);
+    final ArrowBuf dataBuffer;
+    final int dataOffset;
+    if (dataLength > INLINE_SIZE) {
+      final int bufferIndex =
           viewBuffer.getInt(((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH);
-      final int dataOffset =
+      dataOffset =
           viewBuffer.getInt(
               ((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
-      ArrowBuf dataBuf = dataBuffers.get(bufIndex);
-      return ByteFunctionHelpers.hash(hasher, dataBuf, dataOffset, dataOffset + length);
+      dataBuffer = dataBuffers.get(bufferIndex);
+    } else {
+      dataBuffer = viewBuffer;
+      dataOffset = index * ELEMENT_SIZE + BUF_INDEX_WIDTH;
     }
+    if (dataOffset < 0
+        || dataLength < 0
+        || ((long) dataOffset + (long) dataLength) > dataBuffer.capacity()) {
+      // In this case we don't check BOUNDS_CHECKING_ENABLED
+      // Likely this check is redundant, but we are trying to check eagerly before downstream code
+      // potentially
+      // tries to allocate based on the given dataLength
+      throw new IndexOutOfBoundsException(
+          String.format(
+              "index: %d, length: %d (expected: range(0, %d))",
+              dataOffset, dataLength, dataBuffer.capacity()));
+    }
+    return consumer.consume(dataBuffer, dataOffset, dataLength);
   }
 
   /**
@@ -1555,42 +1580,16 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
    * @return byte array containing the data of the element
    */
   protected byte[] getData(int index) {
-    final int dataLength = getValueLength(index);
-    byte[] result = new byte[dataLength];
-    if (dataLength > INLINE_SIZE) {
-      // data is in the data buffer
-      // get buffer index
-      final int bufferIndex =
-          viewBuffer.getInt(((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH);
-      // get data offset
-      final int dataOffset =
-          viewBuffer.getInt(
-              ((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
-      dataBuffers.get(bufferIndex).getBytes(dataOffset, result, 0, dataLength);
-    } else {
-      // data is in the view buffer
-      viewBuffer.getBytes((long) index * ELEMENT_SIZE + BUF_INDEX_WIDTH, result, 0, dataLength);
-    }
-    return result;
+    return getData(index, ArrowBuf::getBytesAsArray);
   }
 
   protected void getData(int index, ReusableBuffer<?> buffer) {
-    final int dataLength = getValueLength(index);
-    if (dataLength > INLINE_SIZE) {
-      // data is in the data buffer
-      // get buffer index
-      final int bufferIndex =
-          viewBuffer.getInt(((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH);
-      // get data offset
-      final int dataOffset =
-          viewBuffer.getInt(
-              ((long) index * ELEMENT_SIZE) + LENGTH_WIDTH + PREFIX_WIDTH + BUF_INDEX_WIDTH);
-      ArrowBuf dataBuf = dataBuffers.get(bufferIndex);
-      buffer.set(dataBuf, dataOffset, dataLength);
-    } else {
-      // data is in the value buffer
-      buffer.set(viewBuffer, ((long) index * ELEMENT_SIZE) + BUF_INDEX_WIDTH, dataLength);
-    }
+    getData(
+        index,
+        (buf, offset, length) -> {
+          buffer.set(buf, offset, length);
+          return null;
+        });
   }
 
   @Override
