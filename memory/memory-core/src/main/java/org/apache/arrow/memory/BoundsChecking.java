@@ -24,6 +24,10 @@ package org.apache.arrow.memory;
  * "arrow.enable_unsafe_memory_access" or "drill.enable_unsafe_memory_access". The latter is
  * deprecated. The environmental variable is named "ARROW_ENABLE_UNSAFE_MEMORY_ACCESS". When both
  * the system property and the environmental variable are set, the system property takes precedence.
+ *
+ * <p>WARNING: disabling bounds checking means that out-of-bounds memory access is possible! This
+ * can lead to security vulnerabilities. You should not read or write untrusted data when bounds
+ * checking is disabled.
  */
 public class BoundsChecking {
 

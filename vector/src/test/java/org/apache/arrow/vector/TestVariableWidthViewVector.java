@@ -2921,4 +2921,21 @@ public class TestVariableWidthViewVector {
       assertTrue(e.getMessage().contains("Not enough capacity for data buffer"));
     }
   }
+
+  @Test
+  public void testValidateInvalidOffsets() {
+    try (final ViewVarCharVector vector = new ViewVarCharVector("v", allocator)) {
+      vector.allocateNew(16, 1);
+      vector.allocateOrGetLastDataBuffer(8);
+      var offsets = vector.getDataBuffer();
+      offsets.setInt(0, Integer.MAX_VALUE);
+      offsets.setInt(4, 0);
+      offsets.setInt(8, 0);
+      offsets.setInt(12, 1024);
+      vector.setValueCount(1);
+      vector.setIndexDefined(0);
+      var e = assertThrows(IndexOutOfBoundsException.class, vector::validateFull);
+      assertTrue(e.getMessage().contains("index: 1024"));
+    }
+  }
 }
