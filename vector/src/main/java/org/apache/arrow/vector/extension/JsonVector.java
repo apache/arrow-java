@@ -81,29 +81,7 @@ public class JsonVector extends ExtensionTypeVector<FieldVector>
 
   @Override
   public TransferPair makeTransferPair(ValueVector target) {
-    JsonVector to = (JsonVector) target;
-    TransferPair storagePair = getUnderlyingVector().makeTransferPair(to.getUnderlyingVector());
-    return new TransferPair() {
-      @Override
-      public void transfer() {
-        storagePair.transfer();
-      }
-
-      @Override
-      public void splitAndTransfer(int startIndex, int length) {
-        storagePair.splitAndTransfer(startIndex, length);
-      }
-
-      @Override
-      public JsonVector getTo() {
-        return to;
-      }
-
-      @Override
-      public void copyValueSafe(int fromIndex, int toIndex) {
-        storagePair.copyValueSafe(fromIndex, toIndex);
-      }
-    };
+    return new TransferImpl((JsonVector) target);
   }
 
   @Override
@@ -114,5 +92,35 @@ public class JsonVector extends ExtensionTypeVector<FieldVector>
   @Override
   public int hashCode(int index, ArrowBufHasher hasher) {
     return getUnderlyingVector().hashCode(index, hasher);
+  }
+
+  private class TransferImpl implements TransferPair {
+    private final JsonVector to;
+    private final TransferPair storagePair;
+
+    TransferImpl(JsonVector to) {
+      this.to = to;
+      this.storagePair = getUnderlyingVector().makeTransferPair(to.getUnderlyingVector());
+    }
+
+    @Override
+    public void transfer() {
+      storagePair.transfer();
+    }
+
+    @Override
+    public void splitAndTransfer(int startIndex, int length) {
+      storagePair.splitAndTransfer(startIndex, length);
+    }
+
+    @Override
+    public JsonVector getTo() {
+      return to;
+    }
+
+    @Override
+    public void copyValueSafe(int fromIndex, int toIndex) {
+      storagePair.copyValueSafe(fromIndex, toIndex);
+    }
   }
 }

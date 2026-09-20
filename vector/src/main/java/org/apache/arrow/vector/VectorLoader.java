@@ -112,7 +112,7 @@ public class VectorLoader {
     }
     checkArgument(nodes.hasNext(), "no more field nodes for field %s and vector %s", field, vector);
     ArrowFieldNode fieldNode = nodes.next();
-    // variadicBufferLayoutCount will be 0 for vectors of a type except BaseVariableWidthViewVector
+    // Only view storage has variadic buffers.
     long variadicBufferLayoutCount = 0;
     if (storageVector instanceof BaseVariableWidthViewVector) {
       if (variadicBufferCounts.hasNext()) {
