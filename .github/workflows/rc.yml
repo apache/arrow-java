@@ -162,7 +162,6 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { runs_on: macos-15-intel, arch: "x86_64"}
           - { runs_on: macos-14, arch: "aarch_64" }
     env:
       MACOSX_DEPLOYMENT_TARGET: "14.0"
@@ -211,46 +210,19 @@ jobs:
           # llvm@14 because llvm is newer than llvm@14.
           brew uninstall llvm || :
 
-          # We can remove this when we drop support for
-          # macos-15-intel. because macos-14 or later with arm64 uses /opt/homebrew/
-          # not /usr/local/.
-          #
-          # Ensure updating python@XXX with the "--overwrite" option.
-          # If python@XXX is updated without "--overwrite", it causes
-          # a conflict error. Because Python 3 installed not by
-          # Homebrew exists in /usr/local on GitHub Actions. If
-          # Homebrew's python@XXX is updated without "--overwrite", it
-          # tries to replace /usr/local/bin/2to3 and so on and causes
-          # a conflict error.
           brew update
-          for python_package in $(brew list | grep python@ | sort -r); do
-            brew install --overwrite ${python_package}
-          done
-          brew install --overwrite python3
 
-          if [ "$(uname -m)" = "arm64" ]; then
-            # pkg-config formula is deprecated but it's still installed
-            # in GitHub Actions runner now. We can remove this once
-            # pkg-config formula is removed from GitHub Actions runner.
-            brew uninstall pkg-config || :
-            brew uninstall pkg-config@0.29.2 || :
-          fi
+          # pkg-config formula is deprecated but it's still installed
+          # in GitHub Actions runner now. We can remove this once
+          # pkg-config formula is removed from GitHub Actions runner.
+          brew uninstall pkg-config || :
+          brew uninstall pkg-config@0.29.2 || :
 
           # We don't use Homebrew's aws-sdk-cpp and gRPC. See the
           # "brew uninstall" calls below for details. So we don't install
           # them instead of installing and uninstalling them.
           #
-          # This is also needed because Homebrew doesn't provide bottles
-          # for them on x86_64 macOS. Homebrew treats x86_64 macOS as a
-          # tier 3 configuration and rarely builds bottles for it:
-          #
-          #   https://docs.brew.sh/Support-Tiers#tier-3
-          #
-          # "brew bundle" fails with "no bottle available!" without this
-          # because it doesn't build them from source.
-          #
-          # We don't use Homebrew's Node.js too. Homebrew doesn't provide
-          # a bottle for it on x86_64 macOS for the same reason.
+          # We don't need Homebrew's Node.js for the JNI build either.
           HOMEBREW_BUNDLE_BREW_SKIP="aws-sdk-cpp grpc node" \
             brew bundle --file=arrow/cpp/Brewfile
           # We want to link aws-sdk-cpp statically but Homebrew's
@@ -388,7 +360,6 @@ jobs:
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
           tar -xvzf jni-linux-x86_64.tar.gz
           tar -xvzf jni-linux-aarch_64.tar.gz
-          tar -xvzf jni-macos-x86_64.tar.gz
           tar -xvzf jni-macos-aarch_64.tar.gz
           tar -xvzf jni-windows-x86_64.tar.gz
       - name: Test that shared libraries exist
@@ -404,11 +375,6 @@ jobs:
           test -f jni/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.so
           test -f jni/arrow_orc_jni/aarch_64/libarrow_orc_jni.so
           test -f jni/gandiva_jni/aarch_64/libgandiva_jni.so
-
-          test -f jni/arrow_cdata_jni/x86_64/libarrow_cdata_jni.dylib
-          test -f jni/arrow_dataset_jni/x86_64/libarrow_dataset_jni.dylib
-          test -f jni/arrow_orc_jni/x86_64/libarrow_orc_jni.dylib
-          test -f jni/gandiva_jni/x86_64/libgandiva_jni.dylib
 
           test -f jni/arrow_cdata_jni/aarch_64/libarrow_cdata_jni.dylib
           test -f jni/arrow_dataset_jni/aarch_64/libarrow_dataset_jni.dylib
