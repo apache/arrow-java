@@ -49,6 +49,7 @@ public class FlightSqlColumnMetadata {
   private static final String TYPE_NAME = "ARROW:FLIGHT:SQL:TYPE_NAME";
   private static final String PRECISION = "ARROW:FLIGHT:SQL:PRECISION";
   private static final String SCALE = "ARROW:FLIGHT:SQL:SCALE";
+  private static final String DEFAULT_VALUE = "ARROW:FLIGHT:SQL:COLUMN_DEF";
   private static final String IS_AUTO_INCREMENT = "ARROW:FLIGHT:SQL:IS_AUTO_INCREMENT";
   private static final String IS_CASE_SENSITIVE = "ARROW:FLIGHT:SQL:IS_CASE_SENSITIVE";
   private static final String IS_READ_ONLY = "ARROW:FLIGHT:SQL:IS_READ_ONLY";
@@ -136,6 +137,15 @@ public class FlightSqlColumnMetadata {
     }
 
     return Integer.valueOf(value);
+  }
+
+  /**
+   * Returns the default value of the column.
+   *
+   * @return The default value of the column.
+   */
+  public String getDefaultValue() {
+    return metadataMap.get(DEFAULT_VALUE);
   }
 
   /**
@@ -275,6 +285,17 @@ public class FlightSqlColumnMetadata {
      */
     public Builder scale(int scale) {
       metadataMap.put(SCALE, Integer.toString(scale));
+      return this;
+    }
+
+    /**
+     * Sets the column's default value.
+     *
+     * @param defaultValue The column's default value.
+     * @return This builder.
+     */
+    public Builder defaultValue(String defaultValue) {
+      metadataMap.put(DEFAULT_VALUE, defaultValue);
       return this;
     }
 
