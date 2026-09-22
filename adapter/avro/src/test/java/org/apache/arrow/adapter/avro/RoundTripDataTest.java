@@ -37,6 +37,8 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -620,6 +622,82 @@ public class RoundTripDataTest {
   }
 
   // Data round trip for logical types, nullable and non-nullable
+
+  @Test
+  public void testRoundTripNarrowDecimals() throws Exception {
+
+    // Field definitions
+    FieldType decimal32Field = new FieldType(false, new ArrowType.Decimal(9, 3, 32), null);
+    FieldType decimal64Field = new FieldType(false, new ArrowType.Decimal(18, 6, 64), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    Decimal32Vector decimal32Vector =
+        new Decimal32Vector(new Field("decimal32", decimal32Field, null), allocator);
+    Decimal64Vector decimal64Vector =
+        new Decimal64Vector(new Field("decimal64", decimal64Field, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(decimal32Vector, decimal64Vector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      decimal32Vector.setSafe(0, new BigDecimal("123456.789"));
+      decimal32Vector.setSafe(1, new BigDecimal("-999999.999"));
+      decimal32Vector.setSafe(2, new BigDecimal("0.001"));
+
+      decimal64Vector.setSafe(0, new BigDecimal("123456789012.345678"));
+      decimal64Vector.setSafe(1, new BigDecimal("-999999999999.999999"));
+      decimal64Vector.setSafe(2, new BigDecimal("0.000001"));
+
+      File dataFile = new File(TMP, "testRoundTripNarrowDecimals.avro");
+
+      roundTripTest(root, allocator, dataFile, rowCount);
+    }
+  }
+
+  @Test
+  public void testRoundTripNullableNarrowDecimals() throws Exception {
+
+    // Field definitions
+    FieldType decimal32Field = new FieldType(true, new ArrowType.Decimal(9, 3, 32), null);
+    FieldType decimal64Field = new FieldType(true, new ArrowType.Decimal(18, 6, 64), null);
+
+    // Create empty vectors
+    BufferAllocator allocator = new RootAllocator();
+    Decimal32Vector decimal32Vector =
+        new Decimal32Vector(new Field("decimal32", decimal32Field, null), allocator);
+    Decimal64Vector decimal64Vector =
+        new Decimal64Vector(new Field("decimal64", decimal64Field, null), allocator);
+
+    // Set up VSR
+    List<FieldVector> vectors = Arrays.asList(decimal32Vector, decimal64Vector);
+    int rowCount = 3;
+
+    try (VectorSchemaRoot root = new VectorSchemaRoot(vectors)) {
+
+      root.setRowCount(rowCount);
+      root.allocateNew();
+
+      // Set test data
+      decimal32Vector.setNull(0);
+      decimal32Vector.setSafe(1, BigDecimal.ZERO.setScale(3, RoundingMode.UNNECESSARY));
+      decimal32Vector.setSafe(2, new BigDecimal("-1.500"));
+
+      decimal64Vector.setNull(0);
+      decimal64Vector.setSafe(1, BigDecimal.ZERO.setScale(6, RoundingMode.UNNECESSARY));
+      decimal64Vector.setSafe(2, new BigDecimal("-1.500000"));
+
+      File dataFile = new File(TMP, "testRoundTripNullableNarrowDecimals.avro");
+
+      roundTripTest(root, allocator, dataFile, rowCount);
+    }
+  }
 
   @Test
   public void testRoundTripDecimals() throws Exception {

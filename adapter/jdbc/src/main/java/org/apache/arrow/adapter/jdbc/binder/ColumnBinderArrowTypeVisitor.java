@@ -25,6 +25,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -211,7 +213,17 @@ public class ColumnBinderArrowTypeVisitor implements ArrowType.ArrowTypeVisitor<
 
   @Override
   public ColumnBinder visit(ArrowType.Decimal type) {
-    if (type.getBitWidth() == 128) {
+    if (type.getBitWidth() == 32) {
+      Decimal32Vector decimalVector = (Decimal32Vector) vector;
+      return jdbcType == null
+          ? new Decimal32Binder(decimalVector)
+          : new Decimal32Binder(decimalVector, jdbcType);
+    } else if (type.getBitWidth() == 64) {
+      Decimal64Vector decimalVector = (Decimal64Vector) vector;
+      return jdbcType == null
+          ? new Decimal64Binder(decimalVector)
+          : new Decimal64Binder(decimalVector, jdbcType);
+    } else if (type.getBitWidth() == 128) {
       DecimalVector decimalVector = (DecimalVector) vector;
       return jdbcType == null
           ? new Decimal128Binder(decimalVector)

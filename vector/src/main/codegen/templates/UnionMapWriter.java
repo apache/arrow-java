@@ -183,6 +183,30 @@ public class UnionMapWriter extends UnionListWriter {
     }
   }
 
+  @Override
+  public Decimal32Writer decimal32() {
+    switch (mode) {
+      case KEY:
+        return entryWriter.decimal32(MapVector.KEY_NAME);
+      case VALUE:
+        return entryWriter.decimal32(MapVector.VALUE_NAME);
+      default:
+        return this;
+    }
+  }
+
+  @Override
+  public Decimal64Writer decimal64() {
+    switch (mode) {
+      case KEY:
+        return entryWriter.decimal64(MapVector.KEY_NAME);
+      case VALUE:
+        return entryWriter.decimal64(MapVector.VALUE_NAME);
+      default:
+        return this;
+    }
+  }
+
 
   @Override
   public StructWriter struct() {

@@ -44,8 +44,10 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
   protected final LargeListViewVector largeListViewVector;
   protected final NullableStructWriterFactory nullableStructWriterFactory;
   protected int position;
-  protected static final int MAX_DECIMAL_PRECISION = 38;
-  protected static final int MAX_DECIMAL256_PRECISION = 76;
+  protected static final int MAX_DECIMAL32_PRECISION = Decimal32Vector.MAX_PRECISION;
+  protected static final int MAX_DECIMAL64_PRECISION = Decimal64Vector.MAX_PRECISION;
+  protected static final int MAX_DECIMAL_PRECISION = DecimalVector.MAX_PRECISION;
+  protected static final int MAX_DECIMAL256_PRECISION = Decimal256Vector.MAX_PRECISION;
 
   protected enum State {
     UNTYPED,
@@ -316,6 +318,9 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
 
   protected boolean requiresArrowType(MinorType type) {
     return type == MinorType.DECIMAL
+        || type == MinorType.DECIMAL32
+        || type == MinorType.DECIMAL64
+        || type == MinorType.DECIMAL256
         || type == MinorType.MAP
         || type == MinorType.DURATION
         || type == MinorType.FIXEDSIZEBINARY
@@ -404,81 +409,47 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
     return writer;
   }
 
+  <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
+  <#if minor.class?starts_with("Decimal")>
   @Override
-  public void write(DecimalHolder holder) {
+  public void write(${name}Holder holder) {
     getWriter(
-        MinorType.DECIMAL,
-        new ArrowType.Decimal(MAX_DECIMAL_PRECISION, holder.scale, /*bitWidth=*/ 128))
+        MinorType.${name?upper_case},
+        new ArrowType.Decimal(MAX_${name?upper_case}_PRECISION, holder.scale, /*bitWidth=*/ ${type.width * 8}))
         .write(holder);
   }
 
   @Override
-  public void writeDecimal(long start, ArrowBuf buffer, ArrowType arrowType) {
+  public void write${name}(long start, ArrowBuf buffer, ArrowType arrowType) {
     getWriter(
-        MinorType.DECIMAL,
+        MinorType.${name?upper_case},
         new ArrowType.Decimal(
-            MAX_DECIMAL_PRECISION,
+            MAX_${name?upper_case}_PRECISION,
             ((ArrowType.Decimal) arrowType).getScale(),
-            /*bitWidth=*/ 128))
-        .writeDecimal(start, buffer, arrowType);
+            /*bitWidth=*/ ${type.width * 8}))
+        .write${name}(start, buffer, arrowType);
   }
 
   @Override
-  public void writeDecimal(BigDecimal value) {
+  public void write${name}(BigDecimal value) {
     getWriter(
-        MinorType.DECIMAL,
-        new ArrowType.Decimal(MAX_DECIMAL_PRECISION, value.scale(), /*bitWidth=*/ 128))
-        .writeDecimal(value);
+        MinorType.${name?upper_case},
+        new ArrowType.Decimal(MAX_${name?upper_case}_PRECISION, value.scale(), /*bitWidth=*/ ${type.width * 8}))
+        .write${name}(value);
   }
 
   @Override
-  public void writeBigEndianBytesToDecimal(byte[] value, ArrowType arrowType) {
+  public void writeBigEndianBytesTo${name}(byte[] value, ArrowType arrowType) {
     getWriter(
-        MinorType.DECIMAL,
+        MinorType.${name?upper_case},
         new ArrowType.Decimal(
-            MAX_DECIMAL_PRECISION,
+            MAX_${name?upper_case}_PRECISION,
             ((ArrowType.Decimal) arrowType).getScale(),
-            /*bitWidth=*/ 128))
-        .writeBigEndianBytesToDecimal(value, arrowType);
+            /*bitWidth=*/ ${type.width * 8}))
+        .writeBigEndianBytesTo${name}(value, arrowType);
   }
-
-  @Override
-  public void write(Decimal256Holder holder) {
-    getWriter(
-        MinorType.DECIMAL256,
-        new ArrowType.Decimal(MAX_DECIMAL256_PRECISION, holder.scale, /*bitWidth=*/ 256))
-        .write(holder);
-  }
-
-  @Override
-  public void writeDecimal256(long start, ArrowBuf buffer, ArrowType arrowType) {
-    getWriter(
-        MinorType.DECIMAL256,
-        new ArrowType.Decimal(
-            MAX_DECIMAL256_PRECISION,
-            ((ArrowType.Decimal) arrowType).getScale(),
-            /*bitWidth=*/ 256))
-        .writeDecimal256(start, buffer, arrowType);
-  }
-
-  @Override
-  public void writeDecimal256(BigDecimal value) {
-    getWriter(
-        MinorType.DECIMAL256,
-        new ArrowType.Decimal(MAX_DECIMAL256_PRECISION, value.scale(), /*bitWidth=*/ 256))
-        .writeDecimal256(value);
-  }
-
-  @Override
-  public void writeBigEndianBytesToDecimal256(byte[] value, ArrowType arrowType) {
-    getWriter(
-        MinorType.DECIMAL256,
-        new ArrowType.Decimal(
-            MAX_DECIMAL256_PRECISION,
-            ((ArrowType.Decimal) arrowType).getScale(),
-            /*bitWidth=*/ 256))
-        .writeBigEndianBytesToDecimal256(value, arrowType);
-  }
+  </#if>
+  </#list></#list>
 
   @Override
   public void writeVarBinary(byte[] value) {

@@ -28,6 +28,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FieldVector;
@@ -307,7 +309,11 @@ public class OpaqueType extends ArrowType.ExtensionType {
 
     @Override
     public FieldVector visit(Decimal type) {
-      if (type.getBitWidth() == 128) {
+      if (type.getBitWidth() == 32) {
+        return new Decimal32Vector(Field.nullable(name, type), allocator);
+      } else if (type.getBitWidth() == 64) {
+        return new Decimal64Vector(Field.nullable(name, type), allocator);
+      } else if (type.getBitWidth() == 128) {
         return new DecimalVector(Field.nullable(name, type), allocator);
       } else if (type.getBitWidth() == 256) {
         return new Decimal256Vector(Field.nullable(name, type), allocator);

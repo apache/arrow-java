@@ -41,6 +41,8 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FieldVector;
@@ -292,6 +294,22 @@ public class RoundtripTest {
     assertEquals(4, imported.getValueCount());
     assertEquals(1, imported.getNullCount());
     imported.close();
+  }
+
+  @Test
+  public void testDecimal32Vector() {
+    try (final Decimal32Vector vector = new Decimal32Vector("v", allocator, 1, 1)) {
+      setVector(vector, 1L, 2L, 3L, null);
+      assertTrue(roundtrip(vector, Decimal32Vector.class));
+    }
+  }
+
+  @Test
+  public void testDecimal64Vector() {
+    try (final Decimal64Vector vector = new Decimal64Vector("v", allocator, 1, 1)) {
+      setVector(vector, 1L, 2L, 3L, null);
+      assertTrue(roundtrip(vector, Decimal64Vector.class));
+    }
   }
 
   @Test
