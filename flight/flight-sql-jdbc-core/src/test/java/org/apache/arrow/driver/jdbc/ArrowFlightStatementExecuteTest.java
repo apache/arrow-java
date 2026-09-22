@@ -17,6 +17,7 @@
 package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -187,6 +188,15 @@ public class ArrowFlightStatementExecuteTest {
     assertNotNull(preparedStatement);
     assertSame(preparedStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
     assertThat(preparedStatement, instanceOf(ArrowFlightPreparedStatement.class));
+  }
+
+  @Test
+  public void testExecutePrepareFailurePreservesServerError() {
+    final SQLException exception =
+        assertThrows(
+            SQLException.class, () -> statement.execute("SELECT * FROM unregistered_table"));
+
+    assertThat(exception.getMessage(), containsString("Query not found"));
   }
 
   @Test

@@ -17,12 +17,14 @@
 package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -37,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.driver.jdbc.utils.CoreMockedSqlProducers;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.sql.FlightSqlUtils;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -145,6 +148,9 @@ public class ArrowFlightPreparedStatementTest {
       assertFalse(resultSet.next());
       assertFalse(preparedStatement.getMoreResults());
       assertEquals(-1, preparedStatement.getUpdateCount());
+    }
+  }
+
   @Test
   public void testPrepareStatementRegistersCreatedStatementByGeneratedHandle() throws SQLException {
     final String query = CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD;
@@ -159,6 +165,16 @@ public class ArrowFlightPreparedStatementTest {
           arrowPreparedStatement,
           flightConnection.statementMap.get(arrowPreparedStatement.handle.id));
     }
+  }
+
+  @Test
+  public void testPrepareFailureIsReportedAsSQLException() {
+    final SQLException exception =
+        assertThrows(
+            SQLException.class,
+            () -> connection.prepareStatement("SELECT * FROM unregistered_table"));
+
+    assertThat(exception.getCause(), instanceOf(FlightRuntimeException.class));
   }
 
   @Test

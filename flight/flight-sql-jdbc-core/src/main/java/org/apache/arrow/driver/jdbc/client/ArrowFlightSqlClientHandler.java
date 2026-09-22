@@ -457,10 +457,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    *
    * @param query the SQL query.
    * @return a new prepared statement.
+   * @throws SQLException if the server rejects the prepare request.
    */
-  public PreparedStatement prepare(final String query) {
-    final FlightSqlClient.PreparedStatement preparedStatement =
-        sqlClient.prepare(query, getOptions());
+  public PreparedStatement prepare(final String query) throws SQLException {
+    final FlightSqlClient.PreparedStatement preparedStatement;
+    try {
+      preparedStatement = sqlClient.prepare(query, getOptions());
+    } catch (final FlightRuntimeException e) {
+      throw new SQLException(e.getMessage(), e);
+    }
     return new PreparedStatement() {
       @Override
       public FlightInfo executeQuery() throws SQLException {
