@@ -44,7 +44,7 @@ import org.apache.arrow.vector.util.SchemaChangeRuntimeException;
 public abstract class BaseLargeRepeatedValueViewVector extends BaseValueVector
     implements RepeatedValueVector, FieldVector {
   public static final FieldVector DEFAULT_DATA_VECTOR = ZeroVector.INSTANCE;
-  public static final String DATA_VECTOR_NAME = "$data$";
+  public static String DATA_VECTOR_NAME = "$data$";
 
   public static final byte OFFSET_WIDTH = 8;
   public static final byte SIZE_WIDTH = 8;
