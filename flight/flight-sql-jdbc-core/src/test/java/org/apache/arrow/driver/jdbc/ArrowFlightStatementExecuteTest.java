@@ -146,6 +146,13 @@ public class ArrowFlightStatementExecuteTest {
   }
 
   @Test
+  public void testStatementKeepsFlightInfoStatementApi() {
+    final ArrowFlightInfoStatement flightInfoStatement = (ArrowFlightInfoStatement) statement;
+
+    assertSame(statement, flightInfoStatement);
+  }
+
+  @Test
   public void testExecuteShouldRunSelectQuery() throws SQLException {
     assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true)); // Means this is a SELECT query.
     final Set<Byte> numbers =

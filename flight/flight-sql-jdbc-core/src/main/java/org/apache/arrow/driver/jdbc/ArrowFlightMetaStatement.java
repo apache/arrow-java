@@ -27,11 +27,12 @@ import org.apache.calcite.avatica.Meta.StatementHandle;
 import org.apache.calcite.avatica.remote.TypedValue;
 
 /** Statement capabilities used by {@link ArrowFlightMetaImpl}. */
-interface ArrowFlightMetaStatement extends Statement {
+interface ArrowFlightMetaStatement extends ArrowFlightInfoStatement {
 
   @Override
   ArrowFlightConnection getConnection() throws SQLException;
 
+  @Override
   FlightInfo executeFlightInfoQuery() throws SQLException;
 
   /**

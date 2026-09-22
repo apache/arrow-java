@@ -82,6 +82,17 @@ public class ArrowFlightPreparedStatementTest {
   }
 
   @Test
+  public void testPreparedStatementKeepsFlightInfoStatementApi() throws SQLException {
+    try (final PreparedStatement preparedStatement =
+        connection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD)) {
+      final ArrowFlightInfoStatement flightInfoStatement =
+          (ArrowFlightInfoStatement) preparedStatement;
+
+      assertSame(preparedStatement, flightInfoStatement);
+    }
+  }
+
+  @Test
   public void testSimpleQueryNoParameterBinding() throws SQLException {
     final String query = CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD;
     try (final PreparedStatement preparedStatement = connection.prepareStatement(query);
