@@ -42,6 +42,16 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
       final int resultSetConcurrency,
       final int resultSetHoldability) {
     super(connection, handle, resultSetType, resultSetConcurrency, resultSetHoldability);
+    connection.registerStatementOwner(this);
+  }
+
+  @Override
+  public synchronized void close() throws SQLException {
+    try {
+      super.close();
+    } finally {
+      ((ArrowFlightConnection) connection).unregisterStatementOwner(this);
+    }
   }
 
   @Override

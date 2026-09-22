@@ -23,9 +23,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
@@ -37,6 +41,7 @@ import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Preconditions;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaFactory;
+import org.apache.calcite.avatica.AvaticaStatement;
 import org.apache.calcite.avatica.DriverVersion;
 
 /** Connection to the Arrow Flight server. */
@@ -48,6 +53,8 @@ public final class ArrowFlightConnection extends AvaticaConnection {
   private ExecutorService executorService;
   private int metadataResultSetCount;
   private Map<Integer, ArrowFlightJdbcFlightStreamResultSet> metadataResultSetMap = new HashMap<>();
+  private final Set<AvaticaStatement> statementOwners =
+      Collections.newSetFromMap(new IdentityHashMap<>());
 
   /**
    * Creates a new {@link ArrowFlightConnection}.
@@ -144,12 +151,13 @@ public final class ArrowFlightConnection extends AvaticaConnection {
   void reset() throws SQLException {
     // Clean up any open Statements
     try {
-      AutoCloseables.close(statementMap.values());
+      AutoCloseables.close(getStatementsToClose());
     } catch (final Exception e) {
       throw AvaticaConnection.HELPER.createException(e.getMessage(), e);
     }
 
     statementMap.clear();
+    statementOwners.clear();
 
     // Reset Holdability
     this.setHoldability(this.metaData.getResultSetHoldability());
@@ -205,6 +213,28 @@ public final class ArrowFlightConnection extends AvaticaConnection {
     metadataResultSetMap.remove(id);
   }
 
+  synchronized void registerStatementOwner(final AvaticaStatement statement) {
+    statementOwners.add(statement);
+  }
+
+  synchronized void unregisterStatementOwner(final AvaticaStatement statement) {
+    statementOwners.remove(statement);
+  }
+
+  private synchronized ArrayList<AutoCloseable> getStatementsToClose() {
+    final ArrayList<AutoCloseable> statements = new ArrayList<>(statementOwners);
+    final Set<Integer> ownedHandles = new HashSet<>();
+    for (AvaticaStatement statement : statementOwners) {
+      ownedHandles.add(statement.handle.id);
+    }
+    for (Map.Entry<Integer, AvaticaStatement> entry : statementMap.entrySet()) {
+      if (!ownedHandles.contains(entry.getKey())) {
+        statements.add(entry.getValue());
+      }
+    }
+    return statements;
+  }
+
   @Override
   public Properties getClientInfo() {
     final Properties copy = new Properties();
@@ -223,7 +253,7 @@ public final class ArrowFlightConnection extends AvaticaConnection {
       topLevelException = e;
     }
     // copies of the collections are used to avoid concurrent modification problems
-    ArrayList<AutoCloseable> closeables = new ArrayList<>(statementMap.values());
+    ArrayList<AutoCloseable> closeables = getStatementsToClose();
     closeables.addAll(new ArrayList<>(metadataResultSetMap.values()));
     closeables.add(clientHandler);
     closeables.addAll(allocator.getChildAllocators());

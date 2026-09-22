@@ -190,6 +190,28 @@ public class ArrowFlightStatementExecuteTest {
   }
 
   @Test
+  public void testConnectionCloseClosesStatementAndResultSetAfterExecute() throws SQLException {
+    PRODUCER.clearActionTypeCounter();
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+    final ResultSet resultSet = statement.getResultSet();
+    assertNotNull(resultSet);
+
+    connection.close();
+
+    assertThat(statement.isClosed(), is(true));
+    assertThat(resultSet.isClosed(), is(true));
+    assertThat(arrowConnection.statementMap.containsKey(arrowStatement.handle.id), is(false));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
+  }
+
+  @Test
   public void testExecuteQueryRestoresStatementMapEntryWithStatement() throws SQLException {
     final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
     final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;

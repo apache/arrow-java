@@ -102,7 +102,11 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
 
   @Override
   public synchronized void close() throws SQLException {
-    super.close();
+    try {
+      super.close();
+    } finally {
+      ((ArrowFlightConnection) connection).unregisterStatementOwner(this);
+    }
   }
 
   void closePreparedResources() {
@@ -256,14 +260,19 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
               preparedStatement.getParameterSchema(),
               preparedStatement.isUpdate());
 
-      return new ArrowFlightPreparedStatement(
-          connection,
-          generateHandle ? null : handle,
-          signature,
-          preparedStatement,
-          resultSetType,
-          resultSetConcurrency,
-          resultSetHoldability);
+      final ArrowFlightPreparedStatement statement =
+          new ArrowFlightPreparedStatement(
+              connection,
+              generateHandle ? null : handle,
+              signature,
+              preparedStatement,
+              resultSetType,
+              resultSetConcurrency,
+              resultSetHoldability);
+      if (generateHandle) {
+        connection.registerStatementOwner(statement);
+      }
+      return statement;
     }
   }
 }
