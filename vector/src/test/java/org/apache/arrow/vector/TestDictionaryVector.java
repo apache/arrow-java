@@ -21,6 +21,7 @@ import static org.apache.arrow.vector.testing.ValueVectorDataPopulator.setVector
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -943,6 +944,35 @@ public class TestDictionaryVector {
   }
 
   @Test
+  public void testDecodeRejectsDictionaryIndicesOutsideBounds() {
+    try (final IntVector indices = newVector(IntVector.class, "", Types.MinorType.INT, allocator);
+        final VarCharVector dictionaryVector = newVarCharVector("dict", allocator)) {
+      setVector(dictionaryVector, zero, one);
+      Dictionary dictionary =
+          new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+
+      setVector(indices, dictionaryVector.getValueCount());
+      IllegalArgumentException upperBoundException =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> DictionaryEncoder.decode(indices, dictionary, allocator));
+      assertEquals(
+          "Provided dictionary does not contain value for index 2",
+          upperBoundException.getMessage());
+
+      setVector(indices, -1);
+      IllegalArgumentException negativeException =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> DictionaryEncoder.decode(indices, dictionary, allocator));
+      assertEquals(
+          "Provided dictionary does not contain value for index -1",
+          negativeException.getMessage());
+    }
+    assertEquals(0, allocator.getAllocatedMemory(), "decode memory leak");
+  }
+
+  @Test
   public void testListNoMemoryLeak() {
     // Create a new value vector
     try (final ListVector vector = ListVector.empty("vector", allocator);
@@ -1053,7 +1083,7 @@ public class TestDictionaryVector {
       NullableStructWriter writer = indices.getWriter();
       writer.allocate();
       writer.start();
-      writer.integer("f0").writeInt(1);
+      writer.integer("f0").writeInt(0);
       writer.integer("f1").writeInt(3);
       writer.end();
       writer.setValueCount(1);
