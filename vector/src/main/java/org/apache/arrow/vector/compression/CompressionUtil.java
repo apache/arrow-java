@@ -33,7 +33,9 @@ public class CompressionUtil {
 
     LZ4_FRAME(org.apache.arrow.flatbuf.CompressionType.LZ4_FRAME),
 
-    ZSTD(org.apache.arrow.flatbuf.CompressionType.ZSTD);
+    ZSTD(org.apache.arrow.flatbuf.CompressionType.ZSTD),
+
+    SNAPPY(org.apache.arrow.flatbuf.CompressionType.SNAPPY);
 
     private final byte type;
 
