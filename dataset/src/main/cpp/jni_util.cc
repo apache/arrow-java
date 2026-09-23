@@ -352,13 +352,17 @@ arrow::Result<std::shared_ptr<arrow::Schema>> FromSchemaByteArray(
   arrow::ipc::DictionaryMemo in_memo;
   int schemaBytes_len = env->GetArrayLength(schemaBytes);
   jbyte* schemaBytes_data = env->GetByteArrayElements(schemaBytes, nullptr);
+  // Ensure the pinned/copied Java array elements are always released, even when
+  // schema parsing fails and an error Result is returned early below.
+  auto release_elements = [&](jbyte* data) {
+    env->ReleaseByteArrayElements(schemaBytes, data, JNI_ABORT);
+  };
+  std::unique_ptr<jbyte, decltype(release_elements)> elements_guard(schemaBytes_data,
+                                                                    release_elements);
   auto serialized_schema = std::make_shared<arrow::Buffer>(
       reinterpret_cast<uint8_t*>(schemaBytes_data), schemaBytes_len);
   arrow::io::BufferReader buf_reader(serialized_schema);
-  ARROW_ASSIGN_OR_RAISE(std::shared_ptr<arrow::Schema> schema,
-                        arrow::ipc::ReadSchema(&buf_reader, &in_memo))
-  env->ReleaseByteArrayElements(schemaBytes, schemaBytes_data, JNI_ABORT);
-  return schema;
+  return arrow::ipc::ReadSchema(&buf_reader, &in_memo);
 }
 arrow::Status ExportRecordBatch(JNIEnv* env, const std::shared_ptr<RecordBatch>& batch,
                                 jlong struct_array) {
