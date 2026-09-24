@@ -407,8 +407,14 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final FlightStream flightStream,
       final StreamListener<PutResult> streamListener) {
     incrementCommandTypeCounter(COMMAND_STATEMENT_UPDATE);
+    return acceptUpdate(commandStatementUpdate.getQuery(), flightStream, streamListener);
+  }
+
+  private Runnable acceptUpdate(
+      final String query,
+      final FlightStream flightStream,
+      final StreamListener<PutResult> streamListener) {
     return () -> {
-      final String query = commandStatementUpdate.getQuery();
       final BiConsumer<FlightStream, StreamListener<PutResult>> resultProvider =
           Preconditions.checkNotNull(
               updateResultProviders.get(query),
@@ -491,11 +497,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       return () -> {};
     }
 
-    return acceptPutStatement(
-        CommandStatementUpdate.newBuilder().setQuery(query).build(),
-        callContext,
-        flightStream,
-        streamListener);
+    return acceptUpdate(query, flightStream, streamListener);
   }
 
   @Override

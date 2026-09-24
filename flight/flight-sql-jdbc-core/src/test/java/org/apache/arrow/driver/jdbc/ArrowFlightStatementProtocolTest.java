@@ -174,6 +174,11 @@ public class ArrowFlightStatementProtocolTest {
             .getCommandTypeCounter()
             .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_QUERY, 0),
         is(0));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
   }
 
   @Test
@@ -215,6 +220,16 @@ public class ArrowFlightStatementProtocolTest {
         PRODUCER
             .getCommandTypeCounter()
             .getOrDefault(MockFlightSqlProducer.COMMAND_PREPARED_STATEMENT_UPDATE, 0),
+        is(1));
+    assertThat(
+        PRODUCER
+            .getCommandTypeCounter()
+            .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_UPDATE, 0),
+        is(0));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
         is(1));
   }
 
@@ -270,6 +285,60 @@ public class ArrowFlightStatementProtocolTest {
         PRODUCER
             .getCommandTypeCounter()
             .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_QUERY, 0),
+        is(1));
+  }
+
+  @Test
+  public void testStatementExecuteQueryThenExecuteUsesPreparedProtocol() throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      try (ResultSet resultSet = statement.executeQuery(SELECT_QUERY)) {
+        assertTrue(resultSet.next());
+      }
+      assertThat(statement.execute(SELECT_QUERY), is(true));
+      try (ResultSet resultSet = statement.getResultSet()) {
+        assertTrue(resultSet.next());
+      }
+    }
+
+    assertThat(
+        PRODUCER
+            .getCommandTypeCounter()
+            .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_QUERY, 0),
+        is(1));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CREATE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
+    assertThat(
+        PRODUCER
+            .getCommandTypeCounter()
+            .getOrDefault(MockFlightSqlProducer.COMMAND_PREPARED_STATEMENT_QUERY, 0),
+        is(1));
+  }
+
+  @Test
+  public void testStatementExecuteUpdateThenExecuteUsesPreparedProtocol() throws SQLException {
+    try (Statement statement = connection.createStatement()) {
+      assertThat(statement.executeUpdate(UPDATE_QUERY), is(1));
+      assertThat(statement.execute(UPDATE_QUERY), is(false));
+      assertThat(statement.getUpdateCount(), is(1));
+    }
+
+    assertThat(
+        PRODUCER
+            .getCommandTypeCounter()
+            .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_UPDATE, 0),
+        is(1));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CREATE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
+    assertThat(
+        PRODUCER
+            .getCommandTypeCounter()
+            .getOrDefault(MockFlightSqlProducer.COMMAND_PREPARED_STATEMENT_UPDATE, 0),
         is(1));
   }
 
@@ -339,6 +408,11 @@ public class ArrowFlightStatementProtocolTest {
             .getCommandTypeCounter()
             .getOrDefault(MockFlightSqlProducer.COMMAND_PREPARED_STATEMENT_UPDATE, 0),
         is(1));
+    assertThat(
+        PRODUCER
+            .getCommandTypeCounter()
+            .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_UPDATE, 0),
+        is(0));
   }
 
   @Test
@@ -358,6 +432,11 @@ public class ArrowFlightStatementProtocolTest {
             .getCommandTypeCounter()
             .getOrDefault(MockFlightSqlProducer.COMMAND_PREPARED_STATEMENT_UPDATE, 0),
         is(1));
+    assertThat(
+        PRODUCER
+            .getCommandTypeCounter()
+            .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_UPDATE, 0),
+        is(0));
   }
 
   @Test
