@@ -251,7 +251,10 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
           connection.getClientHandler().prepare(query);
       final Signature signature =
           ArrowFlightMetaImpl.buildSignature(
-              query, preparedStatement.getDataSetSchema(), preparedStatement.getParameterSchema());
+              query,
+              preparedStatement.getDataSetSchema(),
+              preparedStatement.getParameterSchema(),
+              preparedStatement.isUpdate());
 
       return new ArrowFlightPreparedStatement(
           connection,
