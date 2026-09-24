@@ -191,22 +191,22 @@ public class ArrowFlightMetaImpl extends MetaImpl {
     throw new IllegalStateException("Statement not found: " + statementHandle);
   }
 
-  public static Signature buildDefaultSignature() {
+  static Signature buildDefaultSignature() {
     return buildSignature(null, StatementType.SELECT);
   }
 
-  public static Signature buildSignature(final String sql, final StatementType type) {
+  static Signature buildSignature(final String sql, final StatementType type) {
     return buildSignature(sql, null, null, type);
   }
 
   /** Builds an Avatica signature from Arrow result and parameter schemas. */
-  public static Signature buildSignature(
+  static Signature buildSignature(
       final String sql, final Schema resultSetSchema, final Schema parameterSchema) {
     return buildSignature(sql, resultSetSchema, parameterSchema, (Boolean) null);
   }
 
   /** Builds an Avatica signature, honoring the server-provided statement classification. */
-  public static Signature buildSignature(
+  static Signature buildSignature(
       final String sql,
       final Schema resultSetSchema,
       final Schema parameterSchema,
