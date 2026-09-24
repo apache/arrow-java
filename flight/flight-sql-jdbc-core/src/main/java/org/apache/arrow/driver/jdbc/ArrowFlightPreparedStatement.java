@@ -38,7 +38,7 @@ import org.apache.calcite.avatica.remote.TypedValue;
 
 /** Arrow Flight JDBC's implementation {@link java.sql.PreparedStatement}. */
 public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
-    implements ArrowFlightMetaStatement {
+    implements ArrowFlightInfoStatement {
 
   private ArrowFlightSqlClientHandler.PreparedStatement preparedStatement;
 
@@ -66,7 +66,7 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
     return (ArrowFlightConnection) super.getConnection();
   }
 
-  ExecuteResult prepareAndExecute(final PrepareCallback callback) throws SQLException {
+  ExecuteResult prepareAndExecuteInternal(final PrepareCallback callback) throws SQLException {
     ensurePrepared();
     final StatementType statementType = preparedStatement.getType();
     final long updateCount =
@@ -81,8 +81,7 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
     return new ExecuteResult(Collections.singletonList(metaResultSet));
   }
 
-  @Override
-  public ExecuteResult prepareAndExecute(
+  ExecuteResult prepareAndExecuteInternal(
       final String query,
       final long maxRowCount,
       final int maxRowsInFirstFrame,
@@ -93,7 +92,7 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
         .withQuery(query)
         .withExistingStatement(this)
         .build()
-        .prepareAndExecute(callback);
+        .prepareAndExecuteInternal(callback);
   }
 
   Schema getDataSetSchema() {
@@ -161,25 +160,6 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
 
     long[] updatedCounts = {preparedStatement.executeUpdate()};
     return new ExecuteBatchResult(updatedCounts);
-  }
-
-  @Override
-  public ExecuteResult execute(
-      final StatementHandle statementHandle,
-      final List<TypedValue> typedValues,
-      final long maxRowCount) {
-    return executeWithTypedValues(statementHandle, typedValues, maxRowCount);
-  }
-
-  @Override
-  public ExecuteBatchResult executeBatch(
-      final StatementHandle statementHandle, final List<List<TypedValue>> parameterValuesList) {
-    return executeBatchWithTypedValues(statementHandle, parameterValuesList);
-  }
-
-  @Override
-  public void closeStatement() {
-    closePreparedResources();
   }
 
   @Override

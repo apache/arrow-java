@@ -47,7 +47,10 @@ public class ArrowFlightMetaImpl extends MetaImpl {
 
   @Override
   public void closeStatement(final StatementHandle statementHandle) {
-    getMetaStatement(statementHandle).closeStatement();
+    final AvaticaStatement statement = getStatement(statementHandle);
+    if (statement instanceof ArrowFlightPreparedStatement) {
+      ((ArrowFlightPreparedStatement) statement).closePreparedResources();
+    }
   }
 
   @Override
@@ -60,7 +63,8 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final StatementHandle statementHandle,
       final List<TypedValue> typedValues,
       final long maxRowCount) {
-    return getMetaStatement(statementHandle).execute(statementHandle, typedValues, maxRowCount);
+    return getPreparedStatement(statementHandle)
+        .executeWithTypedValues(statementHandle, typedValues, maxRowCount);
   }
 
   @Override
@@ -75,7 +79,8 @@ public class ArrowFlightMetaImpl extends MetaImpl {
   public ExecuteBatchResult executeBatch(
       final StatementHandle statementHandle, final List<List<TypedValue>> parameterValuesList)
       throws IllegalStateException {
-    return getMetaStatement(statementHandle).executeBatch(statementHandle, parameterValuesList);
+    return getPreparedStatement(statementHandle)
+        .executeBatchWithTypedValues(statementHandle, parameterValuesList);
   }
 
   @Override
@@ -125,8 +130,13 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final PrepareCallback callback)
       throws NoSuchStatementException {
     try {
-      return getMetaStatement(handle)
-          .prepareAndExecute(query, maxRowCount, maxRowsInFirstFrame, callback);
+      final AvaticaStatement statement = getStatement(handle);
+      if (statement instanceof ArrowFlightStatement) {
+        return ((ArrowFlightStatement) statement)
+            .prepareAndExecuteInternal(query, maxRowCount, maxRowsInFirstFrame, callback);
+      }
+      return ((ArrowFlightPreparedStatement) statement)
+          .prepareAndExecuteInternal(query, maxRowCount, maxRowsInFirstFrame, callback);
     } catch (SQLException e) {
       // AvaticaStatement.executeInternal handles RuntimeException and preserves it as the cause of
       // the public SQLException. NoSuchStatementException would incorrectly trigger a statement
@@ -181,12 +191,22 @@ public class ArrowFlightMetaImpl extends MetaImpl {
         .setTransactionIsolation(Connection.TRANSACTION_NONE);
   }
 
-  private ArrowFlightMetaStatement getMetaStatement(StatementHandle statementHandle) {
-    AvaticaStatement statement = connection.statementMap.get(statementHandle.id);
-    if (statement instanceof ArrowFlightMetaStatement) {
-      return (ArrowFlightMetaStatement) statement;
+  private AvaticaStatement getStatement(final StatementHandle statementHandle) {
+    final AvaticaStatement statement = connection.statementMap.get(statementHandle.id);
+    if (statement instanceof ArrowFlightStatement
+        || statement instanceof ArrowFlightPreparedStatement) {
+      return statement;
     }
     throw new IllegalStateException("Statement not found: " + statementHandle);
+  }
+
+  private ArrowFlightPreparedStatement getPreparedStatement(final StatementHandle statementHandle) {
+    final AvaticaStatement statement = getStatement(statementHandle);
+    if (statement instanceof ArrowFlightPreparedStatement) {
+      return (ArrowFlightPreparedStatement) statement;
+    }
+    throw new IllegalStateException(
+        "Statement operation is not supported for handle: " + statementHandle);
   }
 
   static Signature buildDefaultSignature() {

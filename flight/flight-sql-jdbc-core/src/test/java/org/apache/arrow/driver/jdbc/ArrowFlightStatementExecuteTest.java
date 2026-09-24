@@ -248,7 +248,7 @@ public class ArrowFlightStatementExecuteTest {
     final ArrowFlightPreparedStatement preparedStatement = mock(ArrowFlightPreparedStatement.class);
     final FlightRuntimeException closeFailure =
         CallStatus.INTERNAL.withDescription("Prepared statement close failed").toRuntimeException();
-    doThrow(closeFailure).when(preparedStatement).closeStatement();
+    doThrow(closeFailure).when(preparedStatement).closePreparedResources();
     arrowConnection.statementMap.put(arrowStatement.handle.id, preparedStatement);
 
     try {
@@ -268,7 +268,7 @@ public class ArrowFlightStatementExecuteTest {
     final ArrowFlightPreparedStatement preparedStatement = mock(ArrowFlightPreparedStatement.class);
     final FlightRuntimeException closeFailure =
         CallStatus.INTERNAL.withDescription("Prepared statement close failed").toRuntimeException();
-    doThrow(closeFailure).when(preparedStatement).closeStatement();
+    doThrow(closeFailure).when(preparedStatement).closePreparedResources();
     arrowConnection.statementMap.put(arrowStatement.handle.id, preparedStatement);
 
     try {

@@ -33,7 +33,7 @@ import org.apache.calcite.avatica.Meta.StatementHandle;
 import org.apache.calcite.avatica.Meta.StatementType;
 
 /** A SQL statement for querying data from an Arrow Flight server. */
-public class ArrowFlightStatement extends AvaticaStatement implements ArrowFlightMetaStatement {
+public class ArrowFlightStatement extends AvaticaStatement implements ArrowFlightInfoStatement {
 
   ArrowFlightStatement(
       final ArrowFlightConnection connection,
@@ -59,8 +59,7 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
     return (ArrowFlightConnection) super.getConnection();
   }
 
-  @Override
-  public ExecuteResult prepareAndExecute(
+  ExecuteResult prepareAndExecuteInternal(
       final String query,
       final long maxRowCount,
       final int maxRowsInFirstFrame,
@@ -68,13 +67,11 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
       throws SQLException {
     // Keep Avatica Statement.execute(String) behavior: Avatica calls Meta.prepareAndExecute,
     // which resolves to this statement hook.
-    this.closeStatement();
-
     return ArrowFlightPreparedStatement.builder(getConnection())
         .withQuery(query)
         .withExistingStatement(this)
         .build()
-        .prepareAndExecute(callback);
+        .prepareAndExecuteInternal(callback);
   }
 
   @Override
@@ -192,7 +189,7 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
     if (existingStatement instanceof ArrowFlightPreparedStatement) {
       // Release resources from previously attached statement implementation before switching back
       // to direct statement mode for executeQuery/executeUpdate.
-      ((ArrowFlightPreparedStatement) existingStatement).closeStatement();
+      ((ArrowFlightPreparedStatement) existingStatement).closePreparedResources();
     }
     connection.statementMap.put(handle.id, this);
   }
