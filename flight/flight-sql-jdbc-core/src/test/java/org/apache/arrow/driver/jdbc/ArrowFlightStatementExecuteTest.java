@@ -27,6 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,6 +40,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.CallStatus;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.sql.FlightSqlUtils;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -235,6 +239,47 @@ public class ArrowFlightStatementExecuteTest {
     }
 
     assertSame(arrowStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
+  }
+
+  @Test
+  public void testExecuteQueryMapsPreparedStatementCloseFailureToSQLException() {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+    final ArrowFlightPreparedStatement preparedStatement = mock(ArrowFlightPreparedStatement.class);
+    final FlightRuntimeException closeFailure =
+        CallStatus.INTERNAL.withDescription("Prepared statement close failed").toRuntimeException();
+    doThrow(closeFailure).when(preparedStatement).closeStatement();
+    arrowConnection.statementMap.put(arrowStatement.handle.id, preparedStatement);
+
+    try {
+      final SQLException exception =
+          assertThrows(SQLException.class, () -> statement.executeQuery(SAMPLE_QUERY_CMD));
+
+      assertSame(closeFailure, exception.getCause());
+    } finally {
+      arrowConnection.statementMap.put(arrowStatement.handle.id, arrowStatement);
+    }
+  }
+
+  @Test
+  public void testExecuteLargeUpdateMapsPreparedStatementCloseFailureToSQLException() {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+    final ArrowFlightPreparedStatement preparedStatement = mock(ArrowFlightPreparedStatement.class);
+    final FlightRuntimeException closeFailure =
+        CallStatus.INTERNAL.withDescription("Prepared statement close failed").toRuntimeException();
+    doThrow(closeFailure).when(preparedStatement).closeStatement();
+    arrowConnection.statementMap.put(arrowStatement.handle.id, preparedStatement);
+
+    try {
+      final SQLException exception =
+          assertThrows(
+              SQLException.class, () -> statement.executeLargeUpdate(SAMPLE_LARGE_UPDATE_QUERY));
+
+      assertSame(closeFailure, exception.getCause());
+    } finally {
+      arrowConnection.statementMap.put(arrowStatement.handle.id, arrowStatement);
+    }
   }
 
   @Test

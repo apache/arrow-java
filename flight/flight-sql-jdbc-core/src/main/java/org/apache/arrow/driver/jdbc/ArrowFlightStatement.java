@@ -81,8 +81,8 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
   public ResultSet executeQuery(final String sql) throws SQLException {
     checkOpen();
     updateCount = -1;
-    switchToDirectStatementMode();
     try {
+      switchToDirectStatementMode();
       final Meta.Signature signature =
           ArrowFlightMetaImpl.buildSignature(sql, StatementType.SELECT);
       setSignature(signature);
@@ -97,9 +97,9 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
     checkOpen();
     clearOpenResultSet();
     updateCount = -1;
-    switchToDirectStatementMode();
 
     try {
+      switchToDirectStatementMode();
       final long updatedCount = getConnection().getClientHandler().executeUpdate(sql);
       setSignature(ArrowFlightMetaImpl.buildSignature(sql, StatementType.IS_DML));
       updateCount = updatedCount;

@@ -78,7 +78,8 @@ public class ArrowFlightJdbcFactory implements AvaticaFactory {
       final Meta.Signature signature,
       final int resultType,
       final int resultSetConcurrency,
-      final int resultSetHoldability) {
+      final int resultSetHoldability)
+      throws SQLException {
     final ArrowFlightConnection flightConnection = (ArrowFlightConnection) connection;
     final AvaticaStatement existingStatement =
         flightConnection.statementMap.get(statementHandle.id);

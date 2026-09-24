@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.driver.jdbc.utils.AvaticaParameterBinder;
 import org.apache.arrow.flight.FlightInfo;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.calcite.avatica.AvaticaPreparedStatement;
@@ -251,8 +252,12 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
         throw new IllegalStateException("PreparedStatement builder requires a handle.");
       }
 
-      final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement =
-          connection.getClientHandler().prepare(query);
+      final ArrowFlightSqlClientHandler.PreparedStatement preparedStatement;
+      try {
+        preparedStatement = connection.getClientHandler().prepare(query);
+      } catch (final FlightRuntimeException e) {
+        throw new SQLException(e.getMessage(), e);
+      }
       final Signature signature =
           ArrowFlightMetaImpl.buildSignature(
               query,
