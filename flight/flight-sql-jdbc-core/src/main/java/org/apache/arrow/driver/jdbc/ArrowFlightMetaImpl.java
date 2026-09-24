@@ -112,7 +112,6 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final long maxRowCount,
       final PrepareCallback prepareCallback)
       throws NoSuchStatementException {
-    // This is the Avatica entry point used by Statement.execute(String).
     return prepareAndExecute(
         statementHandle, query, maxRowCount, -1 /* Not used */, prepareCallback);
   }
@@ -126,7 +125,6 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       final PrepareCallback callback)
       throws NoSuchStatementException {
     try {
-      // This is the Avatica entry point used by Statement.execute(String).
       return getMetaStatement(handle)
           .prepareAndExecute(query, maxRowCount, maxRowsInFirstFrame, callback);
     } catch (SQLException e) {

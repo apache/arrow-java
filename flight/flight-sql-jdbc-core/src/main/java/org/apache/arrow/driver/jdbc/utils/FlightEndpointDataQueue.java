@@ -97,8 +97,6 @@ public class FlightEndpointDataQueue implements AutoCloseable {
 
   private CloseableEndpointStreamPair next(final EndpointStreamSupplier endpointStreamSupplier)
       throws SQLException {
-    // No checkOpen here: a concurrent close() is an end-of-stream signal for readers,
-    // not an error. Cancelled in-flight streams still surface via future.get() below.
     while (!futures.isEmpty()) {
       final Future<CloseableEndpointStreamPair> future = endpointStreamSupplier.get();
       futures.remove(future);

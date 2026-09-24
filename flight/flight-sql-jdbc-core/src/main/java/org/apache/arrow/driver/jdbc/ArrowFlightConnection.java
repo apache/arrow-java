@@ -52,6 +52,7 @@ public final class ArrowFlightConnection extends AvaticaConnection {
   private final ArrowFlightConnectionConfigImpl config;
   private ExecutorService executorService;
   private int metadataResultSetCount;
+  // Track result sets and statements owned by this connection so close() can release them.
   private Map<Integer, ArrowFlightJdbcFlightStreamResultSet> metadataResultSetMap = new HashMap<>();
   private final Set<AvaticaStatement> statementOwners =
       Collections.newSetFromMap(new IdentityHashMap<>());
