@@ -21,7 +21,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.CompletionService;
 import org.apache.arrow.driver.jdbc.client.CloseableEndpointStreamPair;
@@ -49,17 +48,17 @@ public class FlightEndpointDataQueueTest {
   }
 
   @Test
-  public void testNextShouldReturnNullUponClose() throws Exception {
+  public void testNextShouldThrowExceptionUponClose() throws Exception {
     queue.close();
-    assertThat(queue.next(), is(nullValue()));
+    ThrowableAssertionUtils.simpleAssertThrowableClass(
+        IllegalStateException.class, () -> queue.next());
   }
 
   @Test
-  public void testEnqueueShouldCloseEndpointSilentlyAfterClose() throws Exception {
+  public void testEnqueueShouldThrowExceptionUponClose() throws Exception {
     queue.close();
-    final CloseableEndpointStreamPair endpoint = mock(CloseableEndpointStreamPair.class);
-    assertDoesNotThrow(() -> queue.enqueue(endpoint));
-    verify(endpoint).close();
+    ThrowableAssertionUtils.simpleAssertThrowableClass(
+        IllegalStateException.class, () -> queue.enqueue(mock(CloseableEndpointStreamPair.class)));
   }
 
   @Test

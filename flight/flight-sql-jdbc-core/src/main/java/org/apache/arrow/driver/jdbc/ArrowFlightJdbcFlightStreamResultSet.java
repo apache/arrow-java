@@ -21,6 +21,8 @@ import static org.apache.arrow.driver.jdbc.utils.FlightEndpointDataQueue.createN
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -146,7 +148,8 @@ public final class ArrowFlightJdbcFlightStreamResultSet
 
   private void populateData() throws SQLException {
     loadNewQueue();
-    flightEndpointDataQueue.enqueue(connection.getClientHandler().getStreams(flightInfo));
+    enqueueEndpointData(
+        flightEndpointDataQueue, connection.getClientHandler().getStreams(flightInfo));
     loadNewFlightStream();
 
     // Ownership of the root will be passed onto the cursor.
@@ -203,7 +206,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
             continue;
           }
 
-          flightEndpointDataQueue.enqueue(currentEndpointData);
+          enqueueEndpointData(currentEndpointData);
         }
 
         currentEndpointData = getNextEndpointStream(false);
@@ -279,13 +282,61 @@ public final class ArrowFlightJdbcFlightStreamResultSet
 
   private CloseableEndpointStreamPair getNextEndpointStream(final boolean canTimeout)
       throws SQLException {
-    if (canTimeout) {
-      final int statementTimeout = statement != null ? statement.getQueryTimeout() : 0;
-      return statementTimeout != 0
-          ? flightEndpointDataQueue.next(statementTimeout, TimeUnit.SECONDS)
-          : flightEndpointDataQueue.next();
-    } else {
-      return flightEndpointDataQueue.next();
+    try {
+      if (canTimeout) {
+        final int statementTimeout = statement != null ? statement.getQueryTimeout() : 0;
+        return statementTimeout != 0
+            ? flightEndpointDataQueue.next(statementTimeout, TimeUnit.SECONDS)
+            : flightEndpointDataQueue.next();
+      } else {
+        return flightEndpointDataQueue.next();
+      }
+    } catch (final IllegalStateException e) {
+      throw normalizeClosedQueueException(flightEndpointDataQueue, e);
     }
+  }
+
+  static void enqueueEndpointData(
+      final FlightEndpointDataQueue queue,
+      final Collection<CloseableEndpointStreamPair> endpointRequests)
+      throws SQLException {
+    final Iterator<CloseableEndpointStreamPair> endpointIterator = endpointRequests.iterator();
+    while (endpointIterator.hasNext()) {
+      final CloseableEndpointStreamPair endpointRequest = endpointIterator.next();
+      try {
+        queue.enqueue(endpointRequest);
+      } catch (final IllegalStateException e) {
+        final SQLException exception = normalizeClosedQueueException(queue, e);
+        closeRejectedEndpoint(endpointRequest, exception);
+        endpointIterator.forEachRemaining(endpoint -> closeRejectedEndpoint(endpoint, exception));
+        throw exception;
+      }
+    }
+  }
+
+  private void enqueueEndpointData(final CloseableEndpointStreamPair endpointRequest)
+      throws SQLException {
+    try {
+      flightEndpointDataQueue.enqueue(endpointRequest);
+    } catch (final IllegalStateException e) {
+      throw normalizeClosedQueueException(flightEndpointDataQueue, e);
+    }
+  }
+
+  private static void closeRejectedEndpoint(
+      final CloseableEndpointStreamPair endpoint, final SQLException exception) {
+    try {
+      endpoint.close();
+    } catch (final Exception closeException) {
+      exception.addSuppressed(closeException);
+    }
+  }
+
+  private static SQLException normalizeClosedQueueException(
+      final FlightEndpointDataQueue queue, final IllegalStateException exception) {
+    if (queue.isClosed()) {
+      return AvaticaConnection.HELPER.createException("Statement canceled");
+    }
+    throw exception;
   }
 }
