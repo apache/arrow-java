@@ -31,6 +31,7 @@ public class UnionListViewReader extends AbstractFieldReader {
   private final ValueVector data;
   private int currentOffset;
   private int size;
+  private int remaining;
 
   /**
    * Constructor for UnionListViewReader.
@@ -58,10 +59,12 @@ public class UnionListViewReader extends AbstractFieldReader {
     if (vector.getOffsetBuffer().capacity() == 0) {
       currentOffset = 0;
       size = 0;
+      remaining = 0;
     } else {
       currentOffset =
           vector.getOffsetBuffer().getInt(index * (long) BaseRepeatedValueViewVector.OFFSET_WIDTH);
       size = vector.getSizeBuffer().getInt(index * (long) BaseRepeatedValueViewVector.SIZE_WIDTH);
+      remaining = size;
     }
   }
 
@@ -97,12 +100,10 @@ public class UnionListViewReader extends AbstractFieldReader {
 
   @Override
   public boolean next() {
-    // Here, the currentOffSet keeps track of the current position in the vector inside the list at
-    // set position.
-    // And, size keeps track of the elements count in the list, so to make sure we traverse
-    // the full list, we need to check if the currentOffset is less than the currentOffset + size
-    if (currentOffset < currentOffset + size) {
+    // Yield exactly the element count stored with this list view, beginning at its stored offset.
+    if (remaining > 0) {
       data.getReader().setPosition(currentOffset++);
+      remaining--;
       return true;
     } else {
       return false;

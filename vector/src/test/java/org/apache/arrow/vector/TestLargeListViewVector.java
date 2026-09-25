@@ -29,6 +29,7 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.complex.BaseLargeRepeatedValueViewVector;
 import org.apache.arrow.vector.complex.LargeListViewVector;
+import org.apache.arrow.vector.complex.impl.UnionLargeListViewReader;
 import org.apache.arrow.vector.complex.impl.UnionLargeListViewWriter;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -2227,6 +2228,38 @@ public class TestLargeListViewVector {
       for (int i = 0; i < validityBuffer.capacity(); i++) {
         assertEquals(i, dataBuffer.getInt((long) i * IntVector.TYPE_WIDTH));
       }
+    }
+  }
+
+  @Test
+  public void testDirectReaderIteratesLargeListViewRange() {
+    try (LargeListViewVector largeListViewVector =
+        LargeListViewVector.empty("largelistview", allocator)) {
+      largeListViewVector.allocateNew();
+      FieldType fieldType = new FieldType(true, new ArrowType.Int(32, true), null, null);
+      largeListViewVector.initializeChildrenFromFields(
+          Collections.singletonList(new Field("child-vector", fieldType, null)));
+      IntVector childVector = (IntVector) largeListViewVector.getDataVector();
+      childVector.allocateNew(5);
+      for (int i = 0; i < 5; i++) {
+        childVector.set(i, 10 + i);
+      }
+      childVector.setValueCount(5);
+      largeListViewVector.setValidity(0, 1);
+      largeListViewVector.setOffset(0, 2);
+      largeListViewVector.setSize(0, 3);
+      largeListViewVector.setValueCount(1);
+
+      UnionLargeListViewReader reader = new UnionLargeListViewReader(largeListViewVector);
+      reader.setPosition(0);
+      assertTrue(reader.next());
+      assertEquals(12, ((Number) reader.reader().readObject()).intValue());
+      assertTrue(reader.next());
+      assertEquals(13, ((Number) reader.reader().readObject()).intValue());
+      assertTrue(reader.next());
+      assertEquals(14, ((Number) reader.reader().readObject()).intValue());
+      assertFalse(reader.next());
+      assertFalse(reader.next());
     }
   }
 
