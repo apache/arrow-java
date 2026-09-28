@@ -258,6 +258,11 @@ public class ArrowFlightStatementProtocolTest {
             .getCommandTypeCounter()
             .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_UPDATE, 0),
         is(1));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
   }
 
   @Test
@@ -285,6 +290,11 @@ public class ArrowFlightStatementProtocolTest {
         PRODUCER
             .getCommandTypeCounter()
             .getOrDefault(MockFlightSqlProducer.COMMAND_STATEMENT_QUERY, 0),
+        is(1));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
         is(1));
   }
 

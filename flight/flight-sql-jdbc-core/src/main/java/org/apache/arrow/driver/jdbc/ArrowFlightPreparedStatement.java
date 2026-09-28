@@ -101,9 +101,9 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
   }
 
   @Override
-  public synchronized void close() throws SQLException {
+  protected void close_() {
     try {
-      super.close();
+      super.close_();
     } finally {
       ((ArrowFlightConnection) connection).unregisterStatementOwner(this);
     }

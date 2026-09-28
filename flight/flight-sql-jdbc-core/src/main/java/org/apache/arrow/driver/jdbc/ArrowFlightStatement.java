@@ -46,9 +46,9 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
   }
 
   @Override
-  public synchronized void close() throws SQLException {
+  protected void close_() {
     try {
-      super.close();
+      super.close_();
     } finally {
       ((ArrowFlightConnection) connection).unregisterStatementOwner(this);
     }
@@ -77,6 +77,7 @@ public class ArrowFlightStatement extends AvaticaStatement implements ArrowFligh
   @Override
   public ResultSet executeQuery(final String sql) throws SQLException {
     checkOpen();
+    clearOpenResultSet();
     updateCount = -1;
     try {
       switchToDirectStatementMode();

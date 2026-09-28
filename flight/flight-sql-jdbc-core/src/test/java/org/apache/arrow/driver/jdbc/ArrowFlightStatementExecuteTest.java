@@ -242,9 +242,11 @@ public class ArrowFlightStatementExecuteTest {
   }
 
   @Test
-  public void testExecuteQueryMapsPreparedStatementCloseFailureToSQLException() {
+  public void testExecuteQueryMapsPreparedStatementCloseFailureToSQLException()
+      throws SQLException {
     final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
     final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+    final ResultSet previousResultSet = statement.executeQuery(SAMPLE_QUERY_CMD);
     final ArrowFlightPreparedStatement preparedStatement = mock(ArrowFlightPreparedStatement.class);
     final FlightRuntimeException closeFailure =
         CallStatus.INTERNAL.withDescription("Prepared statement close failed").toRuntimeException();
@@ -256,6 +258,7 @@ public class ArrowFlightStatementExecuteTest {
           assertThrows(SQLException.class, () -> statement.executeQuery(SAMPLE_QUERY_CMD));
 
       assertSame(closeFailure, exception.getCause());
+      assertThat(previousResultSet.isClosed(), is(true));
     } finally {
       arrowConnection.statementMap.put(arrowStatement.handle.id, arrowStatement);
     }
