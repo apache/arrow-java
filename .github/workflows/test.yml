@@ -73,7 +73,7 @@ jobs:
             .docker/java-build \
             .docker/maven-cache/repository/org/apache/arrow
       - name: Upload reusable artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: java-build
           path: java-build.tgz
@@ -95,15 +95,14 @@ jobs:
         include:
           - os: ubuntu-latest
             compose_service: ubuntu-test-prebuilt
-          - name: AMD64 macOS 15-intel Java JDK 17
-            os: macos-15-intel
-            jdk: 17
           - name: AArch64 macOS latest Java JDK 17
             os: macos-latest
             jdk: 17
+            compose_service: ''
           - name: AMD64 Windows Server 2022 Java JDK 17
             os: windows-latest
             jdk: 17
+            compose_service: ''
     env:
       JDK: ${{ matrix.jdk }}
     steps:
@@ -126,7 +125,7 @@ jobs:
           key: java-build-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
           restore-keys: java-build-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Download reusable artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: java-build
       - name: Restore reusable artifacts
@@ -202,7 +201,7 @@ jobs:
             .docker/cdata-jni-dist \
             .docker/maven-cache/repository/org/apache/arrow
       - name: Upload reusable C Data artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: cdata-build
           path: cdata-build.tgz
@@ -234,7 +233,7 @@ jobs:
           key: cdata-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
           restore-keys: cdata-${{ env.BUILD_JDK }}-${{ env.MAVEN }}-
       - name: Download reusable C Data artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: cdata-build
       - name: Restore reusable C Data artifacts
