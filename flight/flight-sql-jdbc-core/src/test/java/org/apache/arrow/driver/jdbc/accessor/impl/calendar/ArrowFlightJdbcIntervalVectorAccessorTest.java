@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.Duration;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import org.apache.arrow.driver.jdbc.accessor.ArrowFlightJdbcAccessorFactory;
@@ -36,6 +37,7 @@ import org.apache.arrow.vector.IntervalYearVector;
 import org.apache.arrow.vector.PeriodDuration;
 import org.apache.arrow.vector.ValueVector;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -252,6 +254,20 @@ public class ArrowFlightJdbcIntervalVectorAccessorTest {
     setup(vectorSupplier);
     assertEquals("+1567 00:00:00.000", formatIntervalDay(Duration.ofDays(1567)));
     assertEquals("-1567 00:00:00.000", formatIntervalDay(Duration.ofDays(-1567)));
+  }
+
+  @Test
+  public void testFormatIntervalIgnoresDefaultLocale() {
+    // Locales such as Arabic-Indic render %d with non-ASCII digits; the interval strings handed
+    // back through getString() must stay ASCII regardless of the JVM default locale.
+    Locale saved = Locale.getDefault();
+    try {
+      Locale.setDefault(Locale.forLanguageTag("ar-EG"));
+      assertEquals("+021-02", formatIntervalYear(Period.of(21, 2, 0)));
+      assertEquals("+001 18:25:16.766", formatIntervalDay(Duration.parse("PT42H25M16.766S")));
+    } finally {
+      Locale.setDefault(saved);
+    }
   }
 
   @ParameterizedTest

@@ -18,6 +18,7 @@ package org.apache.arrow.driver.jdbc.utils;
 
 import java.time.Duration;
 import java.time.Period;
+import java.util.Locale;
 import org.apache.arrow.vector.util.DateUtility;
 
 /**
@@ -43,7 +44,7 @@ public final class IntervalStringUtils {
     final int years = (int) (months / DateUtility.yearsToMonths);
     months = months % DateUtility.yearsToMonths;
 
-    return String.format("%c%03d-%02d", neg ? '-' : '+', years, months);
+    return String.format(Locale.ROOT, "%c%03d-%02d", neg ? '-' : '+', years, months);
   }
 
   /**
@@ -73,6 +74,13 @@ public final class IntervalStringUtils {
     millis = millis % DateUtility.secondsToMillis;
 
     return String.format(
-        "%c%03d %02d:%02d:%02d.%03d", neg ? '-' : '+', days, hours, minutes, seconds, millis);
+        Locale.ROOT,
+        "%c%03d %02d:%02d:%02d.%03d",
+        neg ? '-' : '+',
+        days,
+        hours,
+        minutes,
+        seconds,
+        millis);
   }
 }
