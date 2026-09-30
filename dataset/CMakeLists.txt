@@ -18,7 +18,7 @@
 find_package(ArrowDataset REQUIRED)
 find_package(ArrowSubstrait REQUIRED)
 if(ARROW_S3)
-  find_package(ArrowS3 REQUIRED)
+  find_package(ArrowS3 QUIET)
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
@@ -42,7 +42,7 @@ target_link_libraries(arrow_java_jni_dataset
                       jni
                       ArrowDataset::arrow_dataset_static
                       ArrowSubstrait::arrow_substrait_static)
-if(ARROW_S3)
+if(TARGET ArrowS3::arrow_s3_static)
   target_link_libraries(arrow_java_jni_dataset ArrowS3::arrow_s3_static)
 endif()
 
