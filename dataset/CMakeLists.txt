@@ -17,8 +17,8 @@
 
 find_package(ArrowDataset REQUIRED)
 find_package(ArrowSubstrait REQUIRED)
-if(ARROW_S3)
-  find_package(ArrowS3 QUIET)
+if(ARROW_S3 AND ARROW_VERSION VERSION_GREATER_EQUAL 26.0.0)
+  find_package(ArrowS3 REQUIRED)
 endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
