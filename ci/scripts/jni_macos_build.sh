@@ -75,6 +75,7 @@ cmake \
   --preset=ninja-release-jni-macos \
   -Dabsl_SOURCE=BUNDLED \
   -Dsimdjson_SOURCE=BUNDLED \
+  -Duriparser_SOURCE=BUNDLED \
   -DCMAKE_INSTALL_PREFIX="${install_dir}"
 cmake --build "${build_dir}/cpp" --target install
 github_actions_group_end
