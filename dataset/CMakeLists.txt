@@ -17,9 +17,11 @@
 
 find_package(ArrowDataset REQUIRED)
 find_package(ArrowSubstrait REQUIRED)
-# S3 support lives in its own library in recent Arrow C++ (apache/arrow GH-50194). Older
-# versions bundle it into libarrow and don't provide the ArrowS3 package.
-find_package(ArrowS3 QUIET)
+# S3 support lives in its own library since Arrow C++ 26.0.0 (apache/arrow GH-50194).
+# Older versions bundle it into libarrow and don't provide the ArrowS3 package.
+if(ARROW_VERSION VERSION_GREATER_EQUAL 26.0.0)
+  find_package(ArrowS3 REQUIRED)
+endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}
                     ${JNI_INCLUDE_DIRS} ${JNI_HEADERS_DIR})
