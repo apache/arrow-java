@@ -162,7 +162,7 @@ jobs:
       fail-fast: false
       matrix:
         platform:
-          - { runs_on: macos-14, arch: "aarch_64" }
+          - { runs_on: macos-15, arch: "aarch_64" }
     env:
       MACOSX_DEPLOYMENT_TARGET: "14.0"
     steps:
