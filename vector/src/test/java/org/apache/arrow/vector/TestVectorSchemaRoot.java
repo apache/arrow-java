@@ -164,7 +164,7 @@ public class TestVectorSchemaRoot {
 
       VectorSchemaRoot newRecordBatch = original.addVector(1, intVector3);
       assertEquals(3, newRecordBatch.getFieldVectors().size());
-      assertEquals(intVector3, newRecordBatch.getFieldVectors().get(1));
+      assertEquals(intVector3.getField(), newRecordBatch.getFieldVectors().get(1).getField());
 
       original.close();
       newRecordBatch.close();
@@ -182,9 +182,9 @@ public class TestVectorSchemaRoot {
 
       VectorSchemaRoot newRecordBatch = original.addVector(2, intVector3);
       assertEquals(3, newRecordBatch.getFieldVectors().size());
-      assertEquals(intVector1, newRecordBatch.getFieldVectors().get(0));
-      assertEquals(intVector2, newRecordBatch.getFieldVectors().get(1));
-      assertEquals(intVector3, newRecordBatch.getFieldVectors().get(2));
+      assertEquals(intVector1.getField(), newRecordBatch.getFieldVectors().get(0).getField());
+      assertEquals(intVector2.getField(), newRecordBatch.getFieldVectors().get(1).getField());
+      assertEquals(intVector3.getField(), newRecordBatch.getFieldVectors().get(2).getField());
 
       original.close();
       newRecordBatch.close();
@@ -203,11 +203,84 @@ public class TestVectorSchemaRoot {
 
       VectorSchemaRoot newRecordBatch = original.removeVector(0);
       assertEquals(2, newRecordBatch.getFieldVectors().size());
-      assertEquals(intVector2, newRecordBatch.getFieldVectors().get(0));
-      assertEquals(intVector3, newRecordBatch.getFieldVectors().get(1));
+      assertEquals(intVector2.getField(), newRecordBatch.getFieldVectors().get(0).getField());
+      assertEquals(intVector3.getField(), newRecordBatch.getFieldVectors().get(1).getField());
 
       original.close();
       newRecordBatch.close();
+    }
+  }
+
+  @Test
+  public void testAddVectorSharesCopy() {
+    try (final IntVector intVector1 = new IntVector("intVector1", allocator);
+        final IntVector intVector2 = new IntVector("intVector2", allocator);
+        final IntVector intVector3 = new IntVector("intVector3", allocator)) {
+      for (int i = 0; i < 5; i++) {
+        intVector1.setSafe(i, i * 10);
+        intVector2.setSafe(i, i * 20);
+        intVector3.setSafe(i, i * 30);
+      }
+      intVector1.setValueCount(5);
+      intVector2.setValueCount(5);
+      intVector3.setValueCount(5);
+
+      VectorSchemaRoot original = new VectorSchemaRoot(Arrays.asList(intVector1, intVector2));
+      original.setRowCount(5);
+
+      VectorSchemaRoot result = original.addVector(1, intVector3);
+
+      // Close the original root and the added vector -- the result should still have valid data
+      original.close();
+      intVector3.close();
+
+      assertEquals(3, result.getFieldVectors().size());
+      IntVector resultVec0 = (IntVector) result.getVector("intVector1");
+      IntVector resultVec1 = (IntVector) result.getVector("intVector3");
+      IntVector resultVec2 = (IntVector) result.getVector("intVector2");
+      assertEquals(0, resultVec0.get(0));
+      assertEquals(10, resultVec0.get(1));
+      assertEquals(0, resultVec1.get(0));
+      assertEquals(30, resultVec1.get(1));
+      assertEquals(0, resultVec2.get(0));
+      assertEquals(20, resultVec2.get(1));
+
+      result.close();
+    }
+  }
+
+  @Test
+  public void testRemoveVectorSharesCopy() {
+    try (final IntVector intVector1 = new IntVector("intVector1", allocator);
+        final IntVector intVector2 = new IntVector("intVector2", allocator);
+        final IntVector intVector3 = new IntVector("intVector3", allocator)) {
+      for (int i = 0; i < 5; i++) {
+        intVector1.setSafe(i, i * 10);
+        intVector2.setSafe(i, i * 20);
+        intVector3.setSafe(i, i * 30);
+      }
+      intVector1.setValueCount(5);
+      intVector2.setValueCount(5);
+      intVector3.setValueCount(5);
+
+      VectorSchemaRoot original =
+          new VectorSchemaRoot(Arrays.asList(intVector1, intVector2, intVector3));
+      original.setRowCount(5);
+
+      VectorSchemaRoot result = original.removeVector(1);
+
+      // Close the original root -- the result should still have valid data
+      original.close();
+
+      assertEquals(2, result.getFieldVectors().size());
+      IntVector resultVec0 = (IntVector) result.getVector("intVector1");
+      IntVector resultVec1 = (IntVector) result.getVector("intVector3");
+      assertEquals(0, resultVec0.get(0));
+      assertEquals(10, resultVec0.get(1));
+      assertEquals(0, resultVec1.get(0));
+      assertEquals(30, resultVec1.get(1));
+
+      result.close();
     }
   }
 
