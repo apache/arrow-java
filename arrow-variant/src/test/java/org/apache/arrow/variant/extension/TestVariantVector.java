@@ -769,7 +769,9 @@ class TestVariantVector {
         ArrowBuf metadataBuf = allocator.buffer(10);
         ArrowBuf valueBuf = allocator.buffer(10)) {
 
-      byte[] metadata = new byte[] {1, 2};
+      // Version 1, empty dictionary (single header byte) - a structurally valid variant
+      // metadata, since getObject() eagerly parses the metadata header.
+      byte[] metadata = new byte[] {1};
       byte[] value = new byte[] {3, 4, 5};
       metadataBuf.setBytes(0, metadata);
       valueBuf.setBytes(0, value);
