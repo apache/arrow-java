@@ -55,15 +55,12 @@ public class DateTimeUtils {
    * @return a {@link Timestamp} object representing the given Epoch millis
    */
   public static Timestamp getTimestampValue(long millisWithCalendar) {
-    long milliseconds = millisWithCalendar;
-    if (milliseconds < 0) {
-      // LocalTime#ofNanoDay only accepts positive values
-      milliseconds -= ((milliseconds / MILLIS_PER_DAY) - 1) * MILLIS_PER_DAY;
-    }
-
+    // Millis are negative before 1970, where only floor semantics keep the epoch day
+    // and the time-of-day remainder on the same day (and the remainder non-negative).
     return Timestamp.valueOf(
         LocalDateTime.of(
-            LocalDate.ofEpochDay(millisWithCalendar / MILLIS_PER_DAY),
-            LocalTime.ofNanoOfDay(TimeUnit.MILLISECONDS.toNanos(milliseconds % MILLIS_PER_DAY))));
+            LocalDate.ofEpochDay(Math.floorDiv(millisWithCalendar, MILLIS_PER_DAY)),
+            LocalTime.ofNanoOfDay(
+                TimeUnit.MILLISECONDS.toNanos(Math.floorMod(millisWithCalendar, MILLIS_PER_DAY)))));
   }
 }

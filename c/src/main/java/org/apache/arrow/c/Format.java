@@ -63,10 +63,10 @@ final class Format {
         {
           ArrowType.Decimal type = (ArrowType.Decimal) arrowType;
           if (type.getBitWidth() == 128) {
-            return String.format("d:%d,%d", type.getPrecision(), type.getScale());
+            return String.format(Locale.ROOT, "d:%d,%d", type.getPrecision(), type.getScale());
           }
           return String.format(
-              "d:%d,%d,%d", type.getPrecision(), type.getScale(), type.getBitWidth());
+              Locale.ROOT, "d:%d,%d,%d", type.getPrecision(), type.getScale(), type.getBitWidth());
         }
       case Duration:
         {
@@ -88,12 +88,12 @@ final class Format {
       case FixedSizeBinary:
         {
           ArrowType.FixedSizeBinary type = (ArrowType.FixedSizeBinary) arrowType;
-          return String.format("w:%d", type.getByteWidth());
+          return String.format(Locale.ROOT, "w:%d", type.getByteWidth());
         }
       case FixedSizeList:
         {
           ArrowType.FixedSizeList type = (ArrowType.FixedSizeList) arrowType;
-          return String.format("+w:%d", type.getListSize());
+          return String.format(Locale.ROOT, "+w:%d", type.getListSize());
         }
       case FloatingPoint:
         {

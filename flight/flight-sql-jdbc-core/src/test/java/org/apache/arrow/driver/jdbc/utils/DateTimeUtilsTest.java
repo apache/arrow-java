@@ -95,4 +95,15 @@ public class DateTimeUtilsTest {
 
     assertThat(expected, is(actual));
   }
+
+  @Test
+  public void testShouldGetTimestampNegativeNotAlignedToDay() {
+    final long epochMilli = negativeEpochMilli + 3600000L; // 1950-06-01 01:00:00 UTC
+    final Instant instant = Instant.ofEpochMilli(epochMilli);
+
+    final Timestamp expected = Timestamp.from(instant);
+    final Timestamp actual = DateTimeUtils.getTimestampValue(epochMilli);
+
+    assertThat(expected, is(actual));
+  }
 }

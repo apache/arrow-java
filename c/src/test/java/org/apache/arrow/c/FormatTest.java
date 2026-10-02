@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Locale;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.IntervalUnit;
@@ -155,5 +156,21 @@ public class FormatTest {
     assertThrows(UnsupportedOperationException.class, () -> Format.asType("Format", 0L));
     assertThrows(UnsupportedOperationException.class, () -> Format.asType(":", 0L));
     assertThrows(NumberFormatException.class, () -> Format.asType("w:1,2,3", 0L));
+  }
+
+  @Test
+  public void testAsStringIgnoresDefaultLocale() {
+    // Locales that use digits other than 0-9 (Arabic-Indic, Bengali, Devanagari, ...)
+    // must not leak into the format string, which other implementations parse as ASCII.
+    Locale saved = Locale.getDefault();
+    try {
+      Locale.setDefault(Locale.forLanguageTag("ar-EG"));
+      assertEquals("d:10,2", Format.asString(new ArrowType.Decimal(10, 2, 128)));
+      assertEquals("d:10,2,256", Format.asString(new ArrowType.Decimal(10, 2, 256)));
+      assertEquals("w:16", Format.asString(new ArrowType.FixedSizeBinary(16)));
+      assertEquals("+w:8", Format.asString(new ArrowType.FixedSizeList(8)));
+    } finally {
+      Locale.setDefault(saved);
+    }
   }
 }
