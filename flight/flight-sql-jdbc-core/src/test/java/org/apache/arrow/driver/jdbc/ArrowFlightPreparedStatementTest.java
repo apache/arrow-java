@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -52,6 +54,8 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Text;
+import org.apache.calcite.avatica.AvaticaResultSet;
+import org.apache.calcite.avatica.AvaticaStatement;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,6 +179,82 @@ public class ArrowFlightPreparedStatementTest {
             () -> connection.prepareStatement("SELECT * FROM unregistered_table"));
 
     assertThat(exception.getCause(), instanceOf(FlightRuntimeException.class));
+  }
+
+  @Test
+  public void testNullQueryIsReportedAsSQLException() {
+    final SQLException exception =
+        assertThrows(SQLException.class, () -> connection.prepareStatement(null));
+
+    assertThat(exception.getCause(), instanceOf(NullPointerException.class));
+  }
+
+  @Test
+  public void testCloseReleasesPreparedResourcesWhenResultSetCloseFails() throws Exception {
+    try (final ArrowFlightConnection localConnection =
+        (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false)) {
+      final ArrowFlightPreparedStatement preparedStatement =
+          (ArrowFlightPreparedStatement)
+              localConnection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD);
+      final AvaticaResultSet resultSet = mock(AvaticaResultSet.class);
+      final RuntimeException resultSetCloseFailure =
+          new RuntimeException("Result set close failed");
+      doThrow(resultSetCloseFailure).when(resultSet).close();
+      final java.lang.reflect.Field openResultSetField =
+          AvaticaStatement.class.getDeclaredField("openResultSet");
+      openResultSetField.setAccessible(true);
+      openResultSetField.set(preparedStatement, resultSet);
+
+      final SQLException exception = assertThrows(SQLException.class, preparedStatement::close);
+
+      assertSame(resultSetCloseFailure, exception.getCause());
+      assertTrue(preparedStatement.isClosed());
+      assertEquals(
+          1,
+          PRODUCER
+              .getActionTypeCounter()
+              .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0));
+    }
+  }
+
+  @Test
+  public void testMetaRejectsForeignStatementHandle() throws SQLException {
+    try (final ArrowFlightConnection firstConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        final ArrowFlightConnection secondConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        final PreparedStatement firstStatement =
+            firstConnection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD);
+        final PreparedStatement secondStatement =
+            secondConnection.prepareStatement(
+                CoreMockedSqlProducers.UUID_PREPARED_SELECT_SQL_CMD)) {
+      final ArrowFlightPreparedStatement firstPreparedStatement =
+          (ArrowFlightPreparedStatement) firstStatement;
+      final ArrowFlightPreparedStatement secondPreparedStatement =
+          (ArrowFlightPreparedStatement) secondStatement;
+      assertEquals(firstPreparedStatement.handle.id, secondPreparedStatement.handle.id);
+
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> firstConnection.getMeta().closeStatement(secondPreparedStatement.handle));
+      assertFalse(firstPreparedStatement.isClosed());
+    }
+  }
+
+  @Test
+  public void testMetaRejectsForeignConnectionHandle() throws SQLException {
+    try (final ArrowFlightConnection firstConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        final ArrowFlightConnection secondConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false)) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () ->
+              firstConnection
+                  .getMeta()
+                  .prepare(
+                      secondConnection.handle, CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD, -1));
+    }
   }
 
   @Test

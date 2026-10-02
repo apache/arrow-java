@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.driver.jdbc.utils.ConvertUtils;
+import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaParameter;
@@ -98,6 +99,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
   @Override
   public StatementHandle prepare(
       final ConnectionHandle connectionHandle, final String query, final long maxRowCount) {
+    validateConnectionId(connectionHandle.id);
     try {
       // This is the Avatica entry point used by Connection.prepareStatement(String).
       ArrowFlightPreparedStatement stmt =
@@ -192,6 +194,7 @@ public class ArrowFlightMetaImpl extends MetaImpl {
   }
 
   private AvaticaStatement getStatement(final StatementHandle statementHandle) {
+    validateConnectionId(statementHandle.connectionId);
     final AvaticaStatement statement = connection.statementMap.get(statementHandle.id);
     if (statement instanceof ArrowFlightStatement
         || statement instanceof ArrowFlightPreparedStatement) {
@@ -207,6 +210,11 @@ public class ArrowFlightMetaImpl extends MetaImpl {
     }
     throw new IllegalStateException(
         "Statement operation is not supported for handle: " + statementHandle);
+  }
+
+  private void validateConnectionId(final String connectionId) {
+    Preconditions.checkArgument(
+        connection.id.equals(connectionId), "Connection IDs are not consistent");
   }
 
   static Signature buildDefaultSignature() {

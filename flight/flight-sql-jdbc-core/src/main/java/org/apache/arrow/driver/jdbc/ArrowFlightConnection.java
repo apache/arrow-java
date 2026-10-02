@@ -313,12 +313,16 @@ public final class ArrowFlightConnection extends AvaticaConnection {
       final int resultSetHoldability)
       throws SQLException {
     checkOpen();
-    return ArrowFlightPreparedStatement.builder(this)
-        .withQuery(sql)
-        .withGeneratedHandle()
-        .withResultSetType(resultSetType)
-        .withResultSetConcurrency(resultSetConcurrency)
-        .withResultSetHoldability(resultSetHoldability)
-        .build();
+    try {
+      return ArrowFlightPreparedStatement.builder(this)
+          .withQuery(sql)
+          .withGeneratedHandle()
+          .withResultSetType(resultSetType)
+          .withResultSetConcurrency(resultSetConcurrency)
+          .withResultSetHoldability(resultSetHoldability)
+          .build();
+    } catch (final RuntimeException e) {
+      throw HELPER.createException("while preparing SQL:" + sql, e);
+    }
   }
 }

@@ -102,17 +102,32 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
 
   @Override
   protected void close_() {
+    RuntimeException closeFailure = null;
     try {
       super.close_();
-    } finally {
-      ((ArrowFlightConnection) connection).unregisterStatementOwner(this);
+    } catch (final RuntimeException e) {
+      closeFailure = e;
+    }
+    try {
+      closePreparedResources();
+    } catch (final RuntimeException e) {
+      if (closeFailure == null) {
+        closeFailure = e;
+      } else {
+        closeFailure.addSuppressed(e);
+      }
+    }
+    ((ArrowFlightConnection) connection).unregisterStatementOwner(this);
+    if (closeFailure != null) {
+      throw closeFailure;
     }
   }
 
   void closePreparedResources() {
-    if (preparedStatement != null) {
-      preparedStatement.close();
-      preparedStatement = null;
+    final ArrowFlightSqlClientHandler.PreparedStatement statement = preparedStatement;
+    preparedStatement = null;
+    if (statement != null) {
+      statement.close();
     }
   }
 
