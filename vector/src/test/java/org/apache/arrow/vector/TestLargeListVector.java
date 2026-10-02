@@ -1106,22 +1106,87 @@ public class TestLargeListVector {
 
   @Test
   public void testEmptyLargeListOffsetBuffer() {
-    // Test that LargeListVector has correct readableBytes after allocation.
-    // According to Arrow spec, offset buffer must have N+1 entries.
-    // Even when N=0, it should contain [0].
     try (LargeListVector list = LargeListVector.empty("list", allocator)) {
       list.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
       list.allocateNew();
       list.setValueCount(0);
 
-      List<ArrowBuf> buffers = list.getFieldBuffers();
-      assertTrue(
-          buffers.get(1).readableBytes() >= LargeListVector.OFFSET_WIDTH,
-          "Offset buffer should have at least "
-              + LargeListVector.OFFSET_WIDTH
-              + " bytes for offset[0]");
-      assertEquals(0L, list.getOffsetBuffer().getLong(0));
+      assertEmptyLargeListOffsetBuffer(list);
     }
+  }
+
+  @Test
+  public void testUnallocatedEmptyLargeListOffsetBuffer() {
+    try (LargeListVector list = LargeListVector.empty("list", allocator)) {
+      list.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      list.setValueCount(0);
+
+      assertEmptyLargeListOffsetBuffer(list);
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferEmptyLargeListOffsetBuffer() {
+    try (LargeListVector source = LargeListVector.empty("source", allocator);
+        LargeListVector target = LargeListVector.empty("target", allocator)) {
+      source.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      target.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      source.allocateNew();
+      source.setValueCount(0);
+
+      TransferPair transferPair = source.makeTransferPair(target);
+      transferPair.splitAndTransfer(0, 0);
+
+      assertEmptyLargeListOffsetBuffer(target);
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferEmptyLargeListAllocatesOffsetBuffer() {
+    try (LargeListVector fromVector = LargeListVector.empty("fromVector", allocator);
+        LargeListVector toVector = LargeListVector.empty("toVector", allocator)) {
+      fromVector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      fromVector.allocateNew();
+      fromVector.setValueCount(0);
+
+      TransferPair transferPair = fromVector.makeTransferPair(toVector);
+      transferPair.splitAndTransfer(0, 0);
+
+      assertAllocatedEmptyLargeListOffsetBuffer(toVector);
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferEmptyNestedLargeListAllocatesOffsetBuffers() {
+    try (LargeListVector fromVector = LargeListVector.empty("fromVector", allocator);
+        LargeListVector toVector = LargeListVector.empty("toVector", allocator)) {
+      fromVector.addOrGetVector(FieldType.nullable(MinorType.LARGELIST.getType()));
+      LargeListVector childVector = (LargeListVector) fromVector.getDataVector();
+      childVector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      fromVector.allocateNew();
+      fromVector.setValueCount(0);
+
+      TransferPair transferPair = fromVector.makeTransferPair(toVector);
+      transferPair.splitAndTransfer(0, 0);
+
+      assertAllocatedEmptyLargeListOffsetBuffer(toVector);
+      assertAllocatedEmptyLargeListOffsetBuffer((LargeListVector) toVector.getDataVector());
+    }
+  }
+
+  private ArrowBuf assertEmptyLargeListOffsetBuffer(LargeListVector list) {
+    List<ArrowBuf> buffers = list.getFieldBuffers();
+    ArrowBuf offsetBuffer = buffers.get(1);
+    assertEquals(LargeListVector.OFFSET_WIDTH, offsetBuffer.readableBytes());
+    assertTrue(offsetBuffer.capacity() >= LargeListVector.OFFSET_WIDTH);
+    assertEquals(0L, offsetBuffer.getLong(0));
+    return offsetBuffer;
+  }
+
+  private void assertAllocatedEmptyLargeListOffsetBuffer(LargeListVector list) {
+    ArrowBuf offsetBuffer = list.getOffsetBuffer();
+    assertTrue(offsetBuffer.capacity() >= LargeListVector.OFFSET_WIDTH);
+    assertEquals(0L, offsetBuffer.getLong(0));
   }
 
   private void writeIntValues(UnionLargeListWriter writer, int[] values) {
