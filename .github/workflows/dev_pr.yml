@@ -30,7 +30,8 @@ on:
       - review_requested
 
 concurrency:
-  group: ${{ github.repository }}-${{ github.ref }}-${{ github.workflow }}
+  # github.ref is the base branch for pull_request_target, so use the PR number
+  group: ${{ github.repository }}-${{ github.event.pull_request.number }}-${{ github.workflow }}
   cancel-in-progress: true
 
 permissions:
