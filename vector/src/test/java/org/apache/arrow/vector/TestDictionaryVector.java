@@ -21,6 +21,7 @@ import static org.apache.arrow.vector.testing.ValueVectorDataPopulator.setVector
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -943,6 +944,35 @@ public class TestDictionaryVector {
   }
 
   @Test
+  public void testDecodeRejectsDictionaryIndicesOutsideBounds() {
+    try (final IntVector indices = newVector(IntVector.class, "", Types.MinorType.INT, allocator);
+        final VarCharVector dictionaryVector = newVarCharVector("dict", allocator)) {
+      setVector(dictionaryVector, zero, one);
+      Dictionary dictionary =
+          new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+
+      setVector(indices, dictionaryVector.getValueCount());
+      IllegalArgumentException upperBoundException =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> DictionaryEncoder.decode(indices, dictionary, allocator));
+      assertEquals(
+          "Provided dictionary does not contain value for index 2",
+          upperBoundException.getMessage());
+
+      setVector(indices, -1);
+      IllegalArgumentException negativeException =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> DictionaryEncoder.decode(indices, dictionary, allocator));
+      assertEquals(
+          "Provided dictionary does not contain value for index -1",
+          negativeException.getMessage());
+    }
+    assertEquals(0, allocator.getAllocatedMemory(), "decode memory leak");
+  }
+
+  @Test
   public void testListNoMemoryLeak() {
     // Create a new value vector
     try (final ListVector vector = ListVector.empty("vector", allocator);
@@ -1053,7 +1083,7 @@ public class TestDictionaryVector {
       NullableStructWriter writer = indices.getWriter();
       writer.allocate();
       writer.start();
-      writer.integer("f0").writeInt(1);
+      writer.integer("f0").writeInt(0);
       writer.integer("f1").writeInt(3);
       writer.end();
       writer.setValueCount(1);
@@ -1063,6 +1093,59 @@ public class TestDictionaryVector {
       } catch (Exception e) {
         assertEquals("Provided dictionary does not contain value for index 3", e.getMessage());
       }
+    }
+    assertEquals(0, allocator.getAllocatedMemory(), "struct decode memory leak");
+  }
+
+  @Test
+  public void testStructDecodeUsesDictionaryValueCount() {
+    try (final StructVector validIndices = StructVector.empty("valid", allocator);
+        final StructVector outOfRangeIndices = StructVector.empty("outOfRange", allocator);
+        final VarCharVector dictionaryVector = new VarCharVector("f0", allocator)) {
+
+      setVector(
+          dictionaryVector,
+          "aa".getBytes(StandardCharsets.UTF_8),
+          "bb".getBytes(StandardCharsets.UTF_8));
+
+      DictionaryProvider.MapDictionaryProvider provider =
+          new DictionaryProvider.MapDictionaryProvider();
+      Dictionary dictionary =
+          new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+      provider.put(dictionary);
+
+      ArrowType int32 = new ArrowType.Int(32, true);
+      FieldType indexFieldType = new FieldType(true, int32, dictionary.getEncoding());
+      validIndices.addOrGet("f0", indexFieldType, IntVector.class);
+      outOfRangeIndices.addOrGet("f0", indexFieldType, IntVector.class);
+
+      NullableStructWriter validWriter = validIndices.getWriter();
+      validWriter.allocate();
+      validWriter.start();
+      validWriter.integer("f0").writeInt(1);
+      validWriter.end();
+      validIndices.setValueCount(1);
+
+      try (StructVector decoded = StructSubfieldEncoder.decode(validIndices, provider, allocator)) {
+        assertArrayEquals(
+            new Object[] {new Text("bb")}, convertMapValuesToArray(decoded.getObject(0)));
+      }
+
+      NullableStructWriter outOfRangeWriter = outOfRangeIndices.getWriter();
+      outOfRangeWriter.allocate();
+      for (int i = 0; i < 5; i++) {
+        outOfRangeWriter.start();
+        outOfRangeWriter.integer("f0").writeInt(i == 0 ? 2 : 0);
+        outOfRangeWriter.end();
+      }
+      outOfRangeIndices.setValueCount(5);
+
+      IllegalArgumentException exception =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> StructSubfieldEncoder.decode(outOfRangeIndices, provider, allocator));
+      assertEquals(
+          "Provided dictionary does not contain value for index 2", exception.getMessage());
     }
     assertEquals(0, allocator.getAllocatedMemory(), "struct decode memory leak");
   }

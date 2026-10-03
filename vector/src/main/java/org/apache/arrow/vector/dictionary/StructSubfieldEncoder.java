@@ -207,7 +207,8 @@ public class StructSubfieldEncoder {
           TransferPair transfer = dictionary.getVector().makeTransferPair(decodedChildVector);
           BaseIntVector indices = (BaseIntVector) childVector;
 
-          DictionaryEncoder.retrieveIndexVector(indices, transfer, valueCount, 0, valueCount);
+          DictionaryEncoder.retrieveIndexVector(
+              indices, transfer, dictionary.getVector().getValueCount(), 0, valueCount);
         }
       }
 
