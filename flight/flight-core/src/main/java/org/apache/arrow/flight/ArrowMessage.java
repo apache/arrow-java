@@ -296,6 +296,7 @@ class ArrowMessage implements AutoCloseable {
           case DESCRIPTOR_TAG:
             {
               int size = readRawVarint32(stream);
+              checkFieldLength(size, stream);
               byte[] bytes = new byte[size];
               ByteStreams.readFully(stream, bytes);
               descriptor = FlightDescriptor.parseFrom(bytes);
@@ -304,6 +305,7 @@ class ArrowMessage implements AutoCloseable {
           case HEADER_TAG:
             {
               int size = readRawVarint32(stream);
+              checkFieldLength(size, stream);
               byte[] bytes = new byte[size];
               ByteStreams.readFully(stream, bytes);
               header = MessageMetadataResult.create(ByteBuffer.wrap(bytes), size);
@@ -312,6 +314,7 @@ class ArrowMessage implements AutoCloseable {
           case APP_METADATA_TAG:
             {
               int size = readRawVarint32(stream);
+              checkFieldLength(size, stream);
               appMetadata = allocator.buffer(size);
               GetReadableBuffer.readIntoBuffer(stream, appMetadata, size, ENABLE_ZERO_COPY_READ);
               break;
@@ -323,6 +326,7 @@ class ArrowMessage implements AutoCloseable {
               body = null;
             }
             int size = readRawVarint32(stream);
+            checkFieldLength(size, stream);
             body = allocator.buffer(size);
             GetReadableBuffer.readIntoBuffer(stream, body, size, ENABLE_ZERO_COPY_READ);
             break;
@@ -375,6 +379,24 @@ class ArrowMessage implements AutoCloseable {
 
   private static int readRawVarint32(int firstByte, InputStream is) throws IOException {
     return CodedInputStream.readRawVarint32(firstByte, is);
+  }
+
+  /**
+   * Reject a field whose declared length is negative or larger than the bytes left in the message.
+   *
+   * <p>The length prefix is read straight off the wire, and a field can never be longer than the
+   * bytes still buffered for the message. Without this check an oversized value drives an unbounded
+   * allocation before any content is read; the {@code new byte[size]} paths above do so on the JVM
+   * heap, bypassing the {@link BufferAllocator} limit entirely.
+   */
+  private static void checkFieldLength(int size, InputStream stream) throws IOException {
+    final int remaining = stream.available();
+    if (size < 0 || size > remaining) {
+      throw new IOException(
+          String.format(
+              "Malformed FlightData frame: field length %d exceeds %d bytes remaining in the message",
+              size, remaining));
+    }
   }
 
   /**
