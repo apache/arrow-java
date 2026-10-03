@@ -1097,6 +1097,59 @@ public class TestDictionaryVector {
     assertEquals(0, allocator.getAllocatedMemory(), "struct decode memory leak");
   }
 
+  @Test
+  public void testStructDecodeUsesDictionaryValueCount() {
+    try (final StructVector validIndices = StructVector.empty("valid", allocator);
+        final StructVector outOfRangeIndices = StructVector.empty("outOfRange", allocator);
+        final VarCharVector dictionaryVector = new VarCharVector("f0", allocator)) {
+
+      setVector(
+          dictionaryVector,
+          "aa".getBytes(StandardCharsets.UTF_8),
+          "bb".getBytes(StandardCharsets.UTF_8));
+
+      DictionaryProvider.MapDictionaryProvider provider =
+          new DictionaryProvider.MapDictionaryProvider();
+      Dictionary dictionary =
+          new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+      provider.put(dictionary);
+
+      ArrowType int32 = new ArrowType.Int(32, true);
+      FieldType indexFieldType = new FieldType(true, int32, dictionary.getEncoding());
+      validIndices.addOrGet("f0", indexFieldType, IntVector.class);
+      outOfRangeIndices.addOrGet("f0", indexFieldType, IntVector.class);
+
+      NullableStructWriter validWriter = validIndices.getWriter();
+      validWriter.allocate();
+      validWriter.start();
+      validWriter.integer("f0").writeInt(1);
+      validWriter.end();
+      validIndices.setValueCount(1);
+
+      try (StructVector decoded = StructSubfieldEncoder.decode(validIndices, provider, allocator)) {
+        assertArrayEquals(
+            new Object[] {new Text("bb")}, convertMapValuesToArray(decoded.getObject(0)));
+      }
+
+      NullableStructWriter outOfRangeWriter = outOfRangeIndices.getWriter();
+      outOfRangeWriter.allocate();
+      for (int i = 0; i < 5; i++) {
+        outOfRangeWriter.start();
+        outOfRangeWriter.integer("f0").writeInt(i == 0 ? 2 : 0);
+        outOfRangeWriter.end();
+      }
+      outOfRangeIndices.setValueCount(5);
+
+      IllegalArgumentException exception =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> StructSubfieldEncoder.decode(outOfRangeIndices, provider, allocator));
+      assertEquals(
+          "Provided dictionary does not contain value for index 2", exception.getMessage());
+    }
+    assertEquals(0, allocator.getAllocatedMemory(), "struct decode memory leak");
+  }
+
   private void testDictionary(
       Dictionary dictionary, ToIntBiFunction<ValueVector, Integer> valGetter) {
     try (VarCharVector vector = new VarCharVector("vector", allocator)) {
