@@ -732,6 +732,24 @@ public final class ArrowBuf implements AutoCloseable {
   }
 
   /**
+   * Copy data from this ArrowBuf into a newly allocated array.
+   *
+   * <p>This method is more resilient to invalid data inadvertently causing large allocations, as
+   * the byte[] will not be allocated until we check the length.
+   *
+   * @param index index (0 based relative to the portion of memory this ArrowBuf has access to)
+   * @param length length of data to copy from this ArrowBuf
+   */
+  public byte[] getBytesAsArray(long index, int length) {
+    checkIndex(index, length);
+    byte[] dst = new byte[length];
+    if (length != 0) {
+      MemoryUtil.copyFromMemory(addr(index), dst, 0, length);
+    }
+    return dst;
+  }
+
+  /**
    * Copy data from a given byte array into this ArrowBuf starting at a given index.
    *
    * @param index starting index (0 based relative to the portion of memory) this ArrowBuf has
@@ -1008,8 +1026,7 @@ public final class ArrowBuf implements AutoCloseable {
   /**
    * Copy a certain length of bytes from this ArrowBuf at a given index into the given OutputStream.
    *
-   * @param index index index (0 based relative to the portion of memory this ArrowBuf has access
-   *     to)
+   * @param index index (0 based relative to the portion of memory this ArrowBuf has access to)
    * @param out dst stream to copy data into
    * @param length length of data to copy
    * @throws IOException on failing to write to stream
