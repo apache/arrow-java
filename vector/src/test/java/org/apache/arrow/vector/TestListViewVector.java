@@ -32,9 +32,11 @@ import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.BaseRepeatedValueViewVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.ListViewVector;
+import org.apache.arrow.vector.complex.impl.UnionListViewReader;
 import org.apache.arrow.vector.complex.impl.UnionListViewWriter;
 import org.apache.arrow.vector.holders.DurationHolder;
 import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
+import org.apache.arrow.vector.holders.UnionHolder;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -139,6 +141,69 @@ public class TestListViewVector {
       assertEquals(4, ((BigIntVector) dataVec).get(10));
 
       listViewVector.validate();
+    }
+  }
+
+  @Test
+  public void testCopyFromNonEmptyListView() {
+    try (ListViewVector inVector = ListViewVector.empty("input", allocator);
+        ListViewVector outVector = ListViewVector.empty("output", allocator)) {
+      UnionListViewWriter writer = inVector.getWriter();
+      writer.allocate();
+      writer.setPosition(0);
+      writeIntValues(writer, new int[] {10, 20});
+      writer.setValueCount(1);
+
+      outVector.allocateNew();
+      outVector.copyFrom(0, 0, inVector);
+      outVector.setValueCount(1);
+
+      assertEquals(Arrays.asList(10, 20), outVector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testReaderIteratesListViewRangeAndResets() {
+    try (ListViewVector listViewVector = ListViewVector.empty("listview", allocator)) {
+      initializeListViewVector(
+          listViewVector,
+          List.of(10, 11, 20, 21, 22),
+          List.of(1, 1, 1),
+          List.of(0, 2, 5),
+          List.of(2, 3, 0));
+      UnionListViewReader reader = listViewVector.getReader();
+
+      reader.setPosition(0);
+      assertTrue(reader.next());
+      assertEquals(10, ((Number) reader.reader().readObject()).intValue());
+      assertTrue(reader.next());
+      assertEquals(11, ((Number) reader.reader().readObject()).intValue());
+      assertFalse(reader.next());
+      assertFalse(reader.next());
+
+      reader.setPosition(1);
+      assertTrue(reader.next());
+      assertEquals(20, ((Number) reader.reader().readObject()).intValue());
+      assertTrue(reader.next());
+      assertEquals(21, ((Number) reader.reader().readObject()).intValue());
+      assertTrue(reader.next());
+      assertEquals(22, ((Number) reader.reader().readObject()).intValue());
+      assertFalse(reader.next());
+      assertFalse(reader.next());
+
+      reader.setPosition(1);
+      assertTrue(reader.next());
+      assertEquals(20, ((Number) reader.reader().readObject()).intValue());
+
+      reader.setPosition(2);
+      assertFalse(reader.next());
+      assertFalse(reader.next());
+
+      reader.setPosition(1);
+      UnionHolder holder = new UnionHolder();
+      reader.read(2, holder);
+      assertEquals(22, ((Number) holder.reader.readObject()).intValue());
+      assertFalse(reader.next());
     }
   }
 
