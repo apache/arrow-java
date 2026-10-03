@@ -104,14 +104,18 @@ public class VectorUnloader {
       List<ArrowFieldNode> nodes,
       List<ArrowBuf> buffers,
       List<Long> variadicBufferCounts) {
+    FieldVector storageVector = vector;
+    while (storageVector instanceof ExtensionTypeVector) {
+      storageVector = ((ExtensionTypeVector<?>) storageVector).getUnderlyingVector();
+    }
     nodes.add(
         new ArrowFieldNode(vector.getValueCount(), includeNullCount ? vector.getNullCount() : -1));
     List<ArrowBuf> fieldBuffers = vector.getFieldBuffers();
-    long variadicBufferCount = getVariadicBufferCount(vector);
+    long variadicBufferCount = getVariadicBufferCount(storageVector);
     int expectedBufferCount =
         (int) (TypeLayout.getTypeBufferCount(vector.getField().getType()) + variadicBufferCount);
     // only update variadicBufferCounts for vectors that have variadic buffers
-    if (vector instanceof BaseVariableWidthViewVector) {
+    if (storageVector instanceof BaseVariableWidthViewVector) {
       variadicBufferCounts.add(variadicBufferCount);
     }
     if (fieldBuffers.size() != expectedBufferCount) {
