@@ -87,7 +87,6 @@ under the License.
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
     <dependency>
@@ -159,7 +158,7 @@ under the License.
     <dependency>
       <groupId>org.apache.calcite.avatica</groupId>
       <artifactId>avatica</artifactId>
-      <version>1.27.0</version>
+      <version>1.28.0</version>
     </dependency>
 
     <dependency>
