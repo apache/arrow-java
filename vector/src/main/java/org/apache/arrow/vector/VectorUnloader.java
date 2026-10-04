@@ -104,10 +104,7 @@ public class VectorUnloader {
       List<ArrowFieldNode> nodes,
       List<ArrowBuf> buffers,
       List<Long> variadicBufferCounts) {
-    FieldVector storageVector = vector;
-    while (storageVector instanceof ExtensionTypeVector) {
-      storageVector = ((ExtensionTypeVector<?>) storageVector).getUnderlyingVector();
-    }
+    FieldVector storageVector = ExtensionTypeVector.getStorageVector(vector);
     nodes.add(
         new ArrowFieldNode(vector.getValueCount(), includeNullCount ? vector.getNullCount() : -1));
     List<ArrowBuf> fieldBuffers = vector.getFieldBuffers();

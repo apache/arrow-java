@@ -43,6 +43,7 @@ import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
+import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float2Vector;
@@ -76,6 +77,7 @@ import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.VariableWidthFieldVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.ViewVarBinaryVector;
 import org.apache.arrow.vector.ViewVarCharVector;
@@ -91,6 +93,8 @@ import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.complex.impl.UnionMapWriter;
+import org.apache.arrow.vector.extension.JsonType;
+import org.apache.arrow.vector.extension.OpaqueType;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.IntervalDayHolder;
 import org.apache.arrow.vector.holders.NullableLargeVarBinaryHolder;
@@ -100,6 +104,7 @@ import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
+import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
@@ -107,6 +112,9 @@ import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class RoundtripTest {
   private static final String EMPTY_SCHEMA_PATH = "";
@@ -846,6 +854,68 @@ public class RoundtripTest {
 
       importedRoot.close();
     }
+  }
+
+  static Stream<Arguments> viewExtensionCases() {
+    byte[][] inlined = {
+      "{}".getBytes(StandardCharsets.UTF_8), null, "null".getBytes(StandardCharsets.UTF_8)
+    };
+    byte[][] external = {
+      "{\"message\":\"a JSON value longer than twelve bytes\"}".getBytes(StandardCharsets.UTF_8),
+      null
+    };
+    return Stream.of(
+            new JsonType(ArrowType.Utf8View.INSTANCE),
+            new OpaqueType(ArrowType.Utf8View.INSTANCE, "json", "test"),
+            new OpaqueType(ArrowType.BinaryView.INSTANCE, "binary", "test"))
+        .flatMap(
+            type ->
+                Stream.of(
+                    Arguments.of(type, new byte[0][], 3),
+                    Arguments.of(type, inlined, 3),
+                    Arguments.of(type, external, 4)));
+  }
+
+  @ParameterizedTest
+  @MethodSource("viewExtensionCases")
+  public void testViewExtensionTypeVector(ExtensionType type, byte[][] values, int bufferCount) {
+    ExtensionType previous = ExtensionTypeRegistry.lookup(type.extensionName());
+    ExtensionTypeRegistry.register(type);
+    Schema schema = new Schema(Collections.singletonList(Field.nullable("a", type)));
+    try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+      ExtensionTypeVector<?> vector = (ExtensionTypeVector<?>) root.getVector("a");
+      setVector((VariableWidthFieldVector) vector.getUnderlyingVector(), values);
+      root.setRowCount(values.length);
+
+      try (ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+          ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+        Data.exportVector(allocator, vector, null, arrowArray, arrowSchema);
+        assertEquals(bufferCount, arrowArray.snapshot().n_buffers);
+        try (FieldVector imported =
+            Data.importVector(childAllocator, arrowArray, arrowSchema, null)) {
+          assertViewExtensionVector(vector, imported);
+        }
+      }
+
+      try (VectorSchemaRoot imported = vectorSchemaRootRoundtrip(root)) {
+        assertEquals(root.getSchema(), imported.getSchema());
+        assertEquals(root.getRowCount(), imported.getRowCount());
+        assertViewExtensionVector(vector, imported.getVector("a"));
+      }
+    } finally {
+      ExtensionTypeRegistry.unregister(type);
+      if (previous != null) {
+        ExtensionTypeRegistry.register(previous);
+      }
+    }
+  }
+
+  private void assertViewExtensionVector(ExtensionTypeVector<?> expected, FieldVector actual) {
+    assertEquals(expected.getField(), actual.getField());
+    ExtensionTypeVector<?> imported = assertInstanceOf(ExtensionTypeVector.class, actual);
+    assertTrue(
+        VectorEqualsVisitor.vectorEquals(
+            expected.getUnderlyingVector(), imported.getUnderlyingVector()));
   }
 
   @Test

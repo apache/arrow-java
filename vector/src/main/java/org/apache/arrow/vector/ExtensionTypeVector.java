@@ -76,6 +76,24 @@ public abstract class ExtensionTypeVector<T extends ValueVector & FieldVector>
     return underlyingVector;
   }
 
+  /** Get the storage vector, unwrapping extension vectors. */
+  public static FieldVector getStorageVector(FieldVector vector) {
+    while (vector instanceof ExtensionTypeVector) {
+      vector = ((ExtensionTypeVector<?>) vector).getUnderlyingVector();
+    }
+    return vector;
+  }
+
+  @Override
+  public int getExportedCDataBufferCount() {
+    return this.underlyingVector.getExportedCDataBufferCount();
+  }
+
+  @Override
+  public void exportCDataBuffers(List<ArrowBuf> buffers, ArrowBuf buffersPtr, long nullValue) {
+    this.underlyingVector.exportCDataBuffers(buffers, buffersPtr, nullValue);
+  }
+
   @Override
   public void allocateNew() throws OutOfMemoryException {
     this.underlyingVector.allocateNew();

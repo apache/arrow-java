@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
+import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.TypeLayout;
 import org.apache.arrow.vector.complex.StructVector;
@@ -103,12 +104,13 @@ public class StructVectorUnloader {
       List<Long> variadicBufferCounts) {
     nodes.add(
         new ArrowFieldNode(vector.getValueCount(), includeNullCount ? vector.getNullCount() : -1));
+    FieldVector storageVector = ExtensionTypeVector.getStorageVector(vector);
     List<ArrowBuf> fieldBuffers = vector.getFieldBuffers();
-    long variadicBufferCount = getVariadicBufferCount(vector);
+    long variadicBufferCount = getVariadicBufferCount(storageVector);
     int expectedBufferCount =
         (int) (TypeLayout.getTypeBufferCount(vector.getField().getType()) + variadicBufferCount);
     // only update variadicBufferCounts for vectors that have variadic buffers
-    if (vector instanceof BaseVariableWidthViewVector) {
+    if (storageVector instanceof BaseVariableWidthViewVector) {
       variadicBufferCounts.add(variadicBufferCount);
     }
     if (fieldBuffers.size() != expectedBufferCount) {
