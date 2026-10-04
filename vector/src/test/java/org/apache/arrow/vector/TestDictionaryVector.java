@@ -973,6 +973,32 @@ public class TestDictionaryVector {
   }
 
   @Test
+  public void testDecodeRejectsBigIntDictionaryIndexOutsideBounds() {
+    try (final BigIntVector indices = new BigIntVector("indices", allocator);
+        final VarCharVector dictionaryVector = newVarCharVector("dict", allocator)) {
+      setVector(dictionaryVector, zero, one);
+      Dictionary dictionary =
+          new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+
+      setVector(indices, 1L);
+      try (ValueVector decoded = DictionaryEncoder.decode(indices, dictionary, allocator)) {
+        assertEquals(new Text("bar"), decoded.getObject(0));
+      }
+
+      long largeIndex = 1L << 32;
+      setVector(indices, largeIndex);
+      IllegalArgumentException exception =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> DictionaryEncoder.decode(indices, dictionary, allocator));
+      assertEquals(
+          "Provided dictionary does not contain value for index " + largeIndex,
+          exception.getMessage());
+    }
+    assertEquals(0, allocator.getAllocatedMemory(), "decode memory leak");
+  }
+
+  @Test
   public void testListNoMemoryLeak() {
     // Create a new value vector
     try (final ListVector vector = ListVector.empty("vector", allocator);
