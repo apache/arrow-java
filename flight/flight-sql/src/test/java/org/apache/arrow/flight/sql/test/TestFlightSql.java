@@ -179,10 +179,10 @@ public class TestFlightSql {
         Integer.toString(FlightSql.SqlInfo.FLIGHT_SQL_SERVER_NAME_VALUE), "Apache Derby");
     GET_SQL_INFO_EXPECTED_RESULTS_MAP.put(
         Integer.toString(FlightSql.SqlInfo.FLIGHT_SQL_SERVER_VERSION_VALUE),
-        "10.15.2.0 - (1873585)");
+        "10.16.1.1 - (1901046)");
     GET_SQL_INFO_EXPECTED_RESULTS_MAP.put(
         Integer.toString(FlightSql.SqlInfo.FLIGHT_SQL_SERVER_ARROW_VERSION_VALUE),
-        "10.15.2.0 - (1873585)");
+        "10.16.1.1 - (1901046)");
     GET_SQL_INFO_EXPECTED_RESULTS_MAP.put(
         Integer.toString(FlightSql.SqlInfo.FLIGHT_SQL_SERVER_READ_ONLY_VALUE), "false");
     GET_SQL_INFO_EXPECTED_RESULTS_MAP.put(
