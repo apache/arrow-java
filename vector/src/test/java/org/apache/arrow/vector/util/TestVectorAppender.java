@@ -805,6 +805,26 @@ public class TestVectorAppender {
   }
 
   @Test
+  public void testAppendToEmptyUnionVector() {
+    try (BufferAllocator limitedAllocator = allocator.newChildAllocator("empty union", 0, 1048576);
+        UnionVector target = UnionVector.empty("target", limitedAllocator);
+        UnionVector delta = UnionVector.empty("delta", limitedAllocator)) {
+      delta.setType(0, Types.MinorType.FLOAT4);
+      delta.setType(1, Types.MinorType.FLOAT4);
+      Float4Vector values = delta.getFloat4Vector();
+      values.allocateNew();
+      ValueVectorDataPopulator.setVector(values, 1f, 2f);
+      delta.setValueCount(2);
+
+      delta.accept(new VectorAppender(target), null);
+
+      assertEquals(2, target.getValueCount());
+      assertEquals(1f, target.getObject(0));
+      assertEquals(2f, target.getObject(1));
+    }
+  }
+
+  @Test
   public void testAppendUnionVector() {
     final int length1 = 10;
     final int length2 = 5;
