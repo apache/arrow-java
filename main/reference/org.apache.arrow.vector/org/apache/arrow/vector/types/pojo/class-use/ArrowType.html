@@ -866,14 +866,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../extension/OpaqueType.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">OpaqueType</a></code></div>
+<div class="col-second even-row-color"><code><a href="../../../extension/JsonType.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">JsonType</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">Canonical extension type for UTF-8 encoded RFC 8259 JSON values.</div>
+</div>
+<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../extension/OpaqueType.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">OpaqueType</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Opaque is a placeholder for a type from an external (usually non-Arrow) system that could not be
  interpreted.</div>
 </div>
-<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
-<div class="col-second odd-row-color"><code><a href="../../../extension/UuidType.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">UuidType</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>class&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="../../../extension/UuidType.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">UuidType</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">Extension type for UUID (Universally Unique Identifier) values.</div>
 </div>
 </div>
@@ -894,12 +899,19 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../../../extension/OpaqueType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
+<div class="col-second even-row-color"><span class="type-name-label">JsonType.</span><code><a href="../../../extension/JsonType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serializedData)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UuidType.</span><code><a href="../../../extension/UuidType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
+<div class="col-second odd-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../../../extension/OpaqueType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serializedData)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidType.</span><code><a href="../../../extension/UuidType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serializedData)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">JsonType.</span><code><a href="../../../extension/JsonType.html#storageType()" class="member-name-link">storageType</a>()</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
 <div class="col-second even-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../../../extension/OpaqueType.html#storageType()" class="member-name-link">storageType</a>()</code></div>
@@ -914,13 +926,17 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../../../extension/OpaqueType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
+<div class="col-second even-row-color"><span class="type-name-label">JsonType.</span><code><a href="../../../extension/JsonType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serializedData)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UuidType.</span><code><a href="../../../extension/UuidType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
+<div class="col-second odd-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../../../extension/OpaqueType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serializedData)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidType.</span><code><a href="../../../extension/UuidType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;serializedData)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../../../extension/package-summary.html">org.apache.arrow.vector.extension</a> with parameters of type <a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></span></div>
 <div class="summary-table three-column-summary">
@@ -928,10 +944,15 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Constructor</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../../../extension/OpaqueType.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String,java.lang.String)" class="member-name-link">OpaqueType</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
+<div class="col-second even-row-color"><code><a href="../../../extension/JsonType.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">JsonType</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Create a JSON type backed by the specified string type.</div>
+</div>
+<div class="col-first odd-row-color"><code>&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../../../extension/OpaqueType.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String,java.lang.String)" class="member-name-link">OpaqueType</a><wbr>(<a href="../ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a>&nbsp;storageType,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;typeName,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;vendorName)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Create a new type instance.</div>
 </div>
 </div>

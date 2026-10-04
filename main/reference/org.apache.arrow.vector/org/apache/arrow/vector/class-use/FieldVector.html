@@ -746,17 +746,22 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#getVector(int)" class="member-name-link">getVector</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static <a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../ExtensionTypeVector.html#getStorageVector(org.apache.arrow.vector.FieldVector)" class="member-name-link">getStorageVector</a><wbr>(<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&nbsp;vector)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Get the storage vector, unwrapping extension vectors.</div>
+</div>
 <div class="col-first odd-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#getVector(java.lang.String)" class="member-name-link">getVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-second odd-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#getVector(int)" class="member-name-link">getVector</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#getVector(java.lang.String)" class="member-name-link">getVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name)</code></div>
+<div class="col-last even-row-color">
 <div class="block">gets a vector by name.</div>
 </div>
-<div class="col-first even-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#getVector(org.apache.arrow.vector.types.pojo.Field)" class="member-name-link">getVector</a><wbr>(<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#getVector(org.apache.arrow.vector.types.pojo.Field)" class="member-name-link">getVector</a><wbr>(<a href="../types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Methods in <a href="../package-summary.html">org.apache.arrow.vector</a> that return types with arguments of type <a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></span></div>
 <div class="summary-table three-column-summary">
@@ -809,9 +814,14 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">
 <div class="block">Add vector to the record batch, producing a new VectorSchemaRoot.</div>
 </div>
-<div class="col-first odd-row-color"><code>static <a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#of(org.apache.arrow.vector.FieldVector...)" class="member-name-link">of</a><wbr>(<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>...&nbsp;vectors)</code></div>
+<div class="col-first odd-row-color"><code>static <a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../ExtensionTypeVector.html#getStorageVector(org.apache.arrow.vector.FieldVector)" class="member-name-link">getStorageVector</a><wbr>(<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&nbsp;vector)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Get the storage vector, unwrapping extension vectors.</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../VectorSchemaRoot.html" title="class in org.apache.arrow.vector">VectorSchemaRoot</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">VectorSchemaRoot.</span><code><a href="../VectorSchemaRoot.html#of(org.apache.arrow.vector.FieldVector...)" class="member-name-link">of</a><wbr>(<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>...&nbsp;vectors)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Constructs a new instance from vectors.</div>
 </div>
 </div>
@@ -1219,8 +1229,13 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Class</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code>class&nbsp;</code></div>
-<div class="col-second even-row-color"><code><a href="../extension/OpaqueVector.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">OpaqueVector</a></code></div>
+<div class="col-second even-row-color"><code><a href="../extension/JsonVector.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">JsonVector</a></code></div>
 <div class="col-last even-row-color">
+<div class="block">A JSON extension vector backed by a string vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>class&nbsp;</code></div>
+<div class="col-second odd-row-color"><code><a href="../extension/OpaqueVector.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">OpaqueVector</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">Opaque is a wrapper for (usually binary) data from an external (often non-Arrow) system that
  could not be interpreted.</div>
 </div>
@@ -1231,15 +1246,20 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../extension/OpaqueType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second even-row-color"><span class="type-name-label">JsonType.</span><code><a href="../extension/JsonType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../types/pojo/FieldType.html" title="class in org.apache.arrow.vector.types.pojo">FieldType</a>&nbsp;fieldType,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UuidType.</span><code><a href="../extension/UuidType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+<div class="col-second odd-row-color"><span class="type-name-label">OpaqueType.</span><code><a href="../extension/OpaqueType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
  <a href="../types/pojo/FieldType.html" title="class in org.apache.arrow.vector.types.pojo">FieldType</a>&nbsp;fieldType,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code><a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidType.</span><code><a href="../extension/UuidType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;name,
+ <a href="../types/pojo/FieldType.html" title="class in org.apache.arrow.vector.types.pojo">FieldType</a>&nbsp;fieldType,
+ <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 <div class="caption"><span>Constructors in <a href="../extension/package-summary.html">org.apache.arrow.vector.extension</a> with parameters of type <a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></span></div>
 <div class="summary-table three-column-summary">

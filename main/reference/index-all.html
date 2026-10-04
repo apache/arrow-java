@@ -10265,6 +10265,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize(ArrowType, String)</a> - Method in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize(ArrowType, String)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize(ArrowType, String)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html#deserialize(org.apache.arrow.vector.types.pojo.ArrowType,java.lang.String)" class="member-name-link">deserialize(ArrowType, String)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html" title="class in org.apache.arrow.vector.extension">UuidType</a></dt>
@@ -11277,6 +11279,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">If required JNI libraries are not loaded, then load them.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#ensureRegistered()" class="member-name-link">ensureRegistered()</a> - Static method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
+<dd>
+<div class="block">Register a prototype that can deserialize all supported JSON storage types.</div>
+</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#ensureRegistered()" class="member-name-link">ensureRegistered()</a> - Static method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>
 <div class="block">Register the extension type so it can be used globally.</div>
@@ -11815,6 +11821,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Export the buffers of the fields for C Data Interface.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers(List&lt;ArrowBuf&gt;, ArrowBuf, long)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers(List&lt;ArrowBuf&gt;, ArrowBuf, long)</a> - Method in interface org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></dt>
 <dd>
 <div class="block">Export the buffers of the fields for C Data Interface.</div>
@@ -11917,6 +11925,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#EXTENSION_NAME" class="member-name-link">EXTENSION_NAME</a> - Static variable in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#EXTENSION_NAME" class="member-name-link">EXTENSION_NAME</a> - Static variable in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#EXTENSION_NAME" class="member-name-link">EXTENSION_NAME</a> - Static variable in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html#EXTENSION_NAME" class="member-name-link">EXTENSION_NAME</a> - Static variable in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html" title="class in org.apache.arrow.vector.extension">UuidType</a></dt>
@@ -11924,6 +11934,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Extension name registered in the Arrow extension type registry.</div>
 </dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#extensionEquals(org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType)" class="member-name-link">extensionEquals(ArrowType.ExtensionType)</a> - Method in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#extensionEquals(org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType)" class="member-name-link">extensionEquals(ArrowType.ExtensionType)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#extensionEquals(org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType)" class="member-name-link">extensionEquals(ArrowType.ExtensionType)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>&nbsp;</dd>
@@ -11940,6 +11952,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/holders/ExtensionHolder.html#%3Cinit%3E()" class="member-name-link">ExtensionHolder()</a> - Constructor for class org.apache.arrow.vector.holders.<a href="org.apache.arrow.vector/org/apache/arrow/vector/holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#extensionName()" class="member-name-link">extensionName()</a> - Method in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#extensionName()" class="member-name-link">extensionName()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#extensionName()" class="member-name-link">extensionName()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>&nbsp;</dd>
@@ -20108,6 +20122,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Retrieves the export buffer count for the C Data Interface.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getExportedCDataBufferCount()" class="member-name-link">getExportedCDataBufferCount()</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#getExportedCDataBufferCount()" class="member-name-link">getExportedCDataBufferCount()</a> - Method in interface org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a></dt>
 <dd>
 <div class="block">Retrieves the export buffer count for the C Data Interface.</div>
@@ -20487,6 +20503,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html#getField()" class="member-name-link">getField()</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/BaseWriter.StructWriter.html#getField()" class="member-name-link">getField()</a> - Method in interface org.apache.arrow.vector.complex.writer.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/BaseWriter.StructWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.StructWriter</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#getField()" class="member-name-link">getField()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html#getField()" class="member-name-link">getField()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html" title="class in org.apache.arrow.vector.extension">OpaqueVector</a></dt>
 <dd>&nbsp;</dd>
@@ -23329,6 +23347,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector(String, FieldType, BufferAllocator)</a> - Method in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector(String, FieldType, BufferAllocator)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector(String, FieldType, BufferAllocator)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html#getNewVector(java.lang.String,org.apache.arrow.vector.types.pojo.FieldType,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getNewVector(String, FieldType, BufferAllocator)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html" title="class in org.apache.arrow.vector.extension">UuidType</a></dt>
@@ -23662,6 +23682,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Same as <a href="org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#get(int)"><code>DurationVector.get(int)</code></a>.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#getObject(int)" class="member-name-link">getObject(int)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html#getObject(int)" class="member-name-link">getObject(int)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html" title="class in org.apache.arrow.vector.extension">OpaqueVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getObject(int)" class="member-name-link">getObject(int)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
@@ -26523,6 +26545,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block"><code>.arrow.flight.protocol.CloseSessionResult.Status status = 1;</code></div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getStorageVector(org.apache.arrow.vector.FieldVector)" class="member-name-link">getStorageVector(FieldVector)</a> - Static method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
+<dd>
+<div class="block">Get the storage vector, unwrapping extension vectors.</div>
+</dd>
 <dt><a href="org.apache.arrow.flight.core/org/apache/arrow/flight/FlightProducer.html#getStream(org.apache.arrow.flight.FlightProducer.CallContext,org.apache.arrow.flight.Ticket,org.apache.arrow.flight.FlightProducer.ServerStreamListener)" class="member-name-link">getStream(FlightProducer.CallContext, Ticket, FlightProducer.ServerStreamListener)</a> - Method in interface org.apache.arrow.flight.<a href="org.apache.arrow.flight.core/org/apache/arrow/flight/FlightProducer.html" title="interface in org.apache.arrow.flight">FlightProducer</a></dt>
 <dd>
 <div class="block">Return data for a stream.</div>
@@ -27885,6 +27911,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Construct a TransferPair comprising of this and a target vector of the same type.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(String, BufferAllocator)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(String, BufferAllocator)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(String, BufferAllocator)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html" title="class in org.apache.arrow.vector">FixedSizeBinaryVector</a></dt>
@@ -28059,6 +28087,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(String, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(String, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(String, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/NullVector.html#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(String, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/NullVector.html" title="class in org.apache.arrow.vector">NullVector</a></dt>
@@ -28098,6 +28128,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/StructVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(BufferAllocator)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/StructVector.html" title="class in org.apache.arrow.vector.complex">StructVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(BufferAllocator)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(BufferAllocator)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(BufferAllocator)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
 <dd>&nbsp;</dd>
@@ -28181,6 +28213,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Construct a TransferPair comprising this and a target vector of the same type.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(Field, BufferAllocator)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(Field, BufferAllocator)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair(Field, BufferAllocator)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html" title="class in org.apache.arrow.vector">FixedSizeBinaryVector</a></dt>
@@ -28350,6 +28384,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/StructVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(Field, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/StructVector.html" title="class in org.apache.arrow.vector.complex">StructVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(Field, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(Field, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair(Field, BufferAllocator, CallBack)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
 <dd>&nbsp;</dd>
@@ -31141,6 +31177,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html#hashCode(int)" class="member-name-link">hashCode(int)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#hashCode(int)" class="member-name-link">hashCode(int)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html#hashCode(int)" class="member-name-link">hashCode(int)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html" title="class in org.apache.arrow.vector.extension">OpaqueVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/NullVector.html#hashCode(int)" class="member-name-link">hashCode(int)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/NullVector.html" title="class in org.apache.arrow.vector">NullVector</a></dt>
@@ -31190,6 +31228,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/StructVector.html#hashCode(int,org.apache.arrow.memory.util.hash.ArrowBufHasher)" class="member-name-link">hashCode(int, ArrowBufHasher)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/StructVector.html" title="class in org.apache.arrow.vector.complex">StructVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html#hashCode(int,org.apache.arrow.memory.util.hash.ArrowBufHasher)" class="member-name-link">hashCode(int, ArrowBufHasher)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/UnionVector.html" title="class in org.apache.arrow.vector.complex">UnionVector</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#hashCode(int,org.apache.arrow.memory.util.hash.ArrowBufHasher)" class="member-name-link">hashCode(int, ArrowBufHasher)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html#hashCode(int,org.apache.arrow.memory.util.hash.ArrowBufHasher)" class="member-name-link">hashCode(int, ArrowBufHasher)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueVector.html" title="class in org.apache.arrow.vector.extension">OpaqueVector</a></dt>
 <dd>&nbsp;</dd>
@@ -33774,6 +33814,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#isComplex()" class="member-name-link">isComplex()</a> - Method in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#isComplex()" class="member-name-link">isComplex()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html#isComplex()" class="member-name-link">isComplex()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html" title="class in org.apache.arrow.vector.extension">UuidType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ArrowType.ComplexType.html#isComplex()" class="member-name-link">isComplex()</a> - Method in class org.apache.arrow.vector.types.pojo.<a href="org.apache.arrow.vector/org/apache/arrow/vector/types/pojo/ArrowType.ComplexType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType.ComplexType</a></dt>
@@ -35216,6 +35258,18 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/util/JsonStringHashMap.html#%3Cinit%3E()" class="member-name-link">JsonStringHashMap()</a> - Constructor for class org.apache.arrow.vector.util.<a href="org.apache.arrow.vector/org/apache/arrow/vector/util/JsonStringHashMap.html" title="class in org.apache.arrow.vector.util">JsonStringHashMap</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">JsonType</a> - Class in <a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/package-summary.html">org.apache.arrow.vector.extension</a></dt>
+<dd>
+<div class="block">Canonical extension type for UTF-8 encoded RFC 8259 JSON values.</div>
+</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#%3Cinit%3E(org.apache.arrow.vector.types.pojo.ArrowType)" class="member-name-link">JsonType(ArrowType)</a> - Constructor for class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
+<dd>
+<div class="block">Create a JSON type backed by the specified string type.</div>
+</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" class="type-name-link" title="class in org.apache.arrow.vector.extension">JsonVector</a> - Class in <a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/package-summary.html">org.apache.arrow.vector.extension</a></dt>
+<dd>
+<div class="block">A JSON extension vector backed by a string vector.</div>
+</dd>
 </dl>
 <h2 class="title" id="I:K">K</h2>
 <dl class="index">
@@ -36339,6 +36393,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Construct a TransferPair with a desired target vector of the same type.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair(ValueVector)</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonVector.html" title="class in org.apache.arrow.vector.extension">JsonVector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair(ValueVector)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html" title="class in org.apache.arrow.vector">ExtensionTypeVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair(ValueVector)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html" title="class in org.apache.arrow.vector">FixedSizeBinaryVector</a></dt>
@@ -47023,6 +47079,8 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#serialize()" class="member-name-link">serialize()</a> - Method in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#serialize()" class="member-name-link">serialize()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#serialize()" class="member-name-link">serialize()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html#serialize()" class="member-name-link">serialize()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/UuidType.html" title="class in org.apache.arrow.vector.extension">UuidType</a></dt>
@@ -54020,6 +54078,8 @@ loadScripts(document, 'script');</script>
 <div class="block">Storage type for UUID: FixedSizeBinary(16).</div>
 </dd>
 <dt><a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html#storageType()" class="member-name-link">storageType()</a> - Method in class org.apache.arrow.variant.extension.<a href="org.apache.arrow.variant/org/apache/arrow/variant/extension/VariantType.html" title="class in org.apache.arrow.variant.extension">VariantType</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html#storageType()" class="member-name-link">storageType()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/JsonType.html" title="class in org.apache.arrow.vector.extension">JsonType</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html#storageType()" class="member-name-link">storageType()</a> - Method in class org.apache.arrow.vector.extension.<a href="org.apache.arrow.vector/org/apache/arrow/vector/extension/OpaqueType.html" title="class in org.apache.arrow.vector.extension">OpaqueType</a></dt>
 <dd>&nbsp;</dd>

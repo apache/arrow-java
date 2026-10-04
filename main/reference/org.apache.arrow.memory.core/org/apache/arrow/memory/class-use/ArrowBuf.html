@@ -1134,322 +1134,305 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Get the data buffer of the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>default void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FieldVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffersPtr,
  long&nbsp;nullValue)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>default void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">FieldVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffersPtr,
+ long&nbsp;nullValue)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Export the buffers of the fields for C Data Interface.</div>
 </div>
-<div class="col-first odd-row-color"><code>static byte[]</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#get(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;offset,
- int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Method used by Json Writer to read a variable width element from the variable width vector and
- write to Json.</div>
-</div>
 <div class="col-first even-row-color"><code>static byte[]</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#get(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
+<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#get(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;offset,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Method used by Json Writer to read a variable width element from the variable width vector and
  write to Json.</div>
 </div>
-<div class="col-first odd-row-color"><code>static long</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BigIntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BigIntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>static byte[]</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#get(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;offset,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Method used by Json Writer to read a variable width element from the variable width vector and
+ write to Json.</div>
+</div>
+<div class="col-first even-row-color"><code>static long</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BigIntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BigIntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>static int</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>static int</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Check if a bit at a given index is set or not.</div>
 </div>
-<div class="col-first odd-row-color"><code>static int</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DateDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DateDayVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first even-row-color"><code>static int</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DateDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DateDayVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>static long</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DateMilliVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DateMilliVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
 <div class="col-first even-row-color"><code>static long</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DateMilliVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DateMilliVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-second even-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first odd-row-color"><code>static long</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>static byte[]</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#get(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>static byte[]</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#get(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index,
  int&nbsp;byteWidth)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
+</div>
+<div class="col-first even-row-color"><code>static float</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Float4Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Float4Vector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first odd-row-color"><code>static float</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Float4Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Float4Vector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>static double</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Float8Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Float8Vector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>static double</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Float8Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Float8Vector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first even-row-color"><code>static int</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>static short</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">SmallIntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/SmallIntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
+</div>
+<div class="col-first even-row-color"><code>static long</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeMicroVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeMicroVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
 <div class="col-first odd-row-color"><code>static int</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-second odd-row-color"><span class="type-name-label">TimeMilliVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeMilliVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>static short</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">SmallIntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/SmallIntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first even-row-color"><code>static long</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeNanoVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first odd-row-color"><code>static long</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeMicroVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeMicroVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>static int</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">TimeSecVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeSecVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>static int</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeMilliVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeMilliVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first even-row-color"><code>static long</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">TimeStampVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeStampVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first odd-row-color"><code>static long</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeNanoVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>static int</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TimeSecVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeSecVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first odd-row-color"><code>static long</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">TimeStampVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TimeStampVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>static byte</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">TinyIntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TinyIntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first odd-row-color"><code>static char</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt2Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt2Vector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>static byte</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#getBitsFromCurrentByte(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getBitsFromCurrentByte</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
- int&nbsp;index,
- int&nbsp;offset)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Returns the byte at index from data right-shifted by offset.</div>
 </div>
 <div class="col-first odd-row-color"><code>static byte</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#getBitsFromNextByte(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getBitsFromNextByte</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
+<div class="col-second odd-row-color"><span class="type-name-label">TinyIntVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/TinyIntVector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
+</div>
+<div class="col-first even-row-color"><code>static char</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt2Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt2Vector.html#get(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">get</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>static byte</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#getBitsFromCurrentByte(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getBitsFromCurrentByte</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
  int&nbsp;index,
  int&nbsp;offset)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Returns the byte at index from data right-shifted by offset.</div>
+</div>
+<div class="col-first even-row-color"><code>static byte</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#getBitsFromNextByte(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getBitsFromNextByte</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data,
+ int&nbsp;index,
+ int&nbsp;offset)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Returns the byte at <code>index</code> from left-shifted by (8 - <code>offset</code>).</div>
 </div>
+<div class="col-first odd-row-color"><code>static int</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#getDays(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getDays</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Given a data buffer, get the number of days stored at a particular position in the vector.</div>
+</div>
 <div class="col-first even-row-color"><code>static int</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#getDays(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getDays</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#getDays(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getDays</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the number of days stored at a particular position in the vector.</div>
 </div>
 <div class="col-first odd-row-color"><code>static int</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#getDays(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getDays</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#getMilliseconds(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getMilliseconds</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Given a data buffer, get the number of days stored at a particular position in the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>static int</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#getMilliseconds(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getMilliseconds</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the get the number of milliseconds stored at a particular position in
  the vector.</div>
 </div>
-<div class="col-first odd-row-color"><code>static int</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#getMonths(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getMonths</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Given a data buffer, get the number of months stored at a particular position in the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>static long</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#getNanoseconds(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNanoseconds</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first even-row-color"><code>static int</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#getMonths(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getMonths</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Given a data buffer, get the number of months stored at a particular position in the vector.</div>
+</div>
+<div class="col-first odd-row-color"><code>static long</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#getNanoseconds(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNanoseconds</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Given a data buffer, get the get the number of nanoseconds stored at a particular position in
  the vector.</div>
 </div>
-<div class="col-first odd-row-color"><code>static short</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt1Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt1Vector.html#getNoOverflow(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNoOverflow</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>static long</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UInt4Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt4Vector.html#getNoOverflow(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNoOverflow</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first even-row-color"><code>static short</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt1Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt1Vector.html#getNoOverflow(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNoOverflow</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first odd-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigInteger.html" title="class or interface in java.math" class="external-link">BigInteger</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UInt8Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt8Vector.html#getNoOverflow(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNoOverflow</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>static long</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UInt4Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt4Vector.html#getNoOverflow(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNoOverflow</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;index)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>static int</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#getNullCount(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNullCount</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
- int&nbsp;valueCount)</code></div>
+<div class="col-first even-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigInteger.html" title="class or interface in java.math" class="external-link">BigInteger</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UInt8Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UInt8Vector.html#getNoOverflow(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNoOverflow</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Given a validity buffer, find the number of bits that are not set.</div>
+<div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
 <div class="col-first odd-row-color"><code>static int</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalYearVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalYearVector.html#getTotalMonths(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getTotalMonths</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;index)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#getNullCount(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getNullCount</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
+ int&nbsp;valueCount)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Given a validity buffer, find the number of bits that are not set.</div>
+</div>
+<div class="col-first even-row-color"><code>static int</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalYearVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalYearVector.html#getTotalMonths(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">getTotalMonths</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;index)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Given a data buffer, get the value stored at a particular position in the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BufferBacked.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BufferBacked.html#load(org.apache.arrow.vector.ipc.message.ArrowFieldNode,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">load</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BufferBacked.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BufferBacked.html#load(org.apache.arrow.vector.ipc.message.ArrowFieldNode,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">load</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;data)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#loadValidityBuffer(org.apache.arrow.vector.ipc.message.ArrowFieldNode,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">loadValidityBuffer</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#loadValidityBuffer(org.apache.arrow.vector.ipc.message.ArrowFieldNode,org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">loadValidityBuffer</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;sourceValidityBuffer,
  <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Returns a new buffer if the source validity buffer is either all null or all not-null,
  otherwise returns a buffer pointing to the same memory as source.</div>
 </div>
-<div class="col-first even-row-color"><code>protected <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseValueVector.html#releaseBuffer(org.apache.arrow.memory.ArrowBuf)" class="member-name-link">releaseBuffer</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(int,int,long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>protected <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseValueVector.html#releaseBuffer(org.apache.arrow.memory.ArrowBuf)" class="member-name-link">releaseBuffer</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(int,int,long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  long&nbsp;start,
  long&nbsp;end,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
- is NULL or not.</div>
-</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(int,long,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- long&nbsp;start,
- int&nbsp;length,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
  is NULL or not.</div>
 </div>
-<div class="col-first odd-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator,int,int,long)" class="member-name-link">set</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(int,long,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ long&nbsp;start,
+ int&nbsp;length,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
+ is NULL or not.</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator,int,int,long)" class="member-name-link">set</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  int&nbsp;valueCount,
  int&nbsp;index,
  long&nbsp;value)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Method used by Json Reader to explicitly set the offsets of the variable width vector data.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  int&nbsp;start,
  int&nbsp;end,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
+ is NULL or not.</div>
+</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ int&nbsp;start,
+ int&nbsp;length,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
  is NULL or not.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- int&nbsp;start,
- int&nbsp;length,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
- is NULL or not.</div>
-</div>
-<div class="col-first even-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator,int,int,int)" class="member-name-link">set</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-first odd-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator,int,int,int)" class="member-name-link">set</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  int&nbsp;valueCount,
  int&nbsp;index,
  int&nbsp;value)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Method used by Json Reader to explicitly set the offsets of the variable width vector data.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  int&nbsp;start,
  int&nbsp;end,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
  is NULL or not.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#set(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#set(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  int&nbsp;start,
  int&nbsp;length,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
- is NULL or not.</div>
-</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- int&nbsp;isSet,
- long&nbsp;start,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
  is NULL or not.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- long&nbsp;start,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Set the element at the given index to the given value.</div>
-</div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Set the element at the given index to the given value.</div>
-</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
@@ -1458,281 +1441,303 @@ loadScripts(document, 'script');</script>
  is NULL or not.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Set the element at the given index to the given value.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Set the element at the given index to the given value.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ int&nbsp;isSet,
+ long&nbsp;start,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
+ is NULL or not.</div>
+</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ long&nbsp;start,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Set the element at the given index to the given value.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Set the element at the given index to the given value.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#set(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Set the element at the given index to the given value.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#set(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Set the element at the given index to the given value.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Set the element at the given index to the given value.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Set the element at the given index to the given value.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Set the element at the given index to the given value.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#set(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Set the element at the given index to the given value.</div>
-</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UuidVector.html#set(int,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UuidVector.html#set(int,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;source,
  int&nbsp;sourceOffset)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Sets the UUID value at the given index by copying from a source buffer.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setBigEndianSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setBigEndianSafe</a><wbr>(int&nbsp;index,
- long&nbsp;start,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
- int&nbsp;length)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Sets the element at given index using the buffer whose size maybe &lt;= 32 bytes.</div>
-</div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setBigEndianSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setBigEndianSafe</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setBigEndianSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setBigEndianSafe</a><wbr>(int&nbsp;index,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;length)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Sets the element at given index using the buffer whose size maybe &lt;= 32 bytes.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setBigEndianSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setBigEndianSafe</a><wbr>(int&nbsp;index,
+ long&nbsp;start,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+ int&nbsp;length)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Sets the element at given index using the buffer whose size maybe &lt;= 16 bytes.</div>
 </div>
-<div class="col-first odd-row-color"><code>static void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#setBit(org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">setBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
+<div class="col-first even-row-color"><code>static void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#setBit(org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">setBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
  long&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Set the bit at provided index to 1.</div>
 </div>
-<div class="col-first even-row-color"><code>protected final void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#setBytes(int,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">setBytes</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>protected final void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#setBytes(int,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">setBytes</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;valueBuf,
  int&nbsp;start,
  int&nbsp;length)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">This method is used to create a view buffer for a variable width vector.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#setSafe(int,int,long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#setSafe(int,int,long,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  long&nbsp;start,
  long&nbsp;end,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(int,int,long,long,org.apache.arrow.memory.ArrowBuf)"><code>BaseLargeVariableWidthVector.set(int, int, long, long, ArrowBuf)</code></a> except that it handles the case when index
- is greater than or equal to current value capacity of the vector.</div>
-</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#setSafe(int,long,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
- long&nbsp;start,
- int&nbsp;length,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(int,int,long,long,org.apache.arrow.memory.ArrowBuf)"><code>BaseLargeVariableWidthVector.set(int, int, long, long, ArrowBuf)</code></a> except that it handles the case when index
  is greater than or equal to current value capacity of the vector.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#setSafe(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
- int&nbsp;isSet,
- int&nbsp;start,
- int&nbsp;end,
+<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#setSafe(int,long,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ long&nbsp;start,
+ int&nbsp;length,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>BaseVariableWidthVector.set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
+<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#set(int,int,long,long,org.apache.arrow.memory.ArrowBuf)"><code>BaseLargeVariableWidthVector.set(int, int, long, long, ArrowBuf)</code></a> except that it handles the case when index
  is greater than or equal to current value capacity of the vector.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#setSafe(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#setSafe(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ int&nbsp;isSet,
  int&nbsp;start,
- int&nbsp;length,
+ int&nbsp;end,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>BaseVariableWidthVector.set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
  is greater than or equal to current value capacity of the vector.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#setSafe(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
- int&nbsp;isSet,
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#setSafe(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  int&nbsp;start,
- int&nbsp;end,
+ int&nbsp;length,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>BaseVariableWidthViewVector.set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
+<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>BaseVariableWidthVector.set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
  is greater than or equal to current value capacity of the vector.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#setSafe(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#setSafe(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ int&nbsp;isSet,
  int&nbsp;start,
- int&nbsp;length,
+ int&nbsp;end,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>BaseVariableWidthViewVector.set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
  is greater than or equal to current value capacity of the vector.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#setSafe(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ int&nbsp;start,
+ int&nbsp;length,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>BaseVariableWidthViewVector.set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
+ is greater than or equal to current value capacity of the vector.</div>
+</div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,int,long,org.apache.arrow.memory.ArrowBuf)"><code>Decimal256Vector.setSafe(int, int, int, ArrowBuf)</code></a> except that it handles the case when the
  position of new value is beyond the current value capacity of the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,long,org.apache.arrow.memory.ArrowBuf)"><code>Decimal256Vector.set(int, int, ArrowBuf)</code></a> except that it handles the case when index is greater
  than or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;length)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Sets the element at given index using the buffer whose size maybe &lt;= 32 bytes.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">Decimal256Vector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/Decimal256Vector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>Decimal256Vector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
  or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,int,long,org.apache.arrow.memory.ArrowBuf)"><code>DecimalVector.set(int, int, long, ArrowBuf)</code></a> except that it handles the case when the
  position of new value is beyond the current value capacity of the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,long,org.apache.arrow.memory.ArrowBuf)"><code>DecimalVector.set(int, long, ArrowBuf)</code></a> except that it handles the case when index is greater
  than or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,long,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  long&nbsp;start,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;length)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Sets the element at given index using the buffer whose size maybe &lt;= 16 bytes.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DecimalVector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>DecimalVector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
  or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DurationVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/DurationVector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>DurationVector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
  or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#setSafe(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
- int&nbsp;isSet,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>FixedSizeBinaryVector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
- or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
-</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-second odd-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#setSafe(int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ int&nbsp;isSet,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>FixedSizeBinaryVector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
  or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">FixedSizeBinaryVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FixedSizeBinaryVector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>FixedSizeBinaryVector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
+ or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
+</div>
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">IntervalDayVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalDayVector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>IntervalDayVector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
  or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">IntervalMonthDayNanoVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Same as <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/IntervalMonthDayNanoVector.html#set(int,org.apache.arrow.memory.ArrowBuf)"><code>IntervalMonthDayNanoVector.set(int, ArrowBuf)</code></a> except that it handles the case when index is greater than
  or equal to existing value capacity <a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#getValueCapacity()"><code>BaseFixedWidthVector.getValueCapacity()</code></a>.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UuidVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UuidVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;value)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Sets the UUID value at the given index from an ArrowBuf, expanding capacity if needed.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UuidVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/UuidVector.html#setSafe(int,org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  int&nbsp;start)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Sets the UUID value at the given index by copying from a source buffer, expanding capacity if
  needed.</div>
 </div>
-<div class="col-first even-row-color"><code>static void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#setValidityBit(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">setValidityBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
+<div class="col-first odd-row-color"><code>static void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#setValidityBit(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">setValidityBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
+ int&nbsp;index,
+ int&nbsp;value)</code></div>
+<div class="col-last odd-row-color">
+<div class="block">Set the bit at a given index to provided value (1 or 0).</div>
+</div>
+<div class="col-first even-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#setValidityBit(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator,int,int,int)" class="member-name-link">setValidityBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
+ <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ int&nbsp;valueCount,
  int&nbsp;index,
  int&nbsp;value)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Set the bit at a given index to provided value (1 or 0).</div>
 </div>
 <div class="col-first odd-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#setValidityBit(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator,int,int,int)" class="member-name-link">setValidityBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
- <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
- int&nbsp;valueCount,
- int&nbsp;index,
- int&nbsp;value)</code></div>
-<div class="col-last odd-row-color">
-<div class="block">Set the bit at a given index to provided value (1 or 0).</div>
-</div>
-<div class="col-first even-row-color"><code>static <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseValueVector.html#transferBuffer(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">transferBuffer</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;srcBuffer,
+<div class="col-second odd-row-color"><span class="type-name-label">BaseValueVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseValueVector.html#transferBuffer(org.apache.arrow.memory.ArrowBuf,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">transferBuffer</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;srcBuffer,
  <a href="../BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;targetAllocator)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#unsetBit(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">unsetBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BitVectorHelper.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BitVectorHelper.html#unsetBit(org.apache.arrow.memory.ArrowBuf,int)" class="member-name-link">unsetBit</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;validityBuffer,
  int&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Set the bit at provided index to 0.</div>
 </div>
 </div>
@@ -1772,51 +1777,56 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color">
 <div class="block">Get the data buffer of the vector.</div>
 </div>
-<div class="col-first even-row-color"><code>default void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FieldVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffersPtr,
  long&nbsp;nullValue)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>default void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">FieldVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#exportCDataBuffers(java.util.List,org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">exportCDataBuffers</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;buffers,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffersPtr,
+ long&nbsp;nullValue)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Export the buffers of the fields for C Data Interface.</div>
 </div>
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">BaseFixedWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+ <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
+<div class="col-last even-row-color">
+<div class="block">Load the buffers of this vector with provided source buffers.</div>
+</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseFixedWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseFixedWidthVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-second odd-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Load the buffers of this vector with provided source buffers.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseLargeVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseLargeVariableWidthVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
 <div class="col-last even-row-color">
 <div class="block">Load the buffers of this vector with provided source buffers.</div>
 </div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-second odd-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
 <div class="col-last odd-row-color">
 <div class="block">Load the buffers of this vector with provided source buffers.</div>
 </div>
 <div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">BaseVariableWidthViewVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-second even-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Load the buffers of this vector with provided source buffers.</div>
-</div>
+<div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">ExtensionTypeVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-second odd-row-color"><span class="type-name-label">FieldVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">FieldVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/FieldVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
- <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
-<div class="col-last even-row-color">
+<div class="col-last odd-row-color">
 <div class="block">Loads data in the vectors.</div>
 </div>
-<div class="col-first odd-row-color"><code>void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">NullVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/NullVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-first even-row-color"><code>void</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">NullVector.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/NullVector.html#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last even-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
