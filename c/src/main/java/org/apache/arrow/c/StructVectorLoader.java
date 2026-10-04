@@ -26,6 +26,7 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.util.Collections2;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
+import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.TypeLayout;
 import org.apache.arrow.vector.complex.StructVector;
@@ -124,9 +125,10 @@ public class StructVectorLoader {
       Iterator<Long> variadicBufferCounts) {
     checkArgument(nodes.hasNext(), "no more field nodes for field %s and vector %s", field, vector);
     ArrowFieldNode fieldNode = nodes.next();
-    // variadicBufferLayoutCount will be 0 for vectors of a type except BaseVariableWidthViewVector
+    FieldVector storageVector = ExtensionTypeVector.getStorageVector(vector);
+    // Only view storage has variadic buffers.
     long variadicBufferLayoutCount = 0;
-    if (vector instanceof BaseVariableWidthViewVector) {
+    if (storageVector instanceof BaseVariableWidthViewVector) {
       if (variadicBufferCounts.hasNext()) {
         variadicBufferLayoutCount = variadicBufferCounts.next();
       } else {

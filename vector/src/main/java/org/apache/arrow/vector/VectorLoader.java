@@ -106,11 +106,12 @@ public class VectorLoader {
       Iterator<ArrowFieldNode> nodes,
       CompressionCodec codec,
       Iterator<Long> variadicBufferCounts) {
+    FieldVector storageVector = ExtensionTypeVector.getStorageVector(vector);
     checkArgument(nodes.hasNext(), "no more field nodes for field %s and vector %s", field, vector);
     ArrowFieldNode fieldNode = nodes.next();
-    // variadicBufferLayoutCount will be 0 for vectors of a type except BaseVariableWidthViewVector
+    // Only view storage has variadic buffers.
     long variadicBufferLayoutCount = 0;
-    if (vector instanceof BaseVariableWidthViewVector) {
+    if (storageVector instanceof BaseVariableWidthViewVector) {
       if (variadicBufferCounts.hasNext()) {
         variadicBufferLayoutCount = variadicBufferCounts.next();
       } else {
