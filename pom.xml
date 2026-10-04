@@ -23,7 +23,7 @@ under the License.
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>38</version>
+    <version>40</version>
   </parent>
 
   <groupId>org.apache.arrow</groupId>
@@ -131,6 +131,13 @@ under the License.
       We have to wait new maven-jar-plugin release, and a new Apache POM release providing it
     -->
     <version.maven-jar-plugin>3.2.2</version.maven-jar-plugin>
+    <!--
+      Downgrade maven-surefire-plugin and maven-failsafe-plugin to 3.5.6 due to
+      NullPointerException in AbstractSurefireMojo$JUnitPlatformProviderInfo.getProviderClasspath()
+      in 3.6.0 when inspected by the Develocity extension.
+    -->
+    <version.maven-surefire-plugin>3.5.6</version.maven-surefire-plugin>
+    <version.maven-failsafe-plugin>3.5.6</version.maven-failsafe-plugin>
   </properties>
 
   <dependencyManagement>
