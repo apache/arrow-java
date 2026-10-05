@@ -34,4 +34,17 @@ under the License.
     <module>memory-netty-buffer-patch</module>
     <module>memory-netty</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <!-- java.lang.foreign is only finalized (non-preview) on JDK 22+ (JEP 454). -->
+      <id>arrow-memory-ffm</id>
+      <activation>
+        <jdk>[22,)</jdk>
+      </activation>
+      <modules>
+        <module>memory-ffm</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>
