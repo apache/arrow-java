@@ -113,7 +113,7 @@ under the License.
     <checkstyle.failOnViolation>true</checkstyle.failOnViolation>
     <error_prone_core.version>2.50.0</error_prone_core.version>
     <checker.framework.version>4.3.0</checker.framework.version>
-    <logback.version>1.6.3</logback.version>
+    <logback.version>1.6.5</logback.version>
     <doclint>none</doclint>
     <additionalparam>-Xdoclint:none</additionalparam>
     <surefire.argLine.extend/>
