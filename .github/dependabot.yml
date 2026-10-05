@@ -31,3 +31,7 @@ updates:
     commit-message:
       prefix: "MINOR: "
     open-pull-requests-limit: 10
+    ignore:
+      # Checkstyle 13+ requires Java 21, but the build still runs on JDK 17
+      - dependency-name: "com.puppycrawl.tools:checkstyle"
+        versions: [">=13"]
