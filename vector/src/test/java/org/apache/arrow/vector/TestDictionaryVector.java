@@ -943,6 +943,33 @@ public class TestDictionaryVector {
   }
 
   @Test
+  public void testDecodeIndexOutOfBounds() {
+    // valid indices are 0..dictionaryCount-1; index == dictionaryCount and negative indices
+    // must be rejected before dereferencing the dictionary vector.
+    try (final IntVector indices = newVector(IntVector.class, "", Types.MinorType.INT, allocator);
+        final VarCharVector dictionaryVector = newVarCharVector("dict", allocator)) {
+      setVector(dictionaryVector, zero, one);
+      Dictionary dictionary =
+          new Dictionary(dictionaryVector, new DictionaryEncoding(1L, false, null));
+
+      setVector(indices, 2);
+      try (final ValueVector decoded = DictionaryEncoder.decode(indices, dictionary, allocator)) {
+        fail("There should be an exception when decoding an index equal to the dictionary size");
+      } catch (IllegalArgumentException e) {
+        assertEquals("Provided dictionary does not contain value for index 2", e.getMessage());
+      }
+
+      setVector(indices, -1);
+      try (final ValueVector decoded = DictionaryEncoder.decode(indices, dictionary, allocator)) {
+        fail("There should be an exception when decoding a negative index");
+      } catch (IllegalArgumentException e) {
+        assertEquals("Provided dictionary does not contain value for index -1", e.getMessage());
+      }
+    }
+    assertEquals(0, allocator.getAllocatedMemory(), "decode memory leak");
+  }
+
+  @Test
   public void testListNoMemoryLeak() {
     // Create a new value vector
     try (final ListVector vector = ListVector.empty("vector", allocator);
@@ -1053,7 +1080,7 @@ public class TestDictionaryVector {
       NullableStructWriter writer = indices.getWriter();
       writer.allocate();
       writer.start();
-      writer.integer("f0").writeInt(1);
+      writer.integer("f0").writeInt(0);
       writer.integer("f1").writeInt(3);
       writer.end();
       writer.setValueCount(1);
