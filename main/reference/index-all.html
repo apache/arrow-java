@@ -3197,6 +3197,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Constructs a new instance.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.ViewElementConsumer.html" class="type-name-link" title="interface in org.apache.arrow.vector">BaseVariableWidthViewVector.ViewElementConsumer</a>&lt;<a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.ViewElementConsumer.html" title="type parameter in BaseVariableWidthViewVector.ViewElementConsumer">T</a>&gt; - Interface in <a href="org.apache.arrow.vector/org/apache/arrow/vector/package-summary.html">org.apache.arrow.vector</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/BaseWriter.html" class="type-name-link" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter</a> - Interface in <a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/package-summary.html">org.apache.arrow.vector.complex.writer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/BaseWriter.ComplexWriter.html" class="type-name-link" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.ComplexWriter</a> - Interface in <a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/writer/package-summary.html">org.apache.arrow.vector.complex.writer</a></dt>
@@ -7385,6 +7387,8 @@ loadScripts(document, 'script');</script>
 <dt><a href="org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/MapConsumer.html#consume(java.sql.ResultSet)" class="member-name-link">consume(ResultSet)</a> - Method in class org.apache.arrow.adapter.jdbc.consumer.<a href="org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/MapConsumer.html" title="class in org.apache.arrow.adapter.jdbc.consumer">MapConsumer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/NullConsumer.html#consume(java.sql.ResultSet)" class="member-name-link">consume(ResultSet)</a> - Method in class org.apache.arrow.adapter.jdbc.consumer.<a href="org.apache.arrow.adapter.jdbc/org/apache/arrow/adapter/jdbc/consumer/NullConsumer.html" title="class in org.apache.arrow.adapter.jdbc.consumer">NullConsumer</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.ViewElementConsumer.html#consume(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">consume(ArrowBuf, int, int)</a> - Method in interface org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.ViewElementConsumer.html" title="interface in org.apache.arrow.vector">BaseVariableWidthViewVector.ViewElementConsumer</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/consumers/AvroArraysConsumer.html#consume(org.apache.avro.io.Decoder)" class="member-name-link">consume(Decoder)</a> - Method in class org.apache.arrow.adapter.avro.consumers.<a href="org.apache.arrow.adapter.avro/org/apache/arrow/adapter/avro/consumers/AvroArraysConsumer.html" title="class in org.apache.arrow.adapter.avro.consumers">AvroArraysConsumer</a></dt>
 <dd>&nbsp;</dd>
@@ -16578,6 +16582,10 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Get current allocated bytes.</div>
 </dd>
+<dt><a href="org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html#getBytesAsArray(long,int)" class="member-name-link">getBytesAsArray(long, int)</a> - Method in class org.apache.arrow.memory.<a href="org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></dt>
+<dd>
+<div class="block">Copy data from this ArrowBuf into a newly allocated array.</div>
+</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/util/UuidUtility.html#getBytesFromUUID(java.util.UUID)" class="member-name-link">getBytesFromUUID(UUID)</a> - Static method in class org.apache.arrow.vector.util.<a href="org.apache.arrow.vector/org/apache/arrow/vector/util/UuidUtility.html" title="class in org.apache.arrow.vector.util">UuidUtility</a></dt>
 <dd>
 <div class="block">Converts a UUID to a 16-byte array.</div>
@@ -17193,6 +17201,10 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#getData(int,org.apache.arrow.memory.ReusableBuffer)" class="member-name-link">getData(int, ReusableBuffer&lt;?&gt;)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html#getData(int,org.apache.arrow.vector.BaseVariableWidthViewVector.ViewElementConsumer)" class="member-name-link">getData(int, BaseVariableWidthViewVector.ViewElementConsumer&lt;T&gt;)</a> - Method in class org.apache.arrow.vector.<a href="org.apache.arrow.vector/org/apache/arrow/vector/BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a></dt>
+<dd>
+<div class="block">Helper to get a single view value with sanity checking.</div>
+</dd>
 <dt><a href="org.apache.arrow.flight.core/org/apache/arrow/flight/impl/Flight.FlightData.Builder.html#getDataBody()" class="member-name-link">getDataBody()</a> - Method in class org.apache.arrow.flight.impl.<a href="org.apache.arrow.flight.core/org/apache/arrow/flight/impl/Flight.FlightData.Builder.html" title="class in org.apache.arrow.flight.impl">Flight.FlightData.Builder</a></dt>
 <dd>
 <div class="block">

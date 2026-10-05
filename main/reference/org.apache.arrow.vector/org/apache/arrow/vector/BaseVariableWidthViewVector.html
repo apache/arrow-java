@@ -46,7 +46,7 @@ loadScripts(document, 'script');</script>
 <div>
 <ul class="sub-nav-list">
 <li>Summary:&nbsp;</li>
-<li>Nested&nbsp;|&nbsp;</li>
+<li><a href="#nested-class-summary">Nested</a>&nbsp;|&nbsp;</li>
 <li><a href="#field-summary">Field</a>&nbsp;|&nbsp;</li>
 <li><a href="#constructor-summary">Constr</a>&nbsp;|&nbsp;</li>
 <li><a href="#method-summary">Method</a></li>
@@ -97,6 +97,21 @@ implements <a href="VariableWidthFieldVector.html" title="interface in org.apach
 </section>
 <section class="summary">
 <ul class="summary-list">
+<!-- ======== NESTED CLASS SUMMARY ======== -->
+<li>
+<section class="nested-class-summary" id="nested-class-summary">
+<h2>Nested Class Summary</h2>
+<div class="caption"><span>Nested Classes</span></div>
+<div class="summary-table three-column-summary">
+<div class="table-header col-first">Modifier and Type</div>
+<div class="table-header col-second">Class</div>
+<div class="table-header col-last">Description</div>
+<div class="col-first even-row-color"><code>protected static interface&nbsp;</code></div>
+<div class="col-second even-row-color"><code><a href="BaseVariableWidthViewVector.ViewElementConsumer.html" class="type-name-link" title="interface in org.apache.arrow.vector">BaseVariableWidthViewVector.ViewElementConsumer</a>&lt;<a href="BaseVariableWidthViewVector.ViewElementConsumer.html" title="type parameter in BaseVariableWidthViewVector.ViewElementConsumer">T</a>&gt;</code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+</div>
+</section>
+</li>
 <!-- =========== FIELD SUMMARY =========== -->
 <li>
 <section class="field-summary" id="field-summary">
@@ -289,400 +304,406 @@ IN&gt;&nbsp;OUT</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getData(int,org.apache.arrow.memory.ReusableBuffer)" class="member-name-link">getData</a><wbr>(int&nbsp;index,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ReusableBuffer.html" title="interface in org.apache.arrow.memory">ReusableBuffer</a>&lt;?&gt;&nbsp;buffer)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataBuffer()" class="member-name-link">getDataBuffer</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected &lt;T&gt;&nbsp;T</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getData(int,org.apache.arrow.vector.BaseVariableWidthViewVector.ViewElementConsumer)" class="member-name-link">getData</a><wbr>(int&nbsp;index,
+ <a href="BaseVariableWidthViewVector.ViewElementConsumer.html" title="interface in org.apache.arrow.vector">BaseVariableWidthViewVector.ViewElementConsumer</a>&lt;T&gt;&nbsp;consumer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Helper to get a single view value with sanity checking.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataBuffer()" class="member-name-link">getDataBuffer</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the buffer that stores the data for elements in the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataBufferAddress()" class="member-name-link">getDataBufferAddress</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataBufferAddress()" class="member-name-link">getDataBufferAddress</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the memory address of buffer that stores the data for elements in the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataBuffers()" class="member-name-link">getDataBuffers</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataBuffers()" class="member-name-link">getDataBuffers</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the buffers that store the data for views in the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/util/ArrowBufPointer.html" title="class in org.apache.arrow.memory.util">ArrowBufPointer</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataPointer(int)" class="member-name-link">getDataPointer</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Gets the pointer for the data at the given index.</div>
-</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/util/ArrowBufPointer.html" title="class in org.apache.arrow.memory.util">ArrowBufPointer</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataPointer(int,org.apache.arrow.memory.util.ArrowBufPointer)" class="member-name-link">getDataPointer</a><wbr>(int&nbsp;index,
- <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/util/ArrowBufPointer.html" title="class in org.apache.arrow.memory.util">ArrowBufPointer</a>&nbsp;reuse)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataPointer(int)" class="member-name-link">getDataPointer</a><wbr>(int&nbsp;index)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the pointer for the data at the given index.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDensity()" class="member-name-link">getDensity</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/util/ArrowBufPointer.html" title="class in org.apache.arrow.memory.util">ArrowBufPointer</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDataPointer(int,org.apache.arrow.memory.util.ArrowBufPointer)" class="member-name-link">getDataPointer</a><wbr>(int&nbsp;index,
+ <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/util/ArrowBufPointer.html" title="class in org.apache.arrow.memory.util">ArrowBufPointer</a>&nbsp;reuse)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Gets the pointer for the data at the given index.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>double</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDensity()" class="member-name-link">getDensity</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the density of this ListVector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExportedCDataBufferCount()" class="member-name-link">getExportedCDataBufferCount</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExportedCDataBufferCount()" class="member-name-link">getExportedCDataBufferCount</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Retrieves the export buffer count for the C Data Interface.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getField()" class="member-name-link">getField</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getField()" class="member-name-link">getField</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get information about how this field is materialized.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFieldBuffers()" class="member-name-link">getFieldBuffers</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getFieldBuffers()" class="member-name-link">getFieldBuffers</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the buffers belonging to this vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="BufferBacked.html" title="interface in org.apache.arrow.vector">BufferBacked</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getFieldInnerVectors()" class="member-name-link">getFieldInnerVectors</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="BufferBacked.html" title="interface in org.apache.arrow.vector">BufferBacked</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6"><code><a href="#getFieldInnerVectors()" class="member-name-link">getFieldInnerVectors</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4 method-summary-table-tab6">
 <div class="block"><span class="deprecated-label">Deprecated.</span>
 <div class="deprecation-comment">This API will be removed as the current implementations no longer support inner
      vectors.</div>
 </div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLastSet()" class="member-name-link">getLastSet</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLastSet()" class="member-name-link">getLastSet</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the index of the last non-null element in the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getName()" class="member-name-link">getName</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets the name of the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNullCount()" class="member-name-link">getNullCount</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getNullCount()" class="member-name-link">getNullCount</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the number of elements that are null in the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOffsetBuffer()" class="member-name-link">getOffsetBuffer</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">BaseVariableWidthViewVector doesn't support offset buffer.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOffsetBufferAddress()" class="member-name-link">getOffsetBufferAddress</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOffsetBuffer()" class="member-name-link">getOffsetBuffer</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">BaseVariableWidthViewVector doesn't support offset buffer.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTotalValueLengthUpToIndex(int)" class="member-name-link">getTotalValueLengthUpToIndex</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getOffsetBufferAddress()" class="member-name-link">getOffsetBufferAddress</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">BaseVariableWidthViewVector doesn't support offset buffer.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>final int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTotalValueLengthUpToIndex(int)" class="member-name-link">getTotalValueLengthUpToIndex</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the total length of the elements up to the given index.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
- <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
- <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
- <a href="util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
-</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(java.lang.String,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;ref,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
  <a href="util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValidityBuffer()" class="member-name-link">getValidityBuffer</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract <a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator)" class="member-name-link">getTransferPair</a><wbr>(<a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTransferPair(org.apache.arrow.vector.types.pojo.Field,org.apache.arrow.memory.BufferAllocator,org.apache.arrow.vector.util.CallBack)" class="member-name-link">getTransferPair</a><wbr>(<a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&nbsp;field,
+ <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/BufferAllocator.html" title="interface in org.apache.arrow.memory">BufferAllocator</a>&nbsp;allocator,
+ <a href="util/CallBack.html" title="interface in org.apache.arrow.vector.util">CallBack</a>&nbsp;callBack)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Construct a transfer pair of this vector and another vector of the same type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValidityBuffer()" class="member-name-link">getValidityBuffer</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get buffer that manages the validity (NULL or NON-NULL nature) of elements in the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValidityBufferAddress()" class="member-name-link">getValidityBufferAddress</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValidityBufferAddress()" class="member-name-link">getValidityBufferAddress</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the memory address of buffer that manages the validity (NULL or NON-NULL nature) of
  elements in the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValueCapacity()" class="member-name-link">getValueCapacity</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValueCapacity()" class="member-name-link">getValueCapacity</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the current capacity which does not exceed either validity buffer or value buffer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValueCount()" class="member-name-link">getValueCount</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValueCount()" class="member-name-link">getValueCount</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the value count of vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValueLength(int)" class="member-name-link">getValueLength</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getValueLength(int)" class="member-name-link">getValueLength</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the length of the element at specified index.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleSafe(int,int)" class="member-name-link">handleSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleSafe(int,int)" class="member-name-link">handleSafe</a><wbr>(int&nbsp;index,
  int&nbsp;dataLength)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode(int)" class="member-name-link">hashCode</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode(int)" class="member-name-link">hashCode</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns hashCode of element in index with the default hasher.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode(int,org.apache.arrow.memory.util.hash.ArrowBufHasher)" class="member-name-link">hashCode</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#hashCode(int,org.apache.arrow.memory.util.hash.ArrowBufHasher)" class="member-name-link">hashCode</a><wbr>(int&nbsp;index,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/util/hash/ArrowBufHasher.html" title="interface in org.apache.arrow.memory.util.hash">ArrowBufHasher</a>&nbsp;hasher)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns hashCode of element in index with the given hasher.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initializeChildrenFromFields(java.util.List)" class="member-name-link">initializeChildrenFromFields</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;children)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#initializeChildrenFromFields(java.util.List)" class="member-name-link">initializeChildrenFromFields</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="types/pojo/Field.html" title="class in org.apache.arrow.vector.types.pojo">Field</a>&gt;&nbsp;children)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Initialize the children in schema for this Field.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNull(int)" class="member-name-link">isNull</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isNull(int)" class="member-name-link">isNull</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Check if an element at given index is null.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSafe(int)" class="member-name-link">isSafe</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSafe(int)" class="member-name-link">isSafe</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Check if the given index is within the current value capacity of the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSet(int)" class="member-name-link">isSet</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSet(int)" class="member-name-link">isSet</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Same as <a href="#isNull(int)"><code>isNull(int)</code></a>.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadFieldBuffers(org.apache.arrow.vector.ipc.message.ArrowFieldNode,java.util.List)" class="member-name-link">loadFieldBuffers</a><wbr>(<a href="ipc/message/ArrowFieldNode.html" title="class in org.apache.arrow.vector.ipc.message">ArrowFieldNode</a>&nbsp;fieldNode,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&gt;&nbsp;ownBuffers)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Load the buffers of this vector with provided source buffers.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reAlloc()" class="member-name-link">reAlloc</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reAlloc()" class="member-name-link">reAlloc</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Resize the vector to increase the capacity.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocValidityBuffer()" class="member-name-link">reallocValidityBuffer</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocValidityBuffer()" class="member-name-link">reallocValidityBuffer</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reallocate Validity buffer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewBuffer()" class="member-name-link">reallocViewBuffer</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewBuffer()" class="member-name-link">reallocViewBuffer</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reallocate the view buffer.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewBuffer(long)" class="member-name-link">reallocViewBuffer</a><wbr>(long&nbsp;desiredAllocSize)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewBuffer(long)" class="member-name-link">reallocViewBuffer</a><wbr>(long&nbsp;desiredAllocSize)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reallocate the view buffer to given size.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewDataBuffer()" class="member-name-link">reallocViewDataBuffer</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewDataBuffer()" class="member-name-link">reallocViewDataBuffer</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reallocate the data buffer associated with view buffer.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewDataBuffer(long)" class="member-name-link">reallocViewDataBuffer</a><wbr>(long&nbsp;desiredAllocSize)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reallocViewDataBuffer(long)" class="member-name-link">reallocViewDataBuffer</a><wbr>(long&nbsp;desiredAllocSize)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reallocate the data buffer for views.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reset the vector to initial state.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,byte%5B%5D)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,byte%5B%5D)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  byte[]&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set the variable length element at the specified index to the supplied byte array.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,byte%5B%5D,int,int)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,byte%5B%5D,int,int)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  byte[]&nbsp;value,
  int&nbsp;start,
  int&nbsp;length)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set the variable length element at the specified index to the supplied byte array.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
- is NULL or not.</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
- int&nbsp;start,
- int&nbsp;length,
- <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
  is NULL or not.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,java.nio.ByteBuffer,int,int)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">set</a><wbr>(int&nbsp;index,
+ int&nbsp;start,
+ int&nbsp;length,
+ <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Store the given value at a particular position in the vector. isSet indicates whether the value
+ is NULL or not.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,java.nio.ByteBuffer,int,int)" class="member-name-link">set</a><wbr>(int&nbsp;index,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
  int&nbsp;start,
  int&nbsp;length)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set the variable length element at the specified index to the content in supplied ByteBuffer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBytes(int,byte%5B%5D,int,int)" class="member-name-link">setBytes</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBytes(int,byte%5B%5D,int,int)" class="member-name-link">setBytes</a><wbr>(int&nbsp;index,
  byte[]&nbsp;value,
  int&nbsp;start,
  int&nbsp;length)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This method is used to create a view buffer for a variable width vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBytes(int,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">setBytes</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected final void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setBytes(int,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">setBytes</a><wbr>(int&nbsp;index,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;valueBuf,
  int&nbsp;start,
  int&nbsp;length)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">This method is used to create a view buffer for a variable width vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIndexDefined(int)" class="member-name-link">setIndexDefined</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setIndexDefined(int)" class="member-name-link">setIndexDefined</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Mark the particular position in the vector as non-null.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInitialCapacity(int)" class="member-name-link">setInitialCapacity</a><wbr>(int&nbsp;valueCount)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Sets the desired value capacity for the vector.</div>
-</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInitialCapacity(int,double)" class="member-name-link">setInitialCapacity</a><wbr>(int&nbsp;valueCount,
- double&nbsp;density)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInitialCapacity(int)" class="member-name-link">setInitialCapacity</a><wbr>(int&nbsp;valueCount)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the desired value capacity for the vector.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLastSet(int)" class="member-name-link">setLastSet</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setInitialCapacity(int,double)" class="member-name-link">setInitialCapacity</a><wbr>(int&nbsp;valueCount,
+ double&nbsp;density)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the desired value capacity for the vector.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLastSet(int)" class="member-name-link">setLastSet</a><wbr>(int&nbsp;value)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set the index of the last non-null element in the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNull(int)" class="member-name-link">setNull</a><wbr>(int&nbsp;index)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNull(int)" class="member-name-link">setNull</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Set the element at the given index to null.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,byte%5B%5D)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,byte%5B%5D)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  byte[]&nbsp;value)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Same as <a href="#set(int,byte%5B%5D)"><code>set(int, byte[])</code></a> except that it handles the case where index and length of a
  new element are beyond the existing capacity of the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,byte%5B%5D,int,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,byte%5B%5D,int,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  byte[]&nbsp;value,
  int&nbsp;start,
  int&nbsp;length)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Same as <a href="#set(int,byte%5B%5D,int,int)"><code>set(int, byte[], int, int)</code></a> except that it handles the case where index and
  length of a new element are beyond the existing capacity of the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  int&nbsp;isSet,
  int&nbsp;start,
  int&nbsp;end,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Same as <a href="#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
  is greater than or equal to current value capacity of the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,int,int,org.apache.arrow.memory.ArrowBuf)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  int&nbsp;start,
  int&nbsp;length,
  <a href="../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Same as <a href="#set(int,int,int,int,org.apache.arrow.memory.ArrowBuf)"><code>set(int, int, int, int, ArrowBuf)</code></a> except that it handles the case when index
  is greater than or equal to current value capacity of the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,java.nio.ByteBuffer,int,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSafe(int,java.nio.ByteBuffer,int,int)" class="member-name-link">setSafe</a><wbr>(int&nbsp;index,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;value,
  int&nbsp;start,
  int&nbsp;length)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Same as <a href="#set(int,java.nio.ByteBuffer,int,int)"><code>set(int, ByteBuffer, int, int)</code></a> except that it handles the case where index and
  length of a new element are beyond the existing capacity of the vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setValueCount(int)" class="member-name-link">setValueCount</a><wbr>(int&nbsp;valueCount)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setValueCount(int)" class="member-name-link">setValueCount</a><wbr>(int&nbsp;valueCount)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the value count for the vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setValueLengthSafe(int,int)" class="member-name-link">setValueLengthSafe</a><wbr>(int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setValueLengthSafe(int,int)" class="member-name-link">setValueLengthSafe</a><wbr>(int&nbsp;index,
  int&nbsp;length)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the value length for an element.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sizeOfValueBuffer()" class="member-name-link">sizeOfValueBuffer</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sizeOfValueBuffer()" class="member-name-link">sizeOfValueBuffer</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Provide the number of bytes contained in the valueBuffer.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sizeOfViewBufferElements()" class="member-name-link">sizeOfViewBufferElements</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sizeOfViewBufferElements()" class="member-name-link">sizeOfViewBufferElements</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Get the size (number of bytes) of underlying elements in the view buffer.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sliceAndTransferValidityBuffer(int,int,org.apache.arrow.vector.BaseValueVector)" class="member-name-link">sliceAndTransferValidityBuffer</a><wbr>(int&nbsp;startIndex,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#sliceAndTransferValidityBuffer(int,int,org.apache.arrow.vector.BaseValueVector)" class="member-name-link">sliceAndTransferValidityBuffer</a><wbr>(int&nbsp;startIndex,
  int&nbsp;length,
  <a href="BaseValueVector.html" title="class in org.apache.arrow.vector">BaseValueVector</a>&nbsp;target)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">If the start index is 8 byte aligned, slice `validityBuffer` and transfer ownership to
  `target`'s `validityBuffer`.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#splitAndTransferTo(int,int,org.apache.arrow.vector.BaseVariableWidthViewVector)" class="member-name-link">splitAndTransferTo</a><wbr>(int&nbsp;startIndex,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#splitAndTransferTo(int,int,org.apache.arrow.vector.BaseVariableWidthViewVector)" class="member-name-link">splitAndTransferTo</a><wbr>(int&nbsp;startIndex,
  int&nbsp;length,
  <a href="BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a>&nbsp;target)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Slice this vector at desired index and length and transfer the corresponding data to the target
  vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transferTo(org.apache.arrow.vector.BaseVariableWidthViewVector)" class="member-name-link">transferTo</a><wbr>(<a href="BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a>&nbsp;target)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#transferTo(org.apache.arrow.vector.BaseVariableWidthViewVector)" class="member-name-link">transferTo</a><wbr>(<a href="BaseVariableWidthViewVector.html" title="class in org.apache.arrow.vector">BaseVariableWidthViewVector</a>&nbsp;target)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Transfer this vector's data to another vector.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#validateScalars()" class="member-name-link">validateScalars</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#validateScalars()" class="member-name-link">validateScalars</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Validate the scalar values held by this vector.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#zeroVector()" class="member-name-link">zeroVector</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#zeroVector()" class="member-name-link">zeroVector</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">zero out the vector and the data in associated buffers.</div>
 </div>
 </div>
@@ -2067,6 +2088,14 @@ IN&gt;&nbsp;OUT</code></div>
 <dt>Specified by:</dt>
 <dd><code><a href="ValueVector.html#hashCode(int,org.apache.arrow.memory.util.hash.ArrowBufHasher)">hashCode</a></code>&nbsp;in interface&nbsp;<code><a href="ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></dd>
 </dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getData(int,org.apache.arrow.vector.BaseVariableWidthViewVector.ViewElementConsumer)">
+<h3>getData</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="type-parameters">&lt;T&gt;</span>&nbsp;<span class="return-type">T</span>&nbsp;<span class="element-name">getData</span><wbr><span class="parameters">(int&nbsp;index,
+ <a href="BaseVariableWidthViewVector.ViewElementConsumer.html" title="interface in org.apache.arrow.vector">BaseVariableWidthViewVector.ViewElementConsumer</a>&lt;T&gt;&nbsp;consumer)</span></div>
+<div class="block">Helper to get a single view value with sanity checking.</div>
 </section>
 </li>
 <li>
