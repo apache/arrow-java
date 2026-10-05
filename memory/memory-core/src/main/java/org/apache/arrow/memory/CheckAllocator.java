@@ -35,16 +35,17 @@ final class CheckAllocator {
   private static final Logger logger = LoggerFactory.getLogger(CheckAllocator.class);
 
   /**
-   * The DefaultAllocationManagerFactory implementations to look for, in order of precedence. Unsafe
-   * and Netty match {@link DefaultAllocationManagerOption.AllocationManagerType}, so the logged
-   * name can be used to set the type explicitly.
+   * The DefaultAllocationManagerFactory implementations to look for, in order of precedence.
+   * Unsafe, Netty and FFM match {@link DefaultAllocationManagerOption.AllocationManagerType}, so
+   * the logged name can be used to set the type explicitly.
    */
   private enum Allocator {
     // only provided by the memory-core tests
     Core("org.apache.arrow.memory.DefaultAllocationManagerFactory"),
     // unique package names needed by JPMS module naming
     Unsafe("org.apache.arrow.memory.unsafe.DefaultAllocationManagerFactory"),
-    Netty("org.apache.arrow.memory.netty.DefaultAllocationManagerFactory");
+    Netty("org.apache.arrow.memory.netty.DefaultAllocationManagerFactory"),
+    FFM("org.apache.arrow.memory.ffm.DefaultAllocationManagerFactory");
 
     private final String factoryClassName;
     private final String resourcePath;
@@ -67,7 +68,8 @@ final class CheckAllocator {
     if (found.isEmpty()) {
       throw new RuntimeException(
           "No DefaultAllocationManager found on classpath. Can't allocate Arrow buffers."
-              + " Please consider adding arrow-memory-netty or arrow-memory-unsafe as a dependency.");
+              + " Please consider adding arrow-memory-netty, arrow-memory-unsafe, or"
+              + " arrow-memory-ffm as a dependency.");
     }
     Map.Entry<Allocator, Set<URL>> first = found.entrySet().iterator().next();
     Allocator allocator = first.getKey();

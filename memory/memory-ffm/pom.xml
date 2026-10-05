@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.arrow</groupId>
+    <artifactId>arrow-memory</artifactId>
+    <version>20.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>arrow-memory-ffm</artifactId>
+  <name>Arrow Memory - FFM</name>
+  <description>Allocator and utils for allocating memory in Arrow based on the Java Foreign Function and Memory API</description>
+
+  <properties>
+    <!-- java.lang.foreign is finalized (non-preview) starting JDK 22 (JEP 454). -->
+    <maven.compiler.release>22</maven.compiler.release>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-memory-core</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <!-- NOT sufficient for consumers: the JVM only honours Enable-Native-Access in the
+                   manifest of the jar it was launched with (java -jar), so this only helps in the
+                   rare case where arrow-memory-ffm itself is the launched jar. Consumers that put
+                   this jar on the classpath (the normal case) still need the JVM command line flag
+                   "enable-native-access=ALL-UNNAMED" for MemorySegment.reinterpret(...), and
+                   module-path consumers need "enable-native-access=org.apache.arrow.memory.ffm".
+                   Kept because it is harmless and does help in that rare launched-jar case. See
+                   FfmMemoryAccessor's class javadoc. -->
+              <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <!-- Requires arrow.memory.accessor.type=FFM -->
+            <exclude>**/TestMemoryUtilFfmWiring.java</exclude>
+            <exclude>**/TestFfmArrowBufByteBuffer.java</exclude>
+            <!-- Requires arrow.allocation.manager.type=FFM before MemoryUtil's static init -->
+            <exclude>**/TestAllocationManagerTypeImpliesAccessor.java</exclude>
+            <!-- Only meaningful when NOT running with add-opens -->
+            <exclude>**/TestFfmMemoryAccessorWithoutAddOpens.java</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <!-- Requires arrow.memory.accessor.type=FFM before MemoryUtil's static init,
+                 isolated from the default run so the property doesn't leak into it -->
+            <id>ffm-accessor-wiring-test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <excludes combine.self="override"/>
+              <includes>
+                <include>**/TestMemoryUtilFfmWiring.java</include>
+                <include>**/TestFfmArrowBufByteBuffer.java</include>
+              </includes>
+              <systemPropertyVariables>
+                <arrow.memory.accessor.type>FFM</arrow.memory.accessor.type>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Requires arrow.allocation.manager.type=FFM (with arrow.memory.accessor.type left
+                 unset) before MemoryUtil's static init, isolated from the default run so the
+                 property doesn't leak into it -->
+            <id>allocation-manager-type-implies-accessor-test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <excludes combine.self="override"/>
+              <includes>
+                <include>**/TestAllocationManagerTypeImpliesAccessor.java</include>
+              </includes>
+              <systemPropertyVariables>
+                <arrow.allocation.manager.type>FFM</arrow.allocation.manager.type>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Proves the accessor needs no add-opens: the inherited argLine, which carries
+                 "add-opens=java.base/java.nio=...", is overridden to empty here -->
+            <id>no-add-opens-tests</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <argLine combine.self="override"/>
+              <excludes combine.self="override"/>
+              <includes>
+                <include>**/TestFfmMemoryAccessorWithoutAddOpens.java</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
