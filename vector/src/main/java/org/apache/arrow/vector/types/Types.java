@@ -28,6 +28,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.ExtensionTypeVector;
@@ -81,6 +83,8 @@ import org.apache.arrow.vector.complex.impl.BitWriterImpl;
 import org.apache.arrow.vector.complex.impl.DateDayWriterImpl;
 import org.apache.arrow.vector.complex.impl.DateMilliWriterImpl;
 import org.apache.arrow.vector.complex.impl.Decimal256WriterImpl;
+import org.apache.arrow.vector.complex.impl.Decimal32WriterImpl;
+import org.apache.arrow.vector.complex.impl.Decimal64WriterImpl;
 import org.apache.arrow.vector.complex.impl.DecimalWriterImpl;
 import org.apache.arrow.vector.complex.impl.DenseUnionWriter;
 import org.apache.arrow.vector.complex.impl.DurationWriterImpl;
@@ -802,6 +806,30 @@ public class Types {
             "FieldWriter for run-end encoded vector is not implemented yet.");
       }
     },
+    DECIMAL32(null) {
+      @Override
+      public FieldVector getNewVector(
+          Field field, BufferAllocator allocator, CallBack schemaChangeCallback) {
+        return new Decimal32Vector(field, allocator);
+      }
+
+      @Override
+      public FieldWriter getNewFieldWriter(ValueVector vector) {
+        return new Decimal32WriterImpl((Decimal32Vector) vector);
+      }
+    },
+    DECIMAL64(null) {
+      @Override
+      public FieldVector getNewVector(
+          Field field, BufferAllocator allocator, CallBack schemaChangeCallback) {
+        return new Decimal64Vector(field, allocator);
+      }
+
+      @Override
+      public FieldWriter getNewFieldWriter(ValueVector vector) {
+        return new Decimal64WriterImpl((Decimal64Vector) vector);
+      }
+    },
     ;
 
     private final ArrowType type;
@@ -948,10 +976,16 @@ public class Types {
 
           @Override
           public MinorType visit(Decimal type) {
-            if (type.getBitWidth() == 256) {
-              return MinorType.DECIMAL256;
+            switch (type.getBitWidth()) {
+              case 32:
+                return MinorType.DECIMAL32;
+              case 64:
+                return MinorType.DECIMAL64;
+              case 256:
+                return MinorType.DECIMAL256;
+              default:
+                return MinorType.DECIMAL;
             }
-            return MinorType.DECIMAL;
           }
 
           @Override

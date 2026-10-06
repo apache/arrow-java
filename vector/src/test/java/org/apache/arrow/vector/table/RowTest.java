@@ -56,6 +56,8 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.BitVector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FieldVector;
@@ -71,6 +73,8 @@ import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.holders.NullableBigIntHolder;
 import org.apache.arrow.vector.holders.NullableBitHolder;
+import org.apache.arrow.vector.holders.NullableDecimal32Holder;
+import org.apache.arrow.vector.holders.NullableDecimal64Holder;
 import org.apache.arrow.vector.holders.NullableDecimalHolder;
 import org.apache.arrow.vector.holders.NullableDurationHolder;
 import org.apache.arrow.vector.holders.NullableFloat4Holder;
@@ -202,6 +206,56 @@ class RowTest {
       c.getDecimal("decimal_vector", holder2);
       assertEquals(holder1.buffer, holder2.buffer);
       assertEquals(c.getDecimal(0).memoryAddress(), c.getDecimal("decimal_vector").memoryAddress());
+    }
+  }
+
+  @Test
+  void getDecimal32() {
+    List<FieldVector> vectors = new ArrayList<>();
+    Decimal32Vector decimalVector = new Decimal32Vector("decimal32_vector", allocator, 9, 3);
+    vectors.add(decimalVector);
+    decimalVector.setSafe(0, new BigDecimal("0.054"));
+    decimalVector.setSafe(1, new BigDecimal("2.054"));
+    decimalVector.setValueCount(2);
+    BigDecimal one = decimalVector.getObject(1);
+
+    NullableDecimal32Holder holder1 = new NullableDecimal32Holder();
+    NullableDecimal32Holder holder2 = new NullableDecimal32Holder();
+    try (Table t = new Table(vectors)) {
+      Row c = t.immutableRow();
+      c.setPosition(1);
+      assertEquals(one, c.getDecimal32Obj("decimal32_vector"));
+      assertEquals(one, c.getDecimal32Obj(0));
+      c.getDecimal32(0, holder1);
+      c.getDecimal32("decimal32_vector", holder2);
+      assertEquals(holder1.buffer, holder2.buffer);
+      assertEquals(
+          c.getDecimal32(0).memoryAddress(), c.getDecimal32("decimal32_vector").memoryAddress());
+    }
+  }
+
+  @Test
+  void getDecimal64() {
+    List<FieldVector> vectors = new ArrayList<>();
+    Decimal64Vector decimalVector = new Decimal64Vector("decimal64_vector", allocator, 18, 6);
+    vectors.add(decimalVector);
+    decimalVector.setSafe(0, new BigDecimal("0.054327"));
+    decimalVector.setSafe(1, new BigDecimal("2.054327"));
+    decimalVector.setValueCount(2);
+    BigDecimal one = decimalVector.getObject(1);
+
+    NullableDecimal64Holder holder1 = new NullableDecimal64Holder();
+    NullableDecimal64Holder holder2 = new NullableDecimal64Holder();
+    try (Table t = new Table(vectors)) {
+      Row c = t.immutableRow();
+      c.setPosition(1);
+      assertEquals(one, c.getDecimal64Obj("decimal64_vector"));
+      assertEquals(one, c.getDecimal64Obj(0));
+      c.getDecimal64(0, holder1);
+      c.getDecimal64("decimal64_vector", holder2);
+      assertEquals(holder1.buffer, holder2.buffer);
+      assertEquals(
+          c.getDecimal64(0).memoryAddress(), c.getDecimal64("decimal64_vector").memoryAddress());
     }
   }
 

@@ -43,6 +43,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -125,6 +127,12 @@ public class ArrowFlightJdbcAccessorFactory {
     } else if (vector instanceof BitVector) {
       return new ArrowFlightJdbcBitVectorAccessor(
           (BitVector) vector, getCurrentRow, setCursorWasNull);
+    } else if (vector instanceof Decimal32Vector) {
+      return new ArrowFlightJdbcDecimalVectorAccessor(
+          (Decimal32Vector) vector, getCurrentRow, setCursorWasNull);
+    } else if (vector instanceof Decimal64Vector) {
+      return new ArrowFlightJdbcDecimalVectorAccessor(
+          (Decimal64Vector) vector, getCurrentRow, setCursorWasNull);
     } else if (vector instanceof DecimalVector) {
       return new ArrowFlightJdbcDecimalVectorAccessor(
           (DecimalVector) vector, getCurrentRow, setCursorWasNull);
