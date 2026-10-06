@@ -26,10 +26,8 @@ import org.apache.arrow.memory.ReferenceManager;
 /** Allocation manager based on the Foreign Function &amp; Memory API. */
 public final class FfmAllocationManager extends AllocationManager {
 
-  private static final Arena EMPTY_ARENA = Arena.ofShared();
-  private static final ArrowBuf EMPTY =
-      new ArrowBuf(ReferenceManager.NO_OP, null, 0, EMPTY_ARENA.allocate(0).address());
-
+  // Must be initialized before EMPTY: creating an ArrowBuf may initialize BaseAllocator, whose
+  // default config can read FACTORY back while this class is still initializing.
   public static final AllocationManager.Factory FACTORY =
       new Factory() {
         @Override
@@ -42,6 +40,10 @@ public final class FfmAllocationManager extends AllocationManager {
           return EMPTY;
         }
       };
+
+  private static final Arena EMPTY_ARENA = Arena.ofShared();
+  private static final ArrowBuf EMPTY =
+      new ArrowBuf(ReferenceManager.NO_OP, null, 0, EMPTY_ARENA.allocate(0).address());
 
   private final Arena arena;
   private final long allocatedSize;

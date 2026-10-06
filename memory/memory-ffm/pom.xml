@@ -74,6 +74,8 @@ under the License.
             <exclude>**/TestAllocationManagerTypeImpliesAccessor.java</exclude>
             <!-- Only meaningful when NOT running with add-opens -->
             <exclude>**/TestFfmMemoryAccessorWithoutAddOpens.java</exclude>
+            <!-- Requires FfmAllocationManager to be the first Arrow memory class initialized -->
+            <exclude>**/TestFfmAllocationManagerFactoryFirstAccess.java</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -128,6 +130,21 @@ under the License.
               <excludes combine.self="override"/>
               <includes>
                 <include>**/TestFfmMemoryAccessorWithoutAddOpens.java</include>
+              </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Requires FfmAllocationManager to be the first Arrow memory class initialized in
+                 the JVM, which no other test class may do before it -->
+            <id>factory-first-access-test</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <excludes combine.self="override"/>
+              <includes>
+                <include>**/TestFfmAllocationManagerFactoryFirstAccess.java</include>
               </includes>
             </configuration>
           </execution>
