@@ -424,15 +424,6 @@ public class TestDoExchange {
         client.doExchange(FlightDescriptor.command(EXCHANGE_DO_GET))) {
       assertEquals(Producer.SCHEMA, stream.getReader().getSchema());
     }
-    // Intentionally leak the allocator in this test. gRPC has a bug where it does not wait for all
-    // calls to complete
-    // when shutting down the server, so this test will fail otherwise because it closes the
-    // allocator while the
-    // server-side call still has memory allocated.
-    // TODO(ARROW-9586): fix this once we track outstanding RPCs outside of gRPC.
-    // https://stackoverflow.com/questions/46716024/
-    allocator = null;
-    client = null;
   }
 
   /** Test closing with Metadata can't lead to error. */

@@ -86,6 +86,40 @@ public class TestServerOptions {
     assertTrue(executor.isShutdown());
   }
 
+  /**
+   * Make sure that closing the server waits for the calls still running on the default executor, as
+   * they may still be using the allocator.
+   */
+  @Test
+  public void closeWaitsForDefaultExecutor() throws Exception {
+    final AtomicBoolean callFinished = new AtomicBoolean();
+    final FlightProducer producer =
+        new NoOpFlightProducer() {
+          @Override
+          public void doAction(
+              CallContext context, Action action, StreamListener<Result> listener) {
+            // End the RPC, so that gRPC can shut down, but keep the executor thread busy
+            listener.onCompleted();
+            try {
+              Thread.sleep(200);
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+              return;
+            }
+            callFinished.set(true);
+          }
+        };
+    try (BufferAllocator a = new RootAllocator(Long.MAX_VALUE);
+        FlightServer server =
+            FlightServer.builder(a, forGrpcInsecure(LOCALHOST, 0), producer).build().start()) {
+      try (FlightClient client = FlightClient.builder(a, server.getLocation()).build()) {
+        client.doAction(new Action("")).forEachRemaining(result -> {});
+      }
+      server.close();
+      assertTrue(callFinished.get());
+    }
+  }
+
   /** Make sure that if the user provides an executor to gRPC, then Flight does not close it. */
   @Test
   public void suppliedExecutorNotClosed() throws Exception {

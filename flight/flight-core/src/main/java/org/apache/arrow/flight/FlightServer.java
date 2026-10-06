@@ -145,25 +145,33 @@ public class FlightServer implements AutoCloseable {
   /** Shutdown the server, waits for up to 6 seconds for successful shutdown before returning. */
   @Override
   public void close() throws InterruptedException {
+    final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(6);
     shutdown();
     final boolean terminated = awaitTermination(3000, TimeUnit.MILLISECONDS);
     if (terminated) {
       logger.debug("Server was terminated within 3s");
-      return;
+    } else {
+      // get more aggressive in termination.
+      server.shutdownNow();
+
+      int count = 0;
+      while (!server.isTerminated() && count < 30) {
+        count++;
+        logger.debug("Waiting for termination");
+        Thread.sleep(100);
+      }
+
+      if (!server.isTerminated()) {
+        logger.warn("Couldn't shutdown server, resources likely will be leaked.");
+      }
     }
 
-    // get more aggressive in termination.
-    server.shutdownNow();
-
-    int count = 0;
-    while (!server.isTerminated() && count < 30) {
-      count++;
-      logger.debug("Waiting for termination");
-      Thread.sleep(100);
-    }
-
-    if (!server.isTerminated()) {
-      logger.warn("Couldn't shutdown server, resources likely will be leaked.");
+    // gRPC reports the server as terminated once its transports are closed, without waiting for
+    // the calls still running on the executor. Those calls may still allocate or hold buffers, so
+    // wait for them too; otherwise closing the allocator right after the server can report a leak.
+    if (grpcExecutor != null
+        && !grpcExecutor.awaitTermination(deadline - System.nanoTime(), TimeUnit.NANOSECONDS)) {
+      logger.warn("Couldn't shutdown server executor, resources likely will be leaked.");
     }
   }
 
