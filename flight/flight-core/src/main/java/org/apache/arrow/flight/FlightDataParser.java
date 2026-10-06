@@ -16,11 +16,11 @@
  */
 package org.apache.arrow.flight;
 
-import com.google.common.io.ByteStreams;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.WireFormat;
 import io.grpc.Detachable;
 import io.grpc.HasByteBuffer;
+import io.grpc.KnownLength;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -57,6 +57,30 @@ final class FlightDataParser {
       (FlightData.DATA_BODY_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
   private static final int APP_METADATA_TAG =
       (FlightData.APP_METADATA_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
+
+  private static int validateFieldLength(int size) throws IOException {
+    if (size < 0) {
+      throw new IOException("Malformed FlightData frame: negative field length " + size);
+    }
+    return size;
+  }
+
+  private static int validateFieldLength(int size, int remaining) throws IOException {
+    validateFieldLength(size);
+    if (size > remaining) {
+      throw fieldTooLong(size, remaining);
+    }
+    return size;
+  }
+
+  private static IOException fieldTooLong(int size, int remaining) {
+    return new IOException(
+        "Malformed FlightData frame: field length "
+            + size
+            + " exceeds "
+            + remaining
+            + " bytes remaining in the message");
+  }
 
   /** Base class for FlightData readers with common parsing logic. */
   abstract static class FlightDataReader {
@@ -223,24 +247,32 @@ final class FlightDataParser {
     @Override
     protected int readLength() throws IOException {
       int firstByte = stream.read();
-      return CodedInputStream.readRawVarint32(firstByte, stream);
+      int size = CodedInputStream.readRawVarint32(firstByte, stream);
+      return stream instanceof KnownLength
+          ? validateFieldLength(size, stream.available())
+          : validateFieldLength(size);
     }
 
     @Override
     protected byte[] readBytes(int size) throws IOException {
-      byte[] bytes = new byte[size];
-      ByteStreams.readFully(stream, bytes);
+      byte[] bytes = stream.readNBytes(size);
+      if (bytes.length != size) {
+        throw fieldTooLong(size, bytes.length);
+      }
       return bytes;
     }
 
     @Override
     protected ArrowBuf readBuffer(int size) throws IOException {
+      byte[] heapBytes = readBytes(size);
       ArrowBuf buf = allocator.buffer(size);
-      byte[] heapBytes = new byte[size];
-      ByteStreams.readFully(stream, heapBytes);
-      buf.writeBytes(heapBytes);
-      buf.writerIndex(size);
-      return buf;
+      try {
+        buf.writeBytes(heapBytes);
+        return buf;
+      } catch (RuntimeException e) {
+        buf.close();
+        throw e;
+      }
     }
   }
 
@@ -357,7 +389,9 @@ final class FlightDataParser {
 
     @Override
     protected int readLength() throws IOException {
-      return codedInput.readRawVarint32();
+      int size = codedInput.readRawVarint32();
+      int remaining = (int) (backingBuffer.capacity() - codedInput.getTotalBytesRead());
+      return validateFieldLength(size, remaining);
     }
 
     @Override
