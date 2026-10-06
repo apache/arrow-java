@@ -19,6 +19,7 @@ package org.apache.arrow.memory.util;
 import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.function.Supplier;
 import org.apache.arrow.memory.DefaultAllocationManagerOption;
 import org.apache.arrow.util.VisibleForTesting;
 
@@ -40,7 +41,11 @@ public class MemoryUtil {
   private static final org.slf4j.Logger logger =
       org.slf4j.LoggerFactory.getLogger(MemoryUtil.class);
 
-  private static final MemoryUtilAccessor ACCESSOR = resolveAccessor();
+  private static final MemoryUtilAccessor ACCESSOR =
+      resolveAccessor(
+          System.getProperty(MEMORY_ACCESSOR_TYPE_PROPERTY_NAME, ""),
+          DefaultAllocationManagerOption.getDefaultAllocationManagerType(),
+          MemoryUtil::loadFfmAccessor);
 
   private MemoryUtil() {}
 
@@ -50,33 +55,38 @@ public class MemoryUtil {
     return ACCESSOR.getClass().getName();
   }
 
-  private static MemoryUtilAccessor resolveAccessor() {
-    String type = System.getProperty(MEMORY_ACCESSOR_TYPE_PROPERTY_NAME, "");
+  @VisibleForTesting
+  static MemoryUtilAccessor resolveAccessor(
+      String type,
+      DefaultAllocationManagerOption.AllocationManagerType allocationManagerType,
+      Supplier<MemoryUtilAccessor> ffmAccessorLoader) {
     if ("FFM".equals(type)) {
       logger.info(
           "{}=FFM, loading org.apache.arrow.memory.ffm.FfmMemoryAccessor",
           MEMORY_ACCESSOR_TYPE_PROPERTY_NAME);
-      return loadFfmAccessor();
+      return ffmAccessorLoader.get();
     }
     if (type.isEmpty()
-        && DefaultAllocationManagerOption.getDefaultAllocationManagerType()
-            == DefaultAllocationManagerOption.AllocationManagerType.FFM) {
+        && allocationManagerType == DefaultAllocationManagerOption.AllocationManagerType.FFM) {
       try {
-        MemoryUtilAccessor accessor = loadFfmAccessor();
+        MemoryUtilAccessor accessor = ffmAccessorLoader.get();
         logger.info(
             "{}=FFM, also loading org.apache.arrow.memory.ffm.FfmMemoryAccessor to avoid"
                 + " sun.misc.Unsafe (override with {}=Unsafe if this is not wanted)",
             DefaultAllocationManagerOption.ALLOCATION_MANAGER_TYPE_PROPERTY_NAME,
             MEMORY_ACCESSOR_TYPE_PROPERTY_NAME);
         return accessor;
-      } catch (RuntimeException e) {
+      } catch (RuntimeException | LinkageError e) {
         // Unlike an explicit arrow.memory.accessor.type=FFM request, this preference is only
         // inferred from a different property, which may not even be load-bearing (e.g. a
         // caller-supplied custom AllocationManager.Factory that never reads it). Fall back
         // instead of poisoning MemoryUtil's <clinit> for the rest of the JVM's life (JLS 12.4.2).
+        // LinkageError covers arrow-memory-ffm on a JDK older than 22
+        // (UnsupportedClassVersionError) and a failing FfmMemoryAccessor static initializer.
         logger.warn(
-            "{}=FFM but arrow-memory-ffm is not on the classpath; falling back to Unsafe for {}"
-                + " (set {}=Unsafe to silence this warning)",
+            "{}=FFM but the FFM accessor could not be loaded (arrow-memory-ffm is missing or needs"
+                + " JDK 22+); falling back to Unsafe for {} (set {}=Unsafe to silence this"
+                + " warning)",
             DefaultAllocationManagerOption.ALLOCATION_MANAGER_TYPE_PROPERTY_NAME,
             MEMORY_ACCESSOR_TYPE_PROPERTY_NAME,
             MEMORY_ACCESSOR_TYPE_PROPERTY_NAME,
