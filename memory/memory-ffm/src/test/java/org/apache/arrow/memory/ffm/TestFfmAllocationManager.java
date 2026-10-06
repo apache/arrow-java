@@ -18,6 +18,7 @@ package org.apache.arrow.memory.ffm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.apache.arrow.memory.AllocationManager;
 import org.apache.arrow.memory.ArrowBuf;
@@ -70,6 +71,15 @@ public class TestFfmAllocationManager {
         assertEquals(1024, allocator.getAllocatedMemory());
       }
       assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @Test
+  public void failedNativeAllocationThrowsOutOfMemoryError() {
+    // 4 EiB is beyond any platform's address space, so the native allocation must fail
+    try (BufferAllocator allocator = createFfmAllocator()) {
+      assertThrows(
+          OutOfMemoryError.class, () -> FfmAllocationManager.FACTORY.create(allocator, 1L << 62));
     }
   }
 }

@@ -16,14 +16,15 @@
  */
 package org.apache.arrow.memory.ffm;
 
-import java.lang.foreign.Arena;
-import java.lang.foreign.MemorySegment;
 import org.apache.arrow.memory.AllocationManager;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.ReferenceManager;
 
-/** Allocation manager based on the Foreign Function &amp; Memory API. */
+/**
+ * Allocation manager based on the Foreign Function &amp; Memory API: buffers are allocated with the
+ * C library's {@code malloc} and freed with {@code free}, both called through the foreign linker.
+ */
 public final class FfmAllocationManager extends AllocationManager {
 
   // Must be initialized before EMPTY: creating an ArrowBuf may initialize BaseAllocator, whose
@@ -41,19 +42,15 @@ public final class FfmAllocationManager extends AllocationManager {
         }
       };
 
-  private static final Arena EMPTY_ARENA = Arena.ofShared();
   private static final ArrowBuf EMPTY =
-      new ArrowBuf(ReferenceManager.NO_OP, null, 0, EMPTY_ARENA.allocate(0).address());
+      new ArrowBuf(ReferenceManager.NO_OP, null, 0, NativeMemory.allocate(0));
 
-  private final Arena arena;
   private final long allocatedSize;
   private final long allocatedAddress;
 
   FfmAllocationManager(BufferAllocator accountingAllocator, long requestedSize) {
     super(accountingAllocator);
-    this.arena = Arena.ofShared();
-    MemorySegment segment = arena.allocate(requestedSize);
-    this.allocatedAddress = segment.address();
+    this.allocatedAddress = NativeMemory.allocate(requestedSize);
     this.allocatedSize = requestedSize;
   }
 
@@ -69,6 +66,6 @@ public final class FfmAllocationManager extends AllocationManager {
 
   @Override
   protected void release0() {
-    arena.close();
+    NativeMemory.free(allocatedAddress);
   }
 }
