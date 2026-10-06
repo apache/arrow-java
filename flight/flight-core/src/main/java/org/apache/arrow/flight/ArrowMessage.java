@@ -18,12 +18,12 @@ package org.apache.arrow.flight;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.io.ByteStreams;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.WireFormat;
 import io.grpc.Drainable;
+import io.grpc.KnownLength;
 import io.grpc.MethodDescriptor.Marshaller;
 import io.grpc.protobuf.ProtoUtils;
 import io.netty.buffer.ByteBuf;
@@ -281,11 +281,11 @@ class ArrowMessage implements AutoCloseable {
 
   private static ArrowMessage frame(BufferAllocator allocator, final InputStream stream) {
 
+    ArrowBuf body = null;
+    ArrowBuf appMetadata = null;
     try {
       FlightDescriptor descriptor = null;
       MessageMetadataResult header = null;
-      ArrowBuf body = null;
-      ArrowBuf appMetadata = null;
       while (stream.available() > 0) {
         final int tagFirstByte = stream.read();
         if (tagFirstByte == -1) {
@@ -295,25 +295,24 @@ class ArrowMessage implements AutoCloseable {
         switch (tag) {
           case DESCRIPTOR_TAG:
             {
-              int size = readRawVarint32(stream);
-              byte[] bytes = new byte[size];
-              ByteStreams.readFully(stream, bytes);
+              byte[] bytes = readFieldBytes(stream);
               descriptor = FlightDescriptor.parseFrom(bytes);
               break;
             }
           case HEADER_TAG:
             {
-              int size = readRawVarint32(stream);
-              byte[] bytes = new byte[size];
-              ByteStreams.readFully(stream, bytes);
-              header = MessageMetadataResult.create(ByteBuffer.wrap(bytes), size);
+              byte[] bytes = readFieldBytes(stream);
+              header = MessageMetadataResult.create(ByteBuffer.wrap(bytes), bytes.length);
               break;
             }
           case APP_METADATA_TAG:
             {
-              int size = readRawVarint32(stream);
-              appMetadata = allocator.buffer(size);
-              GetReadableBuffer.readIntoBuffer(stream, appMetadata, size, ENABLE_ZERO_COPY_READ);
+              if (appMetadata != null) {
+                // only read last app metadata.
+                appMetadata.close();
+                appMetadata = null;
+              }
+              appMetadata = readFieldBuffer(allocator, stream);
               break;
             }
           case BODY_TAG:
@@ -322,9 +321,7 @@ class ArrowMessage implements AutoCloseable {
               body.getReferenceManager().release();
               body = null;
             }
-            int size = readRawVarint32(stream);
-            body = allocator.buffer(size);
-            GetReadableBuffer.readIntoBuffer(stream, body, size, ENABLE_ZERO_COPY_READ);
+            body = readFieldBuffer(allocator, stream);
             break;
 
           default:
@@ -364,6 +361,8 @@ class ArrowMessage implements AutoCloseable {
       }
       return new ArrowMessage(descriptor, header, appMetadata, body);
     } catch (Exception ioe) {
+      // No ArrowMessage takes ownership of the buffers read so far, so release them here.
+      AutoCloseables.close(ioe, appMetadata, body);
       throw new RuntimeException(ioe);
     }
   }
@@ -375,6 +374,71 @@ class ArrowMessage implements AutoCloseable {
 
   private static int readRawVarint32(int firstByte, InputStream is) throws IOException {
     return CodedInputStream.readRawVarint32(firstByte, is);
+  }
+
+  /**
+   * Read and validate the length prefix of a length-delimited field.
+   *
+   * <p>The length is read straight off the wire, so it must not size an allocation unchecked. It
+   * can only be compared to the bytes left in the message when the stream is {@link KnownLength}:
+   * {@code available()} means something else on other streams (the decompressing stream gRPC uses
+   * for compressed messages reports 1 until EOF), so for those the read itself bounds the
+   * allocation, see {@link #readFieldBytes}.
+   */
+  private static int readFieldLength(InputStream stream) throws IOException {
+    final int size = readRawVarint32(stream);
+    if (size < 0) {
+      throw new IOException("Malformed FlightData frame: negative field length " + size);
+    }
+    if (stream instanceof KnownLength && size > stream.available()) {
+      throw fieldTooLong(size, stream.available());
+    }
+    return size;
+  }
+
+  /**
+   * Read a length-delimited field into a byte array.
+   *
+   * <p>{@link InputStream#readNBytes(int)} grows the array as bytes arrive, so a length prefix
+   * larger than the message is rejected without allocating the declared length first.
+   */
+  private static byte[] readFieldBytes(InputStream stream) throws IOException {
+    final int size = readFieldLength(stream);
+    final byte[] bytes = stream.readNBytes(size);
+    if (bytes.length != size) {
+      throw fieldTooLong(size, bytes.length);
+    }
+    return bytes;
+  }
+
+  /** Read a length-delimited field into a new buffer. The caller must release the buffer. */
+  private static ArrowBuf readFieldBuffer(BufferAllocator allocator, InputStream stream)
+      throws IOException {
+    if (!(stream instanceof KnownLength)) {
+      // The length can't be checked up front, so only allocate once the bytes have arrived.
+      final byte[] bytes = readFieldBytes(stream);
+      final ArrowBuf buf = allocator.buffer(bytes.length);
+      buf.writeBytes(bytes);
+      return buf;
+    }
+    final int size = readFieldLength(stream);
+    final ArrowBuf buf = allocator.buffer(size);
+    try {
+      GetReadableBuffer.readIntoBuffer(stream, buf, size, ENABLE_ZERO_COPY_READ);
+    } catch (IOException | RuntimeException e) {
+      buf.close();
+      throw e;
+    }
+    return buf;
+  }
+
+  private static IOException fieldTooLong(int size, int remaining) {
+    return new IOException(
+        "Malformed FlightData frame: field length "
+            + size
+            + " exceeds "
+            + remaining
+            + " bytes remaining in the message");
   }
 
   /**
