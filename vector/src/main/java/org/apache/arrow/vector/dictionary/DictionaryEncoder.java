@@ -164,12 +164,12 @@ public class DictionaryEncoder {
       BaseIntVector indices, TransferPair transfer, int dictionaryCount, int start, int end) {
     for (int i = start; i < end; i++) {
       if (!indices.isNull(i)) {
-        int indexAsInt = (int) indices.getValueAsLong(i);
-        if (indexAsInt > dictionaryCount) {
+        long index = indices.getValueAsLong(i);
+        if (index < 0 || index >= dictionaryCount) {
           throw new IllegalArgumentException(
-              "Provided dictionary does not contain value for index " + indexAsInt);
+              "Provided dictionary does not contain value for index " + index);
         }
-        transfer.copyValueSafe(indexAsInt, i);
+        transfer.copyValueSafe((int) index, i);
       }
     }
   }
