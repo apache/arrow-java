@@ -96,7 +96,8 @@ public class TestServerOptions {
     final FlightProducer producer =
         new NoOpFlightProducer() {
           @Override
-          public void doAction(CallContext context, Action action, StreamListener<Result> listener) {
+          public void doAction(
+              CallContext context, Action action, StreamListener<Result> listener) {
             // End the RPC, so that gRPC can shut down, but keep the executor thread busy
             listener.onCompleted();
             try {
