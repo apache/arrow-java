@@ -22,16 +22,31 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Collections;
 import javax.sql.PooledConnection;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.utils.ConnectionWrapper;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.types.Types.MinorType;
+import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
 public class ArrowFlightJdbcConnectionPoolDataSourceTest {
+
+  private static final String SELECT_QUERY = "SELECT * FROM POOLED_CONNECTION_RESET";
+  private static final Schema QUERY_SCHEMA =
+      new Schema(Collections.singletonList(Field.nullable("id", MinorType.INT.getType())));
 
   @RegisterExtension public static final FlightServerTestExtension FLIGHT_SERVER_TEST_EXTENSION;
 
@@ -49,6 +64,25 @@ public class ArrowFlightJdbcConnectionPoolDataSourceTest {
             .authentication(authentication)
             .producer(PRODUCER)
             .build();
+
+    PRODUCER.addSelectQuery(
+        SELECT_QUERY,
+        QUERY_SCHEMA,
+        Collections.singletonList(
+            listener -> {
+              try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+                  final VectorSchemaRoot root = VectorSchemaRoot.create(QUERY_SCHEMA, allocator)) {
+                final IntVector vector = (IntVector) root.getVector("id");
+                vector.setSafe(0, 1);
+                root.setRowCount(1);
+                listener.start(root);
+                listener.putNext();
+              } catch (final Throwable throwable) {
+                listener.error(throwable);
+              } finally {
+                listener.completed();
+              }
+            }));
   }
 
   private ArrowFlightJdbcConnectionPoolDataSource dataSource;
@@ -112,6 +146,70 @@ public class ArrowFlightJdbcConnectionPoolDataSourceTest {
     assertSame(
         connection.unwrap(ArrowFlightConnection.class),
         connection2.unwrap(ArrowFlightConnection.class));
+  }
+
+  @Test
+  public void testShouldResetOpenStatementExecuteResultSetWhenReusingConnection() throws Exception {
+    final PooledConnection pooledConnection = dataSource.getPooledConnection("user1", "pass1");
+    final Connection connection;
+    try {
+      connection = pooledConnection.getConnection();
+    } catch (final SQLException e) {
+      closePooledConnectionAfterFailedCheckout(pooledConnection, e);
+      throw e;
+    }
+
+    try (connection) {
+      final ArrowFlightConnection physicalConnection =
+          connection.unwrap(ArrowFlightConnection.class);
+      final Statement statement = connection.createStatement();
+      assertTrue(statement.execute(SELECT_QUERY));
+      final ResultSet resultSet = statement.getResultSet();
+
+      assertFalse(statement.isClosed());
+      assertFalse(resultSet.isClosed());
+      connection.close();
+      assertFalse(statement.isClosed());
+      assertFalse(resultSet.isClosed());
+
+      final PooledConnection reusedPooledConnection;
+      try {
+        reusedPooledConnection = dataSource.getPooledConnection("user1", "pass1");
+      } catch (final SQLException e) {
+        closePooledConnectionAfterFailedCheckout(pooledConnection, e);
+        throw e;
+      }
+
+      final Connection reusedConnection;
+      try {
+        reusedConnection = reusedPooledConnection.getConnection();
+      } catch (final SQLException e) {
+        closePooledConnectionAfterFailedCheckout(reusedPooledConnection, e);
+        throw e;
+      }
+
+      try (reusedConnection) {
+        assertSame(pooledConnection, reusedPooledConnection);
+        assertSame(physicalConnection, reusedConnection.unwrap(ArrowFlightConnection.class));
+        assertTrue(statement.isClosed());
+        assertTrue(resultSet.isClosed());
+        assertFalse(reusedConnection.isClosed());
+
+        try (Statement reusedStatement = reusedConnection.createStatement();
+            ResultSet reusedResultSet = reusedStatement.executeQuery(SELECT_QUERY)) {
+          assertTrue(reusedResultSet.next());
+        }
+      }
+    }
+  }
+
+  private static void closePooledConnectionAfterFailedCheckout(
+      final PooledConnection pooledConnection, final SQLException failure) {
+    try {
+      pooledConnection.close();
+    } catch (final SQLException closeFailure) {
+      failure.addSuppressed(closeFailure);
+    }
   }
 
   @Test
