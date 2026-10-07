@@ -126,6 +126,11 @@ public class TestFfmMemoryAccessor {
     ByteBuffer readOnly = buf.asReadOnlyBuffer();
     readOnly.position(7);
     assertEquals(address, FfmMemoryAccessor.INSTANCE.getByteBufferAddress(readOnly));
+
+    buf.position(12);
+    assertEquals(address, FfmMemoryAccessor.INSTANCE.getByteBufferAddress(buf));
+    buf.limit(16).position(16);
+    assertEquals(address, FfmMemoryAccessor.INSTANCE.getByteBufferAddress(buf));
   }
 
   @Test
