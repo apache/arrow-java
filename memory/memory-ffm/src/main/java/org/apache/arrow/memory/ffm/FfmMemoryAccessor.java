@@ -151,17 +151,15 @@ public final class FfmMemoryAccessor implements MemoryUtilAccessor {
    * Returns the address of byte 0 of {@code buf}'s backing memory, independent of {@code buf}'s
    * current position.
    *
-   * @implNote {@code MemorySegment.ofBuffer(buf)} only spans {@code [position, limit)}, so its
-   *     address shifts with the position. Callers (notably {@link
+   * @implNote {@code MemorySegment.ofBuffer(buf)} starts at the buffer's position, so subtracting
+   *     the position gives byte 0 without changing {@code buf}. Callers (notably {@link
    *     org.apache.arrow.memory.ArrowBuf}) add {@code position()} or an explicit index on top of
    *     the returned address themselves, matching the {@code sun.misc.Unsafe}-backed accessor,
-   *     which reads the raw {@code java.nio.Buffer.address} field. Clearing a duplicate (rather
-   *     than {@code buf} itself, whose state must not change) resets position to 0 and limit to
-   *     capacity so the segment spans the whole backing buffer from byte 0.
+   *     which reads the raw {@code java.nio.Buffer.address} field.
    */
   @Override
   public long getByteBufferAddress(ByteBuffer buf) {
-    return MemorySegment.ofBuffer(buf.duplicate().clear()).address();
+    return MemorySegment.ofBuffer(buf).address() - buf.position();
   }
 
   @Override
