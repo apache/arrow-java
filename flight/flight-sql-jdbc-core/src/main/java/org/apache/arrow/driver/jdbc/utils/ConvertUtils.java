@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.driver.jdbc.utils;
 
+import java.sql.ResultSetMetaData;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -78,7 +79,11 @@ public final class ConvertUtils {
                   Common.ColumnMetaData.newBuilder()
                       .setOrdinal(index)
                       .setColumnName(field.getName())
-                      .setLabel(field.getName());
+                      .setLabel(field.getName())
+                      .setNullable(
+                          field.isNullable()
+                              ? ResultSetMetaData.columnNullable
+                              : ResultSetMetaData.columnNoNulls);
 
               setOnColumnMetaDataBuilder(builder, field.getMetadata());
 

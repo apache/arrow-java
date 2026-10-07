@@ -28,6 +28,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -256,6 +257,29 @@ public class ArrowFlightPreparedStatementTest {
           () -> assertThat("Hire Date", equalTo(psmt.getMetaData().getColumnName(5))),
           () -> assertThat("Last Sale", equalTo(psmt.getMetaData().getColumnName(6))),
           () -> assertThat(6, equalTo(psmt.getMetaData().getColumnCount())));
+    }
+  }
+
+  @Test
+  public void testReturnColumnNullability() throws SQLException {
+    final String query = "SELECT nullable, required FROM nullability_test";
+    final Schema schema =
+        new Schema(
+            Arrays.asList(
+                Field.nullable("nullable", ArrowType.Utf8.INSTANCE),
+                Field.notNullable("required", ArrowType.Utf8.INSTANCE)));
+    PRODUCER.addSelectQuery(query, schema, Collections.emptyList());
+    try (final PreparedStatement psmt = connection.prepareStatement(query)) {
+      assertAll(
+          "Column nullability is as expected",
+          () -> assertThat("nullable", equalTo(psmt.getMetaData().getColumnName(1))),
+          () -> assertThat("required", equalTo(psmt.getMetaData().getColumnName(2))),
+          () ->
+              assertThat(
+                  psmt.getMetaData().isNullable(1), equalTo(ResultSetMetaData.columnNullable)),
+          () ->
+              assertThat(
+                  psmt.getMetaData().isNullable(2), equalTo(ResultSetMetaData.columnNoNulls)));
     }
   }
 
