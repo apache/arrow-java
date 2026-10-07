@@ -44,6 +44,13 @@ public class DefaultAllocationManagerOption {
     /** Unsafe based allocation manager. */
     Unsafe,
 
+    /**
+     * FFM (java.lang.foreign) based allocation manager. Also switches {@code
+     * org.apache.arrow.memory.util.MemoryUtil} to its FFM-based accessor (avoiding {@code
+     * sun.misc.Unsafe} entirely) unless {@code arrow.memory.accessor.type} says otherwise.
+     */
+    FFM,
+
     /** Unknown type. */
     Unknown,
   }
@@ -87,6 +94,9 @@ public class DefaultAllocationManagerOption {
       case Unsafe:
         DEFAULT_ALLOCATION_MANAGER_FACTORY = getUnsafeFactory();
         break;
+      case FFM:
+        DEFAULT_ALLOCATION_MANAGER_FACTORY = getFfmFactory();
+        break;
       case Unknown:
         LOGGER.info("allocation manager type not specified, using netty as the default type");
         DEFAULT_ALLOCATION_MANAGER_FACTORY = getFactory(CheckAllocator.check());
@@ -128,6 +138,17 @@ public class DefaultAllocationManagerOption {
       throw new RuntimeException(
           "Please add arrow-memory-netty to your classpath,"
               + " No DefaultAllocationManager found to instantiate an NettyAllocationManager",
+          e);
+    }
+  }
+
+  private static AllocationManager.Factory getFfmFactory() {
+    try {
+      return getFactory("org.apache.arrow.memory.ffm.FfmAllocationManager");
+    } catch (RuntimeException e) {
+      throw new RuntimeException(
+          "Please add arrow-memory-ffm to your classpath,"
+              + " No DefaultAllocationManager found to instantiate an FfmAllocationManager",
           e);
     }
   }
