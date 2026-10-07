@@ -53,6 +53,7 @@ public final class FfmMemoryAccessor implements MemoryUtilAccessor {
     return MemorySegment.ofAddress(address).reinterpret(byteSize);
   }
 
+  // byte[] indexes and lengths are ints in MemorySegment.copy, so a valid call always fits.
   private static int checkedInt(long value) {
     if (value < 0 || value > Integer.MAX_VALUE) {
       throw new IllegalArgumentException("value out of int range: " + value);
