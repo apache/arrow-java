@@ -723,4 +723,16 @@ class TestUuidVector {
       assertEquals(uuid2, UuidUtility.uuidFromArrowBuf(targetHolder.buffer, targetHolder.start));
     }
   }
+
+  /**
+   * Holder readers must expose their extension {@link ArrowType} via {@code getExtensionType()} so
+   * callers (notably {@code ComplexCopier}) can route values through union/promotable writers
+   * without depending on {@code getField()}, which is undefined for holder-backed readers.
+   */
+  @Test
+  void testNullableUuidHolderReaderImplGetExtensionType() {
+    NullableUuidHolder holder = new NullableUuidHolder();
+    NullableUuidHolderReaderImpl reader = new NullableUuidHolderReaderImpl(holder);
+    assertEquals(UuidType.INSTANCE, reader.getExtensionType());
+  }
 }
