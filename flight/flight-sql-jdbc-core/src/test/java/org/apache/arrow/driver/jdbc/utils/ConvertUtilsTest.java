@@ -133,11 +133,9 @@ public class ConvertUtilsTest {
 
     assertThat(columnMetaDataList.size(), equalTo(2));
     assertThat(columnMetaDataList.get(0).columnName, equalTo("nullable"));
-    assertThat(
-        columnMetaDataList.get(0).nullable, equalTo(ResultSetMetaData.columnNullable));
+    assertThat(columnMetaDataList.get(0).nullable, equalTo(ResultSetMetaData.columnNullable));
     assertThat(columnMetaDataList.get(1).columnName, equalTo("required"));
-    assertThat(
-        columnMetaDataList.get(1).nullable, equalTo(ResultSetMetaData.columnNoNulls));
+    assertThat(columnMetaDataList.get(1).nullable, equalTo(ResultSetMetaData.columnNoNulls));
   }
 
   private void assertColumnMetaData(
