@@ -51,10 +51,15 @@ final class NativeMemory {
   /**
    * Returns the address of {@code bytes} of uninitialized native memory.
    *
+   * @throws IllegalArgumentException if {@code bytes} is negative, like {@code
+   *     sun.misc.Unsafe#allocateMemory}
    * @throws OutOfMemoryError if {@code malloc} cannot allocate them, like {@code
    *     sun.misc.Unsafe#allocateMemory}
    */
   static long allocate(long bytes) {
+    if (bytes < 0) {
+      throw new IllegalArgumentException("Negative allocation size: " + bytes);
+    }
     long address;
     try {
       address = ((MemorySegment) MALLOC.invokeExact(bytes)).address();
