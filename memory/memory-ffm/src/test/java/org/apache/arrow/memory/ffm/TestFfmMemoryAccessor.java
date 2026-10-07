@@ -133,4 +133,10 @@ public class TestFfmMemoryAccessor {
     assertThrows(
         IllegalArgumentException.class, () -> FfmMemoryAccessor.INSTANCE.directBuffer(1, -1));
   }
+
+  @Test
+  public void allocateMemoryRejectsNegativeSize() {
+    assertThrows(
+        IllegalArgumentException.class, () -> FfmMemoryAccessor.INSTANCE.allocateMemory(-1));
+  }
 }
