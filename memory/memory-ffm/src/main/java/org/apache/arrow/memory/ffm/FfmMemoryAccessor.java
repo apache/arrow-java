@@ -28,16 +28,17 @@ import org.apache.arrow.memory.util.MemoryUtilAccessor;
  * sun.misc.Unsafe} availability.
  *
  * <p><b>Required JVM flag.</b> This accessor calls the restricted methods {@link
- * MemorySegment#reinterpret(long)} and {@link java.lang.foreign.Linker#downcallHandle}, the latter
- * for {@code malloc} and {@code free}. That is a real, current requirement, not a caveat that this
- * module already handles for you: classpath (unnamed-module) consumers must pass {@code
- * --enable-native-access=ALL-UNNAMED} and module-path consumers must pass {@code
- * --enable-native-access=org.apache.arrow.memory.ffm} on the JVM command line. Without it the JVM
- * prints a warning on every restricted call today, and a future JDK that enables restricted-method
- * enforcement by default will turn that into a hard {@link IllegalCallerException}. The {@code
- * Enable-Native-Access: ALL-UNNAMED} entry in this module's jar manifest does <em>not</em> cover
- * this: the JVM only honours that attribute in the manifest of the jar it was launched with via
- * {@code java -jar}, never for a jar that is merely a classpath dependency.
+ * MemorySegment#reinterpret(long)}, once when the class is initialized, and {@link
+ * java.lang.foreign.Linker#downcallHandle}, for {@code malloc} and {@code free}. That is a real,
+ * current requirement, not a caveat that this module already handles for you: classpath
+ * (unnamed-module) consumers must pass {@code --enable-native-access=ALL-UNNAMED} and module-path
+ * consumers must pass {@code --enable-native-access=org.apache.arrow.memory.ffm} on the JVM command
+ * line. Without it the JVM prints a warning on every restricted call today, and a future JDK that
+ * enables restricted-method enforcement by default will turn that into a hard {@link
+ * IllegalCallerException}. The {@code Enable-Native-Access: ALL-UNNAMED} entry in this module's jar
+ * manifest does <em>not</em> cover this: the JVM only honours that attribute in the manifest of the
+ * jar it was launched with via {@code java -jar}, never for a jar that is merely a classpath
+ * dependency.
  *
  * <p>{@link #allocateMemory}/{@link #freeMemory} call {@code malloc}/{@code free} directly, like
  * the {@code sun.misc.Unsafe}-backed accessor, so {@link #freeMemory} accepts any address returned
@@ -45,13 +46,14 @@ import org.apache.arrow.memory.util.MemoryUtilAccessor;
  */
 public final class FfmMemoryAccessor implements MemoryUtilAccessor {
 
+  // Spans the whole address space, so an address is used directly as an offset and no segment is
+  // created per access, whether or not escape analysis removes it. It owns no memory and is never
+  // closed: buffers are still allocated and freed with malloc/free.
+  private static final MemorySegment ALL = MemorySegment.NULL.reinterpret(Long.MAX_VALUE);
+
   public static final MemoryUtilAccessor INSTANCE = new FfmMemoryAccessor();
 
   private FfmMemoryAccessor() {}
-
-  private static MemorySegment segment(long address, long byteSize) {
-    return MemorySegment.ofAddress(address).reinterpret(byteSize);
-  }
 
   // byte[] indexes and lengths are ints in MemorySegment.copy, so a valid call always fits.
   private static int checkedInt(long value) {
@@ -75,74 +77,64 @@ public final class FfmMemoryAccessor implements MemoryUtilAccessor {
 
   @Override
   public byte getByte(long address) {
-    return segment(address, Byte.BYTES).get(ValueLayout.JAVA_BYTE, 0);
+    return ALL.get(ValueLayout.JAVA_BYTE, address);
   }
 
   @Override
   public void putByte(long address, byte value) {
-    segment(address, Byte.BYTES).set(ValueLayout.JAVA_BYTE, 0, value);
+    ALL.set(ValueLayout.JAVA_BYTE, address, value);
   }
 
   @Override
   public short getShort(long address) {
-    return segment(address, Short.BYTES).get(ValueLayout.JAVA_SHORT_UNALIGNED, 0);
+    return ALL.get(ValueLayout.JAVA_SHORT_UNALIGNED, address);
   }
 
   @Override
   public void putShort(long address, short value) {
-    segment(address, Short.BYTES).set(ValueLayout.JAVA_SHORT_UNALIGNED, 0, value);
+    ALL.set(ValueLayout.JAVA_SHORT_UNALIGNED, address, value);
   }
 
   @Override
   public int getInt(long address) {
-    return segment(address, Integer.BYTES).get(ValueLayout.JAVA_INT_UNALIGNED, 0);
+    return ALL.get(ValueLayout.JAVA_INT_UNALIGNED, address);
   }
 
   @Override
   public void putInt(long address, int value) {
-    segment(address, Integer.BYTES).set(ValueLayout.JAVA_INT_UNALIGNED, 0, value);
+    ALL.set(ValueLayout.JAVA_INT_UNALIGNED, address, value);
   }
 
   @Override
   public long getLong(long address) {
-    return segment(address, Long.BYTES).get(ValueLayout.JAVA_LONG_UNALIGNED, 0);
+    return ALL.get(ValueLayout.JAVA_LONG_UNALIGNED, address);
   }
 
   @Override
   public void putLong(long address, long value) {
-    segment(address, Long.BYTES).set(ValueLayout.JAVA_LONG_UNALIGNED, 0, value);
+    ALL.set(ValueLayout.JAVA_LONG_UNALIGNED, address, value);
   }
 
   @Override
   public void setMemory(long address, long bytes, byte value) {
-    segment(address, bytes).fill(value);
+    ALL.asSlice(address, bytes).fill(value);
   }
 
   @Override
   public void copyMemory(long srcAddress, long destAddress, long bytes) {
-    MemorySegment.copy(segment(srcAddress, bytes), 0, segment(destAddress, bytes), 0, bytes);
+    MemorySegment.copy(ALL, srcAddress, ALL, destAddress, bytes);
   }
 
   @Override
   public void copyToMemory(byte[] src, long srcIndex, long destAddress, long bytes) {
     MemorySegment.copy(
-        src,
-        checkedInt(srcIndex),
-        segment(destAddress, bytes),
-        ValueLayout.JAVA_BYTE,
-        0,
-        checkedInt(bytes));
+        src, checkedInt(srcIndex), ALL, ValueLayout.JAVA_BYTE, destAddress, checkedInt(bytes));
   }
 
   @Override
   public void copyFromMemory(long srcAddress, byte[] dest, long destIndex, long bytes) {
     MemorySegment.copy(
-        segment(srcAddress, bytes),
-        ValueLayout.JAVA_BYTE,
-        0,
-        dest,
-        checkedInt(destIndex),
-        checkedInt(bytes));
+        ALL, ValueLayout.JAVA_BYTE, srcAddress, dest, checkedInt(destIndex), checkedInt(bytes));
   }
 
   @Override
@@ -177,6 +169,6 @@ public final class FfmMemoryAccessor implements MemoryUtilAccessor {
     if (capacity < 0) {
       throw new IllegalArgumentException("Capacity is negative, has to be positive or 0");
     }
-    return segment(address, capacity).asByteBuffer();
+    return ALL.asSlice(address, capacity).asByteBuffer();
   }
 }
