@@ -20,6 +20,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.google.common.collect.ImmutableList;
+import java.sql.ResultSetMetaData;
 import java.util.List;
 import org.apache.arrow.flight.sql.FlightSqlColumnMetadata;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -92,6 +93,7 @@ public class ConvertUtilsTest {
                     .setSchemaName("schema1")
                     .setTableName("table1")
                     .setColumnName("col1")
+                    .setNullable(ResultSetMetaData.columnNullable)
                     .setType(
                         Common.AvaticaType.newBuilder()
                             .setId(SqlTypes.getSqlTypeIdFromArrowType(ArrowType.Utf8.INSTANCE))
@@ -104,6 +106,7 @@ public class ConvertUtilsTest {
                     .setSchemaName("schema1")
                     .setTableName("table1")
                     .setColumnName("col2")
+                    .setNullable(ResultSetMetaData.columnNullable)
                     .setType(
                         Common.AvaticaType.newBuilder()
                             .setId(SqlTypes.getSqlTypeIdFromArrowType(ArrowType.Utf8View.INSTANCE))
@@ -115,6 +118,24 @@ public class ConvertUtilsTest {
     final List<ColumnMetaData> actualColumnMetaData =
         ConvertUtils.convertArrowFieldsToColumnMetaDataList(listField);
     assertColumnMetaData(expectedColumnMetaData, actualColumnMetaData);
+  }
+
+  @Test
+  public void testShouldPreserveArrowFieldNullability() {
+
+    final List<Field> fields =
+        ImmutableList.of(
+            Field.nullable("nullable", ArrowType.Utf8.INSTANCE),
+            Field.notNullable("required", ArrowType.Utf8.INSTANCE));
+
+    final List<ColumnMetaData> columnMetaDataList =
+        ConvertUtils.convertArrowFieldsToColumnMetaDataList(fields);
+
+    assertThat(columnMetaDataList.size(), equalTo(2));
+    assertThat(columnMetaDataList.get(0).columnName, equalTo("nullable"));
+    assertThat(columnMetaDataList.get(0).nullable, equalTo(ResultSetMetaData.columnNullable));
+    assertThat(columnMetaDataList.get(1).columnName, equalTo("required"));
+    assertThat(columnMetaDataList.get(1).nullable, equalTo(ResultSetMetaData.columnNoNulls));
   }
 
   private void assertColumnMetaData(
@@ -129,6 +150,7 @@ public class ConvertUtilsTest {
       assertThat(expectedColumnMetaData.tableName, equalTo(actualColumnMetaData.tableName));
       assertThat(expectedColumnMetaData.columnName, equalTo(actualColumnMetaData.columnName));
       assertThat(expectedColumnMetaData.type, equalTo(actualColumnMetaData.type));
+      assertThat(expectedColumnMetaData.nullable, equalTo(actualColumnMetaData.nullable));
       assertThat(expectedColumnMetaData.readOnly, equalTo(actualColumnMetaData.readOnly));
       assertThat(expectedColumnMetaData.autoIncrement, equalTo(actualColumnMetaData.autoIncrement));
       assertThat(expectedColumnMetaData.precision, equalTo(actualColumnMetaData.precision));
