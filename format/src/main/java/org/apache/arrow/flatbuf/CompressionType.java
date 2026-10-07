@@ -21,8 +21,9 @@ public final class CompressionType {
   private CompressionType() { }
   public static final byte LZ4_FRAME = 0;
   public static final byte ZSTD = 1;
+  public static final byte SNAPPY = 2;
 
-  public static final String[] names = { "LZ4_FRAME", "ZSTD", };
+  public static final String[] names = { "LZ4_FRAME", "ZSTD", "SNAPPY", };
 
   public static String name(int e) { return names[e]; }
 }
