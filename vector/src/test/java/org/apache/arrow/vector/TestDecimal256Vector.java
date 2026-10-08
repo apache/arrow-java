@@ -298,7 +298,27 @@ public class TestDecimal256Vector {
       assertThrows(
           IllegalArgumentException.class, () -> decimalVector.setBigEndian(0, new byte[40]));
 
+      // The rejected call must leave its own slot untouched (still null) and the neighbor intact.
+      assertTrue(decimalVector.isNull(0));
       assertEquals(neighbor, decimalVector.getObject(1).unscaledValue());
+    }
+  }
+
+  @Test
+  public void setBigEndianSafeOversizedHasNoSideEffects() {
+    try (Decimal256Vector decimalVector =
+            TestUtils.newVector(
+                Decimal256Vector.class, "decimal", new ArrowType.Decimal(60, 0, 256), allocator);
+        ArrowBuf buf = allocator.buffer(40)) {
+      decimalVector.allocateNew(1);
+      final int capacityBefore = decimalVector.getValueCapacity();
+
+      // Oversize length must be rejected before handleSafe grows the vector or setBit runs.
+      assertThrows(
+          IllegalArgumentException.class, () -> decimalVector.setBigEndianSafe(5, 0, buf, 40));
+
+      assertEquals(capacityBefore, decimalVector.getValueCapacity());
+      assertTrue(decimalVector.isNull(0));
     }
   }
 

@@ -204,16 +204,18 @@ public final class DecimalVector extends BaseFixedWidthVector
    * @param value array of bytes containing decimal in big endian byte order.
    */
   public void setBigEndian(int index, byte[] value) {
-    BitVectorHelper.setBit(validityBuffer, index);
     final int length = value.length;
 
-    // Reject an oversized value before any bytes are written. The little-endian path below
+    // Reject an oversized value before touching the vector. The little-endian path below
     // copies all `length` bytes into the fixed TYPE_WIDTH slot with unchecked native writes,
-    // so validating after the copy would leave adjacent memory already corrupted.
+    // so validating after the copy would leave adjacent memory already corrupted. Checking
+    // before setBit also keeps the slot null when the call is rejected.
     if (length > TYPE_WIDTH) {
       throw new IllegalArgumentException(
           "Invalid decimal value length. Valid length in [1 - 16], got " + length);
     }
+
+    BitVectorHelper.setBit(validityBuffer, index);
 
     // do the bound check.
     valueBuffer.checkBytes((long) index * TYPE_WIDTH, (long) (index + 1) * TYPE_WIDTH);
@@ -309,13 +311,15 @@ public final class DecimalVector extends BaseFixedWidthVector
    * @param length length of the value in the buffer
    */
   public void setBigEndianSafe(int index, long start, ArrowBuf buffer, int length) {
-    handleSafe(index);
-    BitVectorHelper.setBit(validityBuffer, index);
-
+    // Validate before handleSafe/setBit so a rejected call has no side effects: it neither
+    // grows the vector nor marks the slot valid.
     if (length > TYPE_WIDTH) {
       throw new IllegalArgumentException(
           "Invalid decimal value length. Valid length in [1 - 16], got " + length);
     }
+
+    handleSafe(index);
+    BitVectorHelper.setBit(validityBuffer, index);
 
     // do the bound checks.
     buffer.checkBytes(start, start + length);
