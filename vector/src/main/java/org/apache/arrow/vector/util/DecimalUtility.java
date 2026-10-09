@@ -118,7 +118,7 @@ public class DecimalUtility {
    */
   public static boolean checkPrecisionAndScaleNoThrow(
       BigDecimal value, int vectorPrecision, int vectorScale) {
-    return value.scale() == vectorScale && value.precision() < vectorPrecision;
+    return value.scale() == vectorScale && value.precision() <= vectorPrecision;
   }
 
   /**
