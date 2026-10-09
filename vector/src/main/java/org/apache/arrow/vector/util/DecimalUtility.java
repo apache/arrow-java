@@ -167,7 +167,9 @@ public class DecimalUtility {
           "DecimalUtility.writeLongToArrowBuf() currently supports "
               + "128-bit or 256-bit width data");
     }
-    final long addressOfValue = bytebuf.memoryAddress() + (long) index * byteWidth;
+    final long startIndex = (long) index * byteWidth;
+    bytebuf.checkBytes(startIndex, startIndex + byteWidth);
+    final long addressOfValue = bytebuf.memoryAddress() + startIndex;
     final long padValue = Long.signum(value) == -1 ? -1L : 0L;
     if (LITTLE_ENDIAN) {
       MemoryUtil.putLong(addressOfValue, value);
