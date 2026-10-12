@@ -272,8 +272,8 @@ public class ArrowFlightPreparedStatementTest {
     try (final PreparedStatement psmt = connection.prepareStatement(query)) {
       assertAll(
           "Column nullability is as expected",
-          () -> assertThat("nullable", equalTo(psmt.getMetaData().getColumnName(1))),
-          () -> assertThat("required", equalTo(psmt.getMetaData().getColumnName(2))),
+          () -> assertThat(psmt.getMetaData().getColumnName(1), equalTo("nullable")),
+          () -> assertThat(psmt.getMetaData().getColumnName(2), equalTo("required")),
           () ->
               assertThat(
                   psmt.getMetaData().isNullable(1), equalTo(ResultSetMetaData.columnNullable)),

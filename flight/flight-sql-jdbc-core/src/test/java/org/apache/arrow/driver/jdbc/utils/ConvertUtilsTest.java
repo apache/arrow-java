@@ -74,7 +74,7 @@ public class ConvertUtilsTest {
             new Field(
                 "col2",
                 new FieldType(
-                    true,
+                    false,
                     ArrowType.Utf8View.INSTANCE,
                     null,
                     new FlightSqlColumnMetadata.Builder()
@@ -106,7 +106,7 @@ public class ConvertUtilsTest {
                     .setSchemaName("schema1")
                     .setTableName("table1")
                     .setColumnName("col2")
-                    .setNullable(ResultSetMetaData.columnNullable)
+                    .setNullable(ResultSetMetaData.columnNoNulls)
                     .setType(
                         Common.AvaticaType.newBuilder()
                             .setId(SqlTypes.getSqlTypeIdFromArrowType(ArrowType.Utf8View.INSTANCE))
