@@ -77,7 +77,7 @@ jobs:
         with:
           name: java-build
           path: java-build.tgz
-          retention-days: 1
+          retention-days: 7
       - name: Exclude reactor artifacts from Maven dependency cache
         run: rm -rf .docker/maven-cache/repository/org/apache/arrow
 
@@ -240,7 +240,7 @@ jobs:
         with:
           name: cdata-build
           path: cdata-build.tgz
-          retention-days: 1
+          retention-days: 7
       - name: Exclude reactor artifacts from Maven dependency cache
         run: rm -rf .docker/maven-cache/repository/org/apache/arrow
 
