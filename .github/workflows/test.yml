@@ -81,6 +81,41 @@ jobs:
       - name: Exclude reactor artifacts from Maven dependency cache
         run: rm -rf .docker/maven-cache/repository/org/apache/arrow
 
+  compile-java:
+    name: Compile and check Java on JDK ${{ matrix.jdk }}
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: [21, 25]
+    steps:
+      - name: Checkout Arrow
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Cache Docker Volumes
+        uses: actions/cache@v6
+        with:
+          path: .docker/maven-cache
+          key: java-compile-${{ matrix.jdk }}-${{ env.MAVEN }}-${{ hashFiles('compose.yaml', '**/pom.xml') }}
+          restore-keys: java-compile-${{ matrix.jdk }}-${{ env.MAVEN }}-
+      - name: Compile without tests
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          JDK: ${{ matrix.jdk }}
+        run: |
+          docker compose run \
+            --rm \
+            -e CI=true \
+            -e "DEVELOCITY_ACCESS_KEY=$DEVELOCITY_ACCESS_KEY" \
+            ubuntu-artifacts
+          sudo chown -R "$(id -u):$(id -g)" .docker
+      - name: Exclude reactor artifacts from Maven dependency cache
+        run: rm -rf .docker/maven-cache/repository/org/apache/arrow
+
   test-java:
     name: ${{ matrix.name || format('AMD64 Ubuntu JDK {0} Maven 3.9.16', matrix.jdk) }}
     needs: build-java
