@@ -19,6 +19,7 @@ package org.apache.arrow.vector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -97,7 +98,7 @@ public class TestVectorSchemaRoot {
         VectorSchemaRoot root = VectorSchemaRoot.of(intVector, bitVector)) {
       assertEquals(intVector, root.getVector("intVector"));
       assertEquals(bitVector, root.getVector("bitVector"));
-      assertEquals(null, root.getVector("missingVector"));
+      assertNull(root.getVector("missingVector"));
     }
   }
 
