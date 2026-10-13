@@ -89,12 +89,16 @@ jobs:
           - runs_on: ubuntu-latest
             arch: "x86_64"
             archery_arch: "amd64"
+            archery_arch_short: "amd64"
           - runs_on: ubuntu-24.04-arm
             arch: "aarch_64"
             archery_arch: "arm64v8"
+            archery_arch_short: "arm64"
     env:
       # architecture name used for archery build
       ARCH: ${{ matrix.platform.archery_arch }}
+      # architecture name used for the apache/arrow base image tag
+      ARCH_SHORT: ${{ matrix.platform.archery_arch_short }}
       DOCKER_VOLUME_PREFIX: .docker/
     permissions:
       contents: read
@@ -140,6 +144,7 @@ jobs:
           restore-keys: jni-linux-${{ matrix.platform.arch }}-
       - name: Build
         run: |
+          docker compose build --pull vcpkg-jni
           docker compose run vcpkg-jni
       - name: Push Docker image
         if: success() && github.event_name == 'push' && github.repository == 'apache/arrow-java' && github.ref_name == 'main'
