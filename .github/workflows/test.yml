@@ -134,10 +134,6 @@ jobs:
             os: macos-latest
             jdk: 17
             compose_service: ''
-          - name: AMD64 Windows Server 2022 Java JDK 17
-            os: windows-latest
-            jdk: 17
-            compose_service: ''
     env:
       JDK: ${{ matrix.jdk }}
     steps:
@@ -178,7 +174,7 @@ jobs:
           rm -rf "${HOME}/.m2/repository/org/apache/arrow"
           mkdir -p "${HOME}/.m2/repository/org/apache"
           cp -a .docker/maven-cache/repository/org/apache/arrow "${HOME}/.m2/repository/org/apache/"
-      - name: Test prebuilt artifacts on macOS/Windows
+      - name: Test prebuilt artifacts on macOS
         if: ${{ !matrix.compose_service }}
         shell: bash
         env:
@@ -200,6 +196,38 @@ jobs:
         if: ${{ !matrix.compose_service && always() }}
         shell: bash
         run: rm -rf "${HOME}/.m2/repository/org/apache/arrow"
+
+  windows:
+    name: AMD64 Windows Server 2022 Java JDK ${{ matrix.jdk }}
+    runs-on: windows-latest
+    if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: [17]
+    steps:
+      - name: Checkout Arrow
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ matrix.jdk }}
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Build
+        shell: bash
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+        run: ci/scripts/build.sh . build jni
+      - name: Test
+        shell: bash
+        env:
+          DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+        run: ci/scripts/test.sh . build jni
 
   build-cdata:
     name: Build C Data artifacts
