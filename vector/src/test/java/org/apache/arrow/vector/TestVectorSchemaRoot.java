@@ -90,6 +90,17 @@ public class TestVectorSchemaRoot {
     assertEquals(vsr.getRowCount(), count);
   }
 
+  @Test
+  public void testGetVectorByName() {
+    try (IntVector intVector = new IntVector("intVector", allocator);
+        BitVector bitVector = new BitVector("bitVector", allocator);
+        VectorSchemaRoot root = VectorSchemaRoot.of(intVector, bitVector)) {
+      assertEquals(intVector, root.getVector("intVector"));
+      assertEquals(bitVector, root.getVector("bitVector"));
+      assertEquals(null, root.getVector("missingVector"));
+    }
+  }
+
   private VectorSchemaRoot createBatch() {
     FieldType varCharType = new FieldType(true, new ArrowType.Utf8(), /* dictionary= */ null);
     FieldType listType = new FieldType(true, new ArrowType.List(), /* dictionary= */ null);
