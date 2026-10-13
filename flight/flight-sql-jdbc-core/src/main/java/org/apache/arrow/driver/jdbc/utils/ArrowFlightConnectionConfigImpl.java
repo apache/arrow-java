@@ -333,7 +333,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
      */
     public Boolean getBoolean(final Properties properties) {
       final String valueFromProperties = String.valueOf(get(properties));
-      return valueFromProperties.equals("1") || valueFromProperties.equals("true");
+      return valueFromProperties.equals("1") || valueFromProperties.equalsIgnoreCase("true");
     }
 
     /**
