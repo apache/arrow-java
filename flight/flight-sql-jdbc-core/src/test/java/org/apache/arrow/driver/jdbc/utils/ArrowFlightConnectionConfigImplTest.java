@@ -20,6 +20,7 @@ import static java.lang.Runtime.getRuntime;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CATALOG;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CONNECT_TIMEOUT_MILLIS;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.HOST;
+import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.HOSTNAME_OVERRIDE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PASSWORD;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PORT;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.THREAD_POOL_SIZE;
@@ -106,6 +107,12 @@ public final class ArrowFlightConnectionConfigImplTest {
             useEncryption,
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::useEncryption),
+        Arguments.of(
+            HOSTNAME_OVERRIDE,
+            "flight.example.com",
+            "flight.example.com",
+            (Function<ArrowFlightConnectionConfigImpl, ?>)
+                ArrowFlightConnectionConfigImpl::getHostnameOverride),
         Arguments.of(
             THREAD_POOL_SIZE,
             threadPoolSize,

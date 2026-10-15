@@ -188,6 +188,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                     .withHost(endpointUri.getHost())
                     .withPort(endpointUri.getPort())
                     .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS))
+                    .withHostnameOverride(builder.getHostnameOverrideForEndpoint(endpointUri))
                     .withClientCache(flightClientCache)
                     .withConnectTimeout(builder.connectTimeout);
 
@@ -677,6 +678,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting boolean disableCertificateVerification;
 
+    @VisibleForTesting @Nullable String hostnameOverride;
+
     @VisibleForTesting boolean useSystemTrustStore = true;
 
     @VisibleForTesting String tlsRootCertificatesPath;
@@ -732,6 +735,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.token = original.token;
       this.useEncryption = original.useEncryption;
       this.disableCertificateVerification = original.disableCertificateVerification;
+      this.hostnameOverride = original.hostnameOverride;
       this.useSystemTrustStore = original.useSystemTrustStore;
       this.tlsRootCertificatesPath = original.tlsRootCertificatesPath;
       this.clientCertificatePath = original.clientCertificatePath;
@@ -838,6 +842,38 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         final boolean disableCertificateVerification) {
       this.disableCertificateVerification = disableCertificateVerification;
       return this;
+    }
+
+    /**
+     * Sets the hostname to use for TLS certificate verification and SNI instead of the host this
+     * handler connects to. Ignored when encryption is disabled.
+     *
+     * @param hostnameOverride the hostname to verify the server certificate against, or null to use
+     *     the host.
+     * @return this instance.
+     */
+    public Builder withHostnameOverride(@Nullable final String hostnameOverride) {
+      this.hostnameOverride = hostnameOverride;
+      return this;
+    }
+
+    /**
+     * Gets the hostname override to use when connecting to an endpoint location. The override is
+     * only valid for the host it was configured for, so endpoints on any other host are verified
+     * against their own hostname.
+     *
+     * @param endpointUri the endpoint location.
+     * @return the hostname override if the endpoint is on the original host, otherwise null.
+     */
+    @VisibleForTesting
+    @Nullable String getHostnameOverrideForEndpoint(final URI endpointUri) {
+      final String endpointHost = endpointUri.getHost();
+      if (hostnameOverride == null
+          || endpointHost == null
+          || !endpointHost.equalsIgnoreCase(host)) {
+        return null;
+      }
+      return hostnameOverride;
     }
 
     /**
@@ -1065,6 +1101,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         buildTimeMiddlewareFactories.forEach(clientBuilder::intercept);
         if (useEncryption) {
           clientBuilder.useTls();
+          if (hostnameOverride != null) {
+            clientBuilder.overrideHostname(hostnameOverride);
+          }
         }
         Location location = getLocation();
         clientBuilder.location(location);
