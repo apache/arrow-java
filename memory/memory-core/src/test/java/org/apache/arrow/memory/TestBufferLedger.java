@@ -81,6 +81,58 @@ public class TestBufferLedger {
     }
   }
 
+  /** Retaining a closed buffer into another allocator must not revive its memory. */
+  @Test
+  public void testRetainToAllocatorAfterCloseThrows() {
+    try (BufferAllocator root = new RootAllocator();
+        BufferAllocator child = root.newChildAllocator("child", 0, Long.MAX_VALUE)) {
+      ArrowBuf buf = root.buffer(10);
+      buf.close();
+
+      assertThrows(IllegalStateException.class, () -> buf.getReferenceManager().retain(buf, child));
+      assertThrows(IllegalStateException.class, () -> buf.getReferenceManager().retain(buf, root));
+      assertEquals(0, child.getAllocatedMemory());
+      assertEquals(0, root.getAllocatedMemory());
+    }
+  }
+
+  /** Transferring a closed buffer to another allocator must not revive its memory. */
+  @Test
+  public void testTransferOwnershipAfterCloseThrows() {
+    try (BufferAllocator root = new RootAllocator();
+        BufferAllocator child = root.newChildAllocator("child", 0, Long.MAX_VALUE)) {
+      ArrowBuf buf = root.buffer(10);
+      buf.close();
+
+      assertThrows(
+          IllegalStateException.class,
+          () -> buf.getReferenceManager().transferOwnership(buf, child));
+      assertEquals(0, child.getAllocatedMemory());
+      assertEquals(0, root.getAllocatedMemory());
+    }
+  }
+
+  /** Retaining and transferring a live buffer into another allocator still work. */
+  @Test
+  public void testRetainAndTransferToAllocatorWhileReferenced() {
+    try (BufferAllocator root = new RootAllocator();
+        BufferAllocator child = root.newChildAllocator("child", 0, Long.MAX_VALUE)) {
+      ArrowBuf buf = root.buffer(10);
+      try (ArrowBuf retained = buf.getReferenceManager().retain(buf, child)) {
+        assertEquals(1, retained.refCnt());
+        ArrowBuf transferred =
+            buf.getReferenceManager().transferOwnership(buf, child).getTransferredBuffer();
+        assertEquals(2, transferred.refCnt());
+        buf.close();
+        transferred.setByte(0, 1);
+        assertEquals(1, retained.getByte(0));
+        transferred.close();
+      }
+      assertEquals(0, child.getAllocatedMemory());
+      assertEquals(0, root.getAllocatedMemory());
+    }
+  }
+
   /**
    * Races retains against the final release of a buffer. Once a release has dropped the count to 0,
    * every retain that starts afterwards must fail, and the memory must be freed exactly once.
