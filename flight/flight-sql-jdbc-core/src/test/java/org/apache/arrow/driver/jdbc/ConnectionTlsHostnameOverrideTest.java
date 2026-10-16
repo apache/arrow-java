@@ -20,15 +20,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.Properties;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
@@ -46,41 +50,52 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
  * Tests the hostnameOverride connection property. The test certificate is issued for {@code
  * localhost} and has no IP address in its subject alternative names, so connecting by IP address
- * only passes verification when the hostname override is used.
+ * only passes verification when the hostname override is used. Servers bind to the IP address
+ * explicitly so the tests don't depend on how {@code localhost} resolves.
  */
 public class ConnectionTlsHostnameOverrideTest {
 
   private static final String IP_ADDRESS = "127.0.0.1";
   private static final String CERTIFICATE_HOSTNAME = "localhost";
+  // Connecting with credentials performs a handshake, so the TLS connection is made eagerly.
   private static final String USER = "user1";
   private static final String PASSWORD = "pass1";
 
-  @RegisterExtension public static final FlightServerTestExtension FLIGHT_SERVER_TEST_EXTENSION;
-  private static final FlightSqlTestCertificates.CertKeyPair certKey;
-  private static final String tlsRootCertsPath;
+  private static final FlightSqlTestCertificates.CertKeyPair certKey =
+      FlightSqlTestCertificates.exampleTlsCerts().get(0);
+  private static final String tlsRootCertsPath = certKey.cert.getPath();
 
-  static {
-    certKey = FlightSqlTestCertificates.exampleTlsCerts().get(0);
-    tlsRootCertsPath = certKey.cert.getPath();
-
-    FLIGHT_SERVER_TEST_EXTENSION =
-        new FlightServerTestExtension.Builder()
-            .authentication(new UserPasswordAuthentication.Builder().user(USER, PASSWORD).build())
-            .useEncryption(certKey.cert, certKey.key)
-            .producer(new MockFlightSqlProducer())
-            .build();
-  }
+  private static BufferAllocator allocator;
+  private static FlightServer tlsServer;
 
   @BeforeAll
-  public static void registerDriver() throws SQLException {
+  public static void setUp() throws Exception {
     DriverManager.registerDriver(new ArrowFlightJdbcDriver());
+    allocator = new RootAllocator(Long.MAX_VALUE);
+    tlsServer =
+        FlightServer.builder(
+                allocator, Location.forGrpcTls(IP_ADDRESS, 0), new MockFlightSqlProducer())
+            .headerAuthenticator(
+                new UserPasswordAuthentication.Builder()
+                    .user(USER, PASSWORD)
+                    .build()
+                    .authenticate())
+            .useTls(certKey.cert, certKey.key)
+            .build()
+            .start();
+  }
+
+  @AfterAll
+  public static void tearDown() throws Exception {
+    tlsServer.close();
+    allocator.close();
   }
 
   private static String tlsUrl(final String host, final int port) throws Exception {
@@ -93,19 +108,38 @@ public class ConnectionTlsHostnameOverrideTest {
   }
 
   private static String serverUrl(final String host) throws Exception {
-    return tlsUrl(host, FLIGHT_SERVER_TEST_EXTENSION.getPort())
+    return tlsUrl(host, tlsServer.getPort())
         + String.format("&user=%s&password=%s", USER, PASSWORD);
   }
 
+  /** Asserts that connecting fails because the server certificate was rejected. */
+  private static void assertCertificateRejected(final String url) {
+    final SQLException exception =
+        assertThrows(
+            SQLException.class,
+            () -> {
+              try (Connection connection = DriverManager.getConnection(url)) {
+                connection.isValid(0);
+              }
+            });
+    final Deque<Throwable> pending = new ArrayDeque<>();
+    pending.add(exception);
+    while (!pending.isEmpty()) {
+      final Throwable throwable = pending.pop();
+      if (throwable instanceof CertificateException) {
+        return;
+      }
+      if (throwable.getCause() != null) {
+        pending.add(throwable.getCause());
+      }
+      pending.addAll(Arrays.asList(throwable.getSuppressed()));
+    }
+    fail("Expected the server certificate to be rejected", exception);
+  }
+
   @Test
-  public void testConnectionByIpAddressFailsWithoutHostnameOverride() {
-    assertThrows(
-        SQLException.class,
-        () -> {
-          try (Connection connection = DriverManager.getConnection(serverUrl(IP_ADDRESS))) {
-            connection.isValid(0);
-          }
-        });
+  public void testConnectionByIpAddressFailsWithoutHostnameOverride() throws Exception {
+    assertCertificateRejected(serverUrl(IP_ADDRESS));
   }
 
   @Test
@@ -129,27 +163,23 @@ public class ConnectionTlsHostnameOverrideTest {
   }
 
   @Test
-  public void testServerCertificateIsVerifiedAgainstHostnameOverride() {
-    // The connection host matches the certificate, but verification uses the override.
-    assertThrows(
-        SQLException.class,
-        () -> {
-          try (Connection connection =
-              DriverManager.getConnection(
-                  serverUrl(CERTIFICATE_HOSTNAME) + "&hostnameOverride=other.example.com")) {
-            connection.isValid(0);
-          }
-        });
+  public void testServerCertificateIsVerifiedAgainstHostnameOverride() throws Exception {
+    // Same connection as the passing override tests, but the override doesn't match the
+    // certificate, so verification must use the override's value.
+    assertCertificateRejected(serverUrl(IP_ADDRESS) + "&hostnameOverride=other.example.com");
+  }
+
+  @Test
+  public void testBlankHostnameOverrideIsIgnored() throws Exception {
+    // A blank value behaves as if the property were unset rather than being sent to gRPC.
+    assertCertificateRejected(serverUrl(IP_ADDRESS) + "&hostnameOverride=");
   }
 
   @Test
   public void testHostnameOverrideIsIgnoredWithoutEncryption() throws Exception {
-    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
-        FlightServer server =
+    try (FlightServer server =
             FlightServer.builder(
-                    allocator,
-                    Location.forGrpcInsecure(CERTIFICATE_HOSTNAME, 0),
-                    new MockFlightSqlProducer())
+                    allocator, Location.forGrpcInsecure(IP_ADDRESS, 0), new MockFlightSqlProducer())
                 .build()
                 .start();
         Connection connection =
@@ -168,12 +198,11 @@ public class ConnectionTlsHostnameOverrideTest {
             Arrays.asList(Field.nullablePrimitive("int_column", new ArrowType.Int(32, true))));
     final Ticket ticket = new Ticket("partition".getBytes(StandardCharsets.UTF_8));
 
-    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
-        VectorSchemaRoot partition = VectorSchemaRoot.create(schema, allocator);
+    try (VectorSchemaRoot partition = VectorSchemaRoot.create(schema, allocator);
         FlightServer dataServer =
             FlightServer.builder(
                     allocator,
-                    Location.forGrpcTls(CERTIFICATE_HOSTNAME, 0),
+                    Location.forGrpcTls(IP_ADDRESS, 0),
                     new PartitionedFlightSqlProducer.DataOnlyFlightSqlProducer(ticket, partition))
                 .useTls(certKey.cert, certKey.key)
                 .build()
@@ -189,8 +218,7 @@ public class ConnectionTlsHostnameOverrideTest {
       try (PartitionedFlightSqlProducer rootProducer =
               new PartitionedFlightSqlProducer(schema, endpoint);
           FlightServer rootServer =
-              FlightServer.builder(
-                      allocator, Location.forGrpcTls(CERTIFICATE_HOSTNAME, 0), rootProducer)
+              FlightServer.builder(allocator, Location.forGrpcTls(IP_ADDRESS, 0), rootProducer)
                   .useTls(certKey.cert, certKey.key)
                   .build()
                   .start();
