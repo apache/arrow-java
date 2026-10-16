@@ -117,6 +117,17 @@ public class ComplexCopier {
           writer.writeNull();
         }
         break;
+      case FIXEDSIZEBINARY:
+        if (reader.isSet()) {
+          NullableFixedSizeBinaryHolder fixedSizeBinaryHolder = new NullableFixedSizeBinaryHolder();
+          reader.read(fixedSizeBinaryHolder);
+          if (fixedSizeBinaryHolder.isSet == 1) {
+            writer.writeFixedSizeBinary(fixedSizeBinaryHolder.buffer);
+          }
+        } else {
+          writer.writeNull();
+        }
+        break;
   <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
   <#assign fields = minor.fields!type.fields />
   <#assign uncappedName = name?uncap_first/>
@@ -160,6 +171,13 @@ public class ComplexCopier {
     </#if>
 
     </#list></#list>
+    case FIXEDSIZEBINARY:
+      if (reader.getField().getType() instanceof ArrowType.FixedSizeBinary) {
+        ArrowType.FixedSizeBinary type = (ArrowType.FixedSizeBinary) reader.getField().getType();
+        return (FieldWriter) writer.fixedSizeBinary(name, type.getByteWidth());
+      } else {
+        return (FieldWriter) writer.fixedSizeBinary(name);
+      }
     case STRUCT:
       return (FieldWriter) writer.struct(name);
     case FIXED_SIZE_LIST:
@@ -187,6 +205,8 @@ public class ComplexCopier {
     return (FieldWriter) writer.<#if name == "Int">integer<#else>${uncappedName}</#if>();
     </#if>
     </#list></#list>
+    case FIXEDSIZEBINARY:
+      return (FieldWriter) writer.fixedSizeBinary();
     case STRUCT:
       return (FieldWriter) writer.struct();
     case FIXED_SIZE_LIST:
@@ -214,6 +234,8 @@ public class ComplexCopier {
       return (FieldWriter) writer.<#if name == "Int">integer<#else>${uncappedName}</#if>();
     </#if>
     </#list></#list>
+      case FIXEDSIZEBINARY:
+        return (FieldWriter) writer.fixedSizeBinary();
       case STRUCT:
         return (FieldWriter) writer.struct();
       case FIXED_SIZE_LIST:
