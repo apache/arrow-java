@@ -20,6 +20,7 @@ import static java.util.Arrays.asList;
 import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -119,6 +120,23 @@ public class MessageSerializerTest {
     result.order(ByteOrder.nativeOrder());
     assertEquals(3, result.getInt());
     assertEquals(0, result.getInt());
+  }
+
+  @Test
+  public void testReadMessageWithContinuationTokenThenEndOfStream() throws IOException {
+    // A continuation token (0xFFFFFFFF) with no length prefix following it.
+    byte[] bytes = new byte[] {(byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+    ReadChannel in = new ReadChannel(Channels.newChannel(new ByteArrayInputStream(bytes)));
+    assertNull(MessageSerializer.readMessage(in));
+  }
+
+  @Test
+  public void testReadMessageRejectsNegativeLength() {
+    // Little-endian prefix encoding a negative message length (-5), which is not the
+    // continuation token.
+    byte[] bytes = new byte[] {(byte) 0xFB, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF};
+    ReadChannel in = new ReadChannel(Channels.newChannel(new ByteArrayInputStream(bytes)));
+    assertThrows(IOException.class, () -> MessageSerializer.readMessage(in));
   }
 
   @Test
