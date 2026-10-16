@@ -25,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
@@ -153,6 +154,8 @@ public class ArrowFlightStatementExecuteTest {
     try (final ResultSet resultSet = statement.getResultSet()) {
       final int columnCount = resultSet.getMetaData().getColumnCount();
       assertThat(columnCount, is(1));
+      assertThat(
+          resultSet.getMetaData().isNullable(1), equalTo(ResultSetMetaData.columnNullable));
       int rowCount = 0;
       for (; resultSet.next(); rowCount++) {
         assertThat(numbers.remove(resultSet.getByte(1)), is(true));
