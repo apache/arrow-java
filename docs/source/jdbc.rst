@@ -227,6 +227,10 @@ mapping, with additional support for the UUID extension type noted below.
 +----------------------------+----------------------------+-------+
 | Date64                     | DATE (setDate)             |       |
 +----------------------------+----------------------------+-------+
+| Decimal32                  | DECIMAL (setBigDecimal)    |       |
++----------------------------+----------------------------+-------+
+| Decimal64                  | DECIMAL (setBigDecimal)    |       |
++----------------------------+----------------------------+-------+
 | Decimal128                 | DECIMAL (setBigDecimal)    |       |
 +----------------------------+----------------------------+-------+
 | Decimal256                 | DECIMAL (setBigDecimal)    |       |

@@ -30,6 +30,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
 import org.apache.arrow.vector.Float4Vector;
@@ -493,6 +495,64 @@ public class RootAllocatorTestExtension
    *
    * @return UInt8Vector
    */
+  public Decimal32Vector createDecimal32Vector() {
+
+    BigDecimal[] bigDecimalValues =
+        new BigDecimal[] {
+          new BigDecimal(0),
+          new BigDecimal(1),
+          new BigDecimal(-1),
+          new BigDecimal(Byte.MIN_VALUE),
+          new BigDecimal(Byte.MAX_VALUE),
+          new BigDecimal(-Short.MAX_VALUE),
+          new BigDecimal(Short.MIN_VALUE),
+          new BigDecimal("-999999999"),
+          new BigDecimal("999999999")
+        };
+
+    Decimal32Vector result = new Decimal32Vector("ID", this.getRootAllocator(), 9, 0);
+    result.setValueCount(MAX_VALUE);
+    for (int i = 0; i < MAX_VALUE; i++) {
+      if (i < bigDecimalValues.length) {
+        result.setSafe(i, bigDecimalValues[i]);
+      } else {
+        result.setSafe(i, random.nextInt(1_000_000_000));
+      }
+    }
+
+    return result;
+  }
+
+  public Decimal64Vector createDecimal64Vector() {
+
+    BigDecimal[] bigDecimalValues =
+        new BigDecimal[] {
+          new BigDecimal(0),
+          new BigDecimal(1),
+          new BigDecimal(-1),
+          new BigDecimal(Byte.MIN_VALUE),
+          new BigDecimal(Byte.MAX_VALUE),
+          new BigDecimal(-Short.MAX_VALUE),
+          new BigDecimal(Short.MIN_VALUE),
+          new BigDecimal(Integer.MIN_VALUE),
+          new BigDecimal(Integer.MAX_VALUE),
+          new BigDecimal("-999999999999999999"),
+          new BigDecimal("999999999999999999")
+        };
+
+    Decimal64Vector result = new Decimal64Vector("ID", this.getRootAllocator(), 18, 0);
+    result.setValueCount(MAX_VALUE);
+    for (int i = 0; i < MAX_VALUE; i++) {
+      if (i < bigDecimalValues.length) {
+        result.setSafe(i, bigDecimalValues[i]);
+      } else {
+        result.setSafe(i, random.nextLong() % 1_000_000_000_000_000_000L);
+      }
+    }
+
+    return result;
+  }
+
   public DecimalVector createDecimalVector() {
 
     BigDecimal[] bigDecimalValues =

@@ -51,6 +51,8 @@ import org.apache.arrow.adapter.avro.consumers.SkipConsumer;
 import org.apache.arrow.adapter.avro.consumers.SkipFunction;
 import org.apache.arrow.adapter.avro.consumers.logical.AvroDateConsumer;
 import org.apache.arrow.adapter.avro.consumers.logical.AvroDecimal256Consumer;
+import org.apache.arrow.adapter.avro.consumers.logical.AvroDecimal32Consumer;
+import org.apache.arrow.adapter.avro.consumers.logical.AvroDecimal64Consumer;
 import org.apache.arrow.adapter.avro.consumers.logical.AvroDecimalConsumer;
 import org.apache.arrow.adapter.avro.consumers.logical.AvroTimeMicroConsumer;
 import org.apache.arrow.adapter.avro.consumers.logical.AvroTimeMillisConsumer;
@@ -67,6 +69,8 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -226,15 +230,7 @@ public class AvroToArrowUtils {
                   /* dictionary= */ null,
                   getMetaData(schema, extProps, config));
           vector = createVector(consumerVector, fieldType, name, allocator);
-          if (schema.getFixedSize() <= 16) {
-            consumer =
-                new AvroDecimalConsumer.FixedDecimalConsumer(
-                    (DecimalVector) vector, schema.getFixedSize());
-          } else {
-            consumer =
-                new AvroDecimal256Consumer.FixedDecimal256Consumer(
-                    (Decimal256Vector) vector, schema.getFixedSize());
-          }
+          consumer = createFixedDecimalConsumer(vector, schema.getFixedSize());
         } else {
           arrowType = new ArrowType.FixedSizeBinary(schema.getFixedSize());
           fieldType =
@@ -407,18 +403,42 @@ public class AvroToArrowUtils {
         scale,
         precision);
 
+    // A fixed decimal maps to the narrowest Arrow decimal that holds its bytes, so an Arrow
+    // decimal written as fixed(bitWidth / 8) reads back with the same bit width.
     if (schema.getType() == Schema.Type.FIXED) {
-      if (schema.getFixedSize() <= 16) {
-        return new ArrowType.Decimal(precision, scale, 128);
-      } else {
-        return new ArrowType.Decimal(precision, scale, 256);
-      }
+      return new ArrowType.Decimal(
+          precision, scale, decimalBitWidthForFixed(schema.getFixedSize()));
     } else {
       if (precision <= 38) {
         return new ArrowType.Decimal(precision, scale, 128);
       } else {
         return new ArrowType.Decimal(precision, scale, 256);
       }
+    }
+  }
+
+  private static int decimalBitWidthForFixed(int fixedSize) {
+    if (fixedSize <= Decimal32Vector.TYPE_WIDTH) {
+      return Decimal32Vector.TYPE_WIDTH * 8;
+    } else if (fixedSize <= Decimal64Vector.TYPE_WIDTH) {
+      return Decimal64Vector.TYPE_WIDTH * 8;
+    } else if (fixedSize <= DecimalVector.TYPE_WIDTH) {
+      return DecimalVector.TYPE_WIDTH * 8;
+    } else {
+      return Decimal256Vector.TYPE_WIDTH * 8;
+    }
+  }
+
+  private static Consumer createFixedDecimalConsumer(FieldVector vector, int fixedSize) {
+    if (vector instanceof Decimal32Vector) {
+      return new AvroDecimal32Consumer.FixedDecimal32Consumer((Decimal32Vector) vector, fixedSize);
+    } else if (vector instanceof Decimal64Vector) {
+      return new AvroDecimal64Consumer.FixedDecimal64Consumer((Decimal64Vector) vector, fixedSize);
+    } else if (vector instanceof DecimalVector) {
+      return new AvroDecimalConsumer.FixedDecimalConsumer((DecimalVector) vector, fixedSize);
+    } else {
+      return new AvroDecimal256Consumer.FixedDecimal256Consumer(
+          (Decimal256Vector) vector, fixedSize);
     }
   }
 
