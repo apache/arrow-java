@@ -118,6 +118,17 @@ case-sensitive. The supported parameters are:
      - Path to PEM-encoded root certificates for TLS - use this as
        an alternative to ``trustStore``
 
+   * - hostnameOverride
+     - null
+     - When TLS is enabled, the hostname to verify the server certificate
+       against and to send for SNI and as the gRPC ``:authority`` header,
+       instead of **HOSTNAME**. Use this when
+       connecting through a tunnel, a private endpoint, or an IP address
+       that does not match the server certificate. Endpoints returned by
+       the server are only verified against this hostname if they are on
+       the same host as the connection. Ignored when ``useEncryption`` is
+       false.
+
    * - clientCertificate
      - null
      - Path to PEM-encoded client mTLS certificate when the Flight
