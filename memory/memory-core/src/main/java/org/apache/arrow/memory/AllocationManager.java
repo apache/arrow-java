@@ -101,6 +101,12 @@ public abstract class AllocationManager {
         "A buffer can only be associated between two allocators that share the same root");
 
     synchronized (this) {
+      // Once the last ledger is released the memory is freed (owningLedger is null), and a new
+      // association would revive it (https://github.com/apache/arrow-java/issues/906). The final
+      // release frees the memory under this lock, so it can't happen between this check and the
+      // association. The constructor's own association runs before owningLedger is set.
+      Preconditions.checkState(
+          !retain || owningLedger != null, "The ArrowBuf's memory has already been released");
       BufferLedger ledger = map.get(allocator);
       if (ledger != null) {
         // We were already being tracked by the given allocator, just return it
