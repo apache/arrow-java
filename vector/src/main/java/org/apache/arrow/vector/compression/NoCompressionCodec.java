@@ -59,6 +59,7 @@ public class NoCompressionCodec implements CompressionCodec {
         case NO_COMPRESSION:
           return NoCompressionCodec.INSTANCE;
         case LZ4_FRAME:
+        case SNAPPY:
         case ZSTD:
           throw new IllegalArgumentException(
               "Please add arrow-compression module to use CommonsCompressionFactory for "
