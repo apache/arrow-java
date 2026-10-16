@@ -104,7 +104,7 @@ under the License.
     <dep.jackson-bom.version>2.22.3</dep.jackson-bom.version>
     <dep.hadoop.version>3.5.0</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
-    <dep.avro.version>1.12.1</dep.avro.version>
+    <dep.avro.version>1.12.2</dep.avro.version>
     <dep.parquet.version>1.18.1</dep.parquet.version>
     <dep.mockito-bom.version>5.23.0</dep.mockito-bom.version>
     <arrow.vector.classifier/>
