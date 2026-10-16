@@ -153,10 +153,9 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
         targetVector.getValidityBuffer());
 
     // append data buffer
-    MemoryUtil.copyMemory(
-        deltaVector.getDataBuffer().memoryAddress() + deltaDataStart,
-        targetVector.getDataBuffer().memoryAddress() + targetDataSize,
-        deltaDataSize);
+    targetVector
+        .getDataBuffer()
+        .setBytes(targetDataSize, deltaVector.getDataBuffer(), deltaDataStart, deltaDataSize);
 
     // copy offset buffer
     MemoryUtil.copyMemory(
@@ -229,10 +228,9 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
         targetVector.getValidityBuffer());
 
     // append data buffer
-    MemoryUtil.copyMemory(
-        deltaVector.getDataBuffer().memoryAddress() + deltaDataStart,
-        targetVector.getDataBuffer().memoryAddress() + targetDataSize,
-        deltaDataSize);
+    targetVector
+        .getDataBuffer()
+        .setBytes(targetDataSize, deltaVector.getDataBuffer(), deltaDataStart, deltaDataSize);
 
     // copy offset buffer
     MemoryUtil.copyMemory(

@@ -649,6 +649,66 @@ public class TestArrowReaderWriter {
     AutoCloseables.close(closeableList);
   }
 
+  @Test
+  public void testDeltaDictionaryOffsetsExceedDataBuffer() throws Exception {
+    try (VarCharVector dictVector = newVarCharVector("dict", allocator)) {
+      setVector(
+          dictVector,
+          "foo".getBytes(StandardCharsets.UTF_8),
+          "bar".getBytes(StandardCharsets.UTF_8));
+      Dictionary dictionary = new Dictionary(dictVector, new DictionaryEncoding(1L, false, null));
+      DictionaryProvider.MapDictionaryProvider provider =
+          new DictionaryProvider.MapDictionaryProvider();
+      provider.put(dictionary);
+      Field encodedField =
+          new Field(
+              "f",
+              new FieldType(true, new ArrowType.Int(32, true), dictionary.getEncoding()),
+              null);
+      Schema schema =
+          new Schema(
+              Collections.singletonList(
+                  DictionaryUtility.toMessageFormat(encodedField, provider, new HashSet<>())));
+
+      ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+      WriteChannel out = new WriteChannel(newChannel(outStream));
+      MessageSerializer.serialize(out, schema);
+
+      List<AutoCloseable> closeableList = new ArrayList<>();
+      serializeDictionaryBatch(out, dictionary, false, closeableList);
+
+      // delta dictionary whose offsets point far past its 8-byte data buffer
+      ArrowBuf validity = allocator.buffer(0);
+      ArrowBuf offsets = allocator.buffer(12);
+      offsets.setInt(0, 0);
+      offsets.setInt(4, 4);
+      offsets.setInt(8, 4096);
+      offsets.writerIndex(12);
+      ArrowBuf data = allocator.buffer(8);
+      data.setBytes(0, "bazzquxx".getBytes(StandardCharsets.UTF_8));
+      data.writerIndex(8);
+      ArrowRecordBatch deltaBatch =
+          new ArrowRecordBatch(
+              2,
+              Collections.singletonList(new ArrowFieldNode(2, 0)),
+              Arrays.asList(validity, offsets, data));
+      ArrowDictionaryBatch deltaDictionaryBatch = new ArrowDictionaryBatch(1L, deltaBatch, true);
+      MessageSerializer.serialize(out, deltaDictionaryBatch);
+      closeableList.add(deltaDictionaryBatch);
+      AutoCloseables.close(validity, offsets, data);
+
+      // write eos
+      out.writeIntLittleEndian(0);
+
+      try (ArrowStreamReader reader =
+          new ArrowStreamReader(
+              new ByteArrayReadableSeekableByteChannel(outStream.toByteArray()), allocator)) {
+        assertThrows(IndexOutOfBoundsException.class, reader::loadNextBatch);
+      }
+      AutoCloseables.close(closeableList);
+    }
+  }
+
   // Tests that the ArrowStreamWriter re-emits dictionaries when they change
   @Test
   public void testWriteReadStreamWithDictionaryReplacement() throws Exception {
