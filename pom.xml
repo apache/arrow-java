@@ -100,7 +100,7 @@ under the License.
     <dep.guava-bom.version>33.7.1-jre</dep.guava-bom.version>
     <dep.netty-bom.version>4.2.17.Final</dep.netty-bom.version>
     <dep.grpc-bom.version>1.84.2</dep.grpc-bom.version>
-    <dep.protobuf-bom.version>4.35.1</dep.protobuf-bom.version>
+    <dep.protobuf-bom.version>4.36.2</dep.protobuf-bom.version>
     <dep.jackson-bom.version>2.22.3</dep.jackson-bom.version>
     <dep.hadoop.version>3.5.0</dep.hadoop.version>
     <dep.fbs.version>25.2.10</dep.fbs.version>
