@@ -44,7 +44,7 @@ public abstract class BaseRepeatedValueViewVector extends BaseValueVector
     implements RepeatedValueVector, BaseListVector {
 
   public static final FieldVector DEFAULT_DATA_VECTOR = ZeroVector.INSTANCE;
-  public static final String DATA_VECTOR_NAME = "$data$";
+  public static String DATA_VECTOR_NAME = "$data$";
 
   public static final byte OFFSET_WIDTH = 4;
   public static final byte SIZE_WIDTH = 4;
