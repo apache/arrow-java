@@ -219,6 +219,33 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
   }
 
   @Test
+  public void testHostnameOverrideForEndpointWithoutEncryption() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("127.0.0.1")
+            .withEncryption(false)
+            .withHostnameOverride("flight.example.com");
+
+    assertNull(builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1:1234")));
+  }
+
+  @Test
+  public void testBlankHostnameOverrideIsUnset() {
+    assertNull(new ArrowFlightSqlClientHandler.Builder().withHostnameOverride("").hostnameOverride);
+    assertNull(
+        new ArrowFlightSqlClientHandler.Builder().withHostnameOverride("  ").hostnameOverride);
+  }
+
+  @Test
+  public void testHostnameOverrideIsTrimmed() {
+    assertEquals(
+        "flight.example.com",
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHostnameOverride(" flight.example.com ")
+            .hostnameOverride);
+  }
+
+  @Test
   public void testHostnameOverrideForEndpointWithoutOverride() {
     final ArrowFlightSqlClientHandler.Builder builder =
         new ArrowFlightSqlClientHandler.Builder().withHost("127.0.0.1");
