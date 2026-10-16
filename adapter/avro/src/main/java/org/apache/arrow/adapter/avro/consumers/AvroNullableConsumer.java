@@ -41,7 +41,7 @@ public class AvroNullableConsumer<T extends FieldVector> extends BaseAvroConsume
 
   @Override
   public void consume(Decoder decoder) throws IOException {
-    int typeIndex = decoder.readInt();
+    int typeIndex = decoder.readIndex();
     if (typeIndex == nullIndex) {
       decoder.readNull();
       delegate.addNull();
