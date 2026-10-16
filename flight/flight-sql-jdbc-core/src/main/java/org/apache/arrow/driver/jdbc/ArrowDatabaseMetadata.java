@@ -1090,6 +1090,7 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
     final VarCharVector tableSchemVector = (VarCharVector) currentRoot.getVector("TABLE_SCHEM");
     final VarCharVector tableNameVector = (VarCharVector) currentRoot.getVector("TABLE_NAME");
     final VarCharVector columnNameVector = (VarCharVector) currentRoot.getVector("COLUMN_NAME");
+    final VarCharVector columnDefVector = (VarCharVector) currentRoot.getVector("COLUMN_DEF");
     final IntVector dataTypeVector = (IntVector) currentRoot.getVector("DATA_TYPE");
     final VarCharVector typeNameVector = (VarCharVector) currentRoot.getVector("TYPE_NAME");
     final IntVector columnSizeVector = (IntVector) currentRoot.getVector("COLUMN_SIZE");
@@ -1129,6 +1130,11 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
 
       if (columnName != null) {
         columnNameVector.setSafe(insertIndex, columnName.getBytes(CHARSET));
+      }
+
+      final String columnDef = columnMetadata.getDefaultValue();
+      if (columnDef != null) {
+        columnDefVector.setSafe(insertIndex, columnDef.getBytes(CHARSET));
       }
 
       dataTypeVector.setSafe(insertIndex, SqlTypes.getSqlTypeIdFromArrowType(fieldType));

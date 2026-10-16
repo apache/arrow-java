@@ -308,6 +308,7 @@ public class ArrowDatabaseMetadataTest {
     List<Integer> expectedGetColumnsColumnSize = Arrays.asList(5, 29, 10);
     List<Integer> expectedGetColumnsDecimalDigits = Arrays.asList(2, 9, 0);
     List<String> expectedGetColumnsIsNullable = Arrays.asList("YES", "YES", "NO");
+    List<String> expectedGetColumnsDefaultValue = Arrays.asList("123.45", null, "1");
     EXPECTED_GET_COLUMNS_RESULTS =
         range(0, ROW_COUNT * 3)
             .mapToObj(
@@ -325,7 +326,7 @@ public class ArrowDatabaseMetadataTest {
                       expectedGetColumnsRadix.get(i % 3),
                       !Objects.equals(expectedGetColumnsIsNullable.get(i % 3), "NO") ? 1 : 0,
                       format("column description #%d", (i % 3) + 1),
-                      null,
+                      expectedGetColumnsDefaultValue.get(i % 3),
                       null,
                       null,
                       null,
@@ -430,6 +431,7 @@ public class ArrowDatabaseMetadataTest {
                         null,
                         new FlightSqlColumnMetadata.Builder()
                             .remarks("column description #1")
+                            .defaultValue("123.45")
                             .build()
                             .getMetadataMap()),
                     null);
@@ -454,6 +456,7 @@ public class ArrowDatabaseMetadataTest {
                         null,
                         new FlightSqlColumnMetadata.Builder()
                             .remarks("column description #3")
+                            .defaultValue("1")
                             .build()
                             .getMetadataMap()),
                     null);
