@@ -523,9 +523,9 @@ under the License.
           <version>2.22.0</version>
         </plugin>
         <plugin>
-          <groupId>pl.project13.maven</groupId>
-          <artifactId>git-commit-id-plugin</artifactId>
-          <version>4.9.10</version>
+          <groupId>io.github.git-commit-id</groupId>
+          <artifactId>git-commit-id-maven-plugin</artifactId>
+          <version>10.0.1</version>
         </plugin>
         <plugin>
           <groupId>org.cyclonedx</groupId>
@@ -611,8 +611,8 @@ under the License.
         </executions>
       </plugin>
       <plugin>
-        <groupId>pl.project13.maven</groupId>
-        <artifactId>git-commit-id-plugin</artifactId>
+        <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
         <configuration>
           <dateFormat>dd.MM.yyyy '@' HH:mm:ss z</dateFormat>
           <verbose>false</verbose>
