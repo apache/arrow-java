@@ -20,6 +20,7 @@ import org.apache.arrow.vector.holders.ExtensionHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.holders.UuidHolder;
 import org.apache.arrow.vector.types.Types;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.util.UuidUtility;
 
 /**
@@ -70,6 +71,11 @@ public class NullableUuidHolderReaderImpl extends AbstractFieldReader {
   @Override
   public Types.MinorType getMinorType() {
     return Types.MinorType.EXTENSIONTYPE;
+  }
+
+  @Override
+  public ArrowType getExtensionType() {
+    return holder.type();
   }
 
   @Override
