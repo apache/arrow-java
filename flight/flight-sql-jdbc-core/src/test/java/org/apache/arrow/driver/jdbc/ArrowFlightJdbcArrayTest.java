@@ -106,6 +106,20 @@ public class ArrowFlightJdbcArrayTest {
   }
 
   @Test
+  public void testShouldGetArrayWithOffsetsNotReadPastEndOfSlice() throws SQLException {
+    // Array covering elements 5, 6 and 7 of the underlying vector.
+    ArrowFlightJdbcArray arrowFlightJdbcArray = new ArrowFlightJdbcArray(dataVector, 5, 3);
+    assertThrows(ArrayIndexOutOfBoundsException.class, () -> arrowFlightJdbcArray.getArray(1, 3));
+  }
+
+  @Test
+  public void testShouldGetResultSetWithOffsetsNotReadPastEndOfSlice() throws SQLException {
+    ArrowFlightJdbcArray arrowFlightJdbcArray = new ArrowFlightJdbcArray(dataVector, 5, 3);
+    assertThrows(
+        ArrayIndexOutOfBoundsException.class, () -> arrowFlightJdbcArray.getResultSet(1, 3));
+  }
+
+  @Test
   public void testShouldGetArrayWithMapNotBeSupported() throws SQLException {
     ArrowFlightJdbcArray arrowFlightJdbcArray =
         new ArrowFlightJdbcArray(dataVector, 0, dataVector.getValueCount());
