@@ -119,6 +119,8 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
       return targetVector; // nothing to append, return
     }
 
+    validateDelta(deltaVector);
+
     int newValueCount = targetVector.getValueCount() + deltaVector.getValueCount();
 
     int targetDataSize =
@@ -134,7 +136,7 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
                 .getOffsetBuffer()
                 .getInt((long) deltaVector.getValueCount() * BaseVariableWidthVector.OFFSET_WIDTH)
             - deltaDataStart;
-    int newValueCapacity = targetDataSize + deltaDataSize;
+    int newValueCapacity = Math.addExact(targetDataSize, deltaDataSize);
 
     // make sure there is enough capacity
     while (targetVector.getValueCapacity() < newValueCount) {
@@ -193,6 +195,8 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
       return targetVector; // nothing to append, return
     }
 
+    validateDelta(deltaVector);
+
     int newValueCount = targetVector.getValueCount() + deltaVector.getValueCount();
 
     long targetDataSize =
@@ -209,7 +213,7 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
                 .getLong(
                     (long) deltaVector.getValueCount() * BaseLargeVariableWidthVector.OFFSET_WIDTH)
             - deltaDataStart;
-    long newValueCapacity = targetDataSize + deltaDataSize;
+    long newValueCapacity = Math.addExact(targetDataSize, deltaDataSize);
 
     // make sure there is enough capacity
     while (targetVector.getValueCapacity() < newValueCount) {
@@ -257,6 +261,70 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     ((BaseLargeVariableWidthVector) targetVector).setLastSet(newValueCount - 1);
     targetVector.setValueCount(newValueCount);
     return targetVector;
+  }
+
+  /**
+   * Checks that the delta's validity and offset buffers cover its value count, and that its offsets
+   * are non-negative, non-decreasing and within its data buffer. This runs before the target is
+   * touched, so a malformed delta leaves the target unchanged.
+   */
+  private static void validateDelta(BaseVariableWidthVector deltaVector) {
+    int valueCount = deltaVector.getValueCount();
+    checkCapacity(
+        deltaVector.getValidityBuffer(),
+        BitVectorHelper.getValidityBufferSizeFromCount(valueCount),
+        "validity");
+    ArrowBuf offsets = deltaVector.getOffsetBuffer();
+    checkCapacity(offsets, (valueCount + 1L) * BaseVariableWidthVector.OFFSET_WIDTH, "offset");
+    int prev = offsets.getInt(0);
+    if (prev < 0) {
+      throw new IndexOutOfBoundsException("Delta vector has negative start offset " + prev);
+    }
+    for (int i = 1; i <= valueCount; i++) {
+      int cur = offsets.getInt((long) i * BaseVariableWidthVector.OFFSET_WIDTH);
+      if (cur < prev) {
+        throw new IndexOutOfBoundsException(
+            "Delta vector offsets decrease at index " + i + ": " + prev + " > " + cur);
+      }
+      prev = cur;
+    }
+    checkCapacity(deltaVector.getDataBuffer(), prev, "data");
+  }
+
+  /** See {@link #validateDelta(BaseVariableWidthVector)}. */
+  private static void validateDelta(BaseLargeVariableWidthVector deltaVector) {
+    int valueCount = deltaVector.getValueCount();
+    checkCapacity(
+        deltaVector.getValidityBuffer(),
+        BitVectorHelper.getValidityBufferSizeFromCount(valueCount),
+        "validity");
+    ArrowBuf offsets = deltaVector.getOffsetBuffer();
+    checkCapacity(offsets, (valueCount + 1L) * BaseLargeVariableWidthVector.OFFSET_WIDTH, "offset");
+    long prev = offsets.getLong(0);
+    if (prev < 0) {
+      throw new IndexOutOfBoundsException("Delta vector has negative start offset " + prev);
+    }
+    for (int i = 1; i <= valueCount; i++) {
+      long cur = offsets.getLong((long) i * BaseLargeVariableWidthVector.OFFSET_WIDTH);
+      if (cur < prev) {
+        throw new IndexOutOfBoundsException(
+            "Delta vector offsets decrease at index " + i + ": " + prev + " > " + cur);
+      }
+      prev = cur;
+    }
+    checkCapacity(deltaVector.getDataBuffer(), prev, "data");
+  }
+
+  private static void checkCapacity(ArrowBuf buffer, long required, String name) {
+    if (buffer.capacity() < required) {
+      throw new IndexOutOfBoundsException(
+          "Delta vector "
+              + name
+              + " buffer has capacity "
+              + buffer.capacity()
+              + ", needs "
+              + required);
+    }
   }
 
   @Override
