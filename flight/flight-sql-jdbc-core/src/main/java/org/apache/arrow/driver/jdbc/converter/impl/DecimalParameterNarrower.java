@@ -39,18 +39,14 @@ final class DecimalParameterNarrower {
     return widen(typedValue).setScale(scale, RoundingMode.HALF_UP);
   }
 
-  /**
-   * Converts the local value to a {@link BigDecimal}, keeping the digits the client sent.
-   *
-   * <p>{@code BigDecimal.valueOf} rather than {@code new BigDecimal(double)}: the constructor keeps
-   * the binary expansion, so 0.1 arrives as 0.1000000000000000055511151231257827.
-   */
   private static BigDecimal widen(TypedValue typedValue) {
     final Object local = typedValue.toLocal();
     if (local instanceof BigDecimal) {
       return (BigDecimal) local;
     }
     if (local instanceof Double || local instanceof Float) {
+      // valueOf, not new BigDecimal(double): the constructor keeps the binary expansion, so 0.1
+      // arrives as 0.1000000000000000055511151231257827.
       return BigDecimal.valueOf(((Number) local).doubleValue());
     }
     if (local instanceof Number) {
