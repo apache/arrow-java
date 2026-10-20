@@ -35,7 +35,7 @@ public class DecimalAvaticaParameterConverter extends BaseAvaticaParameterConver
       DecimalVector decimalVector = (DecimalVector) vector;
       // The vector rejects any scale but its own, so widen and scale before writing.
       BigDecimal value =
-          DecimalParameterNarrower.toBigDecimal(typedValue, decimalVector.getScale());
+          DecimalParameterCoercer.toBigDecimal(typedValue, decimalVector.getScale());
       decimalVector.setSafe(index, value);
       return true;
     }
