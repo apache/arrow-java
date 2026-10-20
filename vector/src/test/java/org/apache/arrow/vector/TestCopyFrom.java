@@ -20,15 +20,19 @@ import static org.apache.arrow.vector.TestUtils.newVector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.Objects;
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -1096,6 +1100,27 @@ public class TestCopyFrom {
       assertTrue(vc2.isNull(4));
       assertFalse(vc2.isNull(5));
       assertEquals("1234567890", Objects.requireNonNull(vc2.getObject(5)).toString());
+    }
+  }
+
+  @Test
+  public void testCopyFromFixedWidthSourceBufferTooShort() {
+    try (IntVector source = new IntVector("source", allocator);
+        IntVector target = new IntVector("target", allocator);
+        ArrowBuf body = allocator.buffer(64)) {
+      body.setZero(0, body.capacity());
+      body.setInt(0, 1);
+      body.setInt(12, 0xBAD);
+      // Field node claims 4 values, but the data buffer only holds one, as a malformed IPC
+      // record batch can.
+      ArrowBuf validity = body.slice(0, 0);
+      ArrowBuf data = body.slice(0, IntVector.TYPE_WIDTH);
+      source.loadFieldBuffers(new ArrowFieldNode(4, 0), Arrays.asList(validity, data));
+
+      target.allocateNew(4);
+      target.copyFromSafe(0, 0, source);
+      assertEquals(1, target.get(0));
+      assertThrows(IndexOutOfBoundsException.class, () -> target.copyFromSafe(3, 1, source));
     }
   }
 }
