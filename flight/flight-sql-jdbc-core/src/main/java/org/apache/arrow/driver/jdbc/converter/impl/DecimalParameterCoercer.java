@@ -24,9 +24,9 @@ import org.apache.calcite.avatica.remote.TypedValue;
  * Widens Avatica {@link TypedValue}s bound to DECIMAL parameters to {@link BigDecimal}, so calls
  * like {@code setDouble} against an Arrow {@code Decimal} parameter bind instead of throwing.
  */
-final class DecimalParameterNarrower {
+final class DecimalParameterCoercer {
 
-  private DecimalParameterNarrower() {}
+  private DecimalParameterCoercer() {}
 
   /**
    * Returns the {@link BigDecimal} value of a {@link TypedValue} bound to a DECIMAL parameter,
@@ -52,7 +52,8 @@ final class DecimalParameterNarrower {
     if (local instanceof Number) {
       return BigDecimal.valueOf(((Number) local).longValue());
     }
-    // Anything else keeps the upstream failure: a cast error the binder reports as unsupported.
+    // Anything else keeps the existing behaviour: a cast error AvaticaParameterBinder catches and
+    // reports as an unsupported binding, naming the rep and the Arrow type.
     return (BigDecimal) local;
   }
 }
