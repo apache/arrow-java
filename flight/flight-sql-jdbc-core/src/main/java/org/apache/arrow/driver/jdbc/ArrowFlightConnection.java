@@ -118,6 +118,7 @@ public final class ArrowFlightConnection extends AvaticaConnection {
           .withClientKey(config.getClientKeyPath())
           .withBufferAllocator(allocator)
           .withEncryption(config.useEncryption())
+          .withHostnameOverride(config.getHostnameOverride())
           .withDisableCertificateVerification(config.getDisableCertificateVerification())
           .withToken(config.getToken())
           .withCallOptions(config.toCallOption())
