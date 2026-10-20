@@ -897,6 +897,12 @@ public final class ArrowBuf implements AutoCloseable {
   public void setBytes(long index, ByteBuffer src, int srcIndex, int length) {
     // bound check for this ArrowBuf where the data will be copied into
     checkIndex(index, length);
+    // bound check for src ByteBuffer
+    if (isOutOfBounds(srcIndex, length, src.capacity())) {
+      throw new IndexOutOfBoundsException(
+          String.format(
+              "index: %d, length: %d (expected: range(0, %d))", srcIndex, length, src.capacity()));
+    }
     if (src.isDirect()) {
       // copy length bytes of data from src ByteBuffer starting at address
       // srcAddress into this ArrowBuf at address dstAddress
