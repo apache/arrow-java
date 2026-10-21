@@ -631,6 +631,7 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
         to.childVectors[i] = dstVec;
         internalTransferPairs[i] = srcVec.makeTransferPair(dstVec);
       }
+      to.nextTypeId = nextTypeId;
     }
 
     @Override
