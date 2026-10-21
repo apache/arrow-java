@@ -17,10 +17,12 @@
 package org.apache.arrow.vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -377,6 +379,63 @@ public class TestStructVector {
 
     s1.close();
     toVector.close();
+  }
+
+  @Test
+  public void testStructVectorTransferPairWithNullType() {
+    Field nullField = new Field("null_child", FieldType.nullable(ArrowType.Null.INSTANCE), null);
+    Field structField =
+        new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(nullField));
+
+    try (StructVector s1 = (StructVector) structField.createVector(allocator)) {
+      NullVector nullVector =
+          s1.addOrGet("null_child", FieldType.nullable(ArrowType.Null.INSTANCE), NullVector.class);
+      s1.allocateNew();
+      s1.setIndexDefined(0);
+      s1.setNull(1);
+      s1.setIndexDefined(2);
+      nullVector.setValueCount(3);
+      s1.setValueCount(3);
+
+      TransferPair tp = s1.getTransferPair(structField, allocator);
+      try (StructVector toVector = (StructVector) tp.getTo()) {
+        assertEquals(s1.getField(), toVector.getField());
+
+        tp.transfer();
+        assertEquals(3, toVector.getValueCount());
+        assertFalse(toVector.isNull(0));
+        assertTrue(toVector.isNull(1));
+        assertFalse(toVector.isNull(2));
+        NullVector toChild = toVector.getChild("null_child", NullVector.class);
+        assertNotNull(toChild);
+        assertEquals(3, toChild.getValueCount());
+        assertTrue(toChild.isNull(0));
+      }
+    }
+  }
+
+  @Test
+  public void testStructVectorFromFieldWithNullChild() {
+    Field nullField = new Field("null_child", FieldType.nullable(ArrowType.Null.INSTANCE), null);
+    Field intField = new Field("int_child", FieldType.nullable(MinorType.INT.getType()), null);
+    Field structField =
+        new Field(
+            "struct", FieldType.nullable(new ArrowType.Struct()), List.of(nullField, intField));
+
+    try (StructVector vector = new StructVector(structField, allocator, null)) {
+      assertEquals(structField, vector.getField());
+      assertEquals(2, vector.size());
+      assertNotNull(vector.getChild("null_child", NullVector.class));
+
+      // The writer still works for the other children.
+      NullableStructWriter writer = vector.getWriter();
+      writer.setPosition(0);
+      writer.start();
+      writer.integer("int_child").writeInt(42);
+      writer.end();
+      vector.setValueCount(1);
+      assertEquals(42, vector.getChild("int_child", IntVector.class).get(0));
+    }
   }
 
   private StructVector simpleStructVector(String name, BufferAllocator allocator) {
