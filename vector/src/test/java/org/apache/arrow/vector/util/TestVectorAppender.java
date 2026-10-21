@@ -110,6 +110,49 @@ public class TestVectorAppender {
   }
 
   @Test
+  public void testAppendFixedWidthVectorSourceBufferTooShort() {
+    try (IntVector target = new IntVector("", allocator);
+        IntVector delta = new IntVector("", allocator);
+        ArrowBuf body = allocator.buffer(64)) {
+      body.setZero(0, body.capacity());
+      // all 4 values marked valid
+      body.setByte(0, 0x0F);
+      body.setInt(8, 1);
+      // Field node claims 4 values, but the data buffer only holds one, as a malformed IPC
+      // record batch can.
+      ArrowBuf validity = body.slice(0, 8);
+      ArrowBuf data = body.slice(8, IntVector.TYPE_WIDTH);
+      delta.loadFieldBuffers(new ArrowFieldNode(4, 0), Arrays.asList(validity, data));
+
+      target.allocateNew(4);
+      ValueVectorDataPopulator.setVector(target, 0, 1, 2, 3);
+
+      VectorAppender appender = new VectorAppender(target);
+      assertThrows(IndexOutOfBoundsException.class, () -> delta.accept(appender, null));
+    }
+  }
+
+  @Test
+  public void testAppendValidityBufferTooShort() {
+    try (IntVector target = new IntVector("", allocator);
+        IntVector delta = new IntVector("", allocator);
+        ArrowBuf body = allocator.buffer(128)) {
+      body.setZero(0, body.capacity());
+      body.setByte(0, 0x0F);
+      // Field node claims 16 values, but the validity buffer only covers 8.
+      ArrowBuf validity = body.slice(0, 1);
+      ArrowBuf data = body.slice(64, 16 * IntVector.TYPE_WIDTH);
+      delta.loadFieldBuffers(new ArrowFieldNode(16, 4), Arrays.asList(validity, data));
+
+      target.allocateNew(8);
+      ValueVectorDataPopulator.setVector(target, 0, 1, 2, 3, 4, 5, 6, 7);
+
+      VectorAppender appender = new VectorAppender(target);
+      assertThrows(IndexOutOfBoundsException.class, () -> delta.accept(appender, null));
+    }
+  }
+
+  @Test
   public void testAppendBitVector() {
     final int length1 = 10;
     final int length2 = 5;

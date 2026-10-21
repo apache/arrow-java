@@ -1109,12 +1109,14 @@ public class TestCopyFrom {
         IntVector target = new IntVector("target", allocator);
         ArrowBuf body = allocator.buffer(64)) {
       body.setZero(0, body.capacity());
-      body.setInt(0, 1);
-      body.setInt(12, 0xBAD);
+      // all 4 values marked valid
+      body.setByte(0, 0x0F);
+      body.setInt(8, 1);
+      body.setInt(20, 0xBAD);
       // Field node claims 4 values, but the data buffer only holds one, as a malformed IPC
       // record batch can.
-      ArrowBuf validity = body.slice(0, 0);
-      ArrowBuf data = body.slice(0, IntVector.TYPE_WIDTH);
+      ArrowBuf validity = body.slice(0, 8);
+      ArrowBuf data = body.slice(8, IntVector.TYPE_WIDTH);
       source.loadFieldBuffers(new ArrowFieldNode(4, 0), Arrays.asList(validity, data));
 
       target.allocateNew(4);
