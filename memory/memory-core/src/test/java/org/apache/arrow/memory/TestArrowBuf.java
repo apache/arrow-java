@@ -112,6 +112,17 @@ public class TestArrowBuf {
     }
   }
 
+  @Test
+  public void testSetBytesDirectOutOfBoundsSource_RaisesIndexOutOfBoundsException() {
+    ByteBuffer data = ByteBuffer.allocateDirect(8);
+    try (BufferAllocator allocator = new RootAllocator(128);
+        ArrowBuf buf = allocator.buffer(64)) {
+      assertThrows(IndexOutOfBoundsException.class, () -> buf.setBytes(0, data, 0, 64));
+      assertThrows(IndexOutOfBoundsException.class, () -> buf.setBytes(0, data, 4, 8));
+      assertThrows(IndexOutOfBoundsException.class, () -> buf.setBytes(0, data, -1, 4));
+    }
+  }
+
   /** ARROW-9221: guard against big-endian byte buffers. */
   @Test
   public void testSetBytesBigEndian() {
