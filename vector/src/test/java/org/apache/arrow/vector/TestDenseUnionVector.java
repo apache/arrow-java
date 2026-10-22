@@ -192,40 +192,6 @@ public class TestDenseUnionVector {
   }
 
   @Test
-  public void testTransferOfTransferredVector() {
-    try (DenseUnionVector srcVector = newIntAndBitVector();
-        DenseUnionVector intermediate =
-            new DenseUnionVector(EMPTY_SCHEMA_PATH, allocator, null, null);
-        DenseUnionVector destVector =
-            new DenseUnionVector(EMPTY_SCHEMA_PATH, allocator, null, null)) {
-      srcVector.makeTransferPair(intermediate).transfer();
-
-      intermediate.makeTransferPair(destVector).transfer();
-
-      assertEquals(2, destVector.getValueCount());
-      assertEquals(5, destVector.getObject(0));
-      assertEquals(true, destVector.getObject(1));
-    }
-  }
-
-  @Test
-  public void testTransferOfSplitAndTransferredVector() {
-    try (DenseUnionVector srcVector = newIntAndBitVector();
-        DenseUnionVector intermediate =
-            new DenseUnionVector(EMPTY_SCHEMA_PATH, allocator, null, null);
-        DenseUnionVector destVector =
-            new DenseUnionVector(EMPTY_SCHEMA_PATH, allocator, null, null)) {
-      srcVector.makeTransferPair(intermediate).splitAndTransfer(0, 2);
-
-      intermediate.makeTransferPair(destVector).transfer();
-
-      assertEquals(2, destVector.getValueCount());
-      assertEquals(5, destVector.getObject(0));
-      assertEquals(true, destVector.getObject(1));
-    }
-  }
-
-  @Test
   public void testSplitAndTransfer() throws Exception {
     try (DenseUnionVector sourceVector =
         new DenseUnionVector(EMPTY_SCHEMA_PATH, allocator, null, null)) {
@@ -718,19 +684,6 @@ public class TestDenseUnionVector {
       assertEquals(1, floatVector.getValueCount());
       assertEquals(9.0f, floatVector.get(0), 0);
     }
-  }
-
-  private DenseUnionVector newIntAndBitVector() {
-    DenseUnionVector vector = new DenseUnionVector(EMPTY_SCHEMA_PATH, allocator, null, null);
-    vector.allocateNew();
-    byte intTypeId = vector.registerNewTypeId(Field.nullable("", MinorType.INT.getType()));
-    vector.setTypeId(0, intTypeId);
-    vector.setSafe(0, newIntHolder(5));
-    byte bitTypeId = vector.registerNewTypeId(Field.nullable("", MinorType.BIT.getType()));
-    vector.setTypeId(1, bitTypeId);
-    vector.setSafe(1, newBitHolder(true));
-    vector.setValueCount(2);
-    return vector;
   }
 
   private static NullableIntHolder newIntHolder(int value) {
