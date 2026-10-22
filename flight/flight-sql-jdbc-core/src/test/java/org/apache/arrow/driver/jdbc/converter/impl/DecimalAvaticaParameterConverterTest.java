@@ -18,6 +18,7 @@ package org.apache.arrow.driver.jdbc.converter.impl;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
@@ -143,6 +144,35 @@ public class DecimalAvaticaParameterConverterTest {
 
     assertTrue(converter.bindParameter(vector, typedValue, 0));
     assertThat(vector.getObject(0), is(new BigDecimal("-123.456")));
+  }
+
+  @Test
+  public void testBindBigIntegerArrivesAsBigDecimal() {
+    // Avatica has no rep for BigInteger, so toLocal() hands one over as a BigDecimal and the
+    // value survives whole. Nothing reaches the longValue() branch, which would overflow here.
+    final BigDecimal tooBigForALong = new BigDecimal("123456789012345678901234567890");
+    TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.NUMBER, tooBigForALong);
+
+    assertTrue(converter.bindParameter(vector, typedValue, 0));
+    assertThat(vector.getObject(0), is(tooBigForALong.setScale(SCALE)));
+  }
+
+  @Test
+  public void testBindNaNIsReportedAsUnsupported() {
+    // A cast error is what the binder turns into "Binding value of type DOUBLE is not yet
+    // supported"; NumberFormatException would escape it.
+    TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.DOUBLE, Double.NaN);
+
+    assertThrows(ClassCastException.class, () -> converter.bindParameter(vector, typedValue, 0));
+  }
+
+  @Test
+  public void testBindInfinityIsReportedAsUnsupported() {
+    for (double value : new double[] {Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY}) {
+      TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.DOUBLE, value);
+
+      assertThrows(ClassCastException.class, () -> converter.bindParameter(vector, typedValue, 0));
+    }
   }
 
   @Test

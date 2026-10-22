@@ -45,9 +45,16 @@ final class DecimalParameterCoercer {
       return (BigDecimal) local;
     }
     if (local instanceof Double || local instanceof Float) {
+      final double value = ((Number) local).doubleValue();
+      if (Double.isNaN(value) || Double.isInfinite(value)) {
+        // No decimal representation exists. Thrown as a cast error so the binder reports it the
+        // same way it reported every double before this class existed; BigDecimal.valueOf would
+        // raise NumberFormatException, which the binder does not catch.
+        throw new ClassCastException("NaN and infinity have no " + BigDecimal.class.getName());
+      }
       // valueOf, not new BigDecimal(double): the constructor keeps the binary expansion, so 0.1
       // arrives as 0.1000000000000000055511151231257827.
-      return BigDecimal.valueOf(((Number) local).doubleValue());
+      return BigDecimal.valueOf(value);
     }
     if (local instanceof Number) {
       return BigDecimal.valueOf(((Number) local).longValue());
