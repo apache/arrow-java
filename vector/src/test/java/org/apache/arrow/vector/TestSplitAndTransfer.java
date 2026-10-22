@@ -17,6 +17,7 @@
 package org.apache.arrow.vector;
 
 import static java.util.Arrays.asList;
+import static org.apache.arrow.vector.testing.ValueVectorDataPopulator.setVector;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,17 +27,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.compare.VectorEqualsVisitor;
 import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
+import org.apache.arrow.vector.complex.LargeListVector;
 import org.apache.arrow.vector.complex.LargeListViewVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.ListViewVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
+import org.apache.arrow.vector.complex.impl.UnionMapWriter;
+import org.apache.arrow.vector.holders.NullableBitHolder;
+import org.apache.arrow.vector.holders.NullableIntHolder;
+import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.Struct;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -44,9 +56,15 @@ import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class TestSplitAndTransfer {
+  private static final int POPULATED_VALUE_COUNT = 3;
+
   private BufferAllocator allocator;
 
   @BeforeEach
@@ -976,5 +994,224 @@ public class TestSplitAndTransfer {
 
       newMapVector.clear();
     }
+  }
+
+  /**
+   * Vectors of each kind, populated with {@link #POPULATED_VALUE_COUNT} values. A transfer pair
+   * that misses part of the vector's state only shows when its target is transferred again, as with
+   * the type ids of {@link DenseUnionVector} (GH-200).
+   */
+  static Stream<Arguments> populatedVectorKinds() {
+    return Stream.of(
+        vectorKind(
+            "IntVector",
+            vectorAllocator -> {
+              IntVector vector = new IntVector("vector", vectorAllocator);
+              setVector(vector, 1, null, 3);
+              return vector;
+            }),
+        vectorKind(
+            "BitVector",
+            vectorAllocator -> {
+              BitVector vector = new BitVector("vector", vectorAllocator);
+              setVector(vector, 1, null, 0);
+              return vector;
+            }),
+        vectorKind(
+            "VarCharVector",
+            vectorAllocator -> {
+              VarCharVector vector = new VarCharVector("vector", vectorAllocator);
+              setVector(vector, "a", null, "c");
+              return vector;
+            }),
+        vectorKind(
+            "LargeVarCharVector",
+            vectorAllocator -> {
+              LargeVarCharVector vector = new LargeVarCharVector("vector", vectorAllocator);
+              setVector(vector, "a", null, "c");
+              return vector;
+            }),
+        vectorKind(
+            "ViewVarCharVector",
+            vectorAllocator -> {
+              ViewVarCharVector vector = new ViewVarCharVector("vector", vectorAllocator);
+              setVector(vector, "a", null, "c");
+              return vector;
+            }),
+        vectorKind(
+            "VarBinaryVector",
+            vectorAllocator -> {
+              VarBinaryVector vector = new VarBinaryVector("vector", vectorAllocator);
+              setVector(vector, new byte[] {1, 2}, null, new byte[] {3});
+              return vector;
+            }),
+        vectorKind(
+            "LargeVarBinaryVector",
+            vectorAllocator -> {
+              LargeVarBinaryVector vector = new LargeVarBinaryVector("vector", vectorAllocator);
+              setVector(vector, new byte[] {1, 2}, null, new byte[] {3});
+              return vector;
+            }),
+        vectorKind(
+            "ViewVarBinaryVector",
+            vectorAllocator -> {
+              ViewVarBinaryVector vector = new ViewVarBinaryVector("vector", vectorAllocator);
+              setVector(vector, new byte[] {1, 2}, null, new byte[] {3});
+              return vector;
+            }),
+        vectorKind(
+            "FixedSizeBinaryVector",
+            vectorAllocator -> {
+              FixedSizeBinaryVector vector =
+                  new FixedSizeBinaryVector("vector", vectorAllocator, 2);
+              setVector(vector, new byte[] {1, 2}, null, new byte[] {5, 6});
+              return vector;
+            }),
+        vectorKind(
+            "ListVector",
+            vectorAllocator -> {
+              ListVector vector = ListVector.empty("vector", vectorAllocator);
+              setVector(vector, asList(1, 2), null, asList(3));
+              return vector;
+            }),
+        vectorKind(
+            "LargeListVector",
+            vectorAllocator -> {
+              LargeListVector vector = LargeListVector.empty("vector", vectorAllocator);
+              setVector(vector, asList(1, 2), null, asList(3));
+              return vector;
+            }),
+        vectorKind(
+            "FixedSizeListVector",
+            vectorAllocator -> {
+              FixedSizeListVector vector = FixedSizeListVector.empty("vector", 2, vectorAllocator);
+              setVector(vector, asList(1, 2), null, asList(3, 4));
+              return vector;
+            }),
+        vectorKind(
+            "ListViewVector",
+            vectorAllocator -> {
+              ListViewVector vector = ListViewVector.empty("vector", vectorAllocator);
+              setVector(vector, asList(1, 2), asList(), asList(3));
+              return vector;
+            }),
+        vectorKind(
+            "LargeListViewVector",
+            vectorAllocator -> {
+              LargeListViewVector vector = LargeListViewVector.empty("vector", vectorAllocator);
+              setVector(vector, asList(1, 2), asList(), asList(3));
+              return vector;
+            }),
+        vectorKind(
+            "MapVector",
+            vectorAllocator -> {
+              MapVector vector = MapVector.empty("vector", vectorAllocator, false);
+              UnionMapWriter writer = vector.getWriter();
+              writer.allocate();
+              for (int i = 0; i < POPULATED_VALUE_COUNT; i++) {
+                writer.setPosition(i);
+                writer.startMap();
+                writer.startEntry();
+                writer.key().integer().writeInt(i);
+                writer.value().integer().writeInt(i * 10);
+                writer.endEntry();
+                writer.endMap();
+              }
+              writer.setValueCount(POPULATED_VALUE_COUNT);
+              return vector;
+            }),
+        vectorKind(
+            "StructVector",
+            vectorAllocator -> {
+              StructVector vector = StructVector.empty("vector", vectorAllocator);
+              Map<String, List<Integer>> children = new LinkedHashMap<>();
+              children.put("a", asList(1, null, 3));
+              children.put("b", asList(4, 5, 6));
+              setVector(vector, children);
+              return vector;
+            }),
+        vectorKind(
+            "UnionVector",
+            vectorAllocator -> {
+              UnionVector vector = new UnionVector("vector", vectorAllocator, null, null);
+              vector.allocateNew();
+              vector.setType(0, MinorType.INT);
+              vector.setSafe(0, intHolder(5));
+              vector.setType(1, MinorType.BIT);
+              vector.setSafe(1, bitHolder(true));
+              vector.setType(2, MinorType.INT);
+              vector.setSafe(2, intHolder(7));
+              vector.setValueCount(POPULATED_VALUE_COUNT);
+              return vector;
+            }),
+        vectorKind(
+            "DenseUnionVector",
+            vectorAllocator -> {
+              DenseUnionVector vector = new DenseUnionVector("vector", vectorAllocator, null, null);
+              vector.allocateNew();
+              byte intTypeId =
+                  vector.registerNewTypeId(Field.nullable("", MinorType.INT.getType()));
+              byte bitTypeId =
+                  vector.registerNewTypeId(Field.nullable("", MinorType.BIT.getType()));
+              vector.setTypeId(0, intTypeId);
+              vector.setSafe(0, intHolder(5));
+              vector.setTypeId(1, bitTypeId);
+              vector.setSafe(1, bitHolder(true));
+              vector.setTypeId(2, intTypeId);
+              vector.setSafe(2, intHolder(7));
+              vector.setValueCount(POPULATED_VALUE_COUNT);
+              return vector;
+            }));
+  }
+
+  @ParameterizedTest
+  @MethodSource("populatedVectorKinds")
+  public void testTransferOfTransferredVector(Function<BufferAllocator, ValueVector> populated) {
+    assertTransferredTwiceKeepsValues(populated, TransferPair::transfer);
+  }
+
+  @ParameterizedTest
+  @MethodSource("populatedVectorKinds")
+  public void testTransferOfSplitAndTransferredVector(
+      Function<BufferAllocator, ValueVector> populated) {
+    assertTransferredTwiceKeepsValues(
+        populated, pair -> pair.splitAndTransfer(0, POPULATED_VALUE_COUNT));
+  }
+
+  private void assertTransferredTwiceKeepsValues(
+      Function<BufferAllocator, ValueVector> populated, Consumer<TransferPair> firstTransfer) {
+    try (ValueVector expected = populated.apply(allocator);
+        ValueVector source = populated.apply(allocator)) {
+      TransferPair first = source.getTransferPair(allocator);
+      try (ValueVector intermediate = first.getTo()) {
+        firstTransfer.accept(first);
+        TransferPair second = intermediate.getTransferPair(allocator);
+        try (ValueVector target = second.getTo()) {
+          second.transfer();
+          assertTrue(
+              VectorEqualsVisitor.vectorEquals(expected, target),
+              () -> "expected " + expected + " but was " + target);
+        }
+      }
+    }
+  }
+
+  private static Arguments vectorKind(
+      String name, Function<BufferAllocator, ValueVector> populate) {
+    return Arguments.of(Named.of(name, populate));
+  }
+
+  private static NullableIntHolder intHolder(int value) {
+    NullableIntHolder holder = new NullableIntHolder();
+    holder.isSet = 1;
+    holder.value = value;
+    return holder;
+  }
+
+  private static NullableBitHolder bitHolder(boolean value) {
+    NullableBitHolder holder = new NullableBitHolder();
+    holder.isSet = 1;
+    holder.value = value ? 1 : 0;
+    return holder;
   }
 }
