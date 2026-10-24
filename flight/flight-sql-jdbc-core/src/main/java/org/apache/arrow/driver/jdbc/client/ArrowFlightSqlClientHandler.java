@@ -606,6 +606,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   }
 
   /**
+   * Makes an RPC "getXdbcTypeInfo" request based on the provided info.
+   *
+   * @return a {@code FlightInfo} of results.
+   */
+  public FlightInfo getXdbcTypeInfo() {
+    return sqlClient.getXdbcTypeInfo(getOptions());
+  }
+
+  /**
    * Makes an RPC "getPrimaryKeys" request based on the provided info.
    *
    * @param catalog The catalog name; must match the catalog name as it is stored in the database.

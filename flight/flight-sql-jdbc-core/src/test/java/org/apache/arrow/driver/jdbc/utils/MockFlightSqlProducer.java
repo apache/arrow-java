@@ -97,6 +97,9 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   private final Map<ByteString, String> preparedStatements = new HashMap<>();
   private final Map<Message, Consumer<ServerStreamListener>> catalogQueriesResults =
       new HashMap<>();
+  private final Map<Message, Consumer<ServerStreamListener>> typeInfoResults = new HashMap<>();
+  private @Nullable CallStatus typeInfoFlightInfoFailure;
+  private @Nullable CallStatus typeInfoStreamFailure;
   private final Map<String, BiConsumer<FlightStream, StreamListener<PutResult>>>
       updateResultProviders = new HashMap<>();
   private final SqlInfoBuilder sqlInfoBuilder = new SqlInfoBuilder();
@@ -526,8 +529,10 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   @Override
   public FlightInfo getFlightInfoTypeInfo(
       FlightSql.CommandGetXdbcTypeInfo request, CallContext context, FlightDescriptor descriptor) {
-    // TODO Implement this
-    return null;
+    if (typeInfoFlightInfoFailure != null) {
+      throw typeInfoFlightInfoFailure.toRuntimeException();
+    }
+    return getFlightInfo(request, Schemas.GET_TYPE_INFO_SCHEMA, descriptor);
   }
 
   @Override
@@ -535,7 +540,11 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       FlightSql.CommandGetXdbcTypeInfo request,
       CallContext context,
       ServerStreamListener listener) {
-    // TODO Implement this
+    if (typeInfoStreamFailure != null) {
+      listener.error(typeInfoStreamFailure.toRuntimeException());
+      return;
+    }
+    getStreamTypeInfoResults(request, listener);
   }
 
   @Override
@@ -702,6 +711,47 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
     Preconditions.checkNotNull(
             catalogQueriesResults.get(ticket),
             format("Query not registered for ticket: <%s>", ticket))
+        .accept(serverStreamListener);
+  }
+
+  /**
+   * Registers the result provider for {@code GetXdbcTypeInfo} requests.
+   *
+   * @param request the {@link FlightSql.CommandGetXdbcTypeInfo} request to register.
+   * @param resultsProvider consumer for producing the type info stream.
+   */
+  public void addTypeInfoQuery(
+      final Message request, final Consumer<ServerStreamListener> resultsProvider) {
+    typeInfoResults.put(request, resultsProvider);
+  }
+
+  /**
+   * Makes {@link #getFlightInfoTypeInfo} fail with the given status.
+   *
+   * @param failure the status to fail with, or {@code null} to restore the success path.
+   */
+  public void setTypeInfoFlightInfoFailure(final @Nullable CallStatus failure) {
+    this.typeInfoFlightInfoFailure = failure;
+  }
+
+  /**
+   * Makes {@link #getStreamTypeInfo} report the given error status.
+   *
+   * @param failure the status to fail with, or {@code null} to restore the success path.
+   */
+  public void setTypeInfoStreamFailure(final @Nullable CallStatus failure) {
+    this.typeInfoStreamFailure = failure;
+  }
+
+  private void getStreamTypeInfoResults(
+      final Message ticket, final ServerStreamListener serverStreamListener) {
+    Consumer<ServerStreamListener> resultsProvider = typeInfoResults.get(ticket);
+    if (resultsProvider == null) {
+      // Requests without an explicit entry fall back to the default (no data_type filter) request.
+      resultsProvider = typeInfoResults.get(FlightSql.CommandGetXdbcTypeInfo.getDefaultInstance());
+    }
+    Preconditions.checkNotNull(
+            resultsProvider, format("Query not registered for ticket: <%s>", ticket))
         .accept(serverStreamListener);
   }
 
