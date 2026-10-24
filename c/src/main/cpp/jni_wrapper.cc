@@ -170,7 +170,7 @@ void release_exported(T* base) {
     JNIEnvGuard guard(private_data->vm_);
     JNIEnv* env = guard.env();
 
-    env->CallObjectMethod(private_data->j_private_data_, kPrivateDataCloseMethod);
+    env->CallVoidMethod(private_data->j_private_data_, kPrivateDataCloseMethod);
     if (env->ExceptionCheck()) {
       // Can't signal this to caller, so log and then try to free things
       // as best we can
@@ -295,7 +295,7 @@ void ArrowArrayStreamRelease(ArrowArrayStream* stream) {
     JNIEnvGuard guard(private_data->vm_);
     JNIEnv* env = guard.env();
 
-    env->CallObjectMethod(private_data->j_private_data_, kPrivateDataCloseMethod);
+    env->CallVoidMethod(private_data->j_private_data_, kPrivateDataCloseMethod);
     if (env->ExceptionCheck()) {
       env->ExceptionDescribe();
       env->ExceptionClear();
