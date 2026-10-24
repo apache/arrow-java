@@ -57,6 +57,7 @@ import java.util.stream.Collectors;
 import org.apache.arrow.driver.jdbc.utils.SqlTypes;
 import org.apache.arrow.driver.jdbc.utils.VectorSchemaRootTransformer;
 import org.apache.arrow.flight.FlightInfo;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.sql.FlightSqlColumnMetadata;
 import org.apache.arrow.flight.sql.FlightSqlProducer.Schemas;
 import org.apache.arrow.flight.sql.impl.FlightSql.SqlInfo;
@@ -72,10 +73,13 @@ import org.apache.arrow.flight.sql.impl.FlightSql.SqlTransactionIsolationLevel;
 import org.apache.arrow.flight.sql.impl.FlightSql.SupportedAnsi92SqlGrammarLevel;
 import org.apache.arrow.flight.sql.impl.FlightSql.SupportedSqlGrammar;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.SmallIntVector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.ipc.ReadChannel;
 import org.apache.arrow.vector.ipc.message.MessageSerializer;
@@ -147,6 +151,27 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
               Field.nullable("SOURCE_DATA_TYPE", Types.MinorType.SMALLINT.getType()),
               Field.notNullable("IS_AUTOINCREMENT", Types.MinorType.VARCHAR.getType()),
               Field.notNullable("IS_GENERATEDCOLUMN", Types.MinorType.VARCHAR.getType())));
+  private static final Schema GET_TYPE_INFO_SCHEMA =
+      new Schema(
+          Arrays.asList(
+              Field.nullable("TYPE_NAME", Types.MinorType.VARCHAR.getType()),
+              Field.nullable("DATA_TYPE", Types.MinorType.INT.getType()),
+              Field.nullable("PRECISION", Types.MinorType.INT.getType()),
+              Field.nullable("LITERAL_PREFIX", Types.MinorType.VARCHAR.getType()),
+              Field.nullable("LITERAL_SUFFIX", Types.MinorType.VARCHAR.getType()),
+              Field.nullable("CREATE_PARAMS", Types.MinorType.VARCHAR.getType()),
+              Field.nullable("NULLABLE", Types.MinorType.SMALLINT.getType()),
+              Field.nullable("CASE_SENSITIVE", Types.MinorType.BIT.getType()),
+              Field.nullable("SEARCHABLE", Types.MinorType.SMALLINT.getType()),
+              Field.nullable("UNSIGNED_ATTRIBUTE", Types.MinorType.BIT.getType()),
+              Field.nullable("FIXED_PREC_SCALE", Types.MinorType.BIT.getType()),
+              Field.nullable("AUTO_INCREMENT", Types.MinorType.BIT.getType()),
+              Field.nullable("LOCAL_TYPE_NAME", Types.MinorType.VARCHAR.getType()),
+              Field.nullable("MINIMUM_SCALE", Types.MinorType.SMALLINT.getType()),
+              Field.nullable("MAXIMUM_SCALE", Types.MinorType.SMALLINT.getType()),
+              Field.nullable("SQL_DATA_TYPE", Types.MinorType.INT.getType()),
+              Field.nullable("SQL_DATETIME_SUB", Types.MinorType.INT.getType()),
+              Field.nullable("NUM_PREC_RADIX", Types.MinorType.INT.getType())));
   private final AtomicBoolean isCachePopulated = new AtomicBoolean(false);
   private final Map<SqlInfo, Object> cachedSqlInfo = new EnumMap<>(SqlInfo.class);
   private static final Map<Integer, Integer> sqlTypesToFlightEnumConvertTypes = new HashMap<>();
@@ -999,6 +1024,192 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
             .build();
     return ArrowFlightJdbcFlightStreamResultSet.fromFlightInfo(
         connection, flightInfoPrimaryKeys, transformer);
+  }
+
+  @Override
+  public ResultSet getTypeInfo() throws SQLException {
+    final ArrowFlightConnection connection = getConnection();
+    final BufferAllocator allocator = connection.getBufferAllocator();
+
+    final FlightInfo flightInfoTypeInfo;
+    try {
+      flightInfoTypeInfo = connection.getClientHandler().getXdbcTypeInfo();
+    } catch (final FlightRuntimeException e) {
+      throw new SQLException("Failed to retrieve type info.", e);
+    }
+
+    try {
+      final ArrowFlightJdbcFlightStreamResultSet resultSet =
+          ArrowFlightJdbcFlightStreamResultSet.fromFlightInfo(
+              connection,
+              flightInfoTypeInfo,
+              (originalRoot, transformedRoot) -> {
+                if (transformedRoot == null) {
+                  transformedRoot = VectorSchemaRoot.create(GET_TYPE_INFO_SCHEMA, allocator);
+                }
+                transformTypeInfoRoot(originalRoot, transformedRoot);
+                originalRoot.clear();
+                return transformedRoot;
+              });
+      // Empty streams do not initialize a cursor; retain the standard JDBC metadata columns.
+      if (resultSet.getMetaData().getColumnCount() == 0) {
+        resultSet.close();
+        return super.getTypeInfo();
+      }
+      return resultSet;
+    } catch (final FlightRuntimeException e) {
+      throw new SQLException("Failed to retrieve type info.", e);
+    }
+  }
+
+  /**
+   * Maps a {@code CommandGetXdbcTypeInfo} root onto the 18 JDBC {@code getTypeInfo()} columns.
+   *
+   * <p>The rows are kept in the order the server sent them (including the server preference for
+   * types sharing a {@code DATA_TYPE}), the Flight {@code interval_precision} field is dropped as
+   * it has no JDBC counterpart, {@code create_params} is joined into a comma separated string, and
+   * {@code NULLABLE}, {@code SEARCHABLE}, {@code MINIMUM_SCALE} and {@code MAXIMUM_SCALE} are
+   * reported as nullable {@code SMALLINT} as required by the JDBC specification. No value is
+   * fabricated: SQL {@code NULL} stays {@code NULL}.
+   *
+   * @param originalRoot the root received from the server.
+   * @param transformedRoot the root the JDBC columns are written to; reused across batches.
+   */
+  private static void transformTypeInfoRoot(
+      final VectorSchemaRoot originalRoot, final VectorSchemaRoot transformedRoot) {
+    final int rowCount = originalRoot.getRowCount();
+    if (rowCount == 0) {
+      transformedRoot.setRowCount(0);
+      return;
+    }
+
+    final VarCharVector typeName = (VarCharVector) transformedRoot.getVector("TYPE_NAME");
+    final IntVector dataType = (IntVector) transformedRoot.getVector("DATA_TYPE");
+    final IntVector precision = (IntVector) transformedRoot.getVector("PRECISION");
+    final VarCharVector literalPrefix = (VarCharVector) transformedRoot.getVector("LITERAL_PREFIX");
+    final VarCharVector literalSuffix = (VarCharVector) transformedRoot.getVector("LITERAL_SUFFIX");
+    final VarCharVector createParams = (VarCharVector) transformedRoot.getVector("CREATE_PARAMS");
+    final SmallIntVector nullable = (SmallIntVector) transformedRoot.getVector("NULLABLE");
+    final BitVector caseSensitive = (BitVector) transformedRoot.getVector("CASE_SENSITIVE");
+    final SmallIntVector searchable = (SmallIntVector) transformedRoot.getVector("SEARCHABLE");
+    final BitVector unsignedAttribute = (BitVector) transformedRoot.getVector("UNSIGNED_ATTRIBUTE");
+    final BitVector fixedPrecScale = (BitVector) transformedRoot.getVector("FIXED_PREC_SCALE");
+    final BitVector autoIncrement = (BitVector) transformedRoot.getVector("AUTO_INCREMENT");
+    final VarCharVector localTypeName =
+        (VarCharVector) transformedRoot.getVector("LOCAL_TYPE_NAME");
+    final SmallIntVector minimumScale = (SmallIntVector) transformedRoot.getVector("MINIMUM_SCALE");
+    final SmallIntVector maximumScale = (SmallIntVector) transformedRoot.getVector("MAXIMUM_SCALE");
+    final IntVector sqlDataType = (IntVector) transformedRoot.getVector("SQL_DATA_TYPE");
+    final IntVector sqlDatetimeSub = (IntVector) transformedRoot.getVector("SQL_DATETIME_SUB");
+    final IntVector numPrecRadix = (IntVector) transformedRoot.getVector("NUM_PREC_RADIX");
+
+    final VarCharVector serverTypeName = (VarCharVector) originalRoot.getVector("type_name");
+    final IntVector serverDataType = (IntVector) originalRoot.getVector("data_type");
+    final IntVector serverColumnSize = (IntVector) originalRoot.getVector("column_size");
+    final VarCharVector serverLiteralPrefix =
+        (VarCharVector) originalRoot.getVector("literal_prefix");
+    final VarCharVector serverLiteralSuffix =
+        (VarCharVector) originalRoot.getVector("literal_suffix");
+    final ListVector serverCreateParams = (ListVector) originalRoot.getVector("create_params");
+    final IntVector serverNullable = (IntVector) originalRoot.getVector("nullable");
+    final BitVector serverCaseSensitive = (BitVector) originalRoot.getVector("case_sensitive");
+    final IntVector serverSearchable = (IntVector) originalRoot.getVector("searchable");
+    final BitVector serverUnsignedAttribute =
+        (BitVector) originalRoot.getVector("unsigned_attribute");
+    final BitVector serverFixedPrecScale = (BitVector) originalRoot.getVector("fixed_prec_scale");
+    final BitVector serverAutoIncrement = (BitVector) originalRoot.getVector("auto_increment");
+    final VarCharVector serverLocalTypeName =
+        (VarCharVector) originalRoot.getVector("local_type_name");
+    final IntVector serverMinimumScale = (IntVector) originalRoot.getVector("minimum_scale");
+    final IntVector serverMaximumScale = (IntVector) originalRoot.getVector("maximum_scale");
+    final IntVector serverSqlDataType = (IntVector) originalRoot.getVector("sql_data_type");
+    final IntVector serverDatetimeSubcode = (IntVector) originalRoot.getVector("datetime_subcode");
+    final IntVector serverNumPrecRadix = (IntVector) originalRoot.getVector("num_prec_radix");
+
+    for (int i = 0; i < rowCount; i++) {
+      copyVarChar(serverTypeName, typeName, i);
+      copyInt(serverDataType, dataType, i);
+      copyInt(serverColumnSize, precision, i);
+      copyVarChar(serverLiteralPrefix, literalPrefix, i);
+      copyVarChar(serverLiteralSuffix, literalSuffix, i);
+      copyCreateParams(serverCreateParams, createParams, i);
+      copyIntAsSmallInt(serverNullable, nullable, i);
+      copyBit(serverCaseSensitive, caseSensitive, i);
+      copyIntAsSmallInt(serverSearchable, searchable, i);
+      copyBit(serverUnsignedAttribute, unsignedAttribute, i);
+      copyBit(serverFixedPrecScale, fixedPrecScale, i);
+      copyBit(serverAutoIncrement, autoIncrement, i);
+      copyVarChar(serverLocalTypeName, localTypeName, i);
+      copyIntAsSmallInt(serverMinimumScale, minimumScale, i);
+      copyIntAsSmallInt(serverMaximumScale, maximumScale, i);
+      copyInt(serverSqlDataType, sqlDataType, i);
+      copyInt(serverDatetimeSubcode, sqlDatetimeSub, i);
+      copyInt(serverNumPrecRadix, numPrecRadix, i);
+    }
+
+    transformedRoot.setRowCount(rowCount);
+  }
+
+  private static void copyInt(final IntVector source, final IntVector target, final int index) {
+    if (source.isNull(index)) {
+      target.setNull(index);
+    } else {
+      target.setSafe(index, source.get(index));
+    }
+  }
+
+  private static void copyIntAsSmallInt(
+      final IntVector source, final SmallIntVector target, final int index) {
+    if (source.isNull(index)) {
+      target.setNull(index);
+    } else {
+      target.setSafe(index, (short) source.get(index));
+    }
+  }
+
+  private static void copyBit(final BitVector source, final BitVector target, final int index) {
+    if (source.isNull(index)) {
+      target.setNull(index);
+    } else {
+      target.setSafe(index, source.get(index));
+    }
+  }
+
+  private static void copyVarChar(
+      final VarCharVector source, final VarCharVector target, final int index) {
+    if (source.isNull(index)) {
+      target.setNull(index);
+    } else {
+      target.setSafe(index, source.get(index));
+    }
+  }
+
+  /**
+   * Joins the {@code create_params} list into a comma separated string, preserving the difference
+   * between a SQL {@code NULL} list (reported as {@code NULL}) and an empty list (reported as an
+   * empty string).
+   */
+  private static void copyCreateParams(
+      final ListVector source, final VarCharVector target, final int index) {
+    if (source.isNull(index)) {
+      target.setNull(index);
+      return;
+    }
+
+    final VarCharVector items = (VarCharVector) source.getDataVector();
+    final int start = source.getElementStartIndex(index);
+    final int end = source.getElementEndIndex(index);
+    final StringBuilder joined = new StringBuilder();
+    for (int i = start; i < end; i++) {
+      if (i > start) {
+        joined.append(',');
+      }
+      final Text item = items.getObject(i);
+      if (item != null) {
+        joined.append(item.toString());
+      }
+    }
+    target.setSafe(index, new Text(joined.toString()));
   }
 
   @Override
