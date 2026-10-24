@@ -904,6 +904,11 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
         readPosition += LENGTH_WIDTH;
         // set data by copying the required portion from the source buffer
         target.viewBuffer.setBytes(writePosition, viewBuffer, readPosition, stringLength);
+        // zero the unused bytes of the inline view: the target view buffer is freshly allocated
+        // and the format requires the bytes after the value to be zero padded.
+        if (stringLength < INLINE_SIZE) {
+          target.viewBuffer.setZero(writePosition + stringLength, INLINE_SIZE - stringLength);
+        }
       } else {
         // handle non-inline buffer
         final int readBufIndex =
