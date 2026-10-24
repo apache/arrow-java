@@ -100,8 +100,11 @@ public class ServerInterceptorAdapter implements ServerInterceptor {
       try {
         m = factory.factory.onCallStarted(info, headerAdapter, requestContextAdapter);
       } catch (FlightRuntimeException e) {
-        // Cancel call
-        call.close(StatusUtils.toGrpcStatus(e.status()), new Metadata());
+        // Cancel call, but forward any custom error metadata attached to the Flight status
+        // (GH-448).
+        final Metadata trailers = Status.trailersFromThrowable(StatusUtils.toGrpcException(e));
+        call.close(
+            StatusUtils.toGrpcStatus(e.status()), trailers == null ? new Metadata() : trailers);
         return new Listener<ReqT>() {};
       }
       middleware.add(m);
