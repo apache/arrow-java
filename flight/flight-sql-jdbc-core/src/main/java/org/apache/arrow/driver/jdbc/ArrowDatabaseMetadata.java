@@ -58,6 +58,7 @@ import org.apache.arrow.driver.jdbc.utils.SqlTypes;
 import org.apache.arrow.driver.jdbc.utils.VectorSchemaRootTransformer;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.flight.FlightRuntimeException;
+import org.apache.arrow.flight.FlightStatusCode;
 import org.apache.arrow.flight.sql.FlightSqlColumnMetadata;
 import org.apache.arrow.flight.sql.FlightSqlProducer.Schemas;
 import org.apache.arrow.flight.sql.impl.FlightSql.SqlInfo;
@@ -1035,6 +1036,10 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
     try {
       flightInfoTypeInfo = connection.getClientHandler().getXdbcTypeInfo();
     } catch (final FlightRuntimeException e) {
+      if (e.status().code() == FlightStatusCode.UNIMPLEMENTED) {
+        // Compatible servers may not implement GetXdbcTypeInfo at all; keep the empty JDBC result.
+        return super.getTypeInfo();
+      }
       throw new SQLException("Failed to retrieve type info.", e);
     }
 
@@ -1058,6 +1063,10 @@ public class ArrowDatabaseMetadata extends AvaticaDatabaseMetaData {
       }
       return resultSet;
     } catch (final FlightRuntimeException e) {
+      if (e.status().code() == FlightStatusCode.UNIMPLEMENTED) {
+        // The stream handshake may be the first call to reveal an unsupported GetXdbcTypeInfo.
+        return super.getTypeInfo();
+      }
       throw new SQLException("Failed to retrieve type info.", e);
     }
   }

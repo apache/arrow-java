@@ -37,6 +37,7 @@ import static org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportsConvert.SQL_
 import static org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportsConvert.SQL_CONVERT_INTEGER_VALUE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -113,6 +114,10 @@ public class ArrowDatabaseMetadataTest {
       new MockFlightSqlProducer();
   private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_FAILURE =
       new MockFlightSqlProducer();
+  private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_UNIMPLEMENTED =
+      new MockFlightSqlProducer();
+  private static final MockFlightSqlProducer
+      FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED = new MockFlightSqlProducer();
 
   @RegisterExtension
   public static final FlightServerTestExtension FLIGHT_SERVER_TEST_EXTENSION =
@@ -136,6 +141,18 @@ public class ArrowDatabaseMetadataTest {
       FLIGHT_SERVER_TYPE_INFO_GET_STREAM_FAILURE_TEST_RULE =
           FlightServerTestExtension.createStandardTestExtension(
               FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_FAILURE);
+
+  @RegisterExtension
+  public static final FlightServerTestExtension
+      FLIGHT_SERVER_TYPE_INFO_GET_INFO_UNIMPLEMENTED_TEST_RULE =
+          FlightServerTestExtension.createStandardTestExtension(
+              FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_UNIMPLEMENTED);
+
+  @RegisterExtension
+  public static final FlightServerTestExtension
+      FLIGHT_SERVER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED_TEST_RULE =
+          FlightServerTestExtension.createStandardTestExtension(
+              FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED);
 
   private static final int ROW_COUNT = 10;
   private static final List<List<Object>> EXPECTED_GET_CATALOGS_RESULTS =
@@ -557,6 +574,10 @@ public class ArrowDatabaseMetadataTest {
     FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_FAILURE.setTypeInfoFlightInfoFailure(
         CallStatus.INTERNAL.withDescription("GetXdbcTypeInfo is unavailable"));
     FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_FAILURE.setTypeInfoStreamFailure(
+        CallStatus.INTERNAL.withDescription("GetXdbcTypeInfo streams are unavailable"));
+    FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_UNIMPLEMENTED.setTypeInfoFlightInfoFailure(
+        CallStatus.UNIMPLEMENTED.withDescription("GetXdbcTypeInfo is unimplemented"));
+    FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED.setTypeInfoStreamFailure(
         CallStatus.UNIMPLEMENTED.withDescription("GetXdbcTypeInfo streams are unimplemented"));
 
     final Message commandGetCatalogs = CommandGetCatalogs.getDefaultInstance();
@@ -1494,6 +1515,32 @@ public class ArrowDatabaseMetadataTest {
     }
   }
 
+  /**
+   * A server that reports {@link CallStatus#UNIMPLEMENTED} while fetching the type info {@code
+   * FlightInfo} must keep the historical JDBC contract: the empty 18 column result of {@code
+   * super.getTypeInfo()}, not a {@link SQLException}.
+   */
+  @Test
+  public void testGetTypeInfoGetFlightInfoUnimplementedFallsBack() throws Exception {
+    try (Connection unimplementedConnection =
+        FLIGHT_SERVER_TYPE_INFO_GET_INFO_UNIMPLEMENTED_TEST_RULE.getConnection(false)) {
+      assertTypeInfoUnimplementedFallsBack(unimplementedConnection);
+    }
+  }
+
+  /**
+   * A server that reports {@link CallStatus#UNIMPLEMENTED} while the type info stream is
+   * initialized must keep the historical JDBC contract: the empty 18 column result of {@code
+   * super.getTypeInfo()}, not a {@link SQLException}.
+   */
+  @Test
+  public void testGetTypeInfoGetStreamUnimplementedFallsBack() throws Exception {
+    try (Connection unimplementedConnection =
+        FLIGHT_SERVER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED_TEST_RULE.getConnection(false)) {
+      assertTypeInfoUnimplementedFallsBack(unimplementedConnection);
+    }
+  }
+
   @Test
   public void testGetTypeInfoReleasesResources() throws Exception {
     // Normal close after consuming every row.
@@ -1795,6 +1842,32 @@ public class ArrowDatabaseMetadataTest {
             }
           }
         });
+  }
+
+  /**
+   * Asserts that a server which reports {@link CallStatus#UNIMPLEMENTED} for type info still
+   * satisfies the JDBC fallback contract: {@code getTypeInfo()} does not throw, exposes the 18
+   * empty {@code super.getTypeInfo()} columns, returns no rows and releases its buffers on close.
+   */
+  private static void assertTypeInfoUnimplementedFallsBack(final Connection metadataConnection)
+      throws Exception {
+    final BufferAllocator allocator =
+        ((ArrowFlightConnection) metadataConnection).getBufferAllocator();
+    final long baseline = allocator.getAllocatedMemory();
+
+    assertDoesNotThrow(
+        () -> {
+          try (ResultSet resultSet = metadataConnection.getMetaData().getTypeInfo()) {
+            assertTypeInfoSchema(resultSet.getMetaData());
+            assertFalse(resultSet.next(), "a server without type info support must return no rows");
+          }
+        },
+        "unimplemented type info must fall back to the empty JDBC result instead of failing");
+
+    assertEquals(
+        baseline,
+        waitForAllocatedMemory(allocator, baseline),
+        "the fallback type info result set must release its buffers when closed");
   }
 
   /**
