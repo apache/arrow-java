@@ -19,6 +19,9 @@
 
 # How to contribute to Apache Arrow Java
 
+Please see general guidance about commits, pull requests, and AI usage for the
+Apache Arrow project: https://arrow.apache.org/docs/dev/developers/overview.html
+
 ## Did you find a bug?
 
 The Arrow Java project uses GitHub as a bug tracker.  To report a bug, sign in
