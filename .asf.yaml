@@ -34,10 +34,6 @@ github:
   protected_branches:
     main:
       required_linear_history: true
-  pull_requests:
-    creation_cap:
-      enabled: true
-      max_open_pull_requests: 2
 notifications:
   commits: commits@arrow.apache.org
   discussions: user@arrow.apache.org
