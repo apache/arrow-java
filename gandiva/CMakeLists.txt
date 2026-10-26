@@ -58,6 +58,10 @@ if(ARROW_JAVA_JNI_ABSL_INCLUDE_DIR)
   target_include_directories(arrow_java_jni_gandiva SYSTEM
                              PRIVATE "${ARROW_JAVA_JNI_ABSL_INCLUDE_DIR}")
 endif()
+if(ARROW_JAVA_JNI_UTF8_RANGE_INCLUDE_DIR)
+  target_include_directories(arrow_java_jni_gandiva SYSTEM
+                             PRIVATE "${ARROW_JAVA_JNI_UTF8_RANGE_INCLUDE_DIR}")
+endif()
 target_link_libraries(arrow_java_jni_gandiva
                       arrow_java_jni_gandiva_headers
                       jni

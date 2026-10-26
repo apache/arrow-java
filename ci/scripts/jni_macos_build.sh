@@ -86,9 +86,17 @@ if [ ! -d "${absl_include_dir}/absl" ]; then
   exit 1
 fi
 
+# Protobuf 32+ headers include utf8_validity.h from the bundled utf8_range.
+utf8_range_include_dir="${build_dir}/cpp/_deps/protobuf-src/third_party/utf8_range"
+if [ ! -f "${utf8_range_include_dir}/utf8_validity.h" ]; then
+  echo "Bundled utf8_range headers were not found in ${utf8_range_include_dir}" >&2
+  exit 1
+fi
+
 JAVA_JNI_CMAKE_ARGS="-DProtobuf_ROOT=${build_dir}/cpp/_deps/protobuf-build"
 JAVA_JNI_CMAKE_ARGS+=" -DProtobuf_SRC_ROOT_FOLDER=${build_dir}/cpp/_deps/protobuf-src"
 JAVA_JNI_CMAKE_ARGS+=" -DARROW_JAVA_JNI_ABSL_INCLUDE_DIR=${absl_include_dir}"
+JAVA_JNI_CMAKE_ARGS+=" -DARROW_JAVA_JNI_UTF8_RANGE_INCLUDE_DIR=${utf8_range_include_dir}"
 export JAVA_JNI_CMAKE_ARGS
 "${source_dir}/ci/scripts/jni_build.sh" \
   "${source_dir}" \
