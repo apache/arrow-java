@@ -156,18 +156,22 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
    * Registers a new {@link StatementType#UPDATE} SQL query.
    *
    * @param sqlCommand the SQL command.
-   * @param updatedRows the number of rows affected.
+   * @param updatedRows the number of rows affected for each update result.
    */
-  public void addUpdateQuery(final String sqlCommand, final long updatedRows) {
+  public void addUpdateQuery(final String sqlCommand, final long... updatedRows) {
     addUpdateQuery(
         sqlCommand,
         (flightStream, putResultStreamListener) -> {
-          final DoPutUpdateResult result =
-              DoPutUpdateResult.newBuilder().setRecordCount(updatedRows).build();
-          try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
-              final ArrowBuf buffer = allocator.buffer(result.getSerializedSize())) {
-            buffer.writeBytes(result.toByteArray());
-            putResultStreamListener.onNext(PutResult.metadata(buffer));
+          try {
+            for (long updatedRowCount : updatedRows) {
+              final DoPutUpdateResult result =
+                  DoPutUpdateResult.newBuilder().setRecordCount(updatedRowCount).build();
+              try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+                  final ArrowBuf buffer = allocator.buffer(result.getSerializedSize())) {
+                buffer.writeBytes(result.toByteArray());
+                putResultStreamListener.onNext(PutResult.metadata(buffer));
+              }
+            }
           } catch (final Throwable throwable) {
             putResultStreamListener.onError(throwable);
           } finally {

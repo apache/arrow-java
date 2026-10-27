@@ -19,6 +19,7 @@ package org.apache.arrow.driver.jdbc;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -182,7 +183,7 @@ public class ArrowFlightPreparedStatementTest {
   @Test
   public void testUpdateQuery() throws SQLException {
     String query = "Fake update";
-    PRODUCER.addUpdateQuery(query, /*updatedRows*/ 42);
+    PRODUCER.addUpdateQuery(query, /*updatedRows*/ 42, 42);
     try (final PreparedStatement stmt = connection.prepareStatement(query)) {
       int updated = stmt.executeUpdate();
       assertEquals(42, updated);
@@ -248,7 +249,7 @@ public class ArrowFlightPreparedStatementTest {
       stmt.setArray(2, connection.createArrayOf("INTEGER", new Integer[] {0, -1, 100000}));
       stmt.addBatch();
       int[] updated = stmt.executeBatch();
-      assertEquals(42, updated[0]);
+      assertArrayEquals(new int[] {42, 42}, updated);
     }
   }
 }

@@ -31,12 +31,16 @@ public final class SyncPutListener implements FlightClient.PutListener, AutoClos
 
   private final LinkedBlockingQueue<Object> queue;
   private final CompletableFuture<Void> completed;
+  private final Object closeLock;
+  private boolean closed;
   private static final Object DONE = new Object();
   private static final Object DONE_WITH_EXCEPTION = new Object();
 
   public SyncPutListener() {
     queue = new LinkedBlockingQueue<>();
     completed = new CompletableFuture<>();
+    closeLock = new Object();
+    closed = false;
   }
 
   private PutResult unwrap(Object queueItem) throws InterruptedException, ExecutionException {
@@ -90,31 +94,48 @@ public final class SyncPutListener implements FlightClient.PutListener, AutoClos
 
   @Override
   public void onNext(PutResult val) {
-    final ArrowBuf metadata = val.getApplicationMetadata();
-    metadata.getReferenceManager().retain();
-    queue.add(PutResult.metadata(metadata));
+    synchronized (closeLock) {
+      if (closed) {
+        return;
+      }
+
+      final ArrowBuf metadata = val.getApplicationMetadata();
+      metadata.getReferenceManager().retain();
+      queue.add(PutResult.metadata(metadata));
+    }
   }
 
   @Override
   public void onError(Throwable t) {
     completed.completeExceptionally(StatusUtils.fromThrowable(t));
-    queue.add(DONE_WITH_EXCEPTION);
+    synchronized (closeLock) {
+      if (!closed) {
+        queue.add(DONE_WITH_EXCEPTION);
+      }
+    }
   }
 
   @Override
   public void onCompleted() {
     completed.complete(null);
-    queue.add(DONE);
+    synchronized (closeLock) {
+      if (!closed) {
+        queue.add(DONE);
+      }
+    }
   }
 
   @Override
   public void close() {
-    queue.forEach(
-        o -> {
-          if (o instanceof PutResult) {
-            ((PutResult) o).close();
-          }
-        });
+    synchronized (closeLock) {
+      closed = true;
+      Object item;
+      while ((item = queue.poll()) != null) {
+        if (item instanceof PutResult) {
+          ((PutResult) item).close();
+        }
+      }
+    }
   }
 
   @Override

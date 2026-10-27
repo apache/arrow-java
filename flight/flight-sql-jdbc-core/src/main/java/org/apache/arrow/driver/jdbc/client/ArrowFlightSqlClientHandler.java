@@ -368,6 +368,13 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     long executeUpdate();
 
     /**
+     * Executes a {@link StatementType#UPDATE} query for all bound parameter rows.
+     *
+     * @return the update count for each bound parameter row.
+     */
+    long[] executeUpdateBatch();
+
+    /**
      * Gets the {@link StatementType} of this {@link PreparedStatement}.
      *
      * @return the Statement Type.
@@ -452,6 +459,11 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       @Override
       public long executeUpdate() {
         return preparedStatement.executeUpdate(getOptions());
+      }
+
+      @Override
+      public long[] executeUpdateBatch() {
+        return preparedStatement.executeUpdateBatch(getOptions());
       }
 
       @Override
