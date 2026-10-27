@@ -235,6 +235,44 @@ public class ResultSetTest {
     }
   }
 
+  @Test
+  public void testCloseOnCompletionUnregistersDirectStatementWhenResultSetClosedEarly()
+      throws Exception {
+    try (Statement statement = connection.createStatement()) {
+      final ResultSet resultSet =
+          statement.executeQuery(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD);
+      statement.closeOnCompletion();
+
+      resultSet.close();
+
+      assertThat(statement.isClosed(), is(true));
+      assertThat(isStatementOwner(statement), is(false));
+    }
+  }
+
+  @Test
+  public void testCloseOnCompletionUnregistersPreparedStatementWhenResultSetClosedEarly()
+      throws Exception {
+    try (PreparedStatement statement =
+        connection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD)) {
+      final ResultSet resultSet = statement.executeQuery();
+      statement.closeOnCompletion();
+
+      resultSet.close();
+
+      assertThat(statement.isClosed(), is(true));
+      assertThat(isStatementOwner(statement), is(false));
+    }
+  }
+
+  private static boolean isStatementOwner(final Statement statement)
+      throws ReflectiveOperationException {
+    final java.lang.reflect.Field statementOwnersField =
+        ArrowFlightConnection.class.getDeclaredField("statementOwners");
+    statementOwnersField.setAccessible(true);
+    return ((Set<?>) statementOwnersField.get(connection)).contains(statement);
+  }
+
   /**
    * Tests whether the {@link ArrowFlightJdbcDriver} close the statement after complete ResultSet
    * with max rows limit when call {@link
