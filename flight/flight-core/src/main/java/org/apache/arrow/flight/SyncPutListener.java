@@ -36,6 +36,7 @@ public final class SyncPutListener implements FlightClient.PutListener, AutoClos
   private static final Object DONE = new Object();
   private static final Object DONE_WITH_EXCEPTION = new Object();
 
+  /** Creates a listener that exposes server metadata synchronously. */
   public SyncPutListener() {
     queue = new LinkedBlockingQueue<>();
     completed = new CompletableFuture<>();

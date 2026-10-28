@@ -237,7 +237,7 @@ public class ArrowFlightPreparedStatementTest {
             Arrays.asList(new Text("foo"), new Integer[] {1, 2, null}),
             Arrays.asList(new Text("bar"), new Integer[] {0, -1, 100000}));
 
-    PRODUCER.addUpdateQuery(query, /*updatedRows*/ 42);
+    PRODUCER.addUpdateQuery(query, /*updatedRows*/ 42, 42);
     PRODUCER.addExpectedParameters(query, parameterSchema, expected);
 
     try (final PreparedStatement stmt = connection.prepareStatement(query)) {
