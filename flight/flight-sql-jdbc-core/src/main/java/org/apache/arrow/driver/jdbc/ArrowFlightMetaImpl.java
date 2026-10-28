@@ -164,9 +164,15 @@ public class ArrowFlightMetaImpl extends MetaImpl {
       binder.bind(parameterValuesList.get(i), i);
     }
 
-    // Update query
-    long[] updatedCounts = {preparedStatement.executeUpdate()};
-    return new ExecuteBatchResult(updatedCounts);
+    return new ExecuteBatchResult(preparedStatement.executeUpdateBatch());
+  }
+
+  static int[] toIntArray(long[] updateCounts) {
+    int[] result = new int[updateCounts.length];
+    for (int i = 0; i < updateCounts.length; i++) {
+      result[i] = Math.toIntExact(updateCounts[i]);
+    }
+    return result;
   }
 
   @Override

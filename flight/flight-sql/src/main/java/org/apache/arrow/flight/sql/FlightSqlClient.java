@@ -51,6 +51,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -1381,15 +1382,18 @@ public class FlightSqlClient implements AutoCloseable {
 
     private SyncPutListener putParameters(FlightDescriptor descriptor, CallOption... options) {
       final SyncPutListener putListener = new SyncPutListener();
+      try {
+        FlightClient.ClientStreamListener listener =
+            client.startPut(descriptor, parameterBindingRoot, putListener, options);
 
-      FlightClient.ClientStreamListener listener =
-          client.startPut(descriptor, parameterBindingRoot, putListener, options);
+        listener.putNext();
+        listener.completed();
 
-      listener.putNext();
-      listener.completed();
-      listener.getResult();
-
-      return putListener;
+        return putListener;
+      } catch (final RuntimeException | Error e) {
+        putListener.close();
+        throw e;
+      }
     }
 
     /**
@@ -1417,9 +1421,7 @@ public class FlightSqlClient implements AutoCloseable {
                           .build())
                   .toByteArray());
       setParameters(parameterBindingRoot == null ? VectorSchemaRoot.of() : parameterBindingRoot);
-      SyncPutListener putListener = putParameters(descriptor, options);
-
-      try {
+      try (SyncPutListener putListener = putParameters(descriptor, options)) {
         final PutResult read = putListener.read();
         try (final ArrowBuf metadata = read.getApplicationMetadata()) {
           final DoPutUpdateResult doPutUpdateResult =
@@ -1432,6 +1434,53 @@ public class FlightSqlClient implements AutoCloseable {
         throw CallStatus.CANCELLED.withCause(e.getCause()).toRuntimeException();
       } catch (final InvalidProtocolBufferException e) {
         throw CallStatus.INTERNAL.withCause(e).toRuntimeException();
+      }
+    }
+
+    /**
+     * Executes the prepared statement update on the server for all bound parameter rows.
+     *
+     * @param options RPC-layer hints for this call.
+     * @return the update count for each bound parameter row.
+     */
+    public long[] executeUpdateBatch(final CallOption... options) {
+      checkOpen();
+      final FlightDescriptor descriptor =
+          FlightDescriptor.command(
+              Any.pack(
+                      CommandPreparedStatementUpdate.newBuilder()
+                          .setPreparedStatementHandle(
+                              preparedStatementResult.getPreparedStatementHandle())
+                          .build())
+                  .toByteArray());
+      setParameters(parameterBindingRoot == null ? VectorSchemaRoot.of() : parameterBindingRoot);
+
+      final List<Long> updateCounts = new ArrayList<>();
+      try (SyncPutListener putListener = putParameters(descriptor, options)) {
+        while (true) {
+          final PutResult result = putListener.read();
+          if (result == null) {
+            break;
+          }
+          try (result) {
+            final ArrowBuf metadata = result.getApplicationMetadata();
+            final DoPutUpdateResult doPutUpdateResult =
+                DoPutUpdateResult.parseFrom(metadata.nioBuffer());
+            updateCounts.add(doPutUpdateResult.getRecordCount());
+          }
+        }
+        return updateCounts.stream().mapToLong(Long::longValue).toArray();
+      } catch (final InterruptedException e) {
+        throw new FlightSqlBatchUpdateException(
+            CallStatus.CANCELLED.withCause(e).toRuntimeException(),
+            updateCounts.stream().mapToLong(Long::longValue).toArray());
+      } catch (final ExecutionException e) {
+        throw new FlightSqlBatchUpdateException(
+            e.getCause(), updateCounts.stream().mapToLong(Long::longValue).toArray());
+      } catch (final InvalidProtocolBufferException e) {
+        throw new FlightSqlBatchUpdateException(
+            CallStatus.INTERNAL.withCause(e).toRuntimeException(),
+            updateCounts.stream().mapToLong(Long::longValue).toArray());
       }
     }
 
