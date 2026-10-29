@@ -21,7 +21,15 @@ FROM ${base}
 # Install Java
 # We need Java for JNI headers, but we don't invoke Maven in this build.
 ARG java=17
-RUN dnf install -y java-$java-openjdk-devel && dnf clean all
+# The repository metadata is refreshed and the install retried because the
+# baseos mirror intermittently returns an empty repomd.xml.
+RUN dnf clean all && rm -rf /var/cache/dnf && \
+    for i in 1 2 3; do \
+      dnf install -y java-$java-openjdk-devel && break; \
+      if [ "$i" = 3 ]; then exit 1; fi; \
+      sleep 15; \
+    done && \
+    dnf clean all
 
 # For ci/scripts/{cpp,java}_*.sh
 ENV ARROW_HOME=/tmp/local \
