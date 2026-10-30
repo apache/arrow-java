@@ -99,6 +99,9 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
           deltaVector.getValueCount(),
           targetVector.getDataBuffer());
     } else {
+      deltaVector
+          .getDataBuffer()
+          .checkBytes(0, (long) deltaVector.getTypeWidth() * deltaVector.getValueCount());
       MemoryUtil.copyMemory(
           deltaVector.getDataBuffer().memoryAddress(),
           targetVector.getDataBuffer().memoryAddress()
@@ -153,6 +156,7 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
         targetVector.getValidityBuffer());
 
     // append data buffer
+    deltaVector.getDataBuffer().checkBytes(deltaDataStart, deltaDataStart + deltaDataSize);
     MemoryUtil.copyMemory(
         deltaVector.getDataBuffer().memoryAddress() + deltaDataStart,
         targetVector.getDataBuffer().memoryAddress() + targetDataSize,
@@ -229,6 +233,7 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
         targetVector.getValidityBuffer());
 
     // append data buffer
+    deltaVector.getDataBuffer().checkBytes(deltaDataStart, deltaDataStart + deltaDataSize);
     MemoryUtil.copyMemory(
         deltaVector.getDataBuffer().memoryAddress() + deltaDataStart,
         targetVector.getDataBuffer().memoryAddress() + targetDataSize,
@@ -300,6 +305,10 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
 
     // append view buffer
     ArrowBuf targetViewBuffer = targetVector.getDataBuffer();
+    deltaVector
+        .getDataBuffer()
+        .checkBytes(
+            0, (long) BaseVariableWidthViewVector.ELEMENT_SIZE * deltaVector.getValueCount());
     MemoryUtil.copyMemory(
         deltaVector.getDataBuffer().memoryAddress(),
         targetViewBuffer.memoryAddress()
@@ -606,6 +615,7 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     }
 
     // append type buffers
+    deltaVector.getTypeBuffer().checkBytes(0, deltaVector.getValueCount());
     MemoryUtil.copyMemory(
         deltaVector.getTypeBufferAddress(),
         targetUnionVector.getTypeBufferAddress() + targetVector.getValueCount(),
@@ -671,6 +681,7 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     }
 
     // append type buffers
+    deltaVector.getTypeBuffer().checkBytes(0, deltaVector.getValueCount());
     MemoryUtil.copyMemory(
         deltaVector.getTypeBuffer().memoryAddress(),
         targetDenseUnionVector.getTypeBuffer().memoryAddress() + targetVector.getValueCount(),
