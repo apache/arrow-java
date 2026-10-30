@@ -188,6 +188,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                     .withHost(endpointUri.getHost())
                     .withPort(endpointUri.getPort())
                     .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS))
+                    .withHostnameOverride(builder.getHostnameOverrideForEndpoint(endpointUri))
                     .withClientCache(flightClientCache)
                     .withConnectTimeout(builder.connectTimeout);
 
@@ -677,6 +678,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting boolean disableCertificateVerification;
 
+    @VisibleForTesting @Nullable String hostnameOverride;
+
     @VisibleForTesting boolean useSystemTrustStore = true;
 
     @VisibleForTesting String tlsRootCertificatesPath;
@@ -732,6 +735,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.token = original.token;
       this.useEncryption = original.useEncryption;
       this.disableCertificateVerification = original.disableCertificateVerification;
+      this.hostnameOverride = original.hostnameOverride;
       this.useSystemTrustStore = original.useSystemTrustStore;
       this.tlsRootCertificatesPath = original.tlsRootCertificatesPath;
       this.clientCertificatePath = original.clientCertificatePath;
@@ -838,6 +842,54 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         final boolean disableCertificateVerification) {
       this.disableCertificateVerification = disableCertificateVerification;
       return this;
+    }
+
+    /**
+     * Sets the hostname to use for TLS certificate verification and SNI instead of the host this
+     * handler connects to. It is also sent as the gRPC authority ({@code :authority} header).
+     * Ignored when encryption is disabled.
+     *
+     * @param hostnameOverride the hostname to verify the server certificate against, or null or
+     *     blank to use the host.
+     * @return this instance.
+     */
+    public Builder withHostnameOverride(@Nullable final String hostnameOverride) {
+      final String trimmed = hostnameOverride == null ? null : hostnameOverride.trim();
+      this.hostnameOverride = trimmed == null || trimmed.isEmpty() ? null : trimmed;
+      return this;
+    }
+
+    /**
+     * Gets the hostname override to use when connecting to an endpoint location. The override is
+     * only valid for the host and port it was configured for, so endpoints at any other location
+     * are verified against their own hostname. Like the override itself, it is ignored when the
+     * original connection does not use encryption.
+     *
+     * @param endpointUri the endpoint location.
+     * @return the hostname override if the endpoint is on the original host and port, otherwise
+     *     null.
+     */
+    @VisibleForTesting
+    @Nullable String getHostnameOverrideForEndpoint(final URI endpointUri) {
+      final String endpointHost = stripBrackets(endpointUri.getHost());
+      if (!useEncryption
+          || hostnameOverride == null
+          || endpointHost == null
+          || endpointUri.getPort() != port
+          || !endpointHost.equalsIgnoreCase(stripBrackets(host))) {
+        return null;
+      }
+      return hostnameOverride;
+    }
+
+    /**
+     * Strips the brackets from an IPv6 literal. {@link URI#getHost()} keeps them, but a host set
+     * through properties may not have them.
+     */
+    private static @Nullable String stripBrackets(@Nullable final String host) {
+      return host != null && host.startsWith("[") && host.endsWith("]")
+          ? host.substring(1, host.length() - 1)
+          : host;
     }
 
     /**
@@ -1070,6 +1122,10 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         clientBuilder.location(location);
 
         if (useEncryption) {
+          if (hostnameOverride != null) {
+            clientBuilder.overrideHostname(hostnameOverride);
+          }
+
           if (disableCertificateVerification) {
             clientBuilder.verifyServer(false);
           } else {
