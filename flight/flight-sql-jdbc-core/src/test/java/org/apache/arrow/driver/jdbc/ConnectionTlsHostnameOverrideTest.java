@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Properties;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
@@ -39,10 +40,13 @@ import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowF
 import org.apache.arrow.driver.jdbc.utils.FlightSqlTestCertificates;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
 import org.apache.arrow.driver.jdbc.utils.PartitionedFlightSqlProducer;
+import org.apache.arrow.flight.FlightDescriptor;
 import org.apache.arrow.flight.FlightEndpoint;
+import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.flight.FlightServer;
 import org.apache.arrow.flight.Location;
 import org.apache.arrow.flight.Ticket;
+import org.apache.arrow.flight.sql.impl.FlightSql;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.IntVector;
@@ -122,6 +126,11 @@ public class ConnectionTlsHostnameOverrideTest {
                 connection.isValid(0);
               }
             });
+    assertCausedByCertificateException(exception);
+  }
+
+  /** Asserts that the server certificate being rejected caused {@code exception}. */
+  private static void assertCausedByCertificateException(final Throwable exception) {
     final Deque<Throwable> pending = new ArrayDeque<>();
     pending.add(exception);
     while (!pending.isEmpty()) {
@@ -192,7 +201,44 @@ public class ConnectionTlsHostnameOverrideTest {
   }
 
   @Test
-  public void testHostnameOverrideIsAppliedToEndpointOnConnectionHost() throws Exception {
+  public void testHostnameOverrideIsAppliedToEndpointOnConnectionLocation() throws Exception {
+    final Schema schema =
+        new Schema(
+            Arrays.asList(Field.nullablePrimitive("int_column", new ArrowType.Int(32, true))));
+    final Ticket ticket = new Ticket("partition".getBytes(StandardCharsets.UTF_8));
+
+    try (VectorSchemaRoot partition = VectorSchemaRoot.create(schema, allocator)) {
+      partition.setRowCount(1);
+      ((IntVector) partition.getVector(0)).set(0, 42);
+
+      try (SelfServingFlightSqlProducer producer =
+              new SelfServingFlightSqlProducer(schema, ticket, partition);
+          FlightServer server =
+              FlightServer.builder(allocator, Location.forGrpcTls(IP_ADDRESS, 0), producer)
+                  .useTls(certKey.cert, certKey.key)
+                  .build()
+                  .start()) {
+        // The endpoint is at the same location as the connection, so it must be verified against
+        // the hostname override as well.
+        producer.location = Location.forGrpcTls(IP_ADDRESS, server.getPort());
+
+        try (Connection connection =
+                DriverManager.getConnection(
+                    tlsUrl(IP_ADDRESS, server.getPort())
+                        + "&hostnameOverride="
+                        + CERTIFICATE_HOSTNAME);
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT partitioned_data")) {
+          assertTrue(resultSet.next());
+          assertEquals(42, resultSet.getInt(1));
+          assertFalse(resultSet.next());
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testHostnameOverrideIsNotAppliedToEndpointOnDifferentPort() throws Exception {
     final Schema schema =
         new Schema(
             Arrays.asList(Field.nullablePrimitive("int_column", new ArrowType.Int(32, true))));
@@ -210,8 +256,8 @@ public class ConnectionTlsHostnameOverrideTest {
       partition.setRowCount(1);
       ((IntVector) partition.getVector(0)).set(0, 42);
 
-      // The endpoint is on the same IP address as the connection, so it must be verified against
-      // the hostname override as well.
+      // The endpoint is on the connection's IP address but another port, so it is verified
+      // against the IP address, which the certificate does not cover.
       final FlightEndpoint endpoint =
           new FlightEndpoint(ticket, Location.forGrpcTls(IP_ADDRESS, dataServer.getPort()));
 
@@ -227,12 +273,64 @@ public class ConnectionTlsHostnameOverrideTest {
                   tlsUrl(IP_ADDRESS, rootServer.getPort())
                       + "&hostnameOverride="
                       + CERTIFICATE_HOSTNAME);
-          Statement statement = connection.createStatement();
-          ResultSet resultSet = statement.executeQuery("SELECT partitioned_data")) {
-        assertTrue(resultSet.next());
-        assertEquals(42, resultSet.getInt(1));
-        assertFalse(resultSet.next());
+          Statement statement = connection.createStatement()) {
+        final SQLException exception =
+            assertThrows(
+                SQLException.class,
+                () -> {
+                  try (ResultSet resultSet = statement.executeQuery("SELECT partitioned_data")) {
+                    resultSet.next();
+                  }
+                });
+        assertCausedByCertificateException(exception);
       }
+    }
+  }
+
+  /**
+   * Returns a single endpoint at {@link #location}, which is set once the server has started, and
+   * serves its data, so the endpoint is at the same location as the connection.
+   */
+  private static final class SelfServingFlightSqlProducer extends PartitionedFlightSqlProducer {
+    private final Schema schema;
+    private final Ticket ticket;
+    private final PartitionedFlightSqlProducer.DataOnlyFlightSqlProducer dataProducer;
+    private volatile Location location;
+
+    SelfServingFlightSqlProducer(
+        final Schema schema, final Ticket ticket, final VectorSchemaRoot data) {
+      super(schema);
+      this.schema = schema;
+      this.ticket = ticket;
+      this.dataProducer = new PartitionedFlightSqlProducer.DataOnlyFlightSqlProducer(ticket, data);
+    }
+
+    private FlightInfo flightInfo(final FlightDescriptor descriptor) {
+      return FlightInfo.builder(
+              schema, descriptor, Collections.singletonList(new FlightEndpoint(ticket, location)))
+          .build();
+    }
+
+    @Override
+    public FlightInfo getFlightInfoStatement(
+        final FlightSql.CommandStatementQuery command,
+        final CallContext context,
+        final FlightDescriptor descriptor) {
+      return flightInfo(descriptor);
+    }
+
+    @Override
+    public FlightInfo getFlightInfoPreparedStatement(
+        final FlightSql.CommandPreparedStatementQuery command,
+        final CallContext context,
+        final FlightDescriptor descriptor) {
+      return flightInfo(descriptor);
+    }
+
+    @Override
+    public void getStream(
+        final CallContext context, final Ticket ticket, final ServerStreamListener listener) {
+      dataProducer.getStream(context, ticket, listener);
     }
   }
 }

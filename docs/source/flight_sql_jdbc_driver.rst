@@ -126,8 +126,8 @@ case-sensitive. The supported parameters are:
        connecting through a tunnel, a private endpoint, or an IP address
        that does not match the server certificate. Endpoints returned by
        the server are only verified against this hostname if they are on
-       the same host as the connection. Ignored when ``useEncryption`` is
-       false.
+       the same host and port as the connection. Ignored when
+       ``useEncryption`` is false.
 
    * - clientCertificate
      - null

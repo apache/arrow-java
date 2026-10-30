@@ -861,23 +861,35 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     /**
      * Gets the hostname override to use when connecting to an endpoint location. The override is
-     * only valid for the host it was configured for, so endpoints on any other host are verified
-     * against their own hostname. Like the override itself, it is ignored when the original
-     * connection does not use encryption.
+     * only valid for the host and port it was configured for, so endpoints at any other location
+     * are verified against their own hostname. Like the override itself, it is ignored when the
+     * original connection does not use encryption.
      *
      * @param endpointUri the endpoint location.
-     * @return the hostname override if the endpoint is on the original host, otherwise null.
+     * @return the hostname override if the endpoint is on the original host and port, otherwise
+     *     null.
      */
     @VisibleForTesting
     @Nullable String getHostnameOverrideForEndpoint(final URI endpointUri) {
-      final String endpointHost = endpointUri.getHost();
+      final String endpointHost = stripBrackets(endpointUri.getHost());
       if (!useEncryption
           || hostnameOverride == null
           || endpointHost == null
-          || !endpointHost.equalsIgnoreCase(host)) {
+          || endpointUri.getPort() != port
+          || !endpointHost.equalsIgnoreCase(stripBrackets(host))) {
         return null;
       }
       return hostnameOverride;
+    }
+
+    /**
+     * Strips the brackets from an IPv6 literal. {@link URI#getHost()} keeps them, but a host set
+     * through properties may not have them.
+     */
+    private static @Nullable String stripBrackets(@Nullable final String host) {
+      return host != null && host.startsWith("[") && host.endsWith("]")
+          ? host.substring(1, host.length() - 1)
+          : host;
     }
 
     /**

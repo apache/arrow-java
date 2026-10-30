@@ -170,15 +170,24 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     final ArrowFlightSqlClientHandler.Builder builder =
         new ArrowFlightSqlClientHandler.Builder()
             .withHost("127.0.0.1")
+            .withPort(1234)
             .withHostnameOverride("flight.example.com");
 
     assertEquals(
         "flight.example.com",
         builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1:1234")));
-    // The port is not part of the match.
-    assertEquals(
-        "flight.example.com",
-        builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1:5678")));
+  }
+
+  @Test
+  public void testHostnameOverrideForEndpointOnDifferentPortIsCleared() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("127.0.0.1")
+            .withPort(1234)
+            .withHostnameOverride("flight.example.com");
+
+    assertNull(builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1:5678")));
+    assertNull(builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1")));
   }
 
   @Test
@@ -186,6 +195,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     final ArrowFlightSqlClientHandler.Builder builder =
         new ArrowFlightSqlClientHandler.Builder()
             .withHost("Tunnel.Local")
+            .withPort(1234)
             .withHostnameOverride("flight.example.com");
 
     assertEquals(
@@ -195,10 +205,25 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
 
   @Test
   public void testHostnameOverrideForEndpointOnIpv6Host() {
-    // Both the JDBC URL and endpoint locations are parsed with URI#getHost, which keeps brackets.
+    // The JDBC URL is parsed with URI#getHost, which keeps the brackets, like endpoint locations.
     final ArrowFlightSqlClientHandler.Builder builder =
         new ArrowFlightSqlClientHandler.Builder()
             .withHost(URI.create("jdbc://[::1]:1234").getHost())
+            .withPort(1234)
+            .withHostnameOverride("flight.example.com");
+
+    assertEquals(
+        "flight.example.com",
+        builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://[::1]:1234")));
+  }
+
+  @Test
+  public void testHostnameOverrideForEndpointOnIpv6HostWithoutBrackets() {
+    // A host set through properties or a DataSource may not have brackets.
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("::1")
+            .withPort(1234)
             .withHostnameOverride("flight.example.com");
 
     assertEquals(
@@ -211,6 +236,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     final ArrowFlightSqlClientHandler.Builder builder =
         new ArrowFlightSqlClientHandler.Builder()
             .withHost("127.0.0.1")
+            .withPort(1234)
             .withHostnameOverride("flight.example.com");
 
     assertNull(builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://10.0.0.1:1234")));
@@ -223,6 +249,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     final ArrowFlightSqlClientHandler.Builder builder =
         new ArrowFlightSqlClientHandler.Builder()
             .withHost("127.0.0.1")
+            .withPort(1234)
             .withEncryption(false)
             .withHostnameOverride("flight.example.com");
 
@@ -248,7 +275,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
   @Test
   public void testHostnameOverrideForEndpointWithoutOverride() {
     final ArrowFlightSqlClientHandler.Builder builder =
-        new ArrowFlightSqlClientHandler.Builder().withHost("127.0.0.1");
+        new ArrowFlightSqlClientHandler.Builder().withHost("127.0.0.1").withPort(1234);
 
     assertNull(builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1:1234")));
   }
