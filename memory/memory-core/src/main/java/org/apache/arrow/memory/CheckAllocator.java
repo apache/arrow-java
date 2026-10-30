@@ -36,6 +36,8 @@ final class CheckAllocator {
       "org/apache/arrow/memory/unsafe/DefaultAllocationManagerFactory.class";
   private static final String ALLOCATOR_PATH_NETTY =
       "org/apache/arrow/memory/netty/DefaultAllocationManagerFactory.class";
+  private static final String ALLOCATOR_PATH_FFM =
+      "org/apache/arrow/memory/ffm/DefaultAllocationManagerFactory.class";
 
   private CheckAllocator() {}
 
@@ -52,6 +54,9 @@ final class CheckAllocator {
     } else if (rootAllocator.getPath().contains("memory-netty")
         || rootAllocator.getPath().contains("/org/apache/arrow/memory/netty/")) {
       return "org.apache.arrow.memory.netty.DefaultAllocationManagerFactory";
+    } else if (rootAllocator.getPath().contains("memory-ffm")
+        || rootAllocator.getPath().contains("/org/apache/arrow/memory/ffm/")) {
+      return "org.apache.arrow.memory.ffm.DefaultAllocationManagerFactory";
     } else {
       throw new IllegalStateException(
           "Unknown allocation manager type to infer. Current: " + rootAllocator.getPath());
@@ -74,6 +79,9 @@ final class CheckAllocator {
         if (!paths.hasMoreElements()) {
           paths = ClassLoader.getSystemResources(ALLOCATOR_PATH_NETTY);
         }
+        if (!paths.hasMoreElements()) {
+          paths = ClassLoader.getSystemResources(ALLOCATOR_PATH_FFM);
+        }
       } else {
         paths = allocatorClassLoader.getResources(ALLOCATOR_PATH_CORE);
         if (!paths.hasMoreElements()) {
@@ -81,6 +89,9 @@ final class CheckAllocator {
         }
         if (!paths.hasMoreElements()) {
           paths = allocatorClassLoader.getResources(ALLOCATOR_PATH_NETTY);
+        }
+        if (!paths.hasMoreElements()) {
+          paths = allocatorClassLoader.getResources(ALLOCATOR_PATH_FFM);
         }
       }
       while (paths.hasMoreElements()) {
@@ -106,7 +117,8 @@ final class CheckAllocator {
     if (urls.isEmpty()) {
       throw new RuntimeException(
           "No DefaultAllocationManager found on classpath. Can't allocate Arrow buffers."
-              + " Please consider adding arrow-memory-netty or arrow-memory-unsafe as a dependency.");
+              + " Please consider adding arrow-memory-netty, arrow-memory-unsafe, or"
+              + " arrow-memory-ffm as a dependency.");
     }
     return urls.iterator().next();
   }
