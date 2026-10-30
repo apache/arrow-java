@@ -41,6 +41,10 @@ set(ARROW_JAVA_JNI_ABSL_INCLUDE_DIR
     ""
     CACHE PATH "Path to Abseil source headers for the Gandiva JNI build")
 mark_as_advanced(ARROW_JAVA_JNI_ABSL_INCLUDE_DIR)
+set(ARROW_JAVA_JNI_UTF8_RANGE_INCLUDE_DIR
+    ""
+    CACHE PATH "Path to utf8_range source headers for the Gandiva JNI build")
+mark_as_advanced(ARROW_JAVA_JNI_UTF8_RANGE_INCLUDE_DIR)
 
 include(GNUInstallDirs)
 
