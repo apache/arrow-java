@@ -83,6 +83,7 @@ import org.apache.arrow.vector.ViewVarBinaryVector;
 import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.ZeroVector;
 import org.apache.arrow.vector.compare.VectorEqualsVisitor;
+import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
 import org.apache.arrow.vector.complex.LargeListViewVector;
@@ -97,6 +98,7 @@ import org.apache.arrow.vector.extension.JsonType;
 import org.apache.arrow.vector.extension.OpaqueType;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.IntervalDayHolder;
+import org.apache.arrow.vector.holders.NullableIntHolder;
 import org.apache.arrow.vector.holders.NullableLargeVarBinaryHolder;
 import org.apache.arrow.vector.holders.NullableUInt4Holder;
 import org.apache.arrow.vector.table.Table;
@@ -748,42 +750,16 @@ public class RoundtripTest {
 
   @Test
   public void testMapVector() {
-    int count = 5;
     try (final MapVector vector = MapVector.empty("v", allocator, false)) {
-      vector.allocateNew();
-      UnionMapWriter mapWriter = vector.getWriter();
-      for (int i = 0; i < count; i++) {
-        mapWriter.startMap();
-        for (int j = 0; j < i + 1; j++) {
-          mapWriter.startEntry();
-          mapWriter.key().bigInt().writeBigInt(j);
-          mapWriter.value().integer().writeInt(j);
-          mapWriter.endEntry();
-        }
-        mapWriter.endMap();
-      }
-      mapWriter.setValueCount(count);
-
+      writeTestMaps(vector);
       assertTrue(roundtrip(vector, MapVector.class));
     }
   }
 
   @Test
   public void testUnionVector() {
-    final NullableUInt4Holder uInt4Holder = new NullableUInt4Holder();
-    uInt4Holder.value = 100;
-    uInt4Holder.isSet = 1;
-
     try (UnionVector vector = UnionVector.empty("v", allocator)) {
-      vector.allocateNew();
-
-      // write some data
-      vector.setType(0, MinorType.UINT4);
-      vector.setSafe(0, uInt4Holder);
-      vector.setType(2, MinorType.UINT4);
-      vector.setSafe(2, uInt4Holder);
-      vector.setValueCount(4);
-
+      writeTestUnion(vector);
       assertTrue(roundtrip(vector, UnionVector.class));
     }
   }
@@ -1126,20 +1102,260 @@ public class RoundtripTest {
     try (IntVector source = new IntVector("source", allocator);
         IntVector destination = new IntVector("destination", allocator);
         ArrowArray array = ArrowArray.allocateNew(allocator)) {
-      setVector(source, 1, 2, 3);
+      setVector(source, 1, 2, null, 4, 5);
       Data.exportVector(allocator, source, null, array);
+      slice(array, 1, 3);
 
-      ArrowArray.Snapshot snapshot = array.snapshot();
-      snapshot.offset = 1;
-      array.save(snapshot);
+      Data.importIntoVector(allocator, array, destination, null);
 
-      Exception e =
-          assertThrows(
-              IllegalStateException.class,
-              () -> Data.importIntoVector(allocator, array, destination, null));
-      assertEquals(
-          "ArrowArray struct has non-zero offset (1), which is not supported", e.getMessage());
+      assertEquals(3, destination.getValueCount());
+      assertEquals(1, destination.getNullCount());
+      assertEquals(2, destination.get(0));
+      assertTrue(destination.isNull(1));
+      assertEquals(4, destination.get(2));
     }
+  }
+
+  @Test
+  public void testImportArrayWithUnalignedOffset() {
+    try (IntVector source = new IntVector("source", allocator)) {
+      Integer[] values = new Integer[20];
+      for (int i = 0; i < values.length; i++) {
+        values[i] = i % 3 == 0 ? null : i;
+      }
+      setVector(source, values);
+      assertSlicedImportMatchesSource(source, 5, 11);
+    }
+  }
+
+  @Test
+  public void testImportVarCharWithNonZeroOffset() {
+    try (VarCharVector source = new VarCharVector("source", allocator)) {
+      setVector(source, "a", "bb", null, "dddd", "e");
+      assertSlicedImportMatchesSource(source, 2, 2);
+    }
+  }
+
+  @Test
+  public void testImportListWithNonZeroOffset() {
+    try (ListVector source = ListVector.empty("source", allocator)) {
+      setVector(source, Arrays.asList(1, 2), null, Arrays.asList(3), Arrays.asList(4, 5, 6));
+      assertSlicedImportMatchesSource(source, 1, 3);
+    }
+  }
+
+  @Test
+  public void testImportStructWithNonZeroOffset() {
+    // The offset of a struct applies to its children, which are exported at full length
+    try (StructVector source = StructVector.empty("source", allocator);
+        StructVector destination = StructVector.empty("destination", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      Map<String, List<Integer>> values = new HashMap<>();
+      values.put("a", Arrays.asList(1, 2, 3, 4));
+      values.put("b", Arrays.asList(10, null, 30, 40));
+      setVector(source, values);
+      destination.initializeChildrenFromFields(source.getField().getChildren());
+      Data.exportVector(allocator, source, null, array);
+      slice(array, 1, 2);
+
+      Data.importIntoVector(allocator, array, destination, null);
+
+      assertEquals(2, destination.getValueCount());
+      IntVector a = (IntVector) destination.getChild("a");
+      IntVector b = (IntVector) destination.getChild("b");
+      assertEquals(2, a.getValueCount());
+      assertEquals(2, a.get(0));
+      assertEquals(3, a.get(1));
+      assertTrue(b.isNull(0));
+      assertEquals(30, b.get(1));
+    }
+  }
+
+  @Test
+  public void testImportVectorSchemaRootWithSlicedChildren() {
+    // Arrow C++ exports record_batch->Slice(8, 2) as a struct whose children carry the offset
+    try (VectorSchemaRoot source = createTestVSR();
+        VectorSchemaRoot destination = VectorSchemaRoot.create(source.getSchema(), allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      Data.exportVectorSchemaRoot(allocator, source, null, array);
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      slice(array, 0, 2);
+      for (long child : NativeUtil.toJavaArray(snapshot.children, (int) snapshot.n_children)) {
+        slice(ArrowArray.wrap(child), 8, 2);
+      }
+
+      Data.importIntoVectorSchemaRoot(allocator, array, destination, null);
+
+      assertEquals(2, destination.getRowCount());
+      BitVector bits = (BitVector) destination.getVector("boolean");
+      VarCharVector strings = (VarCharVector) destination.getVector("varchar");
+      assertEquals(0, bits.get(0));
+      assertEquals(1, bits.get(1));
+      assertEquals("test8", new String(strings.get(0), StandardCharsets.UTF_8));
+      assertEquals("test9", new String(strings.get(1), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  public void testImportExtensionTypeVectorWithNonZeroOffset() {
+    try (UuidVector source = new UuidVector("source", allocator)) {
+      source.setValueCount(3);
+      for (int i = 0; i < 3; i++) {
+        source.set(i, UUID.randomUUID());
+      }
+      assertSlicedImportMatchesSource(source, 1, 2);
+    }
+  }
+
+  @Test
+  public void testImportStructWithExtensionTypeChildWithNonZeroOffset() {
+    try (StructVector source = StructVector.empty("source", allocator)) {
+      UuidVector child =
+          source.addOrGet("u", FieldType.nullable(UuidType.INSTANCE), UuidVector.class);
+      child.setValueCount(3);
+      for (int i = 0; i < 3; i++) {
+        child.set(i, UUID.randomUUID());
+        source.setIndexDefined(i);
+      }
+      source.setValueCount(3);
+      assertSlicedImportMatchesSource(source, 1, 2);
+    }
+  }
+
+  @Test
+  public void testImportBitVectorWithUnalignedOffset() {
+    try (BitVector source = new BitVector("source", allocator)) {
+      Integer[] values = new Integer[20];
+      for (int i = 0; i < values.length; i++) {
+        values[i] = i % 5 == 0 ? null : i % 2;
+      }
+      setVector(source, values);
+      assertSlicedImportMatchesSource(source, 3, 13);
+    }
+  }
+
+  @Test
+  public void testImportLargeListWithNonZeroOffset() {
+    try (LargeListVector source = LargeListVector.empty("source", allocator)) {
+      setVector(source, Arrays.asList(1, 2), null, Arrays.asList(3), Arrays.asList(4, 5, 6));
+      assertSlicedImportMatchesSource(source, 1, 3);
+    }
+  }
+
+  @Test
+  public void testImportFixedSizeListWithNonZeroOffset() {
+    try (FixedSizeListVector source = FixedSizeListVector.empty("source", 2, allocator)) {
+      setVector(source, Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6));
+      assertSlicedImportMatchesSource(source, 1, 2);
+    }
+  }
+
+  @Test
+  public void testImportMapWithNonZeroOffset() {
+    try (MapVector source = MapVector.empty("source", allocator, false)) {
+      writeTestMaps(source);
+      assertSlicedImportMatchesSource(source, 2, 2);
+    }
+  }
+
+  @Test
+  public void testImportUnionWithNonZeroOffset() {
+    try (UnionVector source = UnionVector.empty("source", allocator)) {
+      writeTestUnion(source);
+      assertSlicedImportMatchesSource(source, 1, 3);
+    }
+  }
+
+  @Test
+  public void testImportDenseUnionWithNonZeroOffset() {
+    final NullableUInt4Holder uInt4Holder = new NullableUInt4Holder();
+    uInt4Holder.value = 100;
+    uInt4Holder.isSet = 1;
+    final NullableIntHolder intHolder = new NullableIntHolder();
+    intHolder.value = -7;
+    intHolder.isSet = 1;
+    try (DenseUnionVector source = DenseUnionVector.empty("source", allocator)) {
+      source.allocateNew();
+      byte uint4TypeId = source.registerNewTypeId(Field.nullable("u", MinorType.UINT4.getType()));
+      byte intTypeId = source.registerNewTypeId(Field.nullable("i", MinorType.INT.getType()));
+      source.setTypeId(0, uint4TypeId);
+      source.setSafe(0, uInt4Holder);
+      source.setTypeId(1, intTypeId);
+      source.setSafe(1, intHolder);
+      source.setTypeId(2, uint4TypeId);
+      source.setSafe(2, uInt4Holder);
+      source.setTypeId(3, intTypeId);
+      source.setSafe(3, intHolder);
+      source.setValueCount(4);
+      assertSlicedImportMatchesSource(source, 1, 3);
+    }
+  }
+
+  @Test
+  public void testImportRunEndEncodedWithNonZeroOffset() {
+    try (RunEndEncodedVector source = RunEndEncodedVector.empty("source", allocator)) {
+      setVector(source, List.of(2, 3, 6), List.of(1, 2, 3));
+      assertSlicedImportMatchesSource(source, 1, 4);
+    }
+  }
+
+  @Test
+  public void testImportViewVarCharWithNonZeroOffset() {
+    try (ViewVarCharVector source = new ViewVarCharVector("source", allocator)) {
+      setVector(source, "short", "a string longer than twelve bytes", null, "another long string");
+      assertSlicedImportMatchesSource(source, 1, 3);
+    }
+  }
+
+  /** Imports a slice of {@code source} and compares it with the same range of the source. */
+  private void assertSlicedImportMatchesSource(FieldVector source, int offset, int length) {
+    try (ArrowArray array = ArrowArray.allocateNew(allocator);
+        ArrowSchema schema = ArrowSchema.allocateNew(allocator)) {
+      Data.exportVector(allocator, source, null, array, schema);
+      slice(array, offset, length);
+      try (FieldVector imported = Data.importVector(allocator, array, schema, null)) {
+        assertEquals(length, imported.getValueCount());
+        for (int i = 0; i < length; i++) {
+          assertEquals(source.getObject(offset + i), imported.getObject(i), "index " + i);
+        }
+      }
+    }
+  }
+
+  private static void writeTestMaps(MapVector vector) {
+    vector.allocateNew();
+    UnionMapWriter mapWriter = vector.getWriter();
+    for (int i = 0; i < 5; i++) {
+      mapWriter.startMap();
+      for (int j = 0; j < i + 1; j++) {
+        mapWriter.startEntry();
+        mapWriter.key().bigInt().writeBigInt(j);
+        mapWriter.value().integer().writeInt(j);
+        mapWriter.endEntry();
+      }
+      mapWriter.endMap();
+    }
+    mapWriter.setValueCount(5);
+  }
+
+  private static void writeTestUnion(UnionVector vector) {
+    final NullableUInt4Holder uInt4Holder = new NullableUInt4Holder();
+    uInt4Holder.value = 100;
+    uInt4Holder.isSet = 1;
+    vector.allocateNew();
+    vector.setType(0, MinorType.UINT4);
+    vector.setSafe(0, uInt4Holder);
+    vector.setType(2, MinorType.UINT4);
+    vector.setSafe(2, uInt4Holder);
+    vector.setValueCount(4);
+  }
+
+  /** Rewrite an exported array in place as a slice, as a C producer would. */
+  private static void slice(ArrowArray array, long offset, long length) {
+    ArrowArray.Snapshot snapshot = array.snapshot();
+    snapshot.offset = offset;
+    snapshot.length = length;
+    array.save(snapshot);
   }
 
   @Test
@@ -1149,11 +1365,7 @@ public class RoundtripTest {
         ArrowArray array = ArrowArray.allocateNew(allocator)) {
       setVector(source, 1, 2, 3);
       Data.exportVector(allocator, source, null, array);
-
-      ArrowArray.Snapshot snapshot = array.snapshot();
-      snapshot.offset = source.getValueCount();
-      snapshot.length = 0;
-      array.save(snapshot);
+      slice(array, source.getValueCount(), 0);
 
       Data.importIntoVector(allocator, array, destination, null);
       assertEquals(0, destination.getValueCount());
@@ -1166,14 +1378,7 @@ public class RoundtripTest {
         NullVector destination = new NullVector("destination");
         ArrowArray array = ArrowArray.allocateNew(allocator)) {
       Data.exportVector(allocator, source, null, array);
-
-      // Mimic a sliced null array. Arrow C++ propagates the slice offset onto the struct
-      // even for null arrays, which export no buffers at all (n_buffers == 0), so there is
-      // nothing for the offset to apply to and the import is safe.
-      ArrowArray.Snapshot snapshot = array.snapshot();
-      snapshot.offset = 2;
-      snapshot.length = 8;
-      array.save(snapshot);
+      slice(array, 2, 8);
 
       Data.importIntoVector(allocator, array, destination, null);
       assertEquals(8, destination.getValueCount());
