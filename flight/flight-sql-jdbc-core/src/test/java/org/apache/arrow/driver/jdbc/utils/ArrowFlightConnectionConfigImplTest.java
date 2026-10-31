@@ -39,6 +39,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public final class ArrowFlightConnectionConfigImplTest {
 
@@ -69,6 +70,22 @@ public final class ArrowFlightConnectionConfigImplTest {
     assertThat(configFunction.apply(arrowFlightConnectionConfig), is(expected));
     assertThat(
         arrowFlightConnectionConfigFunction.apply(arrowFlightConnectionConfig), is(expected));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"true", "TRUE", "True", "tRuE", "1"})
+  public void testUseEncryptionAcceptsTruthyValuesCaseInsensitively(String value) {
+    // A connection string value like "TRUE" must enable TLS. Parsing it as false would
+    // silently downgrade the connection to plaintext and leak credentials.
+    properties.put(USE_ENCRYPTION.camelName(), value);
+    assertThat(arrowFlightConnectionConfig.useEncryption(), is(true));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"false", "FALSE", "0", ""})
+  public void testUseEncryptionRejectsFalsyValues(String value) {
+    properties.put(USE_ENCRYPTION.camelName(), value);
+    assertThat(arrowFlightConnectionConfig.useEncryption(), is(false));
   }
 
   public static Stream<Arguments> provideParameters() {
