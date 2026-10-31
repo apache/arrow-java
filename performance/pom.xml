@@ -86,6 +86,10 @@ under the License.
       <groupId>org.apache.arrow</groupId>
       <artifactId>arrow-algorithm</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.arrow</groupId>
+      <artifactId>arrow-compression</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
