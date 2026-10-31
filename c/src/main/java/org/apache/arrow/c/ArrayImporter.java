@@ -104,7 +104,10 @@ final class ArrayImporter {
     snapshot.offset = 0;
     // The producer's null count only covers the slice. Without a validity bitmap the null count
     // must be 0 for the buffers to load, otherwise it is unknown.
-    boolean hasBitmap = snapshot.n_buffers > 0 && MemoryUtil.getLong(snapshot.buffers) != NULL;
+    boolean hasBitmap =
+        snapshot.n_buffers > 0
+            && snapshot.buffers != NULL
+            && MemoryUtil.getLong(snapshot.buffers) != NULL;
     snapshot.null_count = hasBitmap ? -1 : 0;
 
     try (FieldVector unslicedVector = vector.getField().createVector(allocator)) {
