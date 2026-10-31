@@ -20,6 +20,7 @@ import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import org.apache.arrow.flatbuf.FieldNode;
+import org.apache.arrow.util.Preconditions;
 
 /** Metadata about Vectors/Arrays that is written to a channel. */
 public class ArrowFieldNode implements FBSerializable {
@@ -35,6 +36,13 @@ public class ArrowFieldNode implements FBSerializable {
    */
   public ArrowFieldNode(long length, long nullCount) {
     super();
+    // A negative length is never valid and, if accepted, flows unchecked into buffer size
+    // computations (BitVectorHelper.getValidityBufferSizeFromCount performs an unsigned shift)
+    // and into ArrowBuf.setOne/setZero, which can corrupt memory when bounds checking is
+    // disabled. Reject it at this single chokepoint shared by every deserialization path
+    // (IPC, JSON, C Data). nullCount is intentionally not checked here: VectorUnloader uses -1
+    // as a sentinel meaning "null count not included".
+    Preconditions.checkArgument(length >= 0, "Expected length >= 0, got %s", length);
     this.length = checkedCastToInt(length);
     this.nullCount = checkedCastToInt(nullCount);
   }
