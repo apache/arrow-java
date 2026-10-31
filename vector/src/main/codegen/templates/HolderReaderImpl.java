@@ -127,16 +127,9 @@ public class ${holderMode}${name}HolderReaderImpl extends AbstractFieldReader {
     return DurationVector.toDuration(holder.value, holder.unit);
   <#elseif minor.class == "Bit" >
     return Boolean.valueOf(holder.value != 0);
-  <#elseif minor.class == "Decimal">
-    byte[] bytes = new byte[${type.width}];
-    holder.buffer.getBytes(holder.start, bytes, 0, ${type.width});
-    ${friendlyType} value = new BigDecimal(new BigInteger(bytes), holder.scale);
-    return value;
-  <#elseif minor.class == "Decimal256">
-    byte[] bytes = new byte[${type.width}];
-    holder.buffer.getBytes(holder.start, bytes, 0, ${type.width});
-    ${friendlyType} value = new BigDecimal(new BigInteger(bytes), holder.scale);
-    return value;
+  <#elseif minor.class?starts_with("Decimal")>
+    return DecimalUtility.getBigDecimalFromArrowBufAtOffset(
+        holder.buffer, holder.start, holder.scale, ${type.width});
   <#elseif minor.class == "FixedSizeBinary">
     byte[] value = new byte [holder.byteWidth];
     holder.buffer.getBytes(0, value, 0, holder.byteWidth);

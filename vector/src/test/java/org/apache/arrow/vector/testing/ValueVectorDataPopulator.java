@@ -29,6 +29,8 @@ import org.apache.arrow.vector.BitVectorHelper;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -164,6 +166,54 @@ public class ValueVectorDataPopulator {
 
   /** Populate values for Decimal256Vector. */
   public static void setVector(Decimal256Vector vector, BigDecimal... values) {
+    final int length = values.length;
+    vector.allocateNew(length);
+    for (int i = 0; i < length; i++) {
+      if (values[i] != null) {
+        vector.set(i, values[i]);
+      }
+    }
+    vector.setValueCount(length);
+  }
+
+  /** Populate values for Decimal32Vector. */
+  public static void setVector(Decimal32Vector vector, Long... values) {
+    final int length = values.length;
+    vector.allocateNew(length);
+    for (int i = 0; i < length; i++) {
+      if (values[i] != null) {
+        vector.set(i, values[i]);
+      }
+    }
+    vector.setValueCount(length);
+  }
+
+  /** Populate values for Decimal32Vector. */
+  public static void setVector(Decimal32Vector vector, BigDecimal... values) {
+    final int length = values.length;
+    vector.allocateNew(length);
+    for (int i = 0; i < length; i++) {
+      if (values[i] != null) {
+        vector.set(i, values[i]);
+      }
+    }
+    vector.setValueCount(length);
+  }
+
+  /** Populate values for Decimal64Vector. */
+  public static void setVector(Decimal64Vector vector, Long... values) {
+    final int length = values.length;
+    vector.allocateNew(length);
+    for (int i = 0; i < length; i++) {
+      if (values[i] != null) {
+        vector.set(i, values[i]);
+      }
+    }
+    vector.setValueCount(length);
+  }
+
+  /** Populate values for Decimal64Vector. */
+  public static void setVector(Decimal64Vector vector, BigDecimal... values) {
     final int length = values.length;
     vector.allocateNew(length);
     for (int i = 0; i < length; i++) {

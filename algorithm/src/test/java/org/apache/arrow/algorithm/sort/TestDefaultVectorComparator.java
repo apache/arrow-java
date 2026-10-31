@@ -28,6 +28,8 @@ import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FixedSizeBinaryVector;
@@ -700,6 +702,66 @@ public class TestDefaultVectorComparator {
           vec, -1L, 0L, 1L, null, 1L, 5L, Long.MIN_VALUE + 1L, Long.MAX_VALUE);
 
       VectorValueComparator<Decimal256Vector> comparator =
+          DefaultVectorComparators.createDefaultComparator(vec);
+      comparator.attachVector(vec);
+
+      assertTrue(comparator.compare(0, 1) < 0);
+      assertTrue(comparator.compare(0, 2) < 0);
+      assertTrue(comparator.compare(2, 1) > 0);
+
+      // test equality
+      assertTrue(comparator.compare(5, 5) == 0);
+      assertTrue(comparator.compare(2, 4) == 0);
+
+      // null first
+      assertTrue(comparator.compare(3, 4) < 0);
+      assertTrue(comparator.compare(5, 3) > 0);
+
+      // potential overflow
+      assertTrue(comparator.compare(6, 7) < 0);
+      assertTrue(comparator.compare(7, 6) > 0);
+      assertTrue(comparator.compare(7, 7) == 0);
+    }
+  }
+
+  @Test
+  public void testCompareDecimal32() {
+    try (Decimal32Vector vec = new Decimal32Vector("", allocator, 9, 1)) {
+      vec.allocateNew(8);
+      ValueVectorDataPopulator.setVector(
+          vec, -1L, 0L, 1L, null, 1L, 5L, (long) Integer.MIN_VALUE + 1L, (long) Integer.MAX_VALUE);
+
+      VectorValueComparator<Decimal32Vector> comparator =
+          DefaultVectorComparators.createDefaultComparator(vec);
+      comparator.attachVector(vec);
+
+      assertTrue(comparator.compare(0, 1) < 0);
+      assertTrue(comparator.compare(0, 2) < 0);
+      assertTrue(comparator.compare(2, 1) > 0);
+
+      // test equality
+      assertTrue(comparator.compare(5, 5) == 0);
+      assertTrue(comparator.compare(2, 4) == 0);
+
+      // null first
+      assertTrue(comparator.compare(3, 4) < 0);
+      assertTrue(comparator.compare(5, 3) > 0);
+
+      // potential overflow
+      assertTrue(comparator.compare(6, 7) < 0);
+      assertTrue(comparator.compare(7, 6) > 0);
+      assertTrue(comparator.compare(7, 7) == 0);
+    }
+  }
+
+  @Test
+  public void testCompareDecimal64() {
+    try (Decimal64Vector vec = new Decimal64Vector("", allocator, 18, 1)) {
+      vec.allocateNew(8);
+      ValueVectorDataPopulator.setVector(
+          vec, -1L, 0L, 1L, null, 1L, 5L, Long.MIN_VALUE + 1L, Long.MAX_VALUE);
+
+      VectorValueComparator<Decimal64Vector> comparator =
           DefaultVectorComparators.createDefaultComparator(vec);
       comparator.attachVector(vec);
 

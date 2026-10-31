@@ -17,6 +17,7 @@
 package org.apache.arrow.vector.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -24,8 +25,32 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class DecimalUtilityTest {
+  @ParameterizedTest
+  @ValueSource(ints = {4, 8, 16, 32})
+  public void testWriteLongChecksBufferBounds(int byteWidth) {
+    try (BufferAllocator allocator = new RootAllocator(128);
+        ArrowBuf buffer = allocator.buffer(3L * byteWidth)) {
+      for (long i = 0; i < buffer.capacity(); i++) {
+        buffer.setByte(i, 100);
+      }
+      // The surrounding allocation keeps this regression test safe even if bounds checks fail.
+      ArrowBuf value = buffer.slice(byteWidth, byteWidth);
+      assertThrows(
+          IndexOutOfBoundsException.class,
+          () -> DecimalUtility.writeLongToArrowBuf(1, value, -1, byteWidth));
+      assertThrows(
+          IndexOutOfBoundsException.class,
+          () -> DecimalUtility.writeLongToArrowBuf(1, value, 1, byteWidth));
+      for (long i = 0; i < buffer.capacity(); i++) {
+        assertEquals((byte) 100, buffer.getByte(i));
+      }
+    }
+  }
+
   private static final BigInteger[] MAX_BIG_INT =
       new BigInteger[] {
         BigInteger.valueOf(10).pow(38).subtract(java.math.BigInteger.ONE),
