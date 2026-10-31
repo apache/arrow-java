@@ -20,11 +20,14 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.util.AutoCloseables;
+import org.apache.arrow.vector.complex.LargeListVector;
+import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.compression.CompressionCodec;
 import org.apache.arrow.vector.compression.CompressionUtil;
 import org.apache.arrow.vector.compression.NoCompressionCodec;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
+import org.apache.arrow.vector.util.TransferPair;
 
 /**
  * Helper class that handles converting a {@link VectorSchemaRoot} to a {@link ArrowRecordBatch}.
@@ -74,6 +77,11 @@ public class VectorUnloader {
   /**
    * Performs the depth first traversal of the Vectors to create an {@link ArrowRecordBatch}
    * suitable for serialization.
+   *
+   * <p>A variable-width, list or map vector whose offsets start past zero, or whose child vector
+   * holds elements past its last offset, as one imported through the C Data interface from a sliced
+   * array does, is written as the values between its first and last offset, with the offsets
+   * re-based to start at zero.
    */
   public ArrowRecordBatch getRecordBatch() {
     List<ArrowFieldNode> nodes = new ArrayList<>();
@@ -111,6 +119,10 @@ public class VectorUnloader {
       List<ArrowBuf> buffers,
       List<Long> variadicBufferCounts) {
     FieldVector storageVector = ExtensionTypeVector.getStorageVector(vector);
+    if (firstOffset(storageVector) != 0) {
+      appendRebased(vector, vector.getValueCount(), nodes, buffers, variadicBufferCounts);
+      return;
+    }
     nodes.add(
         new ArrowFieldNode(vector.getValueCount(), includeNullCount ? vector.getNullCount() : -1));
     List<ArrowBuf> fieldBuffers = vector.getFieldBuffers();
@@ -137,8 +149,65 @@ public class VectorUnloader {
       buf.getReferenceManager().retain();
       buffers.add(codec.compress(vector.getAllocator(), buf));
     }
+    long coveredChildLength = coveredChildLength(storageVector);
     for (FieldVector child : vector.getChildrenFromFields()) {
-      appendNodes(child, nodes, buffers, variadicBufferCounts);
+      if (coveredChildLength >= 0 && child.getValueCount() > coveredChildLength) {
+        appendRebased(child, (int) coveredChildLength, nodes, buffers, variadicBufferCounts);
+      } else {
+        appendNodes(child, nodes, buffers, variadicBufferCounts);
+      }
     }
+  }
+
+  /** Appends the first {@code length} values of the vector, re-based to start at offset zero. */
+  private void appendRebased(
+      FieldVector vector,
+      int length,
+      List<ArrowFieldNode> nodes,
+      List<ArrowBuf> buffers,
+      List<Long> variadicBufferCounts) {
+    TransferPair pair = vector.getTransferPair(vector.getField(), vector.getAllocator());
+    pair.splitAndTransfer(0, length);
+    try (FieldVector rebased = (FieldVector) pair.getTo()) {
+      appendNodes(rebased, nodes, buffers, variadicBufferCounts);
+    }
+  }
+
+  /** The first offset of a variable-width, list or map vector, or zero for any other vector. */
+  private static long firstOffset(FieldVector vector) {
+    if (vector.getValueCount() == 0) {
+      return 0;
+    }
+    if (vector instanceof BaseVariableWidthVector) {
+      return ((BaseVariableWidthVector) vector).getStartOffset(0);
+    }
+    if (vector instanceof BaseLargeVariableWidthVector) {
+      return ((BaseLargeVariableWidthVector) vector).getStartOffset(0);
+    }
+    if (vector instanceof ListVector) {
+      return ((ListVector) vector).getElementStartIndex(0);
+    }
+    if (vector instanceof LargeListVector) {
+      return ((LargeListVector) vector).getElementStartIndex(0);
+    }
+    return 0;
+  }
+
+  /**
+   * The number of child elements a list or map vector's offsets cover, which is its last offset, or
+   * -1 for a vector whose child is not addressed by offsets.
+   */
+  private static long coveredChildLength(FieldVector vector) {
+    int valueCount = vector.getValueCount();
+    if (valueCount == 0) {
+      return -1;
+    }
+    if (vector instanceof ListVector) {
+      return ((ListVector) vector).getElementEndIndex(valueCount - 1);
+    }
+    if (vector instanceof LargeListVector) {
+      return ((LargeListVector) vector).getElementEndIndex(valueCount - 1);
+    }
+    return -1;
   }
 }
