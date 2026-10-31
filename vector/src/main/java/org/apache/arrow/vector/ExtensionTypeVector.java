@@ -154,8 +154,15 @@ public abstract class ExtensionTypeVector<T extends ValueVector & FieldVector>
     return underlyingVector.getTransferPair(field, allocator, callBack);
   }
 
+  /**
+   * Make a transfer pair to {@code target}. An extension vector target receives the data in its
+   * underlying vector, any other target is passed to the transfer pair of the underlying vector.
+   */
   @Override
   public TransferPair makeTransferPair(ValueVector target) {
+    if (target instanceof ExtensionTypeVector) {
+      return new TransferImpl((ExtensionTypeVector<?>) target);
+    }
     return underlyingVector.makeTransferPair(target);
   }
 
@@ -304,5 +311,36 @@ public abstract class ExtensionTypeVector<T extends ValueVector & FieldVector>
   @Override
   public <OUT, IN> OUT accept(VectorVisitor<OUT, IN> visitor, IN value) {
     return visitor.visit(this, value);
+  }
+
+  /** Transfers the underlying vector into the underlying vector of another extension vector. */
+  private class TransferImpl implements TransferPair {
+    private final ExtensionTypeVector<?> to;
+    private final TransferPair underlyingPair;
+
+    TransferImpl(ExtensionTypeVector<?> to) {
+      this.to = to;
+      this.underlyingPair = underlyingVector.makeTransferPair(to.getUnderlyingVector());
+    }
+
+    @Override
+    public void transfer() {
+      underlyingPair.transfer();
+    }
+
+    @Override
+    public void splitAndTransfer(int startIndex, int length) {
+      underlyingPair.splitAndTransfer(startIndex, length);
+    }
+
+    @Override
+    public ValueVector getTo() {
+      return to;
+    }
+
+    @Override
+    public void copyValueSafe(int from, int to) {
+      underlyingPair.copyValueSafe(from, to);
+    }
   }
 }
