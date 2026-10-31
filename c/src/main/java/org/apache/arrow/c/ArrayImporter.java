@@ -25,12 +25,12 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
-import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
 
 /** Importer for {@link ArrowArray}. */
@@ -84,15 +84,40 @@ final class ArrayImporter {
   }
 
   private void doImport(ArrowArray.Snapshot snapshot) {
-    // A non-zero offset is only meaningful for arrays that have buffers to offset into.
-    // Null arrays carry no buffers, so their offset is inert and safe to ignore.
-    checkState(
-        snapshot.offset == 0
-            || snapshot.length == 0
-            || vector.getField().getType().getTypeID() == ArrowType.ArrowTypeID.Null,
-        "ArrowArray struct has non-zero offset (%s), which is not supported",
-        snapshot.offset);
+    checkState(snapshot.offset >= 0, "ArrowArray struct has negative offset (%s)", snapshot.offset);
+    if (snapshot.offset != 0 && snapshot.length != 0) {
+      importSliced(snapshot);
+    } else {
+      importUnsliced(snapshot);
+    }
+  }
 
+  /**
+   * Java vectors cannot represent an offset, so the leading {@code offset + length} values are
+   * imported into a temporary vector and the requested window is then transferred into the target.
+   */
+  private void importSliced(ArrowArray.Snapshot snapshot) {
+    int offset = checkedCastToInt(snapshot.offset);
+    int length = checkedCastToInt(snapshot.length);
+
+    snapshot.length = Math.addExact(snapshot.offset, snapshot.length);
+    snapshot.offset = 0;
+    // The producer's null count only covers the slice. Without a validity bitmap the null count
+    // must be 0 for the buffers to load, otherwise it is unknown.
+    boolean hasBitmap = snapshot.n_buffers > 0 && MemoryUtil.getLong(snapshot.buffers) != NULL;
+    snapshot.null_count = hasBitmap ? -1 : 0;
+
+    try (FieldVector unslicedVector = vector.getField().createVector(allocator)) {
+      ArrayImporter unslicedImporter =
+          new ArrayImporter(allocator, unslicedVector, dictionaryProvider);
+      unslicedImporter.recursionLevel = recursionLevel;
+      unslicedImporter.underlyingAllocation = underlyingAllocation;
+      unslicedImporter.importUnsliced(snapshot);
+      unslicedVector.makeTransferPair(vector).splitAndTransfer(offset, length);
+    }
+  }
+
+  private void importUnsliced(ArrowArray.Snapshot snapshot) {
     // First import children (required for reconstituting parent array data)
     long[] children =
         NativeUtil.toJavaArray(snapshot.children, checkedCastToInt(snapshot.n_children));
