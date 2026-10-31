@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.BiConsumer;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -269,7 +270,7 @@ public class TestDecimal256Vector {
               IllegalArgumentException.class,
               () -> decimalVector.setBigEndian(insertionIdxCapture, new byte[33]));
       assertTrue(
-          ex.getMessage().equals("Invalid decimal value length. Valid length in [1 - 32], got 33"));
+          ex.getMessage().equals("Invalid decimal value length. Valid length in [0 - 32], got 33"));
       decimalVector.setValueCount(insertionIdx);
 
       // retrieve values and check if they are correct
@@ -421,13 +422,6 @@ public class TestDecimal256Vector {
     }
   }
 
-  // ---- Oversized raw writes -------------------------------------------------------------------
-  // The value buffer and validity buffer are adjacent slices of one allocation (value buffer first),
-  // so a write that overruns the last value slot lands in the validity buffer. That makes an overrun
-  // observable from Java via isNull() without touching memory outside the allocation. Each test
-  // marks the first 8 values valid, attempts an oversized write into the last slot whose spilled
-  // byte is zero, and asserts the write is rejected without clearing any validity bit.
-
   private static final int OVERSIZED_LENGTH = Decimal256Vector.TYPE_WIDTH + 1;
 
   private Decimal256Vector newVectorWithFirstEightValid() {
@@ -436,10 +430,10 @@ public class TestDecimal256Vector {
     for (int i = 0; i < 8; i++) {
       vector.setSafe(i, BigDecimal.valueOf(i));
     }
-    vector.setValueCount(8);
     return vector;
   }
 
+  // Validity bits sit right after the value buffer, so an overrun of the last slot clobbers them.
   private static void assertFirstEightValid(Decimal256Vector vector) {
     for (int i = 0; i < 8; i++) {
       assertFalse(vector.isNull(i), "validity bit " + i + " was overwritten by an oversized write");
@@ -447,40 +441,33 @@ public class TestDecimal256Vector {
     }
   }
 
-  @Test
-  public void setBigEndianSafeRejectsOversizedByteArrayWithoutWriting() {
-    try (Decimal256Vector vector = newVectorWithFirstEightValid()) {
-      final int last = vector.getValueCapacity() - 1;
-      final byte[] oversized = new byte[OVERSIZED_LENGTH];
-      assertThrows(
-          IllegalArgumentException.class, () -> vector.setBigEndianSafe(last, oversized));
+  private void assertOversizedWriteRejected(BiConsumer<Decimal256Vector, ArrowBuf> write) {
+    try (Decimal256Vector vector = newVectorWithFirstEightValid();
+        ArrowBuf src = allocator.buffer(OVERSIZED_LENGTH)) {
+      src.setZero(0, OVERSIZED_LENGTH);
+      assertThrows(IllegalArgumentException.class, () -> write.accept(vector, src));
       assertFirstEightValid(vector);
     }
   }
 
   @Test
-  public void setSafeFromArrowBufRejectsOversizedLengthWithoutWriting() {
-    try (Decimal256Vector vector = newVectorWithFirstEightValid();
-        ArrowBuf src = allocator.buffer(OVERSIZED_LENGTH)) {
-      src.setZero(0, OVERSIZED_LENGTH);
-      final int last = vector.getValueCapacity() - 1;
-      assertThrows(
-          IllegalArgumentException.class, () -> vector.setSafe(last, 0, src, OVERSIZED_LENGTH));
-      assertFirstEightValid(vector);
-    }
+  public void setBigEndianSafeRejectsOversizedByteArray() {
+    assertOversizedWriteRejected(
+        (vector, src) ->
+            vector.setBigEndianSafe(vector.getValueCapacity() - 1, new byte[OVERSIZED_LENGTH]));
   }
 
   @Test
-  public void setBigEndianSafeFromArrowBufRejectsOversizedLengthWithoutWriting() {
-    try (Decimal256Vector vector = newVectorWithFirstEightValid();
-        ArrowBuf src = allocator.buffer(OVERSIZED_LENGTH)) {
-      src.setZero(0, OVERSIZED_LENGTH);
-      final int last = vector.getValueCapacity() - 1;
-      assertThrows(
-          IllegalArgumentException.class,
-          () -> vector.setBigEndianSafe(last, 0, src, OVERSIZED_LENGTH));
-      assertFirstEightValid(vector);
-    }
+  public void setSafeFromArrowBufRejectsOversizedLength() {
+    assertOversizedWriteRejected(
+        (vector, src) -> vector.setSafe(vector.getValueCapacity() - 1, 0, src, OVERSIZED_LENGTH));
+  }
+
+  @Test
+  public void setBigEndianSafeFromArrowBufRejectsOversizedLength() {
+    assertOversizedWriteRejected(
+        (vector, src) ->
+            vector.setBigEndianSafe(vector.getValueCapacity() - 1, 0, src, OVERSIZED_LENGTH));
   }
 
   @Test
@@ -492,7 +479,18 @@ public class TestDecimal256Vector {
       src.setByte(0, (byte) 0xFF);
       src.setByte(1, (byte) 0x00);
       vector.setSafe(0, 1, src, 0);
-      vector.setValueCount(1);
+      assertEquals(BigDecimal.ZERO, vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void setBigEndianSafeFromArrowBufWithZeroLengthDoesNotReadAtStart() {
+    try (Decimal256Vector vector = new Decimal256Vector("decimal", allocator, 38, 0);
+        ArrowBuf src = allocator.buffer(1)) {
+      vector.allocateNew(1);
+      // A negative byte at `start` must not be used for sign extension of an empty value.
+      src.setByte(0, (byte) 0xFF);
+      vector.setBigEndianSafe(0, 0, src, 0);
       assertEquals(BigDecimal.ZERO, vector.getObject(0));
     }
   }

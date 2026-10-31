@@ -23,6 +23,7 @@ import java.nio.ByteOrder;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.MemoryUtil;
+import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.complex.impl.DecimalReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.DecimalHolder;
@@ -236,16 +237,12 @@ public final class DecimalVector extends BaseFixedWidthVector
     }
   }
 
-  /**
-   * Validates the byte length of a raw decimal value before it is written. The raw write paths
-   * copy straight into native memory and bypass {@link ArrowBuf} bounds checking, so a length
-   * larger than {@link #TYPE_WIDTH} would overrun the value slot.
-   */
   private static void checkValueLength(int length) {
-    if (length < 0 || length > TYPE_WIDTH) {
-      throw new IllegalArgumentException(
-          "Invalid decimal value length. Valid length in [1 - 16], got " + length);
-    }
+    Preconditions.checkArgument(
+        length >= 0 && length <= TYPE_WIDTH,
+        "Invalid decimal value length. Valid length in [0 - %s], got %s",
+        TYPE_WIDTH,
+        length);
   }
 
   /**

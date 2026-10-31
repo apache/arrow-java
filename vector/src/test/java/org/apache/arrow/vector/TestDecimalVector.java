@@ -17,14 +17,15 @@
 package org.apache.arrow.vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.BiConsumer;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -265,7 +266,7 @@ public class TestDecimalVector {
       } catch (IllegalArgumentException ex) {
         assertTrue(
             ex.getMessage()
-                .equals("Invalid decimal value length. Valid length in [1 - 16], got 17"));
+                .equals("Invalid decimal value length. Valid length in [0 - 16], got 17"));
       }
       decimalVector.setValueCount(insertionIdx);
 
@@ -416,26 +417,18 @@ public class TestDecimalVector {
     }
   }
 
-  // ---- Oversized raw writes -------------------------------------------------------------------
-  // The value buffer and validity buffer are adjacent slices of one allocation (value buffer first),
-  // so a write that overruns the last value slot lands in the validity buffer. That makes an overrun
-  // observable from Java via isNull() without touching memory outside the allocation. Each test
-  // marks the first 8 values valid, attempts an oversized write into the last slot whose spilled
-  // byte is zero, and asserts the write is rejected without clearing any validity bit.
-
   private static final int OVERSIZED_LENGTH = DecimalVector.TYPE_WIDTH + 1;
 
   private DecimalVector newVectorWithFirstEightValid() {
-    DecimalVector vector = TestUtils.newVector(
-            DecimalVector.class, "decimal", new ArrowType.Decimal(38, 0, 128), allocator);
+    DecimalVector vector = new DecimalVector("decimal", allocator, 38, 0);
     vector.allocateNew(64);
     for (int i = 0; i < 8; i++) {
       vector.setSafe(i, BigDecimal.valueOf(i));
     }
-    vector.setValueCount(8);
     return vector;
   }
 
+  // Validity bits sit right after the value buffer, so an overrun of the last slot clobbers them.
   private static void assertFirstEightValid(DecimalVector vector) {
     for (int i = 0; i < 8; i++) {
       assertFalse(vector.isNull(i), "validity bit " + i + " was overwritten by an oversized write");
@@ -443,53 +436,56 @@ public class TestDecimalVector {
     }
   }
 
-  @Test
-  public void setBigEndianSafeRejectsOversizedByteArrayWithoutWriting() {
-    try (DecimalVector vector = newVectorWithFirstEightValid()) {
-      final int last = vector.getValueCapacity() - 1;
-      final byte[] oversized = new byte[OVERSIZED_LENGTH];
-      assertThrows(
-          IllegalArgumentException.class, () -> vector.setBigEndianSafe(last, oversized));
+  private void assertOversizedWriteRejected(BiConsumer<DecimalVector, ArrowBuf> write) {
+    try (DecimalVector vector = newVectorWithFirstEightValid();
+        ArrowBuf src = allocator.buffer(OVERSIZED_LENGTH)) {
+      src.setZero(0, OVERSIZED_LENGTH);
+      assertThrows(IllegalArgumentException.class, () -> write.accept(vector, src));
       assertFirstEightValid(vector);
     }
   }
 
   @Test
-  public void setSafeFromArrowBufRejectsOversizedLengthWithoutWriting() {
-    try (DecimalVector vector = newVectorWithFirstEightValid();
-        ArrowBuf src = allocator.buffer(OVERSIZED_LENGTH)) {
-      src.setZero(0, OVERSIZED_LENGTH);
-      final int last = vector.getValueCapacity() - 1;
-      assertThrows(
-          IllegalArgumentException.class, () -> vector.setSafe(last, 0, src, OVERSIZED_LENGTH));
-      assertFirstEightValid(vector);
-    }
+  public void setBigEndianSafeRejectsOversizedByteArray() {
+    assertOversizedWriteRejected(
+        (vector, src) ->
+            vector.setBigEndianSafe(vector.getValueCapacity() - 1, new byte[OVERSIZED_LENGTH]));
   }
 
   @Test
-  public void setBigEndianSafeFromArrowBufRejectsOversizedLengthWithoutWriting() {
-    try (DecimalVector vector = newVectorWithFirstEightValid();
-        ArrowBuf src = allocator.buffer(OVERSIZED_LENGTH)) {
-      src.setZero(0, OVERSIZED_LENGTH);
-      final int last = vector.getValueCapacity() - 1;
-      assertThrows(
-          IllegalArgumentException.class,
-          () -> vector.setBigEndianSafe(last, 0, src, OVERSIZED_LENGTH));
-      assertFirstEightValid(vector);
-    }
+  public void setSafeFromArrowBufRejectsOversizedLength() {
+    assertOversizedWriteRejected(
+        (vector, src) -> vector.setSafe(vector.getValueCapacity() - 1, 0, src, OVERSIZED_LENGTH));
+  }
+
+  @Test
+  public void setBigEndianSafeFromArrowBufRejectsOversizedLength() {
+    assertOversizedWriteRejected(
+        (vector, src) ->
+            vector.setBigEndianSafe(vector.getValueCapacity() - 1, 0, src, OVERSIZED_LENGTH));
   }
 
   @Test
   public void setSafeFromArrowBufWithZeroLengthDoesNotReadBeforeStart() {
-    try (DecimalVector vector = TestUtils.newVector(
-            DecimalVector.class, "decimal", new ArrowType.Decimal(38, 0, 128), allocator);
+    try (DecimalVector vector = new DecimalVector("decimal", allocator, 38, 0);
         ArrowBuf src = allocator.buffer(2)) {
       vector.allocateNew(1);
       // A negative byte immediately before `start` must not be used for sign extension.
       src.setByte(0, (byte) 0xFF);
       src.setByte(1, (byte) 0x00);
       vector.setSafe(0, 1, src, 0);
-      vector.setValueCount(1);
+      assertEquals(BigDecimal.ZERO, vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void setBigEndianSafeFromArrowBufWithZeroLengthDoesNotReadAtStart() {
+    try (DecimalVector vector = new DecimalVector("decimal", allocator, 38, 0);
+        ArrowBuf src = allocator.buffer(1)) {
+      vector.allocateNew(1);
+      // A negative byte at `start` must not be used for sign extension of an empty value.
+      src.setByte(0, (byte) 0xFF);
+      vector.setBigEndianSafe(0, 0, src, 0);
       assertEquals(BigDecimal.ZERO, vector.getObject(0));
     }
   }
