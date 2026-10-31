@@ -74,6 +74,7 @@ cmake \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-macos \
   -Dabsl_SOURCE=BUNDLED \
+  -Dlz4_SOURCE=BUNDLED \
   -Dsimdjson_SOURCE=BUNDLED \
   -Duriparser_SOURCE=BUNDLED \
   -DCMAKE_INSTALL_PREFIX="${install_dir}"
