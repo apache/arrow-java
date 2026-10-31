@@ -18,15 +18,19 @@ package org.apache.arrow.flight;
 
 import static org.apache.arrow.flight.FlightTestUtil.LOCALHOST;
 import static org.apache.arrow.flight.Location.forGrpcInsecure;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import org.apache.arrow.flight.FlightClient.ClientStreamListener;
 import org.apache.arrow.memory.BufferAllocator;
@@ -84,6 +88,71 @@ public class TestServerMiddleware {
           assertNull(status.cause());
           assertEquals(FlightStatusCode.UNAVAILABLE, status.code());
           assertEquals("description", status.description());
+        });
+  }
+
+  /**
+   * Make sure custom error metadata attached to a middleware rejection reaches the client (GH-448).
+   */
+  @Test
+  public void middlewareRejectionPreservesMetadata() {
+    final ErrorFlightMetadata metadata = new ErrorFlightMetadata();
+    metadata.insert("x-foo", "foo");
+    // Values with an embedded 0 and non-ASCII bytes must survive the round trip unchanged.
+    final byte[] binaryValue = new byte[] {0, (byte) 0x80, 'a'};
+    metadata.insert("x-bar-bin", binaryValue);
+    final AtomicBoolean producerCalled = new AtomicBoolean(false);
+    test(
+        new NoOpFlightProducer() {
+          @Override
+          public FlightInfo getFlightInfo(CallContext context, FlightDescriptor descriptor) {
+            producerCalled.set(true);
+            throw new AssertionError(
+                "Middleware rejection should prevent the producer from being invoked");
+          }
+        },
+        Collections.singletonList(
+            new ServerMiddlewarePair<>(
+                FlightServerMiddleware.Key.of("m"),
+                new RejectingFactory(
+                    CallStatus.UNAUTHENTICATED
+                        .withDescription("metadata rejection")
+                        .withMetadata(metadata)))),
+        (allocator, client) -> {
+          final CallStatus status =
+              FlightTestUtil.assertCode(
+                  FlightStatusCode.UNAUTHENTICATED,
+                  () -> client.getInfo(FlightDescriptor.path("test")));
+          assertEquals("metadata rejection", status.description());
+          final ErrorFlightMetadata errorMetadata = status.metadata();
+          // Assert presence first so a missing key fails clearly instead of throwing.
+          assertTrue(errorMetadata.containsKey("x-foo"));
+          assertTrue(errorMetadata.containsKey("x-bar-bin"));
+          assertEquals("foo", errorMetadata.get("x-foo"));
+          assertArrayEquals(binaryValue, errorMetadata.getByte("x-bar-bin"));
+          assertFalse(producerCalled.get());
+        });
+  }
+
+  /** Control case: a rejection without metadata still propagates code and description. */
+  @Test
+  public void middlewareRejectionWithoutMetadata() {
+    test(
+        new NoOpFlightProducer(),
+        Collections.singletonList(
+            new ServerMiddlewarePair<>(
+                FlightServerMiddleware.Key.of("m"),
+                new RejectingFactory(CallStatus.UNAVAILABLE.withDescription("plain rejection")))),
+        (allocator, client) -> {
+          final CallStatus status =
+              FlightTestUtil.assertCode(
+                  FlightStatusCode.UNAVAILABLE,
+                  () -> client.getInfo(FlightDescriptor.path("test")));
+          assertEquals("plain rejection", status.description());
+          // gRPC adds its own transport trailers (e.g. content-type), so only assert that no
+          // custom error metadata came through.
+          assertFalse(status.metadata().containsKey("x-foo"));
+          assertFalse(status.metadata().containsKey("x-bar-bin"));
         });
   }
 
@@ -229,6 +298,22 @@ public class TestServerMiddleware {
           CallInfo info, CallHeaders incomingHeaders, RequestContext context) {
         return instance;
       }
+    }
+  }
+
+  /** A middleware factory that rejects every call before the producer is invoked. */
+  static class RejectingFactory implements FlightServerMiddleware.Factory<FlightServerMiddleware> {
+
+    private final CallStatus status;
+
+    RejectingFactory(CallStatus status) {
+      this.status = status;
+    }
+
+    @Override
+    public FlightServerMiddleware onCallStarted(
+        CallInfo info, CallHeaders incomingHeaders, RequestContext context) {
+      throw status.toRuntimeException();
     }
   }
 
