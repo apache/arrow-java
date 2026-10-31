@@ -29,12 +29,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.memory.util.MemoryUtil;
+import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.vector.BaseLargeVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthVector;
 import org.apache.arrow.vector.BigIntVector;
@@ -96,6 +99,7 @@ import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.complex.impl.UnionMapWriter;
 import org.apache.arrow.vector.extension.JsonType;
 import org.apache.arrow.vector.extension.OpaqueType;
+import org.apache.arrow.vector.extension.OpaqueVector;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.IntervalDayHolder;
 import org.apache.arrow.vector.holders.NullableIntHolder;
@@ -104,6 +108,7 @@ import org.apache.arrow.vector.holders.NullableUInt4Holder;
 import org.apache.arrow.vector.table.Table;
 import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types.MinorType;
+import org.apache.arrow.vector.types.UnionMode;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
 import org.apache.arrow.vector.types.pojo.ExtensionTypeRegistry;
@@ -111,12 +116,14 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.TransferPair;
+import org.apache.arrow.vector.util.ValueVectorUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class RoundtripTest {
   private static final String EMPTY_SCHEMA_PATH = "";
@@ -1117,30 +1124,26 @@ public class RoundtripTest {
   }
 
   @Test
-  public void testImportArrayWithUnalignedOffset() {
+  public void testImportIntVectorWithNonZeroOffset() {
     try (IntVector source = new IntVector("source", allocator)) {
-      Integer[] values = new Integer[20];
-      for (int i = 0; i < values.length; i++) {
-        values[i] = i % 3 == 0 ? null : i;
-      }
-      setVector(source, values);
-      assertSlicedImportMatchesSource(source, 5, 11);
+      setVector(source, rows(i -> i % 3 == 0 ? null : i, Integer[]::new));
+      assertSlicedImportsMatchSource(source);
     }
   }
 
   @Test
   public void testImportVarCharWithNonZeroOffset() {
     try (VarCharVector source = new VarCharVector("source", allocator)) {
-      setVector(source, "a", "bb", null, "dddd", "e");
-      assertSlicedImportMatchesSource(source, 2, 2);
+      setVector(source, rows(i -> i % 4 == 1 ? null : "v".repeat(i % 5), String[]::new));
+      assertSlicedImportsMatchSource(source);
     }
   }
 
   @Test
   public void testImportListWithNonZeroOffset() {
     try (ListVector source = ListVector.empty("source", allocator)) {
-      setVector(source, Arrays.asList(1, 2), null, Arrays.asList(3), Arrays.asList(4, 5, 6));
-      assertSlicedImportMatchesSource(source, 1, 3);
+      setVector(source, testLists());
+      assertSlicedImportsMatchSource(source);
     }
   }
 
@@ -1172,6 +1175,77 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testImportStructWithNullsWithNonZeroOffset() {
+    try (StructVector source = StructVector.empty("source", allocator)) {
+      setVector(source, testStructValues());
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportStructWithChildOffsetsWithNonZeroOffset() {
+    // The offset of a child adds to the offset of the struct
+    try (StructVector source = StructVector.empty("source", allocator)) {
+      setVector(source, testStructValues());
+      for (int childOffset : new int[] {3, 8, 11}) {
+        for (int offset = 0; offset < ROW_COUNT - childOffset; offset++) {
+          int length = ROW_COUNT - childOffset - offset;
+          try (ArrowArray array = ArrowArray.allocateNew(allocator);
+              ArrowSchema schema = ArrowSchema.allocateNew(allocator)) {
+            Data.exportVector(allocator, source, null, array, schema);
+            ArrowArray.Snapshot snapshot = array.snapshot();
+            long[] children = NativeUtil.toJavaArray(snapshot.children, (int) snapshot.n_children);
+            for (long child : children) {
+              slice(ArrowArray.wrap(child), childOffset, ROW_COUNT - childOffset);
+            }
+            slice(array, offset, length);
+
+            try (StructVector imported =
+                (StructVector) Data.importVector(allocator, array, schema, null)) {
+              assertEquals(length, imported.getValueCount());
+              for (int i = 0; i < length; i++) {
+                String row = "child offset " + childOffset + ", offset " + offset + ", index " + i;
+                assertEquals(source.isNull(offset + i), imported.isNull(i), row);
+                for (String name : source.getChildFieldNames()) {
+                  assertEquals(
+                      source.getChild(name).getObject(childOffset + offset + i),
+                      imported.getChild(name).getObject(i),
+                      row + ", child " + name);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testImportStructWithShortChildWithNonZeroOffset() {
+    try (StructVector source = StructVector.empty("source", allocator);
+        StructVector destination = StructVector.empty("destination", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      setVector(source, testStructValues());
+      destination.initializeChildrenFromFields(source.getField().getChildren());
+      Data.exportVector(allocator, source, null, array);
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      for (long child : NativeUtil.toJavaArray(snapshot.children, (int) snapshot.n_children)) {
+        slice(ArrowArray.wrap(child), 0, 13);
+      }
+      // The slice needs 14 rows of each child
+      slice(array, 9, 5);
+
+      Exception e =
+          assertThrows(
+              IllegalStateException.class,
+              () -> Data.importIntoVector(allocator, array, destination, null));
+      assertEquals(
+          "ArrowArray struct child at position 0 has length 13, but its parent needs 14 rows",
+          e.getMessage());
+    }
+  }
+
+  @Test
   public void testImportVectorSchemaRootWithSlicedChildren() {
     // Arrow C++ exports record_batch->Slice(8, 2) as a struct whose children carry the offset
     try (VectorSchemaRoot source = createTestVSR();
@@ -1197,13 +1271,51 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testImportVectorSchemaRootWithSlicedStructOfPlainExtension() {
+    // The schema of the root has the extension type that the vector's getField() does not report
+    Field field =
+        new Field(
+            "s",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Collections.singletonList(Field.nullable("p", PlainType.INSTANCE)));
+    Schema schema = new Schema(Collections.singletonList(field));
+    withExtensionType(
+        PlainType.INSTANCE,
+        () -> {
+          try (VectorSchemaRoot source = VectorSchemaRoot.create(schema, allocator);
+              VectorSchemaRoot destination = VectorSchemaRoot.create(schema, allocator);
+              ArrowArray array = ArrowArray.allocateNew(allocator)) {
+            StructVector struct = (StructVector) source.getVector("s");
+            setTestStrings(((PlainVector) struct.getChild("p")).getUnderlyingVector());
+            for (int i = 0; i < ROW_COUNT; i++) {
+              struct.setIndexDefined(i);
+            }
+            source.setRowCount(ROW_COUNT);
+            Data.exportVectorSchemaRoot(allocator, source, null, array);
+            ArrowArray.Snapshot snapshot = array.snapshot();
+            slice(array, 0, 5);
+            long[] children = NativeUtil.toJavaArray(snapshot.children, (int) snapshot.n_children);
+            for (long child : children) {
+              slice(ArrowArray.wrap(child), 9, 5);
+            }
+
+            Data.importIntoVectorSchemaRoot(allocator, array, destination, null);
+
+            assertEquals(5, destination.getRowCount());
+            StructVector imported = (StructVector) destination.getVector("s");
+            assertInstanceOf(PlainVector.class, imported.getChild("p"));
+            for (int i = 0; i < 5; i++) {
+              assertEquals(struct.getObject(9 + i), imported.getObject(i), "index " + i);
+            }
+          }
+        });
+  }
+
+  @Test
   public void testImportExtensionTypeVectorWithNonZeroOffset() {
     try (UuidVector source = new UuidVector("source", allocator)) {
-      source.setValueCount(3);
-      for (int i = 0; i < 3; i++) {
-        source.set(i, UUID.randomUUID());
-      }
-      assertSlicedImportMatchesSource(source, 1, 2);
+      setTestUuids(source);
+      assertSlicedImportsMatchSource(source);
     }
   }
 
@@ -1212,41 +1324,37 @@ public class RoundtripTest {
     try (StructVector source = StructVector.empty("source", allocator)) {
       UuidVector child =
           source.addOrGet("u", FieldType.nullable(UuidType.INSTANCE), UuidVector.class);
-      child.setValueCount(3);
-      for (int i = 0; i < 3; i++) {
-        child.set(i, UUID.randomUUID());
-        source.setIndexDefined(i);
-      }
-      source.setValueCount(3);
-      assertSlicedImportMatchesSource(source, 1, 2);
+      setTestUuids(child);
+      setStructRowsDefined(source);
+      assertSlicedImportsMatchSource(source);
     }
   }
 
   @Test
-  public void testImportBitVectorWithUnalignedOffset() {
+  public void testImportBitVectorWithNonZeroOffset() {
     try (BitVector source = new BitVector("source", allocator)) {
-      Integer[] values = new Integer[20];
-      for (int i = 0; i < values.length; i++) {
-        values[i] = i % 5 == 0 ? null : i % 2;
-      }
-      setVector(source, values);
-      assertSlicedImportMatchesSource(source, 3, 13);
+      setVector(source, rows(i -> i % 5 == 0 ? null : i % 2, Integer[]::new));
+      assertSlicedImportsMatchSource(source);
     }
   }
 
   @Test
   public void testImportLargeListWithNonZeroOffset() {
     try (LargeListVector source = LargeListVector.empty("source", allocator)) {
-      setVector(source, Arrays.asList(1, 2), null, Arrays.asList(3), Arrays.asList(4, 5, 6));
-      assertSlicedImportMatchesSource(source, 1, 3);
+      setVector(source, testLists());
+      assertSlicedImportsMatchSource(source);
     }
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testImportFixedSizeListWithNonZeroOffset() {
     try (FixedSizeListVector source = FixedSizeListVector.empty("source", 2, allocator)) {
-      setVector(source, Arrays.asList(1, 2), Arrays.asList(3, 4), Arrays.asList(5, 6));
-      assertSlicedImportMatchesSource(source, 1, 2);
+      setVector(source, rows(i -> Arrays.asList(2 * i, 2 * i + 1), List[]::new));
+      for (int i = 1; i < ROW_COUNT; i += 6) {
+        source.setNull(i);
+      }
+      assertSlicedImportsMatchSource(source);
     }
   }
 
@@ -1254,7 +1362,7 @@ public class RoundtripTest {
   public void testImportMapWithNonZeroOffset() {
     try (MapVector source = MapVector.empty("source", allocator, false)) {
       writeTestMaps(source);
-      assertSlicedImportMatchesSource(source, 2, 2);
+      assertSlicedImportsMatchSource(source);
     }
   }
 
@@ -1262,92 +1370,647 @@ public class RoundtripTest {
   public void testImportUnionWithNonZeroOffset() {
     try (UnionVector source = UnionVector.empty("source", allocator)) {
       writeTestUnion(source);
-      assertSlicedImportMatchesSource(source, 1, 3);
+      assertSlicedImportsMatchSource(source);
     }
   }
 
   @Test
   public void testImportDenseUnionWithNonZeroOffset() {
     final NullableUInt4Holder uInt4Holder = new NullableUInt4Holder();
-    uInt4Holder.value = 100;
     uInt4Holder.isSet = 1;
     final NullableIntHolder intHolder = new NullableIntHolder();
-    intHolder.value = -7;
-    intHolder.isSet = 1;
     try (DenseUnionVector source = DenseUnionVector.empty("source", allocator)) {
       source.allocateNew();
       byte uint4TypeId = source.registerNewTypeId(Field.nullable("u", MinorType.UINT4.getType()));
       byte intTypeId = source.registerNewTypeId(Field.nullable("i", MinorType.INT.getType()));
-      source.setTypeId(0, uint4TypeId);
-      source.setSafe(0, uInt4Holder);
-      source.setTypeId(1, intTypeId);
-      source.setSafe(1, intHolder);
-      source.setTypeId(2, uint4TypeId);
-      source.setSafe(2, uInt4Holder);
-      source.setTypeId(3, intTypeId);
-      source.setSafe(3, intHolder);
-      source.setValueCount(4);
-      assertSlicedImportMatchesSource(source, 1, 3);
+      for (int i = 0; i < ROW_COUNT; i++) {
+        if (i % 3 == 0) {
+          uInt4Holder.value = 100 + i;
+          source.setTypeId(i, uint4TypeId);
+          source.setSafe(i, uInt4Holder);
+        } else {
+          intHolder.isSet = i % 5 == 0 ? 0 : 1;
+          intHolder.value = -i;
+          source.setTypeId(i, intTypeId);
+          source.setSafe(i, intHolder);
+        }
+      }
+      source.setValueCount(ROW_COUNT);
+      assertSlicedImportsMatchSource(source);
     }
+  }
+
+  @Test
+  public void testImportDenseUnionWithTypeIdsWithNonZeroOffset() {
+    // The type ids differ from the positions of the children they select
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {5, 10})),
+            Arrays.asList(
+                Field.nullable("i", MinorType.INT.getType()),
+                Field.nullable("s", MinorType.VARCHAR.getType())));
+    try (DenseUnionVector source = (DenseUnionVector) field.createVector(allocator)) {
+      source.allocateNew();
+      IntVector ints = (IntVector) source.getVectorByType((byte) 5);
+      VarCharVector strings = (VarCharVector) source.getVectorByType((byte) 10);
+      int intCount = 0;
+      int stringCount = 0;
+      for (int i = 0; i < ROW_COUNT; i++) {
+        if (i % 3 == 0) {
+          source.setTypeId(i, (byte) 10);
+          source.setOffset(i, stringCount);
+          strings.setSafe(stringCount++, ("s" + i).getBytes(StandardCharsets.UTF_8));
+        } else {
+          source.setTypeId(i, (byte) 5);
+          source.setOffset(i, intCount);
+          ints.setSafe(intCount++, i);
+        }
+      }
+      source.setValueCount(ROW_COUNT);
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportDenseUnionWithOffsetGapsWithNonZeroOffset() {
+    // The offsets of a dense union only have to increase, so they may skip values of a child
+    try (DenseUnionVector source =
+        (DenseUnionVector) denseUnionWithIntChild("source").createVector(allocator)) {
+      setTestValuesWithOffsetGaps(source);
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportStructWithDenseUnionWithOffsetGapsWithNonZeroOffset() {
+    // The struct sets the value count of the dense union after transferring it
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Collections.singletonList(denseUnionWithIntChild("u")));
+    try (StructVector source = (StructVector) field.createVector(allocator)) {
+      for (int i = 0; i < OFFSETS_WITH_GAPS.length; i++) {
+        if (i % 6 != 5) {
+          source.setIndexDefined(i);
+        }
+      }
+      source.setValueCount(OFFSETS_WITH_GAPS.length);
+      setTestValuesWithOffsetGaps((DenseUnionVector) source.getChild("u"));
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  private static final int[] OFFSETS_WITH_GAPS = {0, 1, 3, 4, 5, 8, 9, 12, 13, 14, 17, 19};
+
+  private static Field denseUnionWithIntChild(String name) {
+    return new Field(
+        name,
+        FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {0})),
+        Collections.singletonList(Field.nullable("i", MinorType.INT.getType())));
+  }
+
+  /** Selects the values at {@link #OFFSETS_WITH_GAPS} from the child of a dense union. */
+  private static void setTestValuesWithOffsetGaps(DenseUnionVector vector) {
+    vector.allocateNew();
+    IntVector child = (IntVector) vector.getVectorByType((byte) 0);
+    setVector(child, rows(i -> 100 + i, Integer[]::new));
+    for (int i = 0; i < OFFSETS_WITH_GAPS.length; i++) {
+      vector.setTypeId(i, (byte) 0);
+      vector.setOffset(i, OFFSETS_WITH_GAPS[i]);
+    }
+    vector.setValueCount(OFFSETS_WITH_GAPS.length);
+    // setValueCount() sets the child's value count to the number of rows selecting it
+    child.setValueCount(ROW_COUNT);
   }
 
   @Test
   public void testImportRunEndEncodedWithNonZeroOffset() {
     try (RunEndEncodedVector source = RunEndEncodedVector.empty("source", allocator)) {
-      setVector(source, List.of(2, 3, 6), List.of(1, 2, 3));
-      assertSlicedImportMatchesSource(source, 1, 4);
+      setVector(source, List.of(2, 3, 6, 10, 11, 15, 20), List.of(1, 2, 3, 4, 5, 6, 7));
+      assertSlicedImportsMatchSource(source);
     }
   }
 
   @Test
   public void testImportViewVarCharWithNonZeroOffset() {
     try (ViewVarCharVector source = new ViewVarCharVector("source", allocator)) {
-      setVector(source, "short", "a string longer than twelve bytes", null, "another long string");
-      assertSlicedImportMatchesSource(source, 1, 3);
+      setVector(
+          source,
+          rows(
+              i ->
+                  i % 4 == 1
+                      ? null
+                      : i % 2 == 0 ? "short " + i : "a string longer than twelve bytes " + i,
+              String[]::new));
+      assertSlicedImportsMatchSource(source);
     }
   }
 
-  /** Imports a slice of {@code source} and compares it with the same range of the source. */
-  private void assertSlicedImportMatchesSource(FieldVector source, int offset, int length) {
-    try (ArrowArray array = ArrowArray.allocateNew(allocator);
+  @ParameterizedTest
+  @ValueSource(ints = {1 << 16, (1 << 16) + 3})
+  public void testImportSliceWithoutValidityBitmapAllocatesOnlyTheSlice(int offset) {
+    // Producers commonly omit the validity bitmap of a column without nulls. Neither the bitmap
+    // synthesized for the import nor the imported buffers may grow with the offset.
+    final int length = 10;
+    try (IntVector source = new IntVector("source", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator);
         ArrowSchema schema = ArrowSchema.allocateNew(allocator)) {
+      source.allocateNew(offset + length);
+      for (int i = 0; i < offset + length; i++) {
+        source.set(i, i);
+      }
+      source.setValueCount(offset + length);
       Data.exportVector(allocator, source, null, array, schema);
       slice(array, offset, length);
+      dropValidityBitmap(array);
+
+      try (BufferAllocator importAllocator =
+              allocator.newChildAllocator("import", 0, Long.MAX_VALUE);
+          IntVector imported =
+              (IntVector) Data.importVector(importAllocator, array, schema, null)) {
+        assertEquals(length, imported.getValueCount());
+        assertEquals(0, imported.getNullCount());
+        for (int i = 0; i < length; i++) {
+          assertEquals(offset + i, imported.get(i));
+        }
+        assertTrue(
+            importAllocator.getAllocatedMemory() < 1024,
+            "allocated " + importAllocator.getAllocatedMemory() + " bytes");
+      }
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {10, 1 << 16, (1 << 16) + 3})
+  public void testImportStructSliceWithoutValidityBitmapsAllocatesOnlyTheSlice(int offset) {
+    // The children of a sliced struct are exported at full length, and only the rows of the
+    // slice may be imported from them
+    final int rowCount = (1 << 16) + 20;
+    final int length = 10;
+    try (StructVector source = StructVector.empty("source", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator);
+        ArrowSchema schema = ArrowSchema.allocateNew(allocator)) {
+      IntVector child =
+          source.addOrGet("a", FieldType.nullable(MinorType.INT.getType()), IntVector.class);
+      child.allocateNew(rowCount);
+      for (int i = 0; i < rowCount; i++) {
+        child.set(i, i);
+        source.setIndexDefined(i);
+      }
+      source.setValueCount(rowCount);
+      Data.exportVector(allocator, source, null, array, schema);
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      dropValidityBitmap(array);
+      dropValidityBitmap(ArrowArray.wrap(NativeUtil.toJavaArray(snapshot.children, 1)[0]));
+      slice(array, offset, length);
+
+      try (BufferAllocator importAllocator =
+              allocator.newChildAllocator("import", 0, Long.MAX_VALUE);
+          StructVector imported =
+              (StructVector) Data.importVector(importAllocator, array, schema, null)) {
+        assertEquals(length, imported.getValueCount());
+        IntVector importedChild = (IntVector) imported.getChild("a");
+        for (int i = 0; i < length; i++) {
+          assertFalse(imported.isNull(i));
+          assertEquals(offset + i, importedChild.get(i));
+        }
+        assertTrue(
+            importAllocator.getAllocatedMemory() < 1024,
+            "allocated " + importAllocator.getAllocatedMemory() + " bytes");
+      }
+    }
+  }
+
+  @Test
+  public void testImportOpaqueVectorWithNonZeroOffset() {
+    // OpaqueVector overrides getField() but not makeTransferPair()
+    withExtensionType(
+        OPAQUE_TYPE,
+        () -> {
+          try (OpaqueVector source =
+              (OpaqueVector) Field.nullable("source", OPAQUE_TYPE).createVector(allocator)) {
+            setTestStrings((VarCharVector) source.getUnderlyingVector());
+            assertSlicedImportsMatchSource(source);
+          }
+        });
+  }
+
+  @Test
+  public void testImportStructWithOpaqueChildWithNonZeroOffset() {
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Collections.singletonList(Field.nullable("o", OPAQUE_TYPE)));
+    withExtensionType(
+        OPAQUE_TYPE,
+        () -> {
+          try (StructVector source = (StructVector) field.createVector(allocator)) {
+            OpaqueVector child = (OpaqueVector) source.getChild("o");
+            setTestStrings((VarCharVector) child.getUnderlyingVector());
+            setStructRowsDefined(source);
+            assertSlicedImportsMatchSource(source);
+          }
+        });
+  }
+
+  @Test
+  public void testImportListOfOpaqueWithNonZeroOffset() {
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(ArrowType.List.INSTANCE),
+            Collections.singletonList(Field.nullable("item", OPAQUE_TYPE)));
+    withExtensionType(
+        OPAQUE_TYPE,
+        () -> {
+          try (ListVector source = (ListVector) field.createVector(allocator)) {
+            OpaqueVector items = (OpaqueVector) source.getDataVector();
+            writeTestStringLists(source, (VarCharVector) items.getUnderlyingVector());
+            assertSlicedImportsMatchSource(source);
+          }
+        });
+  }
+
+  @Test
+  public void testImportPlainExtensionVectorWithNonZeroOffset() {
+    // PlainVector overrides neither getField() nor makeTransferPair()
+    Field field = Field.nullable("source", PlainType.INSTANCE);
+    withExtensionType(
+        PlainType.INSTANCE,
+        () -> {
+          try (PlainVector source = (PlainVector) field.createVector(allocator)) {
+            setTestStrings(source.getUnderlyingVector());
+            assertSlicedImportsMatchSource(field, source);
+          }
+        });
+  }
+
+  @Test
+  public void testImportIntoPlainExtensionVectorWithNonZeroOffset() {
+    // The target reports only its storage type, so the temporary vector is a plain VarCharVector
+    Field field = Field.nullable("source", PlainType.INSTANCE);
+    withExtensionType(
+        PlainType.INSTANCE,
+        () -> {
+          try (PlainVector source = (PlainVector) field.createVector(allocator);
+              PlainVector destination = (PlainVector) field.createVector(allocator);
+              ArrowArray array = ArrowArray.allocateNew(allocator)) {
+            setTestStrings(source.getUnderlyingVector());
+            Data.exportVector(allocator, source, null, array);
+            slice(array, 9, 5);
+
+            Data.importIntoVector(allocator, array, destination, null);
+
+            assertEquals(5, destination.getValueCount());
+            for (int i = 0; i < 5; i++) {
+              assertEquals(source.getObject(9 + i), destination.getObject(i), "index " + i);
+            }
+          }
+        });
+  }
+
+  @Test
+  public void testImportStructWithPlainExtensionChildWithNonZeroOffset() {
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Collections.singletonList(Field.nullable("p", PlainType.INSTANCE)));
+    withExtensionType(
+        PlainType.INSTANCE,
+        () -> {
+          try (StructVector source = (StructVector) field.createVector(allocator)) {
+            setTestStrings(((PlainVector) source.getChild("p")).getUnderlyingVector());
+            setStructRowsDefined(source);
+            assertSlicedImportsMatchSource(field, source);
+          }
+        });
+  }
+
+  @Test
+  public void testImportListOfPlainExtensionWithNonZeroOffset() {
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(ArrowType.List.INSTANCE),
+            Collections.singletonList(Field.nullable("item", PlainType.INSTANCE)));
+    withExtensionType(
+        PlainType.INSTANCE,
+        () -> {
+          try (ListVector source = (ListVector) field.createVector(allocator)) {
+            PlainVector items = (PlainVector) source.getDataVector();
+            writeTestStringLists(source, items.getUnderlyingVector());
+            assertSlicedImportsMatchSource(field, source);
+          }
+        });
+  }
+
+  @Test
+  public void testImportIntoStructWithPlainExtensionChildWithNonZeroOffset() {
+    // Without the imported field the importer cannot create a PlainVector for the struct's child
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Collections.singletonList(Field.nullable("p", PlainType.INSTANCE)));
+    withExtensionType(
+        PlainType.INSTANCE,
+        () -> {
+          try (StructVector source = (StructVector) field.createVector(allocator);
+              StructVector destination = (StructVector) field.createVector(allocator);
+              ArrowArray array = ArrowArray.allocateNew(allocator)) {
+            setTestStrings(((PlainVector) source.getChild("p")).getUnderlyingVector());
+            setStructRowsDefined(source);
+            Data.exportVector(allocator, source, null, array);
+            slice(array, 9, 5);
+
+            Exception e =
+                assertThrows(
+                    UnsupportedOperationException.class,
+                    () -> Data.importIntoVector(allocator, array, destination, null));
+            assertEquals(
+                "Cannot import an ArrowArray with a non-zero offset into PlainVector p, because"
+                    + " its getField() does not report its extension type",
+                e.getMessage());
+            assertInstanceOf(PlainVector.class, destination.getChild("p"));
+          }
+        });
+  }
+
+  private static final int ROW_COUNT = 20;
+
+  /** Returns the values of the {@link #ROW_COUNT} rows of a test vector. */
+  private static <T> T[] rows(IntFunction<T> value, IntFunction<T[]> newArray) {
+    return IntStream.range(0, ROW_COUNT).mapToObj(value).toArray(newArray);
+  }
+
+  /** Lists of up to 3 values, and some nulls. */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static List<Integer>[] testLists() {
+    List[] lists =
+        rows(
+            i ->
+                i % 5 == 2
+                    ? null
+                    : IntStream.range(0, i % 4)
+                        .mapToObj(j -> 10 * i + j)
+                        .collect(Collectors.toList()),
+            List[]::new);
+    return lists;
+  }
+
+  /** Two int children, which are both null in the rows where the struct is null. */
+  private static Map<String, List<Integer>> testStructValues() {
+    Map<String, List<Integer>> values = new HashMap<>();
+    values.put("a", Arrays.asList(rows(i -> i % 7 == 0 ? null : i, Integer[]::new)));
+    values.put(
+        "b", Arrays.asList(rows(i -> i % 7 == 0 || i % 3 == 0 ? null : 10 * i, Integer[]::new)));
+    return values;
+  }
+
+  private static void setTestStrings(VarCharVector vector) {
+    setVector(vector, rows(i -> i % 4 == 1 ? null : "s" + i, String[]::new));
+  }
+
+  private static void setTestUuids(UuidVector vector) {
+    vector.setValueCount(ROW_COUNT);
+    for (int i = 0; i < ROW_COUNT; i++) {
+      if (i % 4 == 0) {
+        vector.setNull(i);
+      } else {
+        vector.set(i, new UUID(i, -i));
+      }
+    }
+  }
+
+  /** Defines all but some rows of a struct whose children are set already. */
+  private static void setStructRowsDefined(StructVector vector) {
+    for (int i = 0; i < ROW_COUNT; i++) {
+      if (i % 6 != 5) {
+        vector.setIndexDefined(i);
+      }
+    }
+    vector.setValueCount(ROW_COUNT);
+  }
+
+  /**
+   * Imports the slices of {@code source} that start at each offset and either have one row or end
+   * at the end of the source, which covers offsets before and after the first byte of a bitmap,
+   * aligned to a byte or not.
+   */
+  private void assertSlicedImportsMatchSource(FieldVector source) {
+    assertSlicedImportsMatchSource(source.getField(), source);
+  }
+
+  /** Like {@link #assertSlicedImportsMatchSource(FieldVector)}, exporting the type of field. */
+  private void assertSlicedImportsMatchSource(Field field, FieldVector source) {
+    int valueCount = source.getValueCount();
+    for (int offset = 1; offset < valueCount; offset++) {
+      assertSlicedImportMatchesSource(field, source, offset, 1);
+      assertSlicedImportMatchesSource(field, source, offset, valueCount - offset);
+    }
+  }
+
+  /**
+   * Imports a slice of {@code source}, exported with the type of {@code field}, and compares it
+   * with the same range of the source.
+   */
+  private void assertSlicedImportMatchesSource(
+      Field field, FieldVector source, int offset, int length) {
+    try (ArrowArray array = ArrowArray.allocateNew(allocator);
+        ArrowSchema schema = ArrowSchema.allocateNew(allocator)) {
+      Data.exportField(allocator, field, null, schema);
+      Data.exportVector(allocator, source, null, array);
+      slice(array, offset, length);
       try (FieldVector imported = Data.importVector(allocator, array, schema, null)) {
+        if (canValidate(imported)) {
+          ValueVectorUtility.validateFull(imported);
+        }
+        assertSameVectorClasses(source, imported);
         assertEquals(length, imported.getValueCount());
         for (int i = 0; i < length; i++) {
-          assertEquals(source.getObject(offset + i), imported.getObject(i), "index " + i);
+          assertEquals(
+              source.getObject(offset + i),
+              imported.getObject(i),
+              "offset " + offset + ", length " + length + ", index " + i);
         }
       }
     }
   }
 
+  /**
+   * Returns whether {@link ValueVectorUtility#validateFull} supports {@code vector}, which it does
+   * not for fixed-size lists, maps, run-end encoded vectors, or extension vectors that report their
+   * storage type.
+   */
+  private static boolean canValidate(FieldVector vector) {
+    if (vector instanceof FixedSizeListVector
+        || vector instanceof MapVector
+        || vector instanceof RunEndEncodedVector
+        || (vector instanceof ExtensionTypeVector
+            && !(vector.getField().getType() instanceof ExtensionType))) {
+      return false;
+    }
+    return vector.getChildrenFromFields().stream().allMatch(RoundtripTest::canValidate);
+  }
+
+  private static void assertSameVectorClasses(FieldVector expected, FieldVector actual) {
+    assertEquals(expected.getClass(), actual.getClass());
+    List<FieldVector> expectedChildren = expected.getChildrenFromFields();
+    List<FieldVector> actualChildren = actual.getChildrenFromFields();
+    assertEquals(expectedChildren.size(), actualChildren.size());
+    for (int i = 0; i < expectedChildren.size(); i++) {
+      assertSameVectorClasses(expectedChildren.get(i), actualChildren.get(i));
+    }
+  }
+
+  private static final OpaqueType OPAQUE_TYPE =
+      new OpaqueType(ArrowType.Utf8.INSTANCE, "test.type", "test.vendor");
+
+  /** Runs {@code test} with {@code type} registered, so that importing it creates its vector. */
+  private static void withExtensionType(ExtensionType type, Runnable test) {
+    ExtensionType previous = ExtensionTypeRegistry.lookup(type.extensionName());
+    ExtensionTypeRegistry.register(type);
+    try {
+      test.run();
+    } finally {
+      ExtensionTypeRegistry.unregister(type);
+      if (previous != null) {
+        ExtensionTypeRegistry.register(previous);
+      }
+    }
+  }
+
+  /** An extension type whose vector overrides neither getField() nor makeTransferPair(). */
+  private static final class PlainType extends ExtensionType {
+    static final PlainType INSTANCE = new PlainType();
+
+    @Override
+    public ArrowType storageType() {
+      return ArrowType.Utf8.INSTANCE;
+    }
+
+    @Override
+    public String extensionName() {
+      return "test.plain";
+    }
+
+    @Override
+    public boolean extensionEquals(ExtensionType other) {
+      return other instanceof PlainType;
+    }
+
+    @Override
+    public ArrowType deserialize(ArrowType storageType, String serializedData) {
+      return INSTANCE;
+    }
+
+    @Override
+    public String serialize() {
+      return "";
+    }
+
+    @Override
+    public FieldVector getNewVector(String name, FieldType fieldType, BufferAllocator allocator) {
+      return new PlainVector(name, allocator);
+    }
+  }
+
+  private static final class PlainVector extends ExtensionTypeVector<VarCharVector> {
+    PlainVector(String name, BufferAllocator allocator) {
+      super(name, allocator, new VarCharVector(name, allocator));
+    }
+
+    @Override
+    public Object getObject(int index) {
+      return getUnderlyingVector().getObject(index);
+    }
+
+    @Override
+    public int hashCode(int index) {
+      return getUnderlyingVector().hashCode(index);
+    }
+
+    @Override
+    public int hashCode(int index, ArrowBufHasher hasher) {
+      return getUnderlyingVector().hashCode(index, hasher);
+    }
+  }
+
+  /** Writes lists of up to 3 strings and some nulls, whose items are stored in values. */
+  private static void writeTestStringLists(ListVector vector, VarCharVector values) {
+    vector.allocateNew();
+    values.allocateNew();
+    int valueCount = 0;
+    for (int i = 0; i < ROW_COUNT; i++) {
+      if (i % 5 == 2) {
+        vector.setNull(i);
+        continue;
+      }
+      vector.startNewValue(i);
+      for (int j = 0; j < i % 4; j++) {
+        if (j == 1) {
+          values.setNull(valueCount);
+        } else {
+          values.setSafe(valueCount, ("s" + i + j).getBytes(StandardCharsets.UTF_8));
+        }
+        valueCount++;
+      }
+      vector.endValue(i, i % 4);
+    }
+    vector.setValueCount(ROW_COUNT);
+  }
+
+  /** Rewrite an exported array in place as one whose producer omitted the validity bitmap. */
+  private static void dropValidityBitmap(ArrowArray array) {
+    ArrowArray.Snapshot snapshot = array.snapshot();
+    assertEquals(0, snapshot.null_count);
+    MemoryUtil.putLong(snapshot.buffers, NativeUtil.NULL);
+  }
+
+  /** Writes maps of up to 3 entries and some nulls. */
   private static void writeTestMaps(MapVector vector) {
     vector.allocateNew();
     UnionMapWriter mapWriter = vector.getWriter();
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < ROW_COUNT; i++) {
+      if (i % 5 == 3) {
+        continue;
+      }
+      mapWriter.setPosition(i);
       mapWriter.startMap();
-      for (int j = 0; j < i + 1; j++) {
+      for (int j = 0; j < i % 4; j++) {
         mapWriter.startEntry();
         mapWriter.key().bigInt().writeBigInt(j);
-        mapWriter.value().integer().writeInt(j);
+        mapWriter.value().integer().writeInt(10 * i + j);
         mapWriter.endEntry();
       }
       mapWriter.endMap();
     }
-    mapWriter.setValueCount(5);
+    mapWriter.setValueCount(ROW_COUNT);
   }
 
+  /** Writes uint4 and int values, and some nulls. */
   private static void writeTestUnion(UnionVector vector) {
     final NullableUInt4Holder uInt4Holder = new NullableUInt4Holder();
-    uInt4Holder.value = 100;
     uInt4Holder.isSet = 1;
+    final NullableIntHolder intHolder = new NullableIntHolder();
+    intHolder.isSet = 1;
     vector.allocateNew();
-    vector.setType(0, MinorType.UINT4);
-    vector.setSafe(0, uInt4Holder);
-    vector.setType(2, MinorType.UINT4);
-    vector.setSafe(2, uInt4Holder);
-    vector.setValueCount(4);
+    for (int i = 0; i < ROW_COUNT; i++) {
+      if (i % 3 == 0) {
+        uInt4Holder.value = 100 + i;
+        vector.setType(i, MinorType.UINT4);
+        vector.setSafe(i, uInt4Holder);
+      } else if (i % 3 == 1) {
+        intHolder.value = -i;
+        vector.setType(i, MinorType.INT);
+        vector.setSafe(i, intHolder);
+      }
+    }
+    vector.setValueCount(ROW_COUNT);
   }
 
   /** Rewrite an exported array in place as a slice, as a C producer would. */

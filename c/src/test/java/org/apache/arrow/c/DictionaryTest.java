@@ -101,7 +101,7 @@ public class DictionaryTest {
   public void testWithDictionary() throws Exception {
     try (DictionaryProvider.MapDictionaryProvider provider =
             new DictionaryProvider.MapDictionaryProvider();
-        IntVector encodedVector = createEncodedVector(provider)) {
+        IntVector encodedVector = createEncodedVector(provider, "bb", "bb", "cc", "aa")) {
       roundtrip(encodedVector, provider, IntVector.class);
     }
   }
@@ -110,7 +110,7 @@ public class DictionaryTest {
   public void testWithDictionaryAndNonZeroOffset() throws Exception {
     try (DictionaryProvider.MapDictionaryProvider provider =
             new DictionaryProvider.MapDictionaryProvider();
-        IntVector encodedVector = createEncodedVector(provider);
+        IntVector encodedVector = createEncodedVector(provider, "bb", "bb", "cc", "aa");
         ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
         ArrowArray consumerArrowArray = ArrowArray.allocateNew(allocator)) {
       Data.exportVector(
@@ -142,8 +142,48 @@ public class DictionaryTest {
     }
   }
 
-  /** Registers an aa/bb/cc dictionary with {@code provider} and encodes bb/bb/cc/aa with it. */
-  private IntVector createEncodedVector(DictionaryProvider.MapDictionaryProvider provider) {
+  @Test
+  public void testWithDictionaryAndOffsetsPastTheFirstByte() throws Exception {
+    String[] values = new String[20];
+    for (int i = 0; i < values.length; i++) {
+      values[i] = i % 5 == 4 ? null : new String[] {"aa", "bb", "cc"}[i % 3];
+    }
+    try (DictionaryProvider.MapDictionaryProvider provider =
+            new DictionaryProvider.MapDictionaryProvider();
+        IntVector encodedVector = createEncodedVector(provider, values)) {
+      for (int offset : new int[] {8, 9, 16}) {
+        try (ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
+            ArrowArray consumerArrowArray = ArrowArray.allocateNew(allocator)) {
+          Data.exportVector(
+              allocator, encodedVector, provider, consumerArrowArray, consumerArrowSchema);
+          ArrowArray.Snapshot snapshot = consumerArrowArray.snapshot();
+          snapshot.offset = offset;
+          snapshot.length = values.length - offset;
+          consumerArrowArray.save(snapshot);
+
+          try (CDataDictionaryProvider cDictionaryProvider = new CDataDictionaryProvider();
+              FieldVector imported =
+                  Data.importVector(
+                      allocator, consumerArrowArray, consumerArrowSchema, cDictionaryProvider);
+              VarCharVector decoded =
+                  (VarCharVector)
+                      DictionaryEncoder.decode(imported, cDictionaryProvider.lookup(0L))) {
+            assertEquals(values.length - offset, decoded.getValueCount());
+            for (int i = 0; i < decoded.getValueCount(); i++) {
+              String expected = values[offset + i];
+              String actual =
+                  decoded.isNull(i) ? null : new String(decoded.get(i), StandardCharsets.UTF_8);
+              assertEquals(expected, actual, "offset " + offset + ", index " + i);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /** Registers an aa/bb/cc dictionary with {@code provider} and encodes values with it. */
+  private IntVector createEncodedVector(
+      DictionaryProvider.MapDictionaryProvider provider, String... values) {
     final VarCharVector dictVector = new VarCharVector("dict", allocator);
     dictVector.allocateNewSafe();
     dictVector.setSafe(0, "aa".getBytes(StandardCharsets.UTF_8));
@@ -156,11 +196,14 @@ public class DictionaryTest {
 
     try (VarCharVector vector = new VarCharVector("vector", allocator)) {
       vector.allocateNewSafe();
-      vector.setSafe(0, "bb".getBytes(StandardCharsets.UTF_8));
-      vector.setSafe(1, "bb".getBytes(StandardCharsets.UTF_8));
-      vector.setSafe(2, "cc".getBytes(StandardCharsets.UTF_8));
-      vector.setSafe(3, "aa".getBytes(StandardCharsets.UTF_8));
-      vector.setValueCount(4);
+      for (int i = 0; i < values.length; i++) {
+        if (values[i] == null) {
+          vector.setNull(i);
+        } else {
+          vector.setSafe(i, values[i].getBytes(StandardCharsets.UTF_8));
+        }
+      }
+      vector.setValueCount(values.length);
       return (IntVector) DictionaryEncoder.encode(vector, dictionary);
     }
   }
