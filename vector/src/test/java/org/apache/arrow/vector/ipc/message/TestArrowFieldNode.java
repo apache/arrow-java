@@ -25,10 +25,6 @@ public class TestArrowFieldNode {
 
   @Test
   public void testNegativeLengthRejected() {
-    // A negative length that still fits in an int must be rejected. Left unchecked it flows into
-    // BitVectorHelper.getValidityBufferSizeFromCount (unsigned shift -> ~512MB) and into
-    // ArrowBuf.setOne(0, length / 8) with a negative length, corrupting memory when bounds
-    // checking is disabled. See the deserialization paths in MessageSerializer and JsonFileReader.
     IllegalArgumentException e =
         assertThrows(IllegalArgumentException.class, () -> new ArrowFieldNode(-100, 0));
     assertEquals("Expected length >= 0, got -100", e.getMessage());
@@ -40,6 +36,11 @@ public class TestArrowFieldNode {
   }
 
   @Test
+  public void testLengthAboveIntRangeRejected() {
+    assertThrows(ArithmeticException.class, () -> new ArrowFieldNode((1L << 32) - 100, 0));
+  }
+
+  @Test
   public void testZeroAndPositiveLengthAccepted() {
     assertEquals(0, new ArrowFieldNode(0, 0).getLength());
     assertEquals(42, new ArrowFieldNode(42, 0).getLength());
@@ -47,9 +48,18 @@ public class TestArrowFieldNode {
 
   @Test
   public void testNegativeNullCountSentinelPreserved() {
-    // VectorUnloader uses nullCount == -1 to signal "null count not included"; it must survive.
     ArrowFieldNode node = new ArrowFieldNode(10, -1);
     assertEquals(10, node.getLength());
     assertEquals(-1, node.getNullCount());
+  }
+
+  @Test
+  public void testNullCountBelowSentinelRejected() {
+    assertThrows(IllegalArgumentException.class, () -> new ArrowFieldNode(10, -2));
+  }
+
+  @Test
+  public void testNullCountAboveIntRangeRejected() {
+    assertThrows(ArithmeticException.class, () -> new ArrowFieldNode(10, (1L << 32) - 2));
   }
 }
