@@ -17,6 +17,7 @@
 package org.apache.arrow.vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.LargeListVector;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.MapVector;
@@ -34,6 +36,7 @@ import org.apache.arrow.vector.ipc.message.ArrowBuffer;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.types.Types.MinorType;
+import org.apache.arrow.vector.types.UnionMode;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -88,6 +91,15 @@ public class TestVectorUnloadNonZeroStartOffset {
 
   private ArrowBuf allValid() {
     return longs(-1L);
+  }
+
+  private ArrowBuf typeIds(int... values) {
+    ArrowBuf buf = allocator.buffer(values.length);
+    for (int i = 0; i < values.length; i++) {
+      buf.setByte(i, values[i]);
+    }
+    buf.writerIndex(values.length);
+    return buf;
   }
 
   private static void load(FieldVector vector, int length, ArrowBuf... buffers) {
@@ -158,6 +170,39 @@ public class TestVectorUnloadNonZeroStartOffset {
     vector.addOrGetVector(FieldType.nullable(MinorType.VARCHAR.getType()));
     load(vector, 2, allValid(), ints(0, 1, 2));
     load(vector.getDataVector(), 2, allValid(), ints(2, 4, 6), bytes("aabbcc"));
+    return vector;
+  }
+
+  /** Two empty rows over an inner list that still holds [[1], [2]]. */
+  private ListVector emptyRowsOverNestedList() {
+    ListVector vector = ListVector.empty("l", allocator);
+    vector.addOrGetVector(FieldType.nullable(ArrowType.List.INSTANCE));
+    ListVector inner = (ListVector) vector.getDataVector();
+    inner.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+    load(vector, 2, allValid(), ints(0, 0, 0));
+    load(inner, 2, allValid(), ints(0, 1, 2));
+    load(inner.getDataVector(), 2, allValid(), ints(1, 2));
+    return vector;
+  }
+
+  /**
+   * One row over a dense union whose int child skips an element: union slots 0..3 hold child
+   * elements 0, 1, 3 and 4, that is 10, 11, 13 and 14.
+   */
+  private ListVector listOfDenseUnion(int... offsets) {
+    Field union =
+        new Field(
+            "u",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {0})),
+            Collections.singletonList(Field.nullable("i", MinorType.INT.getType())));
+    Field list =
+        new Field(
+            "l", FieldType.nullable(ArrowType.List.INSTANCE), Collections.singletonList(union));
+    ListVector vector = (ListVector) list.createVector(allocator);
+    load(vector, 1, allValid(), ints(offsets));
+    DenseUnionVector unionVector = (DenseUnionVector) vector.getDataVector();
+    load(unionVector, 4, typeIds(0, 0, 0, 0), ints(0, 1, 3, 4));
+    load(unionVector.getChildrenFromFields().get(0), 5, allValid(), ints(10, 11, 12, 13, 14));
     return vector;
   }
 
@@ -297,5 +342,62 @@ public class TestVectorUnloadNonZeroStartOffset {
             vector.getDataBuffer().memoryAddress(), batch.getBuffers().get(2).memoryAddress());
       }
     }
+  }
+
+  @Test
+  public void emptyCoveredRangeOverNestedListKeepsItsFirstOffset() {
+    try (ListVector vector = emptyRowsOverNestedList();
+        VectorSchemaRoot root = VectorSchemaRoot.of(vector);
+        ArrowRecordBatch batch = new VectorUnloader(root).getRecordBatch();
+        VectorSchemaRoot loaded = reload(root, batch)) {
+      assertEquals(Arrays.asList(2, 0, 0), lengths(batch));
+      assertEquals(Arrays.asList(1L, 12L, 0L, 4L, 0L, 0L), sizes(batch));
+      assertEquals(0, batch.getBuffers().get(3).getInt(0));
+      ListVector read = (ListVector) loaded.getVector(0);
+      assertEquals(Collections.emptyList(), read.getObject(0));
+      assertEquals(Collections.emptyList(), read.getObject(1));
+    }
+  }
+
+  @Test
+  public void denseUnionChildIsWrittenUntrimmed() {
+    try (ListVector vector = listOfDenseUnion(0, 3);
+        VectorSchemaRoot root = VectorSchemaRoot.of(vector);
+        ArrowRecordBatch batch = new VectorUnloader(root).getRecordBatch();
+        VectorSchemaRoot loaded = reload(root, batch)) {
+      assertEquals(Arrays.asList(1, 4, 5), lengths(batch));
+      assertEquals(Arrays.asList(10, 11, 13), ((ListVector) loaded.getVector(0)).getObject(0));
+    }
+  }
+
+  @Test
+  public void listOverDenseUnionIsWrittenWithItsOwnOffsets() {
+    try (ListVector vector = listOfDenseUnion(1, 3);
+        VectorSchemaRoot root = VectorSchemaRoot.of(vector);
+        ArrowRecordBatch batch = new VectorUnloader(root).getRecordBatch();
+        VectorSchemaRoot loaded = reload(root, batch)) {
+      assertEquals(Arrays.asList(1, 4, 5), lengths(batch));
+      assertEquals(Arrays.asList(11, 13), ((ListVector) loaded.getVector(0)).getObject(0));
+    }
+  }
+
+  @Test
+  public void failedSplitDoesNotLeak() {
+    try (ListVector vector = listSlice(2, 4, 9);
+        VectorSchemaRoot root = VectorSchemaRoot.of(vector)) {
+      assertThrows(IllegalArgumentException.class, () -> new VectorUnloader(root).getRecordBatch());
+    }
+    assertEquals(0, allocator.getAllocatedMemory());
+  }
+
+  @Test
+  public void failedSplitReleasesTheBuffersOfEarlierVectors() {
+    try (IntVector first = new IntVector("i", allocator);
+        ListVector malformed = listSlice(2, 4, 9);
+        VectorSchemaRoot root = VectorSchemaRoot.of(first, malformed)) {
+      load(first, 2, allValid(), ints(1, 2));
+      assertThrows(IllegalArgumentException.class, () -> new VectorUnloader(root).getRecordBatch());
+    }
+    assertEquals(0, allocator.getAllocatedMemory());
   }
 }

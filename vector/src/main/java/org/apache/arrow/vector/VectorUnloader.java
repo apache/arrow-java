@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.util.AutoCloseables;
+import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.NonNullableStructVector;
 import org.apache.arrow.vector.compression.CompressionCodec;
 import org.apache.arrow.vector.compression.CompressionUtil;
 import org.apache.arrow.vector.compression.NoCompressionCodec;
@@ -81,7 +83,8 @@ public class VectorUnloader {
    * <p>A variable-width, list or map vector whose offsets start past zero, or whose child vector
    * holds elements past its last offset, as one imported through the C Data interface from a sliced
    * array does, is written as the values between its first and last offset, with the offsets
-   * re-based to start at zero.
+   * re-based to start at zero. Vectors with a union, view or extension vector at or below them are
+   * written as they are.
    */
   public ArrowRecordBatch getRecordBatch() {
     List<ArrowFieldNode> nodes = new ArrayList<>();
@@ -119,7 +122,7 @@ public class VectorUnloader {
       List<ArrowBuf> buffers,
       List<Long> variadicBufferCounts) {
     FieldVector storageVector = ExtensionTypeVector.getStorageVector(vector);
-    if (firstOffset(storageVector) != 0) {
+    if (firstOffset(storageVector) != 0 && splitKeepsValues(vector)) {
       appendRebased(vector, vector.getValueCount(), nodes, buffers, variadicBufferCounts);
       return;
     }
@@ -151,7 +154,9 @@ public class VectorUnloader {
     }
     long coveredChildLength = coveredChildLength(storageVector);
     for (FieldVector child : vector.getChildrenFromFields()) {
-      if (coveredChildLength >= 0 && child.getValueCount() > coveredChildLength) {
+      if (coveredChildLength >= 0
+          && child.getValueCount() > coveredChildLength
+          && splitKeepsValues(child)) {
         appendRebased(child, (int) coveredChildLength, nodes, buffers, variadicBufferCounts);
       } else {
         appendNodes(child, nodes, buffers, variadicBufferCounts);
@@ -167,10 +172,35 @@ public class VectorUnloader {
       List<ArrowBuf> buffers,
       List<Long> variadicBufferCounts) {
     TransferPair pair = vector.getTransferPair(vector.getField(), vector.getAllocator());
-    pair.splitAndTransfer(0, length);
     try (FieldVector rebased = (FieldVector) pair.getTo()) {
+      pair.splitAndTransfer(0, length);
       appendNodes(rebased, nodes, buffers, variadicBufferCounts);
     }
+  }
+
+  /**
+   * Whether splitting the vector keeps every value in its slot. A dense union's split does not when
+   * a type's offsets have gaps, so only the vector types listed here are re-based.
+   */
+  private static boolean splitKeepsValues(FieldVector vector) {
+    if (vector instanceof BaseFixedWidthVector
+        || vector instanceof BaseVariableWidthVector
+        || vector instanceof BaseLargeVariableWidthVector
+        || vector instanceof NullVector) {
+      return true;
+    }
+    if (vector instanceof ListVector
+        || vector instanceof LargeListVector
+        || vector instanceof FixedSizeListVector
+        || vector instanceof NonNullableStructVector) {
+      for (FieldVector child : vector.getChildrenFromFields()) {
+        if (!splitKeepsValues(child)) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   /** The first offset of a variable-width, list or map vector, or zero for any other vector. */
