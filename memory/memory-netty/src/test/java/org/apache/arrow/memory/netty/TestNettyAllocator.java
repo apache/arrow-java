@@ -25,8 +25,6 @@ import ch.qos.logback.core.read.ListAppender;
 import io.netty.buffer.PooledByteBufAllocatorL;
 import java.util.Collections;
 import java.util.stream.Collectors;
-import org.apache.arrow.memory.ArrowBuf;
-import org.apache.arrow.memory.ReferenceManager;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +41,8 @@ public class TestNettyAllocator {
       logger.setLevel(Level.TRACE);
       logger.addAppender(memoryLogsAppender);
       memoryLogsAppender.start();
-      try (ArrowBuf buf =
-          new ArrowBuf(
-              ReferenceManager.NO_OP,
-              null,
-              1024,
-              new PooledByteBufAllocatorL().empty.memoryAddress())) {
-        buf.memoryAddress();
-      }
+      // Creating the allocator with TRACE logging enabled starts the thread that logs memory usage.
+      new PooledByteBufAllocatorL();
       boolean result = false;
       long startTime = System.currentTimeMillis();
       while ((System.currentTimeMillis() - startTime)
