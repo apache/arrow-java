@@ -162,7 +162,10 @@ public class Lz4CompressionCodec extends AbstractCompressionCodec {
     int descriptorLength = (int) (at - (PREFIX + 4));
     int headerChecksum =
         (Lz4.XXHASH.hash(
-                    compressedBuffer.nioBuffer(PREFIX + 4, descriptorLength), 0, descriptorLength, 0)
+                    compressedBuffer.nioBuffer(PREFIX + 4, descriptorLength),
+                    0,
+                    descriptorLength,
+                    0)
                 >>> 8)
             & 0xFF;
     if ((compressedBuffer.getByte(at) & 0xFF) != headerChecksum) {
@@ -191,9 +194,7 @@ public class Lz4CompressionCodec extends AbstractCompressionCodec {
         throw corrupt("a block of " + n + " bytes runs past the end of the frame");
       }
       maxDecompressedLength +=
-          (word & UNCOMPRESSED_BLOCK) != 0
-              ? n
-              : Math.min(maxBlockSize, n * MAX_COMPRESSION_RATIO);
+          (word & UNCOMPRESSED_BLOCK) != 0 ? n : Math.min(maxBlockSize, n * MAX_COMPRESSION_RATIO);
       at += n;
       if (blockChecksum) {
         if (end - at < Integer.BYTES) {
@@ -232,7 +233,8 @@ public class Lz4CompressionCodec extends AbstractCompressionCodec {
         }
         if ((word & UNCOMPRESSED_BLOCK) != 0) {
           if (n > length - to) {
-            throw corrupt("the frame holds more than its recorded decompressed length of " + length);
+            throw corrupt(
+                "the frame holds more than its recorded decompressed length of " + length);
           }
           decompressedBuffer.setBytes(to, compressedBuffer, at, n);
           to += n;
