@@ -23,6 +23,7 @@ import java.nio.ByteOrder;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.MemoryUtil;
+import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.complex.impl.DecimalReaderImpl;
 import org.apache.arrow.vector.complex.reader.FieldReader;
 import org.apache.arrow.vector.holders.DecimalHolder;
@@ -204,8 +205,9 @@ public final class DecimalVector extends BaseFixedWidthVector
    * @param value array of bytes containing decimal in big endian byte order.
    */
   public void setBigEndian(int index, byte[] value) {
-    BitVectorHelper.setBit(validityBuffer, index);
     final int length = value.length;
+    checkValueLength(length);
+    BitVectorHelper.setBit(validityBuffer, index);
 
     // do the bound check.
     valueBuffer.checkBytes((long) index * TYPE_WIDTH, (long) (index + 1) * TYPE_WIDTH);
@@ -221,28 +223,26 @@ public final class DecimalVector extends BaseFixedWidthVector
         MemoryUtil.putByte(outAddress + byteIdx, value[length - 1 - byteIdx]);
       }
 
-      if (length == TYPE_WIDTH) {
-        return;
-      }
-
       if (length < TYPE_WIDTH) {
         // sign extend
         final byte pad = (byte) (value[0] < 0 ? 0xFF : 0x00);
         MemoryUtil.setMemory(outAddress + length, DecimalVector.TYPE_WIDTH - length, pad);
-        return;
       }
     } else {
-      if (length <= TYPE_WIDTH) {
-        // copy data from value to outAddress
-        MemoryUtil.copyToMemory(value, 0, outAddress + DecimalVector.TYPE_WIDTH - length, length);
-        // sign extend
-        final byte pad = (byte) (value[0] < 0 ? 0xFF : 0x00);
-        MemoryUtil.setMemory(outAddress, DecimalVector.TYPE_WIDTH - length, pad);
-        return;
-      }
+      // copy data from value to outAddress
+      MemoryUtil.copyToMemory(value, 0, outAddress + DecimalVector.TYPE_WIDTH - length, length);
+      // sign extend
+      final byte pad = (byte) (value[0] < 0 ? 0xFF : 0x00);
+      MemoryUtil.setMemory(outAddress, DecimalVector.TYPE_WIDTH - length, pad);
     }
-    throw new IllegalArgumentException(
-        "Invalid decimal value length. Valid length in [1 - 16], got " + length);
+  }
+
+  private static void checkValueLength(int length) {
+    Preconditions.checkArgument(
+        length >= 0 && length <= TYPE_WIDTH,
+        "Invalid decimal value length. Valid length in [0 - %s], got %s",
+        TYPE_WIDTH,
+        length);
   }
 
   /**
@@ -266,6 +266,7 @@ public final class DecimalVector extends BaseFixedWidthVector
    * @param length length of the value in the buffer
    */
   public void setSafe(int index, long start, ArrowBuf buffer, int length) {
+    checkValueLength(length);
     handleSafe(index);
     BitVectorHelper.setBit(validityBuffer, index);
 
@@ -275,6 +276,10 @@ public final class DecimalVector extends BaseFixedWidthVector
 
     long inAddress = buffer.memoryAddress() + start;
     long outAddress = valueBuffer.memoryAddress() + (long) index * TYPE_WIDTH;
+    if (length == 0) {
+      MemoryUtil.setMemory(outAddress, DecimalVector.TYPE_WIDTH, (byte) 0);
+      return;
+    }
     if (LITTLE_ENDIAN) {
       MemoryUtil.copyMemory(inAddress, outAddress, length);
       // sign extend
@@ -303,6 +308,7 @@ public final class DecimalVector extends BaseFixedWidthVector
    * @param length length of the value in the buffer
    */
   public void setBigEndianSafe(int index, long start, ArrowBuf buffer, int length) {
+    checkValueLength(length);
     handleSafe(index);
     BitVectorHelper.setBit(validityBuffer, index);
 
@@ -313,6 +319,10 @@ public final class DecimalVector extends BaseFixedWidthVector
     // not using buffer.getByte() to avoid boundary checks for every byte.
     long inAddress = buffer.memoryAddress() + start;
     long outAddress = valueBuffer.memoryAddress() + (long) index * TYPE_WIDTH;
+    if (length == 0) {
+      MemoryUtil.setMemory(outAddress, DecimalVector.TYPE_WIDTH, (byte) 0);
+      return;
+    }
     if (LITTLE_ENDIAN) {
       // swap bytes to convert BE to LE
       for (int byteIdx = 0; byteIdx < length; ++byteIdx) {
