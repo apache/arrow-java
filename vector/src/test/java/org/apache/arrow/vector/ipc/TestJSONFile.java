@@ -19,6 +19,7 @@ package org.apache.arrow.vector.ipc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +49,11 @@ import org.slf4j.LoggerFactory;
 
 public class TestJSONFile extends BaseFileTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestJSONFile.class);
+  private static final String NEGATIVE_BATCH_COUNT_JSON =
+      "{\"schema\": {\"fields\": [{\"name\": \"i\", \"type\": {\"name\": \"int\","
+          + " \"isSigned\": true, \"bitWidth\": 32}, \"nullable\": true, \"children\": []}]},"
+          + " \"batches\": [{\"count\": -100, \"columns\": [{\"name\": \"i\", \"count\": 0,"
+          + " \"VALIDITY\": [], \"DATA\": []}]}]}";
 
   @Test
   public void testNoBatches() throws IOException {
@@ -520,5 +526,48 @@ public class TestJSONFile extends BaseFileTest {
         }
       }
     }
+  }
+
+  @Test
+  public void testNegativeColumnCountRejected() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": [{\"name\": \"s\", \"type\": {\"name\": \"struct\"},"
+                + " \"nullable\": true, \"children\": []}]},"
+                + " \"batches\": [{\"count\": 0, \"columns\": [{\"name\": \"s\", \"count\": -100,"
+                + " \"VALIDITY\": []}]}]}");
+    // Small limit, so that sizing buffers from a negative count fails fast
+    try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
+        JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+      reader.start();
+      assertThrows(IllegalArgumentException.class, () -> reader.read());
+    }
+  }
+
+  @Test
+  public void testNegativeBatchCountRejected() throws IOException {
+    File file = writeJson(NEGATIVE_BATCH_COUNT_JSON);
+    try (JsonFileReader reader = new JsonFileReader(file, allocator)) {
+      reader.start();
+      assertThrows(IllegalArgumentException.class, () -> reader.read());
+    }
+  }
+
+  @Test
+  public void testNegativeBatchCountRejectedWhenReadingIntoRoot() throws IOException {
+    File file = writeJson(NEGATIVE_BATCH_COUNT_JSON);
+    try (JsonFileReader reader = new JsonFileReader(file, allocator)) {
+      Schema schema = reader.start();
+      try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+        assertThrows(IllegalArgumentException.class, () -> reader.read(root));
+      }
+    }
+  }
+
+  private static File writeJson(String json) throws IOException {
+    Path path = Files.createTempFile("arrow-", ".json");
+    path.toFile().deleteOnExit();
+    Files.writeString(path, json);
+    return path.toFile();
   }
 }
