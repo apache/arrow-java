@@ -64,6 +64,7 @@ export ARROW_BUILD_TESTS=OFF
 
 export ARROW_DATASET=ON
 export ARROW_GANDIVA=ON
+export ARROW_JSON=ON
 export ARROW_ORC=ON
 export ARROW_PARQUET=ON
 
@@ -73,6 +74,7 @@ cmake \
   -S "${arrow_dir}/cpp" \
   -B "${build_dir}/cpp" \
   --preset=ninja-release-jni-macos \
+  -DARROW_JSON="${ARROW_JSON}" \
   -Dabsl_SOURCE=BUNDLED \
   -Dlz4_SOURCE=BUNDLED \
   -Dsimdjson_SOURCE=BUNDLED \

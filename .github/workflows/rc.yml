@@ -111,15 +111,16 @@ jobs:
       - name: Extract source archive
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
+      - name: Download the latest Apache Arrow C++ RC
         if: github.event_name != 'schedule'
         run: |
-          ci/scripts/download_cpp.sh
+          ci/scripts/download_cpp.sh latest-rc
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
         uses: actions/checkout@v7
         with:
           repository: apache/arrow
+          ref: main
           path: arrow
       - name: Checkout apache/arrow-testing
         uses: actions/checkout@v7
@@ -178,9 +179,9 @@ jobs:
       - name: Extract source archive
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
+      - name: Download the latest Apache Arrow C++ RC
         if: github.event_name != 'schedule'
-        run: ci/scripts/download_cpp.sh
+        run: ci/scripts/download_cpp.sh latest-rc
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
         uses: actions/checkout@v7
@@ -275,10 +276,12 @@ jobs:
         run: |
           JAVA_HOME="$(brew --prefix openjdk@17)/libexec/openjdk.jdk/Contents/Home"
           export JAVA_HOME
-          mvn -Parrow-jni -pl dataset -am test \
+          # Install dependencies without applying the dataset-only test filter to them.
+          mvn -Parrow-jni -pl dataset -am install -DskipTests \
+            -Darrow.c.jni.dist.dir="$PWD/jni" -Darrow.cpp.build.dir="$PWD/jni"
+          mvn -Parrow-jni -pl dataset test \
             -Darrow.c.jni.dist.dir="$PWD/jni" -Darrow.cpp.build.dir="$PWD/jni" \
-            -Dtest='TestFileSystemDataset#testBaseJsonRead' \
-            -Dsurefire.failIfNoSpecifiedTests=false
+            -Dtest='TestFileSystemDataset#testBaseJsonRead'
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
