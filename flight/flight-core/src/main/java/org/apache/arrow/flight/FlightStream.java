@@ -318,13 +318,18 @@ public class FlightStream implements AutoCloseable {
 
   /** Update our metadata reference with a new one from this message. */
   private void updateMetadata(ArrowMessage msg) {
+    ArrowBuf retainedMetadata = null;
+    if (msg.getApplicationMetadata() != null) {
+      // Re-associate metadata with the stream allocator so it can outlive this message.
+      retainedMetadata =
+          msg.getApplicationMetadata()
+              .getReferenceManager()
+              .retain(msg.getApplicationMetadata(), allocator);
+    }
     if (this.applicationMetadata != null) {
       this.applicationMetadata.close();
     }
-    this.applicationMetadata = msg.getApplicationMetadata();
-    if (this.applicationMetadata != null) {
-      this.applicationMetadata.getReferenceManager().retain();
-    }
+    this.applicationMetadata = retainedMetadata;
   }
 
   /** Ensure the Arrow metadata version doesn't change mid-stream. */
@@ -424,50 +429,49 @@ public class FlightStream implements AutoCloseable {
             }
             if (msg.getApplicationMetadata() != null) {
               enqueue(msg);
+            } else {
+              AutoCloseables.closeNoChecked(msg);
             }
             break;
           }
         case SCHEMA:
           {
-            Schema schema = msg.asSchema();
-
-            // if there is app metadata in the schema message, make sure
-            // that we don't leak it.
-            ArrowBuf meta = msg.getApplicationMetadata();
-            if (meta != null) {
-              meta.close();
-            }
-
-            final List<Field> fields = new ArrayList<>();
-            final Map<Long, Dictionary> dictionaryMap = new HashMap<>();
-            for (final Field originalField : schema.getFields()) {
-              final Field updatedField =
-                  DictionaryUtility.toMemoryFormat(originalField, allocator, dictionaryMap);
-              fields.add(updatedField);
-            }
-            for (final Map.Entry<Long, Dictionary> entry : dictionaryMap.entrySet()) {
-              dictionaries.put(entry.getValue());
-            }
-            schema = new Schema(fields, schema.getCustomMetadata());
-            metadataVersion =
-                MetadataVersion.fromFlatbufID(msg.asSchemaMessage().getMessage().version());
             try {
-              MetadataV4UnionChecker.checkRead(schema, metadataVersion);
-            } catch (IOException e) {
-              ex = e;
-              enqueue(DONE_EX);
-              break;
-            }
+              Schema schema = msg.asSchema();
 
-            synchronized (completed) {
-              if (!completed.isDone()) {
-                fulfilledRoot = VectorSchemaRoot.create(schema, allocator);
-                loader = new VectorLoader(fulfilledRoot);
-                if (msg.getDescriptor() != null) {
-                  descriptor.set(new FlightDescriptor(msg.getDescriptor()));
-                }
-                root.set(fulfilledRoot);
+              final List<Field> fields = new ArrayList<>();
+              final Map<Long, Dictionary> dictionaryMap = new HashMap<>();
+              for (final Field originalField : schema.getFields()) {
+                final Field updatedField =
+                    DictionaryUtility.toMemoryFormat(originalField, allocator, dictionaryMap);
+                fields.add(updatedField);
               }
+              for (final Map.Entry<Long, Dictionary> entry : dictionaryMap.entrySet()) {
+                dictionaries.put(entry.getValue());
+              }
+              schema = new Schema(fields, schema.getCustomMetadata());
+              metadataVersion =
+                  MetadataVersion.fromFlatbufID(msg.asSchemaMessage().getMessage().version());
+              try {
+                MetadataV4UnionChecker.checkRead(schema, metadataVersion);
+              } catch (IOException e) {
+                ex = e;
+                enqueue(DONE_EX);
+                break;
+              }
+
+              synchronized (completed) {
+                if (!completed.isDone()) {
+                  fulfilledRoot = VectorSchemaRoot.create(schema, allocator);
+                  loader = new VectorLoader(fulfilledRoot);
+                  if (msg.getDescriptor() != null) {
+                    descriptor.set(new FlightDescriptor(msg.getDescriptor()));
+                  }
+                  root.set(fulfilledRoot);
+                }
+              }
+            } finally {
+              AutoCloseables.closeNoChecked(msg);
             }
             break;
           }
@@ -480,6 +484,7 @@ public class FlightStream implements AutoCloseable {
           ex =
               new UnsupportedOperationException(
                   "Unable to handle message of type: " + msg.getMessageType());
+          AutoCloseables.closeNoChecked(msg);
           enqueue(DONE_EX);
       }
     }
