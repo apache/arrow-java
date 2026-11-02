@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +33,8 @@ import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.apache.arrow.flatbuf.FieldNode;
+import org.apache.arrow.flatbuf.RecordBatch;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -218,6 +221,44 @@ public class MessageSerializerTest {
     }
 
     alloc.close();
+  }
+
+  @Test
+  public void testNegativeNodeLengthDoesNotLeakBody() {
+    RecordBatch recordBatchFB = recordBatchWithNode(-100, 0);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @Test
+  public void testNodeLengthAboveIntRangeDoesNotLeakBody() {
+    RecordBatch recordBatchFB = recordBatchWithNode(1L << 32, 0);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  private static RecordBatch recordBatchWithNode(long length, long nullCount) {
+    FlatBufferBuilder builder = new FlatBufferBuilder();
+    RecordBatch.startNodesVector(builder, 1);
+    FieldNode.createFieldNode(builder, length, nullCount);
+    int nodes = builder.endVector();
+    RecordBatch.startBuffersVector(builder, 0);
+    int buffers = builder.endVector();
+    RecordBatch.startRecordBatch(builder);
+    RecordBatch.addLength(builder, 0);
+    RecordBatch.addNodes(builder, nodes);
+    RecordBatch.addBuffers(builder, buffers);
+    builder.finish(RecordBatch.endRecordBatch(builder));
+    return RecordBatch.getRootAsRecordBatch(builder.dataBuffer());
   }
 
   public static Schema testSchema() {
