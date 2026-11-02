@@ -19,6 +19,7 @@ package org.apache.arrow.variant.impl;
 import org.apache.arrow.variant.holders.NullableVariantHolder;
 import org.apache.arrow.vector.complex.impl.AbstractFieldReader;
 import org.apache.arrow.vector.types.Types;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 
 public class NullableVariantHolderReaderImpl extends AbstractFieldReader {
   private final NullableVariantHolder holder;
@@ -45,6 +46,11 @@ public class NullableVariantHolderReaderImpl extends AbstractFieldReader {
   @Override
   public Types.MinorType getMinorType() {
     return Types.MinorType.EXTENSIONTYPE;
+  }
+
+  @Override
+  public ArrowType getExtensionType() {
+    return holder.type();
   }
 
   @Override
