@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLTimeoutException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +166,15 @@ public class ArrowFlightMetaImpl extends MetaImpl {
     }
 
     // Update query
-    long[] updatedCounts = {preparedStatement.executeUpdate()};
+    long totalUpdated = preparedStatement.executeUpdate();
+    final int batchSize = parameterValuesList.size();
+    long[] updatedCounts = new long[batchSize];
+    if (batchSize > 0) {
+      Arrays.fill(updatedCounts, totalUpdated / batchSize);
+      if (totalUpdated % batchSize != 0) {
+        updatedCounts[0] += totalUpdated % batchSize;
+      }
+    }
     return new ExecuteBatchResult(updatedCounts);
   }
 
