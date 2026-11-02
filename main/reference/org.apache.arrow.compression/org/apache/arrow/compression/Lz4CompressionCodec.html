@@ -92,7 +92,13 @@ loadScripts(document, 'script');</script>
 <div class="horizontal-scroll">
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">Lz4CompressionCodec</span>
 <span class="extends-implements">extends <a href="../../../../../org.apache.arrow.vector/org/apache/arrow/vector/compression/AbstractCompressionCodec.html" title="class in org.apache.arrow.vector.compression">AbstractCompressionCodec</a></span></div>
-<div class="block">Compression codec for the LZ4 algorithm.</div>
+<div class="block">Compression codec for the LZ4 frame format.
+
+<p>Each buffer is written as one frame of independent blocks of up to 4 MiB, without checksums,
+which every LZ4 frame decoder reads. Compression, and the decompression of frames whose blocks
+are independent, use lz4-java on the buffers' memory directly. A frame whose blocks are linked,
+as Arrow C++ writes for a buffer larger than 64 KiB, or that uses a dictionary, is decompressed
+with commons-compress, since lz4-java cannot decode a block that refers to earlier ones.</div>
 </div>
 </section>
 <section class="summary">
