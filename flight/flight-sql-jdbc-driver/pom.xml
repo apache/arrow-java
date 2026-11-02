@@ -101,6 +101,8 @@ under the License.
                   <shadedPattern>org.apache.arrow.driver.jdbc.shaded.com.</shadedPattern>
                   <excludes>
                     <exclude>com.sun.**</exclude>
+                    <!-- zstd-jni uses JNI native methods bound to original class names -->
+                    <exclude>com.github.luben.**</exclude>
                   </excludes>
                 </relocation>
                 <relocation>
