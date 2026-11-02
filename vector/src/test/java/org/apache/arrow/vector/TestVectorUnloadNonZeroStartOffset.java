@@ -185,6 +185,21 @@ public class TestVectorUnloadNonZeroStartOffset {
     return vector;
   }
 
+  /** Two empty rows over an inner list that still holds two large lists, [[1]] and [[2]]. */
+  private ListVector emptyRowsOverNestedLargeList() {
+    ListVector vector = ListVector.empty("l", allocator);
+    vector.addOrGetVector(FieldType.nullable(ArrowType.List.INSTANCE));
+    ListVector inner = (ListVector) vector.getDataVector();
+    inner.addOrGetVector(FieldType.nullable(ArrowType.LargeList.INSTANCE));
+    LargeListVector largeList = (LargeListVector) inner.getDataVector();
+    largeList.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+    load(vector, 2, allValid(), ints(0, 0, 0));
+    load(inner, 2, allValid(), ints(0, 1, 2));
+    load(largeList, 2, allValid(), longs(0, 1, 2));
+    load(largeList.getDataVector(), 2, allValid(), ints(1, 2));
+    return vector;
+  }
+
   /**
    * One row over a dense union whose int child skips an element: union slots 0..3 hold child
    * elements 0, 1, 3 and 4, that is 10, 11, 13 and 14.
@@ -353,6 +368,21 @@ public class TestVectorUnloadNonZeroStartOffset {
       assertEquals(Arrays.asList(2, 0, 0), lengths(batch));
       assertEquals(Arrays.asList(1L, 12L, 0L, 4L, 0L, 0L), sizes(batch));
       assertEquals(0, batch.getBuffers().get(3).getInt(0));
+      ListVector read = (ListVector) loaded.getVector(0);
+      assertEquals(Collections.emptyList(), read.getObject(0));
+      assertEquals(Collections.emptyList(), read.getObject(1));
+    }
+  }
+
+  @Test
+  public void emptyCoveredRangeOverNestedLargeListKeepsItsFirstOffset() {
+    try (ListVector vector = emptyRowsOverNestedLargeList();
+        VectorSchemaRoot root = VectorSchemaRoot.of(vector);
+        ArrowRecordBatch batch = new VectorUnloader(root).getRecordBatch();
+        VectorSchemaRoot loaded = reload(root, batch)) {
+      assertEquals(Arrays.asList(2, 0, 0, 0), lengths(batch));
+      assertEquals(Arrays.asList(1L, 12L, 0L, 4L, 0L, 8L, 0L, 0L), sizes(batch));
+      assertEquals(0L, batch.getBuffers().get(5).getLong(0));
       ListVector read = (ListVector) loaded.getVector(0);
       assertEquals(Collections.emptyList(), read.getObject(0));
       assertEquals(Collections.emptyList(), read.getObject(1));
