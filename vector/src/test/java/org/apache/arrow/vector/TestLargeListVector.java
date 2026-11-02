@@ -1216,4 +1216,17 @@ public class TestLargeListVector {
       }
     }
   }
+
+  @Test
+  public void testGetFieldBuffersOfEmptyVector() {
+    // An empty vector holds the allocator's shared empty buffer as its offsets until it allocates
+    try (LargeListVector vector = LargeListVector.empty("list", allocator)) {
+      vector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      ArrowBuf offsets = vector.getFieldBuffers().get(1);
+      assertTrue(offsets.capacity() >= LargeListVector.OFFSET_WIDTH);
+      assertEquals(LargeListVector.OFFSET_WIDTH, offsets.readableBytes());
+      assertEquals(0L, offsets.getLong(0));
+      assertEquals(0, allocator.getEmpty().writerIndex());
+    }
+  }
 }

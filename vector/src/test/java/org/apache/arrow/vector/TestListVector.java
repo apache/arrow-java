@@ -1406,4 +1406,27 @@ public class TestListVector {
     }
     writer.endList();
   }
+
+  @Test
+  public void testSplitAndTransferZeroLength() {
+    try (ListVector listVector = ListVector.empty("sourceVector", allocator)) {
+      listVector.addOrGetVector(FieldType.nullable(MinorType.INT.getType()));
+      UnionListWriter listWriter = listVector.getWriter();
+      listWriter.allocate();
+      listWriter.setPosition(0);
+      listWriter.startList();
+      listWriter.integer().writeInt(1);
+      listWriter.endList();
+      listVector.setValueCount(1);
+
+      TransferPair pair = listVector.getTransferPair(allocator);
+      pair.splitAndTransfer(0, 0);
+      try (ListVector to = (ListVector) pair.getTo()) {
+        ArrowBuf offsets = to.getFieldBuffers().get(1);
+        assertTrue(offsets.capacity() >= BaseRepeatedValueVector.OFFSET_WIDTH);
+        assertEquals(0, offsets.getInt(0));
+        assertEquals(0, allocator.getEmpty().writerIndex());
+      }
+    }
+  }
 }

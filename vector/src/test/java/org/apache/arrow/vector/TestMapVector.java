@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.complex.BaseRepeatedValueVector;
 import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.impl.UnionMapReader;
@@ -1660,6 +1661,37 @@ public class TestMapVector {
       // Verify third list item
       UUID actualValue2c = (UUID) listValue.get(2);
       assertEquals(value2c, actualValue2c);
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferZeroLength() {
+    try (MapVector mapVector = MapVector.empty("sourceVector", allocator, false)) {
+      FieldType type = new FieldType(false, ArrowType.Struct.INSTANCE, null, null);
+      AddOrGetResult<StructVector> addResult = mapVector.addOrGetVector(type);
+      FieldType keyType = new FieldType(false, MinorType.BIGINT.getType(), null, null);
+      FieldType valueType = FieldType.nullable(MinorType.FLOAT8.getType());
+      addResult.getVector().addOrGet(MapVector.KEY_NAME, keyType, BigIntVector.class);
+      addResult.getVector().addOrGet(MapVector.VALUE_NAME, valueType, Float8Vector.class);
+      UnionMapWriter mapWriter = mapVector.getWriter();
+      mapWriter.allocate();
+      mapWriter.setPosition(0);
+      mapWriter.startMap();
+      mapWriter.startEntry();
+      mapWriter.key().bigInt().writeBigInt(10);
+      mapWriter.value().float8().writeFloat8(1.0);
+      mapWriter.endEntry();
+      mapWriter.endMap();
+      mapVector.setValueCount(1);
+
+      TransferPair pair = mapVector.getTransferPair(allocator);
+      pair.splitAndTransfer(0, 0);
+      try (MapVector to = (MapVector) pair.getTo()) {
+        ArrowBuf offsets = to.getFieldBuffers().get(1);
+        assertTrue(offsets.capacity() >= BaseRepeatedValueVector.OFFSET_WIDTH);
+        assertEquals(0, offsets.getInt(0));
+        assertEquals(0, allocator.getEmpty().writerIndex());
+      }
     }
   }
 }
