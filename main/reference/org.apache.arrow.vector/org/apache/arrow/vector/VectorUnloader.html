@@ -211,7 +211,13 @@ suitable for serialization.</div>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="ipc/message/ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a></span>&nbsp;<span class="element-name">getRecordBatch</span>()</div>
 <div class="block">Performs the depth first traversal of the Vectors to create an <a href="ipc/message/ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message"><code>ArrowRecordBatch</code></a>
-suitable for serialization.</div>
+suitable for serialization.
+
+<p>A variable-width, list or map vector whose offsets start past zero, or whose child vector
+holds elements past its last offset, as one imported through the C Data interface from a sliced
+array does, is written as the values between its first and last offset, with the offsets
+re-based to start at zero. Vectors with a union, view or extension vector at or below them are
+written as they are.</div>
 </div>
 </section>
 </li>
