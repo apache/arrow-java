@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.protobuf.Message;
 import java.io.IOException;
@@ -146,17 +145,13 @@ public class ConnectionTest {
     SQLException e =
         assertThrows(
             SQLException.class,
-            () -> {
-              try (Connection conn =
-                  DriverManager.getConnection(
-                      "jdbc:arrow-flight-sql://"
-                          + FLIGHT_SERVER_TEST_EXTENSION.getHost()
-                          + ":"
-                          + FLIGHT_SERVER_TEST_EXTENSION.getPort(),
-                      properties)) {
-                fail();
-              }
-            });
+            () ->
+                DriverManager.getConnection(
+                    "jdbc:arrow-flight-sql://"
+                        + FLIGHT_SERVER_TEST_EXTENSION.getHost()
+                        + ":"
+                        + FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+                    properties));
     assertTrue(e.getMessage().contains("UNAUTHENTICATED"));
   }
 
@@ -176,11 +171,7 @@ public class ConnectionTest {
 
     assertThrows(
         SQLException.class,
-        () -> {
-          try (Connection conn = DriverManager.getConnection(invalidUrl, properties)) {
-            fail("Expected SQLException.");
-          }
-        });
+        () -> DriverManager.getConnection(invalidUrl, properties));
   }
 
   /**
@@ -223,11 +214,7 @@ public class ConnectionTest {
 
     assertThrows(
         SQLException.class,
-        () -> {
-          try (Connection conn = DriverManager.getConnection(invalidUrl, properties)) {
-            fail("Expected SQLException");
-          }
-        });
+        () -> DriverManager.getConnection(invalidUrl, properties));
   }
 
   /**
@@ -289,12 +276,7 @@ public class ConnectionTest {
 
     assertThrows(
         SQLException.class,
-        () -> {
-          try (Connection ignored =
-              DriverManager.getConnection("jdbc:arrow-flight-sql://localhost:32010", properties)) {
-            fail();
-          }
-        });
+        () -> DriverManager.getConnection("jdbc:arrow-flight-sql://localhost:32010", properties));
   }
 
   /**
