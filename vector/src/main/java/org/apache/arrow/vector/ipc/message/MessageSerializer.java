@@ -417,6 +417,13 @@ public class MessageSerializer {
       List<ArrowFieldNode> nodes = new ArrayList<>();
       for (int i = 0; i < nodesLength; ++i) {
         FieldNode node = recordBatchFB.nodes(i);
+        if (node.length() < 0) {
+          throw new IOException("Record batch node " + i + " has negative length " + node.length());
+        }
+        if (node.nullCount() < -1) {
+          throw new IOException(
+              "Record batch node " + i + " has invalid null count " + node.nullCount());
+        }
         if ((int) node.length() != node.length() || (int) node.nullCount() != node.nullCount()) {
           throw new IOException(
               "Cannot currently deserialize record batches with "
