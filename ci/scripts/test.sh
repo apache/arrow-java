@@ -17,7 +17,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -ex
+set -exo pipefail
 
 if [[ "${ARROW_JAVA_TEST:-ON}" != "ON" ]]; then
   exit
@@ -31,14 +31,72 @@ if [ -d "${java_jni_dist_dir}" ]; then
   java_jni_dist_dir="$(cd "${java_jni_dist_dir}" && pwd)"
 fi
 
-mvn="mvn -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
-# Use `2 * ncores` threads
-mvn="${mvn} -T 2C"
-mvn="${mvn} -Denforcer.skip=true"
+mvn=(
+  mvn
+  -B
+  -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
+  -T
+  2C
+  -Denforcer.skip=true
+)
+
+run_tests() {
+  if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
+    run_prebuilt_tests "${@}" surefire:test
+  else
+    "${@}" test
+  fi
+}
+
+run_prebuilt_tests() {
+  local log
+  log=$(mktemp)
+
+  "${@}" -Ddevelocity.cache.local.enabled=false | tee "${log}"
+
+  if grep -E "Compiling [0-9]+ source files?" "${log}"; then
+    echo "Unexpected compilation occurred while running prebuilt tests."
+    exit 1
+  fi
+
+  if ! grep -q "Tests run:" "${log}"; then
+    echo "No surefire test summary found; tests may have been skipped."
+    exit 1
+  fi
+
+  rm -f "${log}"
+}
 
 pushd "${build_dir}"
 
-${mvn} -Darrow.test.dataRoot="${source_dir}/testing/data" test
+if [[ "${ARROW_JAVA_TEST_BASE:-ON}" = "ON" ]]; then
+  if [[ "${ARROW_JAVA_TEST_PREBUILT:-OFF}" = "ON" ]]; then
+    run_prebuilt_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data" \
+      -pl "!vector" \
+      surefire:test
+    # Direct Surefire skips Vector's lifecycle-bound allocator test passes.
+    run_prebuilt_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data" \
+      -pl vector \
+      org.apache.maven.plugins:maven-surefire-plugin:test@default-test
+    run_prebuilt_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data" \
+      -pl vector \
+      org.apache.maven.plugins:maven-surefire-plugin:test@run-unsafe
+    run_prebuilt_tests \
+      "${mvn[@]}" \
+      -pl memory/memory-core \
+      org.apache.maven.plugins:maven-surefire-plugin:test@opens-tests
+  else
+    run_tests \
+      "${mvn[@]}" \
+      -Darrow.test.dataRoot="${source_dir}/testing/data"
+  fi
+fi
 
 projects=()
 if [ "${ARROW_JAVA_JNI}" = "ON" ]; then
@@ -47,7 +105,8 @@ if [ "${ARROW_JAVA_JNI}" = "ON" ]; then
   projects+=(gandiva)
 fi
 if [ "${#projects[@]}" -gt 0 ]; then
-  ${mvn} test \
+  run_tests \
+    "${mvn[@]}" \
     -Parrow-jni \
     -pl "$(
       IFS=,
@@ -57,7 +116,11 @@ if [ "${#projects[@]}" -gt 0 ]; then
 fi
 
 if [ "${ARROW_JAVA_CDATA}" = "ON" ]; then
-  ${mvn} test -Parrow-c-data -pl c -Darrow.c.jni.dist.dir="${java_jni_dist_dir}"
+  run_tests \
+    "${mvn[@]}" \
+    -Parrow-c-data \
+    -pl c \
+    -Darrow.c.jni.dist.dir="${java_jni_dist_dir}"
 fi
 
 popd

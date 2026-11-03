@@ -46,7 +46,7 @@ cp -r "${source_dir}/dev" "${build_dir}"
 # crawl back up to the top.  GNU realpath has --relative-to but this does not
 # work on macOS
 
-poms=$(find "${source_dir}" -not \( -path "${source_dir}"/build -prune \) -type f -name pom.xml)
+poms=$(find "${source_dir}" \( -path "${source_dir}"/build -o -path "${source_dir}"/.docker \) -prune -o -type f -name pom.xml -print)
 if [[ "$OSTYPE" == "darwin"* ]]; then
   poms=$(echo "$poms" | xargs -n1 python -c "import sys; import os.path; print(os.path.relpath(sys.argv[1], '${source_dir}'))")
 else
