@@ -29,6 +29,7 @@ import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
@@ -37,6 +38,7 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.ArrowTypeID;
 import org.apache.arrow.vector.types.pojo.DictionaryEncoding;
 import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.util.TransferPair;
 
 /** Importer for {@link ArrowArray}. */
 final class ArrayImporter {
@@ -101,10 +103,44 @@ final class ArrayImporter {
 
   private void doImport(ArrowArray.Snapshot snapshot) {
     checkState(snapshot.offset >= 0, "ArrowArray struct has negative offset (%s)", snapshot.offset);
+    checkState(snapshot.length >= 0, "ArrowArray struct has negative length (%s)", snapshot.length);
     if (snapshot.offset != 0 && snapshot.length != 0) {
-      importSliced(snapshot);
+      if (storageType().getTypeID() == ArrowTypeID.Struct) {
+        importSlicedStruct(snapshot);
+      } else {
+        importSliced(snapshot);
+      }
     } else {
       importUnsliced(snapshot, /* skippedRows= */ 0, /* trimChildren= */ false);
+    }
+  }
+
+  /**
+   * Imports a struct with a non-zero offset into the target itself, because transferring a struct
+   * matches its children by name, which loses children that have the same name as another. The
+   * offset of a struct applies to its children, so it is pushed into them, and only the validity
+   * bitmap of the struct itself is sliced.
+   */
+  private void importSlicedStruct(ArrowArray.Snapshot snapshot) {
+    long skippedRows = snapshot.offset & ~7L;
+    int unslicedLength = unslicedLength(snapshot, skippedRows);
+    int offset = (int) (snapshot.offset - skippedRows);
+    int length = (int) snapshot.length;
+    importChildren(snapshot, snapshot.offset, /* childRowsPerRow= */ 1);
+    importDictionary(snapshot);
+
+    snapshot.offset = 0;
+    snapshot.length = unslicedLength;
+    snapshot.null_count = unknownNullCount(snapshot);
+    try (StructVector unsliced = StructVector.empty("", allocator)) {
+      importBuffers(unsliced, snapshot, skippedRows);
+      TransferPair pair = unsliced.getTransferPair(allocator);
+      pair.splitAndTransfer(offset, length);
+      try (StructVector sliced = (StructVector) pair.getTo()) {
+        vector.loadFieldBuffers(
+            new ArrowFieldNode(length, sliced.getNullCount()),
+            Collections.singletonList(sliced.getValidityBuffer()));
+      }
     }
   }
 
@@ -119,11 +155,12 @@ final class ArrayImporter {
     // Run-end encoded arrays have no buffers, and their children are not indexed by row
     long skippedRows =
         storageType().getTypeID() == ArrowTypeID.RunEndEncoded ? 0 : snapshot.offset & ~7L;
-    int offset = checkedCastToInt(snapshot.offset - skippedRows);
-    int length = checkedCastToInt(snapshot.length);
+    int unslicedLength = unslicedLength(snapshot, skippedRows);
+    int offset = (int) (snapshot.offset - skippedRows);
+    int length = (int) snapshot.length;
 
     snapshot.offset = 0;
-    snapshot.length = Math.addExact(offset, length);
+    snapshot.length = unslicedLength;
     snapshot.null_count = unknownNullCount(snapshot);
 
     Field unslicedField = field != null ? field : vector.getField();
@@ -140,6 +177,23 @@ final class ArrayImporter {
       unslicedImporter.importUnsliced(snapshot, skippedRows, /* trimChildren= */ true);
       from.makeTransferPair(to).splitAndTransfer(offset, length);
     }
+  }
+
+  /**
+   * Returns how many rows a temporary vector needs for the rows of {@code snapshot} that follow its
+   * first {@code skippedRows} rows, which only run-end encoded arrays, whose rows cannot be
+   * skipped, can make more than a vector can hold.
+   */
+  private static int unslicedLength(ArrowArray.Snapshot snapshot, long skippedRows) {
+    long length = Math.addExact(snapshot.offset - skippedRows, snapshot.length);
+    checkState(
+        length <= Integer.MAX_VALUE,
+        "Cannot import an ArrowArray with offset %s and length %s, because a vector cannot hold"
+            + " the %s rows it has to import",
+        snapshot.offset,
+        snapshot.length,
+        length);
+    return (int) length;
   }
 
   /**
@@ -173,44 +227,56 @@ final class ArrayImporter {
   private void importUnsliced(
       ArrowArray.Snapshot snapshot, long skippedRows, boolean trimChildren) {
     // First import children (required for reconstituting parent array data)
+    importChildren(snapshot, skippedRows, trimChildren ? childRowsPerRow(storageType()) : 0);
+    importDictionary(snapshot);
+    importBuffers(vector, snapshot, skippedRows);
+  }
+
+  /**
+   * Imports the children of {@code snapshot}. With a non-zero {@code childRowsPerRow}, which is how
+   * many rows of each child a row of the array spans, each child is imported only for the rows of
+   * the array that follow its first {@code skippedRows} rows, rather than in full.
+   */
+  private void importChildren(
+      ArrowArray.Snapshot snapshot, long skippedRows, long childRowsPerRow) {
     long[] children =
         NativeUtil.toJavaArray(snapshot.children, checkedCastToInt(snapshot.n_children));
-    if (children != null && children.length > 0) {
-      List<FieldVector> childVectors = vector.getChildrenFromFields();
-      checkState(
-          children.length == childVectors.size(),
-          "ArrowArray struct has %s children (expected %s)",
-          children.length,
-          childVectors.size());
-      List<Field> childFields = field != null ? field.getChildren() : null;
-      long childRowsPerRow = trimChildren ? childRowsPerRow(storageType()) : 0;
-      for (int i = 0; i < children.length; i++) {
-        checkState(children[i] != NULL, "ArrowArray struct has NULL child at position %s", i);
-        ArrowArray.Snapshot child = ArrowArray.wrap(children[i]).snapshot();
-        if (childRowsPerRow != 0) {
-          long firstRow = Math.multiplyExact(skippedRows, childRowsPerRow);
-          long rowCount = Math.multiplyExact(snapshot.length, childRowsPerRow);
-          checkState(
-              child.length - firstRow >= rowCount,
-              "ArrowArray struct child at position %s has length %s, but its parent needs %s rows",
-              i,
-              child.length,
-              firstRow + rowCount);
-          child.offset = Math.addExact(child.offset, firstRow);
-          child.length = rowCount;
-          child.null_count = unknownNullCount(child);
-        }
-        Field childField =
-            childFields != null && childFields.size() == children.length
-                ? childFields.get(i)
-                : null;
-        ArrayImporter childImporter =
-            new ArrayImporter(allocator, childVectors.get(i), childField, dictionaryProvider);
-        childImporter.importChild(this, child);
-      }
+    if (children == null || children.length == 0) {
+      return;
     }
+    List<FieldVector> childVectors = vector.getChildrenFromFields();
+    checkState(
+        children.length == childVectors.size(),
+        "ArrowArray struct has %s children (expected %s)",
+        children.length,
+        childVectors.size());
+    List<Field> childFields = field != null ? field.getChildren() : null;
+    for (int i = 0; i < children.length; i++) {
+      checkState(children[i] != NULL, "ArrowArray struct has NULL child at position %s", i);
+      ArrowArray.Snapshot child = ArrowArray.wrap(children[i]).snapshot();
+      if (childRowsPerRow != 0) {
+        long firstRow = Math.multiplyExact(skippedRows, childRowsPerRow);
+        long rowCount = Math.multiplyExact(snapshot.length, childRowsPerRow);
+        checkState(
+            child.length - firstRow >= rowCount,
+            "ArrowArray struct child at position %s has length %s, but its parent needs %s rows",
+            i,
+            child.length,
+            firstRow + rowCount);
+        child.offset = Math.addExact(child.offset, firstRow);
+        child.length = rowCount;
+        child.null_count = unknownNullCount(child);
+      }
+      Field childField =
+          childFields != null && childFields.size() == children.length ? childFields.get(i) : null;
+      ArrayImporter childImporter =
+          new ArrayImporter(allocator, childVectors.get(i), childField, dictionaryProvider);
+      childImporter.importChild(this, child);
+    }
+  }
 
-    // Handle import of a dictionary encoded vector
+  /** Imports the dictionary of a dictionary encoded array. */
+  private void importDictionary(ArrowArray.Snapshot snapshot) {
     if (snapshot.dictionary != NULL) {
       DictionaryEncoding encoding = vector.getField().getDictionary();
       checkNotNull(encoding, "Missing encoding on import of ArrowArray with dictionary");
@@ -225,8 +291,13 @@ final class ArrayImporter {
           new ArrayImporter(allocator, dictionary.getVector(), dictionaryProvider);
       dictionaryImporter.importChild(this, ArrowArray.wrap(snapshot.dictionary).snapshot());
     }
+  }
 
-    // Import main data
+  /**
+   * Imports the buffers of {@code snapshot} into {@code target}, skipping the first {@code
+   * skippedRows} rows, which must be a multiple of 8.
+   */
+  private void importBuffers(FieldVector target, ArrowArray.Snapshot snapshot, long skippedRows) {
     ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
     long[] bufferPointers =
         NativeUtil.toJavaArray(snapshot.buffers, checkedCastToInt(snapshot.n_buffers));
@@ -238,9 +309,9 @@ final class ArrayImporter {
       if (bufferPointers == null || bufferPointers.length == 0) {
         buffers = Collections.emptyList();
       } else {
-        buffers = vector.getField().getType().accept(visitor);
+        buffers = target.getField().getType().accept(visitor);
       }
-      vector.loadFieldBuffers(fieldNode, buffers);
+      target.loadFieldBuffers(fieldNode, buffers);
     } catch (Exception e) {
       throw new IllegalArgumentException(
           "Could not load buffers for field "

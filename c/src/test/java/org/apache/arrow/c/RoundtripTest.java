@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,6 +45,7 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
+import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.ExtensionTypeVector;
@@ -96,6 +98,7 @@ import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
+import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.impl.UnionMapWriter;
 import org.apache.arrow.vector.extension.JsonType;
 import org.apache.arrow.vector.extension.OpaqueType;
@@ -1271,6 +1274,38 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testImportVectorSchemaRootWithDuplicatedFieldNamesWithNonZeroOffset() {
+    // Transferring a struct matches its children by name, which loses children with the same name
+    try (IntVector a1 = new IntVector("a", allocator);
+        IntVector a2 = new IntVector("a", allocator);
+        VarCharVector b = new VarCharVector("b", allocator)) {
+      setVector(a1, rows(i -> i % 5 == 0 ? null : i, Integer[]::new));
+      setVector(a2, rows(i -> i % 3 == 0 ? null : 100 + i, Integer[]::new));
+      setTestStrings(b);
+      VectorSchemaRoot source = new VectorSchemaRoot(Arrays.asList(a1, a2, b));
+      for (int offset : new int[] {3, 8, 13}) {
+        try (ArrowArray array = ArrowArray.allocateNew(allocator);
+            VectorSchemaRoot imported = VectorSchemaRoot.create(source.getSchema(), allocator)) {
+          Data.exportVectorSchemaRoot(allocator, source, null, array);
+          slice(array, offset, ROW_COUNT - offset);
+
+          Data.importIntoVectorSchemaRoot(allocator, array, imported, null);
+
+          assertEquals(ROW_COUNT - offset, imported.getRowCount());
+          for (int column = 0; column < 3; column++) {
+            for (int i = 0; i < imported.getRowCount(); i++) {
+              assertEquals(
+                  source.getVector(column).getObject(offset + i),
+                  imported.getVector(column).getObject(i),
+                  "column " + column + ", offset " + offset + ", index " + i);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @Test
   public void testImportVectorSchemaRootWithSlicedStructOfPlainExtension() {
     // The schema of the root has the extension type that the vector's getField() does not report
     Field field =
@@ -1433,6 +1468,60 @@ public class RoundtripTest {
   }
 
   @Test
+  public void testImportDenseUnionWithDescendingTypeIdsWithNonZeroOffset() {
+    // The children of a dense union need not be in the order of their type ids
+    try (DenseUnionVector source =
+        (DenseUnionVector) denseUnionWithDescendingTypeIds("source").createVector(allocator)) {
+      setValuesWithDescendingTypeIds(source, ROW_COUNT);
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportIntoDenseUnionWithDescendingTypeIdsWithNonZeroOffset() {
+    // Without a field, the importer creates its temporary vector from the target's getField()
+    Field field = denseUnionWithDescendingTypeIds("u");
+    try (DenseUnionVector source = (DenseUnionVector) field.createVector(allocator);
+        DenseUnionVector target = (DenseUnionVector) field.createVector(allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      setValuesWithDescendingTypeIds(source, 4);
+      Data.exportVector(allocator, source, null, array);
+      slice(array, 1, 3);
+
+      Data.importIntoVector(allocator, array, target, null);
+
+      assertEquals(3, target.getValueCount());
+      assertEquals(201, target.getObject(0));
+      assertEquals(102, target.getObject(1));
+      assertEquals(203, target.getObject(2));
+      assertEquals(field, target.getField());
+    }
+  }
+
+  /** A dense union of two int children, {@code a} with type id 10 and {@code b} with 5. */
+  private static Field denseUnionWithDescendingTypeIds(String name) {
+    return new Field(
+        name,
+        FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {10, 5})),
+        Arrays.asList(
+            Field.nullable("a", MinorType.INT.getType()),
+            Field.nullable("b", MinorType.INT.getType())));
+  }
+
+  /** Sets rows that alternate between a = 100 + row and b = 200 + row, starting with a. */
+  private static void setValuesWithDescendingTypeIds(DenseUnionVector vector, int rowCount) {
+    vector.allocateNew();
+    IntVector a = (IntVector) vector.getVectorByType((byte) 10);
+    IntVector b = (IntVector) vector.getVectorByType((byte) 5);
+    for (int i = 0; i < rowCount; i++) {
+      vector.setTypeId(i, (byte) (i % 2 == 0 ? 10 : 5));
+      vector.setOffset(i, i / 2);
+      (i % 2 == 0 ? a : b).setSafe(i / 2, (i % 2 == 0 ? 100 : 200) + i);
+    }
+    vector.setValueCount(rowCount);
+  }
+
+  @Test
   public void testImportDenseUnionWithOffsetGapsWithNonZeroOffset() {
     // The offsets of a dense union only have to increase, so they may skip values of a child
     try (DenseUnionVector source =
@@ -1496,16 +1585,149 @@ public class RoundtripTest {
   @Test
   public void testImportViewVarCharWithNonZeroOffset() {
     try (ViewVarCharVector source = new ViewVarCharVector("source", allocator)) {
+      setVector(source, testViewStrings());
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportViewVarBinaryWithNonZeroOffset() {
+    try (ViewVarBinaryVector source = new ViewVarBinaryVector("source", allocator)) {
+      setVector(source, testViewBytes());
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportVarBinaryWithNonZeroOffset() {
+    try (VarBinaryVector source = new VarBinaryVector("source", allocator)) {
+      setVector(source, testViewBytes());
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportLargeVarCharWithNonZeroOffset() {
+    try (LargeVarCharVector source = new LargeVarCharVector("source", allocator)) {
+      setVector(source, testViewStrings());
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportLargeVarBinaryWithNonZeroOffset() {
+    try (LargeVarBinaryVector source = new LargeVarBinaryVector("source", allocator)) {
+      setVector(source, testViewBytes());
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportDecimalWithNonZeroOffset() {
+    try (DecimalVector source = new DecimalVector("source", allocator, 10, 2)) {
+      setVector(source, rows(i -> i % 3 == 0 ? null : 1001L * i - 5000, Long[]::new));
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportDecimal256WithNonZeroOffset() {
+    try (Decimal256Vector source = new Decimal256Vector("source", allocator, 40, 2)) {
+      setVector(source, rows(i -> i % 3 == 0 ? null : 1001L * i - 5000, Long[]::new));
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportFixedSizeBinaryWithNonZeroOffset() {
+    try (FixedSizeBinaryVector source = new FixedSizeBinaryVector("source", allocator, 3)) {
       setVector(
           source,
           rows(
-              i ->
-                  i % 4 == 1
-                      ? null
-                      : i % 2 == 0 ? "short " + i : "a string longer than twelve bytes " + i,
-              String[]::new));
+              i -> i % 3 == 0 ? null : new byte[] {(byte) i, (byte) -i, (byte) (2 * i)},
+              byte[][]::new));
       assertSlicedImportsMatchSource(source);
     }
+  }
+
+  @Test
+  public void testImportFloat16WithNonZeroOffset() {
+    try (Float2Vector source = new Float2Vector("source", allocator)) {
+      setVector(source, rows(i -> i % 3 == 0 ? null : i / 4f - 2, Float[]::new));
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportTimeStampWithTimeZoneWithNonZeroOffset() {
+    try (TimeStampMicroTZVector source =
+        new TimeStampMicroTZVector("source", allocator, "Asia/Tokyo")) {
+      setVector(
+          source,
+          rows(i -> i % 3 == 0 ? null : 1_700_000_000_000_000L + 1_000_003L * i, Long[]::new));
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportListViewWithNonZeroOffset() {
+    try (ListViewVector source = ListViewVector.empty("source", allocator)) {
+      setVector(source, testListsWithoutNulls());
+      setTestListNulls(source::setNull);
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  @Test
+  public void testImportLargeListViewWithNonZeroOffset() {
+    try (LargeListViewVector source = LargeListViewVector.empty("source", allocator)) {
+      setVector(source, testListsWithoutNulls());
+      setTestListNulls(source::setNull);
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  /**
+   * Returns {@link #testLists()} with empty lists in place of the nulls, which the populators of
+   * list views do not take.
+   */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private static List<Integer>[] testListsWithoutNulls() {
+    List[] lists =
+        Arrays.stream(testLists())
+            .map(list -> list == null ? List.of() : list)
+            .toArray(List[]::new);
+    return lists;
+  }
+
+  /** Sets the rows that are null in {@link #testLists()} to null. */
+  private static void setTestListNulls(IntConsumer setNull) {
+    List<Integer>[] lists = testLists();
+    for (int i = 0; i < lists.length; i++) {
+      if (lists[i] == null) {
+        setNull.accept(i);
+      }
+    }
+  }
+
+  /**
+   * Strings of up to and over the 12 bytes that a view holds inline, some of which are not ASCII,
+   * and some nulls.
+   */
+  private static String[] testViewStrings() {
+    return rows(
+        i ->
+            i % 4 == 1
+                ? null
+                : i % 2 == 0 ? "é" + i + "日" : "a string longer than twelve bytes 日本語 😀 " + i,
+        String[]::new);
+  }
+
+  /** The UTF-8 bytes of {@link #testViewStrings()}. */
+  private static byte[][] testViewBytes() {
+    return Arrays.stream(testViewStrings())
+        .map(s -> s == null ? null : s.getBytes(StandardCharsets.UTF_8))
+        .toArray(byte[][]::new);
   }
 
   @ParameterizedTest
@@ -1710,7 +1932,8 @@ public class RoundtripTest {
 
   @Test
   public void testImportIntoStructWithPlainExtensionChildWithNonZeroOffset() {
-    // Without the imported field the importer cannot create a PlainVector for the struct's child
+    // The struct's child is imported into the destination's PlainVector without a field that
+    // reports its extension type, because structs are imported without a temporary vector
     Field field =
         new Field(
             "source",
@@ -1727,15 +1950,13 @@ public class RoundtripTest {
             Data.exportVector(allocator, source, null, array);
             slice(array, 9, 5);
 
-            Exception e =
-                assertThrows(
-                    UnsupportedOperationException.class,
-                    () -> Data.importIntoVector(allocator, array, destination, null));
-            assertEquals(
-                "Cannot import an ArrowArray with a non-zero offset into PlainVector p, because"
-                    + " its getField() does not report its extension type",
-                e.getMessage());
+            Data.importIntoVector(allocator, array, destination, null);
+
             assertInstanceOf(PlainVector.class, destination.getChild("p"));
+            assertEquals(5, destination.getValueCount());
+            for (int i = 0; i < 5; i++) {
+              assertEquals(source.getObject(9 + i), destination.getObject(i), "index " + i);
+            }
           }
         });
   }
@@ -1771,8 +1992,10 @@ public class RoundtripTest {
     return values;
   }
 
+  /** Strings with characters that are not ASCII, and some nulls. */
   private static void setTestStrings(VarCharVector vector) {
-    setVector(vector, rows(i -> i % 4 == 1 ? null : "s" + i, String[]::new));
+    String[] suffixes = {"é", "日本語", "😀"};
+    setVector(vector, rows(i -> i % 4 == 1 ? null : "s" + i + suffixes[i % 3], String[]::new));
   }
 
   private static void setTestUuids(UuidVector vector) {
@@ -1831,24 +2054,46 @@ public class RoundtripTest {
         }
         assertSameVectorClasses(source, imported);
         assertEquals(length, imported.getValueCount());
+        String range = "offset " + offset + ", length " + length;
+        assertEquals(expectedNullCount(source, offset, length), imported.getNullCount(), range);
         for (int i = 0; i < length; i++) {
-          assertEquals(
-              source.getObject(offset + i),
-              imported.getObject(i),
-              "offset " + offset + ", length " + length + ", index " + i);
+          Object expected = source.getObject(offset + i);
+          Object actual = imported.getObject(i);
+          if (expected instanceof byte[]) {
+            assertArrayEquals((byte[]) expected, (byte[]) actual, range + ", index " + i);
+          } else {
+            assertEquals(expected, actual, range + ", index " + i);
+          }
         }
       }
     }
   }
 
   /**
+   * Returns how many of the {@code length} rows of {@code vector} from {@code offset} are null, or
+   * 0 for unions and run-end encoded vectors, which have no validity bitmap of their own and always
+   * report a null count of 0.
+   */
+  private static int expectedNullCount(FieldVector vector, int offset, int length) {
+    if (vector instanceof UnionVector
+        || vector instanceof DenseUnionVector
+        || vector instanceof RunEndEncodedVector) {
+      return 0;
+    }
+    return (int) IntStream.range(offset, offset + length).filter(vector::isNull).count();
+  }
+
+  /**
    * Returns whether {@link ValueVectorUtility#validateFull} supports {@code vector}, which it does
-   * not for fixed-size lists, maps, run-end encoded vectors, or extension vectors that report their
-   * storage type.
+   * not for fixed-size lists, maps, list views, run-end encoded vectors, float16 vectors, or
+   * extension vectors that report their storage type.
    */
   private static boolean canValidate(FieldVector vector) {
     if (vector instanceof FixedSizeListVector
         || vector instanceof MapVector
+        || vector instanceof ListViewVector
+        || vector instanceof LargeListViewVector
+        || vector instanceof Float2Vector
         || vector instanceof RunEndEncodedVector
         || (vector instanceof ExtensionTypeVector
             && !(vector.getField().getType() instanceof ExtensionType))) {
@@ -2045,6 +2290,165 @@ public class RoundtripTest {
 
       Data.importIntoVector(allocator, array, destination, null);
       assertEquals(8, destination.getValueCount());
+    }
+  }
+
+  @Test
+  public void testImportStructOfMapAndListOfStructsWithNonZeroOffset() {
+    // m and the structs in ls are nullable, while ls and the y of its structs are not
+    Field entries =
+        new Field(
+            "entries",
+            FieldType.notNullable(ArrowType.Struct.INSTANCE),
+            Arrays.asList(
+                Field.notNullable("key", MinorType.BIGINT.getType()),
+                Field.nullable("value", MinorType.INT.getType())));
+    Field item =
+        new Field(
+            "item",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Arrays.asList(
+                Field.nullable("x", MinorType.INT.getType()),
+                Field.notNullable("y", MinorType.INT.getType())));
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Arrays.asList(
+                new Field(
+                    "m",
+                    FieldType.nullable(new ArrowType.Map(false)),
+                    Collections.singletonList(entries)),
+                new Field(
+                    "ls",
+                    FieldType.notNullable(ArrowType.List.INSTANCE),
+                    Collections.singletonList(item))));
+    try (StructVector source = (StructVector) field.createVector(allocator)) {
+      writeTestMaps((MapVector) source.getChild("m"));
+      writeTestListsOfStructs((ListVector) source.getChild("ls"));
+      setStructRowsDefined(source);
+      assertSlicedImportsMatchSource(source);
+    }
+  }
+
+  /** Writes lists of up to 2 structs, whose x is null in some of them. */
+  private static void writeTestListsOfStructs(ListVector vector) {
+    vector.allocateNew();
+    UnionListWriter writer = vector.getWriter();
+    for (int i = 0; i < ROW_COUNT; i++) {
+      writer.setPosition(i);
+      writer.startList();
+      for (int j = 0; j < i % 3; j++) {
+        writer.struct().start();
+        if ((i + j) % 4 != 0) {
+          writer.struct().integer("x").writeInt(10 * i + j);
+        }
+        writer.struct().integer("y").writeInt(-10 * i - j);
+        writer.struct().end();
+      }
+      writer.endList();
+    }
+    writer.setValueCount(ROW_COUNT);
+  }
+
+  @Test
+  public void testImportListWithChildOffsetWithNonZeroOffset() {
+    // Both the list and its child have an offset, and the list's offsets count from the child's
+    try (ListVector source = ListVector.empty("source", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator);
+        ArrowSchema schema = ArrowSchema.allocateNew(allocator)) {
+      setVector(source, List.of(0, 1), List.of(2), List.of(3, 4, 5), List.of(), List.of(6, 7));
+      // Values that only the offset of the child makes reachable
+      IntVector values = (IntVector) source.getDataVector();
+      values.setSafe(8, 8);
+      values.setSafe(9, 9);
+      values.setValueCount(10);
+      Data.exportField(allocator, source.getField(), null, schema);
+      Data.exportVector(allocator, source, null, array);
+      slice(array, 1, 3);
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      slice(ArrowArray.wrap(NativeUtil.toJavaArray(snapshot.children, 1)[0]), 2, 8);
+
+      try (FieldVector imported = Data.importVector(allocator, array, schema, null)) {
+        assertEquals(3, imported.getValueCount());
+        assertEquals(List.of(4), imported.getObject(0));
+        assertEquals(List.of(5, 6, 7), imported.getObject(1));
+        assertEquals(List.of(), imported.getObject(2));
+      }
+    }
+  }
+
+  @Test
+  public void testImportArrayWithNegativeOffsetFails() {
+    assertSliceRejected(-1, 2, "ArrowArray struct has negative offset (-1)");
+  }
+
+  @Test
+  public void testImportArrayWithNegativeLengthFails() {
+    assertSliceRejected(1, -2, "ArrowArray struct has negative length (-2)");
+  }
+
+  private void assertSliceRejected(long offset, long length, String message) {
+    try (IntVector source = new IntVector("source", allocator);
+        IntVector destination = new IntVector("destination", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      setVector(source, 1, 2, 3);
+      Data.exportVector(allocator, source, null, array);
+      slice(array, offset, length);
+
+      IllegalStateException e =
+          assertThrows(
+              IllegalStateException.class,
+              () -> Data.importIntoVector(allocator, array, destination, null));
+      assertEquals(message, e.getMessage());
+    }
+  }
+
+  @Test
+  public void testImportSliceWithOffsetBeyondIntRange() {
+    // The importer skips the rows before the slice by advancing the buffer pointers, so the array
+    // the slice belongs to can have more rows than a vector. Moving the pointers back by the rows
+    // that are skipped makes the buffers of the source look like those of such an array.
+    long skippedRows = 1L << 31;
+    try (IntVector source = new IntVector("source", allocator);
+        IntVector destination = new IntVector("destination", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator)) {
+      setVector(source, rows(i -> i % 3 == 0 ? null : i, Integer[]::new));
+      Data.exportVector(allocator, source, null, array);
+      ArrowArray.Snapshot snapshot = array.snapshot();
+      long validity = MemoryUtil.getLong(snapshot.buffers);
+      long data = MemoryUtil.getLong(snapshot.buffers + 8);
+      MemoryUtil.putLong(snapshot.buffers, validity - skippedRows / 8);
+      MemoryUtil.putLong(snapshot.buffers + 8, data - skippedRows * 4);
+      slice(array, skippedRows + 3, 5);
+
+      Data.importIntoVector(allocator, array, destination, null);
+
+      assertEquals(5, destination.getValueCount());
+      for (int i = 0; i < 5; i++) {
+        assertEquals(source.getObject(3 + i), destination.getObject(i), "index " + i);
+      }
+    }
+  }
+
+  @Test
+  public void testImportRunEndEncodedSliceBeyondIntRangeFails() {
+    // Run ends count from the start of the array, so a vector has to hold the rows before the slice
+    try (RunEndEncodedVector source = RunEndEncodedVector.empty("source", allocator);
+        ArrowArray array = ArrowArray.allocateNew(allocator);
+        ArrowSchema schema = ArrowSchema.allocateNew(allocator)) {
+      setVector(source, List.of(2, 3, 6), List.of(1, 2, 3));
+      Data.exportField(allocator, source.getField(), null, schema);
+      Data.exportVector(allocator, source, null, array);
+      slice(array, Integer.MAX_VALUE - 2, 5);
+
+      IllegalStateException e =
+          assertThrows(
+              IllegalStateException.class, () -> Data.importVector(allocator, array, schema, null));
+      assertEquals(
+          "Cannot import an ArrowArray with offset 2147483645 and length 5, because a vector"
+              + " cannot hold the 2147483650 rows it has to import",
+          e.getMessage());
     }
   }
 

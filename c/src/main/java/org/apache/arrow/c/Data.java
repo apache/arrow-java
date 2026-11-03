@@ -40,8 +40,9 @@ import org.apache.arrow.vector.types.pojo.Schema;
  *
  * <p>Importing {@link ArrowArray ArrowArrays} with a non-zero offset is not always zero-copy:
  * buffers that cannot be sliced at the offset, such as offset buffers or view data, are copied.
- * Importing such an array into an existing vector fails if an extension vector nested in it does
- * not report its extension type in {@link FieldVector#getField()}.
+ * Importing such an array into an existing vector fails if an extension vector nested in a list,
+ * map, union or other vector that is not a struct does not report its extension type in {@link
+ * FieldVector#getField()}.
  */
 public final class Data {
 

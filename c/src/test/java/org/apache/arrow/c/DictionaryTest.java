@@ -181,31 +181,80 @@ public class DictionaryTest {
     }
   }
 
+  @Test
+  public void testWithDictionaryValuesWithNonZeroOffset() throws Exception {
+    // The indices refer to the values of the dictionary from its offset
+    String[] dictionaryValues = {"aa", "é", "日本語", "😀"};
+    String[] values = {"é", "😀", null, "aa", "日本語", "日本語", "é"};
+    DictionaryEncoding encoding = new DictionaryEncoding(0L, false, /* indexType= */ null);
+    for (int offset : new int[] {1, 9}) {
+      String[] unslicedDictionaryValues = new String[offset + dictionaryValues.length];
+      for (int i = 0; i < offset; i++) {
+        unslicedDictionaryValues[i] = "unused " + i;
+      }
+      System.arraycopy(
+          dictionaryValues, 0, unslicedDictionaryValues, offset, dictionaryValues.length);
+      try (DictionaryProvider.MapDictionaryProvider provider =
+              new DictionaryProvider.MapDictionaryProvider();
+          VarCharVector dictionaryVector = newStringVector("dict", dictionaryValues);
+          VarCharVector vector = newStringVector("vector", values);
+          IntVector encodedVector =
+              (IntVector)
+                  DictionaryEncoder.encode(vector, new Dictionary(dictionaryVector, encoding));
+          ArrowSchema consumerArrowSchema = ArrowSchema.allocateNew(allocator);
+          ArrowArray consumerArrowArray = ArrowArray.allocateNew(allocator)) {
+        provider.put(new Dictionary(newStringVector("dict", unslicedDictionaryValues), encoding));
+        Data.exportVector(
+            allocator, encodedVector, provider, consumerArrowArray, consumerArrowSchema);
+        ArrowArray dictionary = ArrowArray.wrap(consumerArrowArray.snapshot().dictionary);
+        ArrowArray.Snapshot snapshot = dictionary.snapshot();
+        snapshot.offset = offset;
+        snapshot.length = dictionaryValues.length;
+        dictionary.save(snapshot);
+
+        try (CDataDictionaryProvider cDictionaryProvider = new CDataDictionaryProvider();
+            FieldVector imported =
+                Data.importVector(
+                    allocator, consumerArrowArray, consumerArrowSchema, cDictionaryProvider);
+            VarCharVector decoded =
+                (VarCharVector)
+                    DictionaryEncoder.decode(imported, cDictionaryProvider.lookup(0L))) {
+          assertEquals(values.length, decoded.getValueCount());
+          for (int i = 0; i < values.length; i++) {
+            String actual =
+                decoded.isNull(i) ? null : new String(decoded.get(i), StandardCharsets.UTF_8);
+            assertEquals(values[i], actual, "offset " + offset + ", index " + i);
+          }
+        }
+      }
+    }
+  }
+
   /** Registers an aa/bb/cc dictionary with {@code provider} and encodes values with it. */
   private IntVector createEncodedVector(
       DictionaryProvider.MapDictionaryProvider provider, String... values) {
-    final VarCharVector dictVector = new VarCharVector("dict", allocator);
-    dictVector.allocateNewSafe();
-    dictVector.setSafe(0, "aa".getBytes(StandardCharsets.UTF_8));
-    dictVector.setSafe(1, "bb".getBytes(StandardCharsets.UTF_8));
-    dictVector.setSafe(2, "cc".getBytes(StandardCharsets.UTF_8));
-    dictVector.setValueCount(3);
     Dictionary dictionary =
-        new Dictionary(dictVector, new DictionaryEncoding(0L, false, /* indexType= */ null));
+        new Dictionary(
+            newStringVector("dict", "aa", "bb", "cc"),
+            new DictionaryEncoding(0L, false, /* indexType= */ null));
     provider.put(dictionary);
-
-    try (VarCharVector vector = new VarCharVector("vector", allocator)) {
-      vector.allocateNewSafe();
-      for (int i = 0; i < values.length; i++) {
-        if (values[i] == null) {
-          vector.setNull(i);
-        } else {
-          vector.setSafe(i, values[i].getBytes(StandardCharsets.UTF_8));
-        }
-      }
-      vector.setValueCount(values.length);
+    try (VarCharVector vector = newStringVector("vector", values)) {
       return (IntVector) DictionaryEncoder.encode(vector, dictionary);
     }
+  }
+
+  private VarCharVector newStringVector(String name, String... values) {
+    VarCharVector vector = new VarCharVector(name, allocator);
+    vector.allocateNewSafe();
+    for (int i = 0; i < values.length; i++) {
+      if (values[i] == null) {
+        vector.setNull(i);
+      } else {
+        vector.setSafe(i, values[i].getBytes(StandardCharsets.UTF_8));
+      }
+    }
+    vector.setValueCount(values.length);
+    return vector;
   }
 
   @Test
