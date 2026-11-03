@@ -518,15 +518,12 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
 
   @Override
   public Field getField() {
-    int childCount = (int) Arrays.stream(typeFields).filter(field -> field != null).count();
-    List<org.apache.arrow.vector.types.pojo.Field> childFields = new ArrayList<>(childCount);
-    int[] typeIds = new int[childCount];
-    for (int i = 0; i < typeFields.length; i++) {
-      if (typeFields[i] != null) {
-        int curIdx = childFields.size();
-        typeIds[curIdx] = i;
-        childFields.add(typeFields[i]);
-      }
+    // The children keep their order, which is not necessarily the order of their type ids
+    List<org.apache.arrow.vector.types.pojo.Field> childFields = new ArrayList<>(nextTypeId);
+    int[] typeIds = new int[nextTypeId];
+    for (int i = 0; i < nextTypeId; i++) {
+      typeIds[i] = typeMapFields[i];
+      childFields.add(typeFields[typeMapFields[i]]);
     }
 
     FieldType fieldType;
@@ -634,6 +631,7 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
         to.childVectors[typeId] = dstVec;
         internalTransferPairs[i] = srcVec.makeTransferPair(dstVec);
       }
+      to.nextTypeId = (byte) Math.max(to.nextTypeId, nextTypeId);
     }
 
     @Override
@@ -701,19 +699,33 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
         }
       }
 
-      // transfer vector values, and copy those of children whose selected values have gaps
+      // copy the values of children whose selected values have gaps, before transferring those of
+      // the other children, so that a child that cannot copy its values leaves the target empty
+      for (int i = startIndex; i < startIndex + length; i++) {
+        byte typeId = typeBuffer.getByte(i);
+        if (typeId >= 0 && !contiguous[childIndexes[typeId]]) {
+          int child = childIndexes[typeId];
+          try {
+            internalTransferPairs[child].copyValueSafe(
+                offsetBuffer.getInt((long) i * OFFSET_WIDTH),
+                to.offsetBuffer.getInt((long) (i - startIndex) * OFFSET_WIDTH));
+          } catch (UnsupportedOperationException e) {
+            to.clear();
+            ValueVector childVector = internalStruct.getVectorById(child);
+            throw new UnsupportedOperationException(
+                String.format(
+                    "Cannot split dense union %s: the values its rows select from child %s (%s)"
+                        + " are not consecutive, and copying them is not supported",
+                    getName(), childVector.getName(), childVector.getClass().getSimpleName()),
+                e);
+          }
+        }
+      }
+      // transfer the values of the other children
       for (int i = 0; i < nextTypeId; i++) {
         if (childCounts[i] > 0 && contiguous[i]) {
           internalTransferPairs[i].splitAndTransfer(childStarts[i], childCounts[i]);
           to.childVectors[typeMapFields[i]] = internalTransferPairs[i].getTo();
-        }
-      }
-      for (int i = startIndex; i < startIndex + length; i++) {
-        byte typeId = typeBuffer.getByte(i);
-        if (typeId >= 0 && !contiguous[childIndexes[typeId]]) {
-          internalTransferPairs[childIndexes[typeId]].copyValueSafe(
-              offsetBuffer.getInt((long) i * OFFSET_WIDTH),
-              to.offsetBuffer.getInt((long) (i - startIndex) * OFFSET_WIDTH));
         }
       }
       for (int i = 0; i < nextTypeId; i++) {
