@@ -708,7 +708,14 @@ public class MessageSerializer {
         // ARROW-6313, if the first 4 bytes are continuation message, read the next 4 for the length
         if (in.readFully(buffer) == 4) {
           messageLength = MessageSerializer.bytesToInt(buffer.array());
+        } else {
+          // Stream ended right after the continuation token, treat as end-of-stream.
+          return null;
         }
+      }
+
+      if (messageLength < 0) {
+        throw new IOException("Invalid message length: " + messageLength);
       }
 
       // Length of 0 indicates end of stream
