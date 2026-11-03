@@ -33,6 +33,7 @@ import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 import org.apache.arrow.flatbuf.FieldNode;
 import org.apache.arrow.flatbuf.RecordBatch;
 import org.apache.arrow.memory.ArrowBuf;
@@ -50,6 +51,9 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class MessageSerializerTest {
 
@@ -223,27 +227,45 @@ public class MessageSerializerTest {
     alloc.close();
   }
 
-  @Test
-  public void testNegativeNodeLengthDoesNotLeakBody() {
-    RecordBatch recordBatchFB = recordBatchWithNode(-100, 0);
-    try (BufferAllocator allocator = new RootAllocator()) {
-      ArrowBuf body = allocator.buffer(8);
-      assertThrows(
-          IllegalArgumentException.class,
-          () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
-      assertEquals(0, allocator.getAllocatedMemory());
-    }
-  }
-
-  @Test
-  public void testNodeLengthAboveIntRangeDoesNotLeakBody() {
-    RecordBatch recordBatchFB = recordBatchWithNode(1L << 32, 0);
+  @ParameterizedTest
+  @MethodSource("invalidFieldNodes")
+  public void testInvalidFieldNodeRejectedWithoutLeakingBody(long length, long nullCount) {
+    RecordBatch recordBatchFB = recordBatchWithNode(length, nullCount);
     try (BufferAllocator allocator = new RootAllocator()) {
       ArrowBuf body = allocator.buffer(8);
       assertThrows(
           IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
       assertEquals(0, allocator.getAllocatedMemory());
     }
+  }
+
+  static Stream<Arguments> invalidFieldNodes() {
+    return Stream.of(
+        Arguments.of(-100L, 0L),
+        Arguments.of(Long.MIN_VALUE, 0L),
+        Arguments.of(Integer.MAX_VALUE + 1L, 0L),
+        Arguments.of(1L << 32, 0L),
+        Arguments.of(10L, -2L));
+  }
+
+  @ParameterizedTest
+  @MethodSource("validFieldNodes")
+  public void testValidFieldNodeDeserialized(long length, long nullCount) throws IOException {
+    RecordBatch recordBatchFB = recordBatchWithNode(length, nullCount);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      try (ArrowRecordBatch batch = MessageSerializer.deserializeRecordBatch(recordBatchFB, body)) {
+        ArrowFieldNode node = batch.getNodes().get(0);
+        assertEquals(length, node.getLength());
+        assertEquals(nullCount, node.getNullCount());
+      }
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> validFieldNodes() {
+    return Stream.of(
+        Arguments.of(0L, 0L), Arguments.of(10L, -1L), Arguments.of((long) Integer.MAX_VALUE, 0L));
   }
 
   private static RecordBatch recordBatchWithNode(long length, long nullCount) {
