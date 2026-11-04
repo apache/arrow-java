@@ -169,9 +169,7 @@ public class ConnectionTest {
     properties.put("password", passTest);
     final String invalidUrl = "jdbc:arrow-flight-sql://";
 
-    assertThrows(
-        SQLException.class,
-        () -> DriverManager.getConnection(invalidUrl, properties));
+    assertThrows(SQLException.class, () -> DriverManager.getConnection(invalidUrl, properties));
   }
 
   /**
@@ -212,9 +210,7 @@ public class ConnectionTest {
     final String invalidUrl =
         "jdbc:arrow-flight-sql://" + FLIGHT_SERVER_TEST_EXTENSION.getHost() + ":" + invalidPort;
 
-    assertThrows(
-        SQLException.class,
-        () -> DriverManager.getConnection(invalidUrl, properties));
+    assertThrows(SQLException.class, () -> DriverManager.getConnection(invalidUrl, properties));
   }
 
   /**
