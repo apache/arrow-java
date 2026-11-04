@@ -137,6 +137,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     assertNull(builder.password);
     assertTrue(builder.useEncryption);
     assertFalse(builder.disableCertificateVerification);
+    assertNull(builder.hostnameOverride);
     assertNull(builder.trustStorePath);
     assertNull(builder.trustStorePassword);
     assertTrue(builder.useSystemTrustStore);
@@ -150,6 +151,18 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     assertNull(builder.flightClientCache);
     assertNull(builder.connectTimeout);
     assertNull(builder.driverVersion);
+  }
+
+  @Test
+  public void testHostnameOverrideIsCopied() {
+    final String hostnameOverride = "flight.example.com";
+    final ArrowFlightSqlClientHandler.Builder rootBuilder =
+        new ArrowFlightSqlClientHandler.Builder().withHostnameOverride(hostnameOverride);
+
+    final ArrowFlightSqlClientHandler.Builder copiedBuilder =
+        new ArrowFlightSqlClientHandler.Builder(rootBuilder);
+
+    assertEquals(hostnameOverride, copiedBuilder.hostnameOverride);
   }
 
   @Test

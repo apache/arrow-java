@@ -112,6 +112,15 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     return ArrowFlightConnectionProperty.TLS_ROOT_CERTS.getString(properties);
   }
 
+  /**
+   * Gets the hostname used for TLS certificate verification and SNI, if configured.
+   *
+   * @return the hostname override, or null when not configured.
+   */
+  public String getHostnameOverride() {
+    return ArrowFlightConnectionProperty.HOSTNAME_OVERRIDE.getString(properties);
+  }
+
   public String getClientCertificatePath() {
     return ArrowFlightConnectionProperty.CLIENT_CERTIFICATE.getString(properties);
   }
@@ -254,6 +263,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     PASSWORD("password", null, Type.STRING, false),
     USE_ENCRYPTION("useEncryption", true, Type.BOOLEAN, false),
     CERTIFICATE_VERIFICATION("disableCertificateVerification", false, Type.BOOLEAN, false),
+    HOSTNAME_OVERRIDE("hostnameOverride", null, Type.STRING, false),
     TRUST_STORE("trustStore", null, Type.STRING, false),
     TRUST_STORE_PASSWORD("trustStorePassword", null, Type.STRING, false),
     USE_SYSTEM_TRUST_STORE("useSystemTrustStore", true, Type.BOOLEAN, false),

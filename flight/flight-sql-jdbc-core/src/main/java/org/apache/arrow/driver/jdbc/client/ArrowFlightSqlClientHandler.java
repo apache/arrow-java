@@ -188,6 +188,13 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                     .withHost(endpointUri.getHost())
                     .withPort(endpointUri.getPort())
                     .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS))
+                    // An override belongs to the original connection host, not arbitrary endpoints.
+                    .withHostnameOverride(
+                        endpointUri.getHost() != null
+                                && this.builder.host != null
+                                && endpointUri.getHost().equalsIgnoreCase(this.builder.host)
+                            ? this.builder.hostnameOverride
+                            : null)
                     .withClientCache(flightClientCache)
                     .withConnectTimeout(builder.connectTimeout);
 
@@ -677,6 +684,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting boolean disableCertificateVerification;
 
+    @VisibleForTesting @Nullable String hostnameOverride;
+
     @VisibleForTesting boolean useSystemTrustStore = true;
 
     @VisibleForTesting String tlsRootCertificatesPath;
@@ -732,6 +741,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.token = original.token;
       this.useEncryption = original.useEncryption;
       this.disableCertificateVerification = original.disableCertificateVerification;
+      this.hostnameOverride = original.hostnameOverride;
       this.useSystemTrustStore = original.useSystemTrustStore;
       this.tlsRootCertificatesPath = original.tlsRootCertificatesPath;
       this.clientCertificatePath = original.clientCertificatePath;
@@ -837,6 +847,17 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     public Builder withDisableCertificateVerification(
         final boolean disableCertificateVerification) {
       this.disableCertificateVerification = disableCertificateVerification;
+      return this;
+    }
+
+    /**
+     * Sets the hostname used for TLS certificate verification and SNI.
+     *
+     * @param hostnameOverride the hostname override, or null to use the connection host.
+     * @return this instance.
+     */
+    public Builder withHostnameOverride(@Nullable final String hostnameOverride) {
+      this.hostnameOverride = hostnameOverride;
       return this;
     }
 
@@ -1065,6 +1086,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         buildTimeMiddlewareFactories.forEach(clientBuilder::intercept);
         if (useEncryption) {
           clientBuilder.useTls();
+          if (hostnameOverride != null) {
+            clientBuilder.overrideHostname(hostnameOverride);
+          }
         }
         Location location = getLocation();
         clientBuilder.location(location);

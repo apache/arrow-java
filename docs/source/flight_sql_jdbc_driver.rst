@@ -93,6 +93,10 @@ case-sensitive. The supported parameters are:
      - false
      - When TLS is enabled, whether to verify the server certificate
 
+   * - hostnameOverride
+     - null
+     - When TLS is enabled, the hostname used for server certificate verification and SNI instead of the host in the JDBC URL
+
    * - password
      - null
      - The password for user/password authentication
