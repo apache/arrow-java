@@ -22,6 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import io.grpc.Metadata;
+import io.grpc.ServerCall;
+import io.grpc.ServerCallHandler;
+import io.grpc.ServerInterceptor;
+import io.grpc.netty.NettyServerBuilder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
@@ -35,6 +40,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.FlightSqlTestCertificates;
@@ -76,6 +83,8 @@ public class ConnectionTlsHostnameOverrideTest {
       FlightSqlTestCertificates.exampleTlsCerts().get(0);
   private static final String tlsRootCertsPath = certKey.cert.getPath();
 
+  private static final AtomicReference<String> tlsServerAuthority = new AtomicReference<>();
+
   private static BufferAllocator allocator;
   private static FlightServer tlsServer;
 
@@ -84,13 +93,7 @@ public class ConnectionTlsHostnameOverrideTest {
     DriverManager.registerDriver(new ArrowFlightJdbcDriver());
     allocator = new RootAllocator(Long.MAX_VALUE);
     tlsServer =
-        FlightServer.builder(
-                allocator, Location.forGrpcTls(IP_ADDRESS, 0), new MockFlightSqlProducer())
-            .headerAuthenticator(
-                new UserPasswordAuthentication.Builder()
-                    .user(USER, PASSWORD)
-                    .build()
-                    .authenticate())
+        serverBuilder(Location.forGrpcTls(IP_ADDRESS, 0), tlsServerAuthority)
             .useTls(certKey.cert, certKey.key)
             .build()
             .start();
@@ -100,6 +103,32 @@ public class ConnectionTlsHostnameOverrideTest {
   public static void tearDown() throws Exception {
     tlsServer.close();
     allocator.close();
+  }
+
+  /**
+   * Creates a server that requires {@link #USER} and {@link #PASSWORD} and records the {@code
+   * :authority} of each call it receives in {@code authority}.
+   */
+  private static FlightServer.Builder serverBuilder(
+      final Location location, final AtomicReference<String> authority) {
+    return FlightServer.builder(allocator, location, new MockFlightSqlProducer())
+        .headerAuthenticator(
+            new UserPasswordAuthentication.Builder().user(USER, PASSWORD).build().authenticate())
+        .transportHint(
+            "grpc.builderConsumer",
+            (Consumer<NettyServerBuilder>)
+                builder ->
+                    builder.intercept(
+                        new ServerInterceptor() {
+                          @Override
+                          public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
+                              final ServerCall<ReqT, RespT> call,
+                              final Metadata headers,
+                              final ServerCallHandler<ReqT, RespT> next) {
+                            authority.set(call.getAuthority());
+                            return next.startCall(call, headers);
+                          }
+                        }));
   }
 
   private static String tlsUrl(final String host, final int port) throws Exception {
@@ -185,18 +214,38 @@ public class ConnectionTlsHostnameOverrideTest {
   }
 
   @Test
+  public void testHostnameOverrideIsSentAsAuthority() throws Exception {
+    // The override replaces the whole authority, so the port is only sent if the override has one.
+    tlsServerAuthority.set(null);
+    try (Connection connection =
+        DriverManager.getConnection(
+            serverUrl(IP_ADDRESS) + "&hostnameOverride=" + CERTIFICATE_HOSTNAME)) {
+      assertEquals(CERTIFICATE_HOSTNAME, tlsServerAuthority.get());
+    }
+
+    // With a port, only the hostname is used to verify the server certificate.
+    final String overrideWithPort = CERTIFICATE_HOSTNAME + ":" + tlsServer.getPort();
+    tlsServerAuthority.set(null);
+    try (Connection connection =
+        DriverManager.getConnection(
+            serverUrl(IP_ADDRESS) + "&hostnameOverride=" + overrideWithPort)) {
+      assertEquals(overrideWithPort, tlsServerAuthority.get());
+    }
+  }
+
+  @Test
   public void testHostnameOverrideIsIgnoredWithoutEncryption() throws Exception {
+    final AtomicReference<String> authority = new AtomicReference<>();
     try (FlightServer server =
-            FlightServer.builder(
-                    allocator, Location.forGrpcInsecure(IP_ADDRESS, 0), new MockFlightSqlProducer())
-                .build()
-                .start();
+            serverBuilder(Location.forGrpcInsecure(IP_ADDRESS, 0), authority).build().start();
         Connection connection =
             DriverManager.getConnection(
                 String.format(
-                    "jdbc:arrow-flight-sql://%s:%d?useEncryption=false&hostnameOverride=%s",
-                    IP_ADDRESS, server.getPort(), "other.example.com"))) {
-      assertTrue(connection.isValid(0));
+                    "jdbc:arrow-flight-sql://%s:%d?useEncryption=false&user=%s&password=%s"
+                        + "&hostnameOverride=%s",
+                    IP_ADDRESS, server.getPort(), USER, PASSWORD, "other.example.com"))) {
+      // The connection's own host and port are sent instead of the override.
+      assertEquals(IP_ADDRESS + ":" + server.getPort(), authority.get());
     }
   }
 

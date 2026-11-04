@@ -28,6 +28,7 @@ import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USE_CLIENT_CACHE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USE_ENCRYPTION;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.Duration;
@@ -37,6 +38,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -87,6 +89,19 @@ public final class ArrowFlightConnectionConfigImplTest {
   public void testUseEncryptionRejectsFalsyValues(String value) {
     properties.put(USE_ENCRYPTION.camelName(), value);
     assertThat(arrowFlightConnectionConfig.useEncryption(), is(false));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"", " "})
+  public void testBlankHostnameOverrideIsNull(String value) {
+    properties.put(HOSTNAME_OVERRIDE.camelName(), value);
+    assertThat(arrowFlightConnectionConfig.getHostnameOverride(), is(nullValue()));
+  }
+
+  @Test
+  public void testHostnameOverrideIsTrimmed() {
+    properties.put(HOSTNAME_OVERRIDE.camelName(), " flight.example.com ");
+    assertThat(arrowFlightConnectionConfig.getHostnameOverride(), is("flight.example.com"));
   }
 
   public static Stream<Arguments> provideParameters() {
