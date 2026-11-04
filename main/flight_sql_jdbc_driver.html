@@ -265,7 +265,7 @@
           <section id="arrow-flight-sql-jdbc-driver">
 <h1>Arrow Flight SQL JDBC Driver<a class="headerlink" href="#arrow-flight-sql-jdbc-driver" title="Link to this heading">¶</a></h1>
 <p>The Flight SQL JDBC driver is a JDBC driver implementation that uses
-the <a class="reference external" href="https://arrow.apache.org/docs/format/FlightSql.html" title="(in Apache Arrow v26.0.0)"><span class="xref std std-doc">Flight SQL protocol</span></a> under
+the <a class="reference external" href="https://arrow.apache.org/docs/format/FlightSql.html" title="(in Apache Arrow v26.0.1)"><span class="xref std std-doc">Flight SQL protocol</span></a> under
 the hood.  This driver can be used with any database that implements
 Flight SQL.</p>
 <section id="installation-and-requirements">
@@ -357,34 +357,45 @@ case-sensitive. The supported parameters are:</p>
 <td><p>Path to PEM-encoded root certificates for TLS - use this as
 an alternative to <code class="docutils literal notranslate"><span class="pre">trustStore</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p>clientCertificate</p></td>
+<tr class="row-odd"><td><p>hostnameOverride</p></td>
+<td><p>null</p></td>
+<td><p>When TLS is enabled, the hostname to verify the server certificate
+against and to send for SNI and as the gRPC <code class="docutils literal notranslate"><span class="pre">:authority</span></code> header,
+instead of <strong>HOSTNAME</strong>. Use this when
+connecting through a tunnel, a private endpoint, or an IP address
+that does not match the server certificate. Endpoints returned by
+the server are only verified against this hostname if they are on
+the same host and port as the connection. Ignored when
+<code class="docutils literal notranslate"><span class="pre">useEncryption</span></code> is false.</p></td>
+</tr>
+<tr class="row-even"><td><p>clientCertificate</p></td>
 <td><p>null</p></td>
 <td><p>Path to PEM-encoded client mTLS certificate when the Flight
 SQL server requires client verification.</p></td>
 </tr>
-<tr class="row-even"><td><p>clientKey</p></td>
+<tr class="row-odd"><td><p>clientKey</p></td>
 <td><p>null</p></td>
 <td><p>Path to PEM-encoded client mTLS key when the Flight
 SQL server requires client verification.</p></td>
 </tr>
-<tr class="row-odd"><td><p>useEncryption</p></td>
+<tr class="row-even"><td><p>useEncryption</p></td>
 <td><p>true</p></td>
 <td><p>Whether to use TLS (the default is an encrypted connection)</p></td>
 </tr>
-<tr class="row-even"><td><p>user</p></td>
+<tr class="row-odd"><td><p>user</p></td>
 <td><p>null</p></td>
 <td><p>The username for user/password authentication</p></td>
 </tr>
-<tr class="row-odd"><td><p>useSystemTrustStore</p></td>
+<tr class="row-even"><td><p>useSystemTrustStore</p></td>
 <td><p>true</p></td>
 <td><p>When TLS is enabled, whether to use the system certificate store</p></td>
 </tr>
-<tr class="row-even"><td><p>retainCookies</p></td>
+<tr class="row-odd"><td><p>retainCookies</p></td>
 <td><p>true</p></td>
 <td><p>Whether to use cookies from the initial connection in subsequent
 internal connections when retrieving streams from separate endpoints.</p></td>
 </tr>
-<tr class="row-odd"><td><p>retainAuth</p></td>
+<tr class="row-even"><td><p>retainAuth</p></td>
 <td><p>true</p></td>
 <td><p>Whether to use bearer tokens obtained from the initial connection
 in subsequent internal connections used for retrieving streams
