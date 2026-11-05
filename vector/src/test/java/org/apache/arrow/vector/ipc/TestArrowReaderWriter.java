@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.arrow.flatbuf.FieldNode;
 import org.apache.arrow.flatbuf.Message;
 import org.apache.arrow.flatbuf.RecordBatch;
@@ -53,12 +54,15 @@ import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Collections2;
+import org.apache.arrow.vector.BitVectorHelper;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.LargeVarCharVector;
 import org.apache.arrow.vector.NullVector;
 import org.apache.arrow.vector.TestUtils;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.VariableWidthFieldVector;
 import org.apache.arrow.vector.VectorLoader;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.VectorUnloader;
@@ -89,6 +93,10 @@ import org.apache.arrow.vector.util.TransferPair;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TestArrowReaderWriter {
 
@@ -647,6 +655,129 @@ public class TestArrowReaderWriter {
     vector1.close();
     vector2.close();
     AutoCloseables.close(closeableList);
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {false, true})
+  public void testDeltaDictionaryWithNonZeroStartOffset(boolean large) throws Exception {
+    // a valid delta whose offsets start at 3, so its data begins after a 3-byte prefix
+    byte[] stream = writeDeltaDictionaryStream(large, new long[] {3, 6, 9}, "xxxbazqux");
+    try (ArrowStreamReader reader =
+        new ArrowStreamReader(new ByteArrayReadableSeekableByteChannel(stream), allocator)) {
+      assertFalse(reader.loadNextBatch());
+      FieldVector dictionaryVector = reader.getDictionaryVectors().get(1L).getVector();
+      assertEquals(4, dictionaryVector.getValueCount());
+      assertEquals("foo", dictionaryVector.getObject(0).toString());
+      assertEquals("bar", dictionaryVector.getObject(1).toString());
+      assertEquals("baz", dictionaryVector.getObject(2).toString());
+      assertEquals("qux", dictionaryVector.getObject(3).toString());
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("malformedDeltaOffsets")
+  public void testDeltaDictionaryWithMalformedOffsets(boolean large, long[] deltaOffsets)
+      throws Exception {
+    byte[] stream = writeDeltaDictionaryStream(large, deltaOffsets, "bazzquxx");
+    try (ArrowStreamReader reader =
+        new ArrowStreamReader(new ByteArrayReadableSeekableByteChannel(stream), allocator)) {
+      assertThrows(IndexOutOfBoundsException.class, reader::loadNextBatch);
+      // the rejected delta must leave the original dictionary untouched
+      FieldVector dictionaryVector = reader.getDictionaryVectors().get(1L).getVector();
+      assertEquals(2, dictionaryVector.getValueCount());
+      assertEquals("foo", dictionaryVector.getObject(0).toString());
+      assertEquals("bar", dictionaryVector.getObject(1).toString());
+      assertEquals(0, BitVectorHelper.get(dictionaryVector.getValidityBuffer(), 2));
+      assertEquals(0, BitVectorHelper.get(dictionaryVector.getValidityBuffer(), 3));
+    }
+  }
+
+  static Stream<Arguments> malformedDeltaOffsets() {
+    List<long[]> offsets =
+        Arrays.asList(
+            new long[] {0, 4, 4096}, // last offset past the 8-byte data buffer
+            new long[] {0, 6, 4}, // decreasing intermediate offset
+            new long[] {4, 0, 0}, // last offset before the first
+            new long[] {-4, 0, 4}); // negative start offset
+    return Stream.of(false, true)
+        .flatMap(large -> offsets.stream().map(o -> Arguments.of(large, o)));
+  }
+
+  /**
+   * Writes a stream holding a {"foo", "bar"} dictionary followed by a delta dictionary batch built
+   * directly from the given offsets and data bytes, bypassing any vector-level validation.
+   */
+  private byte[] writeDeltaDictionaryStream(boolean large, long[] deltaOffsets, String deltaData)
+      throws IOException {
+    List<AutoCloseable> closeables = new ArrayList<>();
+    try {
+      FieldVector dictVector =
+          large
+              ? newVector(LargeVarCharVector.class, "dict", MinorType.LARGEVARCHAR, allocator)
+              : newVarCharVector("dict", allocator);
+      closeables.add(dictVector);
+      dictVector.allocateNew();
+      ((VariableWidthFieldVector) dictVector).setSafe(0, "foo".getBytes(StandardCharsets.UTF_8));
+      ((VariableWidthFieldVector) dictVector).setSafe(1, "bar".getBytes(StandardCharsets.UTF_8));
+      dictVector.setValueCount(2);
+      Dictionary dictionary = new Dictionary(dictVector, new DictionaryEncoding(1L, false, null));
+      DictionaryProvider.MapDictionaryProvider provider =
+          new DictionaryProvider.MapDictionaryProvider();
+      provider.put(dictionary);
+      Field encodedField =
+          new Field(
+              "f",
+              new FieldType(true, new ArrowType.Int(32, true), dictionary.getEncoding()),
+              null);
+      Schema schema =
+          new Schema(
+              Collections.singletonList(
+                  DictionaryUtility.toMessageFormat(encodedField, provider, new HashSet<>())));
+
+      ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+      WriteChannel out = new WriteChannel(newChannel(outStream));
+      MessageSerializer.serialize(out, schema);
+      serializeDictionaryBatch(out, dictionary, false, closeables);
+
+      int offsetWidth = large ? 8 : 4;
+      ArrowBuf validity = allocator.buffer(0);
+      closeables.add(validity);
+      ArrowBuf offsets = allocator.buffer((long) deltaOffsets.length * offsetWidth);
+      closeables.add(offsets);
+      for (int i = 0; i < deltaOffsets.length; i++) {
+        if (large) {
+          offsets.setLong((long) i * offsetWidth, deltaOffsets[i]);
+        } else {
+          offsets.setInt((long) i * offsetWidth, (int) deltaOffsets[i]);
+        }
+      }
+      offsets.writerIndex((long) deltaOffsets.length * offsetWidth);
+      byte[] dataBytes = deltaData.getBytes(StandardCharsets.UTF_8);
+      ArrowBuf data = allocator.buffer(dataBytes.length);
+      closeables.add(data);
+      data.setBytes(0, dataBytes);
+      data.writerIndex(dataBytes.length);
+
+      int deltaValueCount = deltaOffsets.length - 1;
+      ArrowRecordBatch deltaBatch =
+          new ArrowRecordBatch(
+              deltaValueCount,
+              Collections.singletonList(new ArrowFieldNode(deltaValueCount, 0)),
+              Arrays.asList(validity, offsets, data));
+      ArrowDictionaryBatch deltaDictionaryBatch = new ArrowDictionaryBatch(1L, deltaBatch, true);
+      closeables.add(deltaDictionaryBatch);
+      MessageSerializer.serialize(out, deltaDictionaryBatch);
+
+      // write eos
+      out.writeIntLittleEndian(0);
+      return outStream.toByteArray();
+    } finally {
+      try {
+        AutoCloseables.close(closeables);
+      } catch (Exception e) {
+        throw new IOException(e);
+      }
+    }
   }
 
   // Tests that the ArrowStreamWriter re-emits dictionaries when they change
