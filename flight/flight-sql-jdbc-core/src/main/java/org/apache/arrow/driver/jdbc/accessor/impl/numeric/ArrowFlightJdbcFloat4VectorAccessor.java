@@ -99,7 +99,7 @@ public class ArrowFlightJdbcFloat4VectorAccessor extends ArrowFlightJdbcAccessor
 
   @Override
   public double getDouble() {
-    return this.getFloat();
+    return Double.parseDouble(Float.toString(this.getFloat()));
   }
 
   @Override
@@ -110,7 +110,7 @@ public class ArrowFlightJdbcFloat4VectorAccessor extends ArrowFlightJdbcAccessor
       throw new SQLException("BigDecimal doesn't support Infinite/NaN.");
     }
 
-    return this.wasNull ? null : BigDecimal.valueOf(value);
+    return this.wasNull ? null : new BigDecimal(Float.toString(value));
   }
 
   @Override
@@ -119,7 +119,9 @@ public class ArrowFlightJdbcFloat4VectorAccessor extends ArrowFlightJdbcAccessor
     if (Float.isInfinite(value) || Float.isNaN(value)) {
       throw new SQLException("BigDecimal doesn't support Infinite/NaN.");
     }
-    return this.wasNull ? null : BigDecimal.valueOf(value).setScale(scale, RoundingMode.HALF_UP);
+    return this.wasNull
+        ? null
+        : new BigDecimal(Float.toString(value)).setScale(scale, RoundingMode.HALF_UP);
   }
 
   @Override
