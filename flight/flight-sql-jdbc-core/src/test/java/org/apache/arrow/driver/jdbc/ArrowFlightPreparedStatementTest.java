@@ -342,7 +342,9 @@ public class ArrowFlightPreparedStatementTest {
       stmt.setArray(2, connection.createArrayOf("INTEGER", new Integer[] {0, -1, 100000}));
       stmt.addBatch();
       int[] updated = stmt.executeBatch();
-      assertEquals(42, updated[0]);
+      assertEquals(2, updated.length);
+      assertEquals(21, updated[0]);
+      assertEquals(21, updated[1]);
     }
   }
 }
