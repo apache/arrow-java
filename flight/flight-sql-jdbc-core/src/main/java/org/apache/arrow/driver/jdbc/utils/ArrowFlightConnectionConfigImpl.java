@@ -115,10 +115,15 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
   /**
    * Gets the hostname to use for TLS certificate verification and SNI instead of the host.
    *
-   * @return the hostname override, or null if not set.
+   * @return the hostname override, or null if not set or blank.
    */
-  public String getHostnameOverride() {
-    return ArrowFlightConnectionProperty.HOSTNAME_OVERRIDE.getString(properties);
+  public @Nullable String getHostnameOverride() {
+    final String hostnameOverride =
+        ArrowFlightConnectionProperty.HOSTNAME_OVERRIDE.getString(properties);
+    if (hostnameOverride == null || hostnameOverride.trim().isEmpty()) {
+      return null;
+    }
+    return hostnameOverride.trim();
   }
 
   public String getClientCertificatePath() {

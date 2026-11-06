@@ -718,7 +718,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     public Builder() {}
 
     /**
-     * Copies the builder.
+     * Copies the builder. The hostname override is not copied, since it is only valid for the
+     * original host and port.
      *
      * @param original The builder to base this copy off of.
      */
@@ -735,7 +736,6 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.token = original.token;
       this.useEncryption = original.useEncryption;
       this.disableCertificateVerification = original.disableCertificateVerification;
-      this.hostnameOverride = original.hostnameOverride;
       this.useSystemTrustStore = original.useSystemTrustStore;
       this.tlsRootCertificatesPath = original.tlsRootCertificatesPath;
       this.clientCertificatePath = original.clientCertificatePath;
@@ -846,7 +846,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     /**
      * Sets the hostname to use for TLS certificate verification and SNI instead of the host this
-     * handler connects to. It is also sent as the gRPC authority ({@code :authority} header).
+     * handler connects to. It is also sent as the gRPC authority ({@code :authority} header),
+     * replacing both the host and the port, so it may include a port to keep one in the authority.
      * Ignored when encryption is disabled.
      *
      * @param hostnameOverride the hostname to verify the server certificate against, or null or
