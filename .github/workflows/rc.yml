@@ -281,7 +281,7 @@ jobs:
             -Darrow.c.jni.dist.dir="$PWD/jni" -Darrow.cpp.build.dir="$PWD/jni"
           mvn -Parrow-jni -pl dataset test \
             -Darrow.c.jni.dist.dir="$PWD/jni" -Darrow.cpp.build.dir="$PWD/jni" \
-            -Dtest='TestFileSystemDataset#testBaseJsonRead'
+            -Dtest='TestFileSystemDataset#testBaseJsonRead' -DfailIfNoTests=true
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
