@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -223,5 +224,14 @@ public class ArrowFlightStatementExecuteUpdateTest {
           is(format("Error while executing SQL \"%s\": Query not found", badQuery)));
     }
     assertThat(count, is(1));
+  }
+
+  @Test
+  public void testExecuteLargeUpdateShouldWrapBadStatement() {
+    final String badQuery = "BAD INVALID UPDATE";
+    final SQLException exception =
+        assertThrows(SQLException.class, () -> statement.executeLargeUpdate(badQuery));
+    assertThat(
+        exception.getMessage(), startsWith(format("Error while executing SQL \"%s\"", badQuery)));
   }
 }

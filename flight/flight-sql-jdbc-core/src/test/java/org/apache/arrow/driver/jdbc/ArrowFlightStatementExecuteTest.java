@@ -17,11 +17,18 @@
 package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,6 +40,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.CallStatus;
+import org.apache.arrow.flight.FlightRuntimeException;
+import org.apache.arrow.flight.sql.FlightSqlUtils;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -143,6 +153,13 @@ public class ArrowFlightStatementExecuteTest {
   }
 
   @Test
+  public void testStatementKeepsFlightInfoStatementApi() {
+    final ArrowFlightInfoStatement flightInfoStatement = (ArrowFlightInfoStatement) statement;
+
+    assertSame(statement, flightInfoStatement);
+  }
+
+  @Test
   public void testExecuteShouldRunSelectQuery() throws SQLException {
     assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true)); // Means this is a SELECT query.
     final Set<Byte> numbers =
@@ -163,6 +180,109 @@ public class ArrowFlightStatementExecuteTest {
     assertThat(
         (long) statement.getUpdateCount(),
         is(allOf(equalTo(statement.getLargeUpdateCount()), equalTo(-1L))));
+  }
+
+  @Test
+  public void testExecuteReplacesStatementMapEntryWithPreparedStatement() throws SQLException {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+
+    final Object preparedStatement = arrowConnection.statementMap.get(arrowStatement.handle.id);
+
+    assertNotNull(preparedStatement);
+    assertSame(preparedStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
+    assertThat(preparedStatement, instanceOf(ArrowFlightPreparedStatement.class));
+  }
+
+  @Test
+  public void testExecutePrepareFailurePreservesServerError() {
+    final SQLException exception =
+        assertThrows(
+            SQLException.class, () -> statement.execute("SELECT * FROM unregistered_table"));
+
+    assertThat(exception.getMessage(), containsString("Query not found"));
+  }
+
+  @Test
+  public void testConnectionCloseClosesStatementAndResultSetAfterExecute() throws SQLException {
+    PRODUCER.clearActionTypeCounter();
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+    final ResultSet resultSet = statement.getResultSet();
+    assertNotNull(resultSet);
+
+    connection.close();
+
+    assertThat(statement.isClosed(), is(true));
+    assertThat(resultSet.isClosed(), is(true));
+    assertThat(arrowConnection.statementMap.containsKey(arrowStatement.handle.id), is(false));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
+  }
+
+  @Test
+  public void testExecuteQueryRestoresStatementMapEntryWithStatement() throws SQLException {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+
+    try (ResultSet resultSet = statement.executeQuery(SAMPLE_QUERY_CMD)) {
+      assertThat(resultSet.next(), is(true));
+    }
+
+    assertSame(arrowStatement, arrowConnection.statementMap.get(arrowStatement.handle.id));
+  }
+
+  @Test
+  public void testExecuteQueryMapsPreparedStatementCloseFailureToSQLException()
+      throws SQLException {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+    final ResultSet previousResultSet = statement.executeQuery(SAMPLE_QUERY_CMD);
+    final ArrowFlightPreparedStatement preparedStatement = mock(ArrowFlightPreparedStatement.class);
+    final FlightRuntimeException closeFailure =
+        CallStatus.INTERNAL.withDescription("Prepared statement close failed").toRuntimeException();
+    doThrow(closeFailure).when(preparedStatement).closePreparedResources();
+    arrowConnection.statementMap.put(arrowStatement.handle.id, preparedStatement);
+
+    try {
+      final SQLException exception =
+          assertThrows(SQLException.class, () -> statement.executeQuery(SAMPLE_QUERY_CMD));
+
+      assertSame(closeFailure, exception.getCause());
+      assertThat(previousResultSet.isClosed(), is(true));
+    } finally {
+      arrowConnection.statementMap.put(arrowStatement.handle.id, arrowStatement);
+    }
+  }
+
+  @Test
+  public void testExecuteLargeUpdateMapsPreparedStatementCloseFailureToSQLException() {
+    final ArrowFlightStatement arrowStatement = (ArrowFlightStatement) statement;
+    final ArrowFlightConnection arrowConnection = (ArrowFlightConnection) connection;
+    final ArrowFlightPreparedStatement preparedStatement = mock(ArrowFlightPreparedStatement.class);
+    final FlightRuntimeException closeFailure =
+        CallStatus.INTERNAL.withDescription("Prepared statement close failed").toRuntimeException();
+    doThrow(closeFailure).when(preparedStatement).closePreparedResources();
+    arrowConnection.statementMap.put(arrowStatement.handle.id, preparedStatement);
+
+    try {
+      final SQLException exception =
+          assertThrows(
+              SQLException.class, () -> statement.executeLargeUpdate(SAMPLE_LARGE_UPDATE_QUERY));
+
+      assertSame(closeFailure, exception.getCause());
+    } finally {
+      arrowConnection.statementMap.put(arrowStatement.handle.id, arrowStatement);
+    }
   }
 
   @Test
