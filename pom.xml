@@ -787,6 +787,32 @@ under the License.
 
   <profiles>
     <profile>
+      <id>apache-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>source-release-assembly</id>
+                <configuration>
+                  <!-- Use our own descriptor instead of the Apache parent's
+                       "source-release" one so that pre-built JNI libraries
+                       in jni/ aren't included in the source release. -->
+                  <descriptorRefs combine.self="override"/>
+                  <descriptors>
+                    <descriptor>${maven.multiModuleProjectDirectory}/dev/release/source-release.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <!-- Certain flags are required on newer JDK but not recognized on earlier JDK -->
       <id>jdk24</id>
       <activation>
