@@ -312,6 +312,12 @@ public class VectorSchemaRoot implements AutoCloseable {
         this.fieldVectors.stream().map(ValueVector::getField).collect(Collectors.toList());
     if (!oldFields.equals(newFields)) {
       this.schema = new Schema(newFields);
+      // Field equality is structural, and promotion (e.g. a promoted Struct/List child)
+      // produces new Field instances, so the existing keys would no longer match.
+      fieldVectorsMap.clear();
+      for (int i = 0; i < newFields.size(); i++) {
+        fieldVectorsMap.put(newFields.get(i), fieldVectors.get(i));
+      }
       return true;
     }
     return false;
