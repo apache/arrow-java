@@ -392,8 +392,7 @@ public class TestStructVector {
         new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(nullField));
 
     try (StructVector s1 = (StructVector) structField.createVector(allocator)) {
-      NullVector nullVector =
-          s1.addOrGet("null_child", nullField.getFieldType(), NullVector.class);
+      NullVector nullVector = s1.addOrGet("null_child", nullField.getFieldType(), NullVector.class);
       s1.allocateNew();
       s1.setIndexDefined(0);
       s1.setNull(1);
