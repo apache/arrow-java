@@ -518,15 +518,12 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
 
   @Override
   public Field getField() {
-    int childCount = (int) Arrays.stream(typeFields).filter(field -> field != null).count();
-    List<org.apache.arrow.vector.types.pojo.Field> childFields = new ArrayList<>(childCount);
-    int[] typeIds = new int[childCount];
-    for (int i = 0; i < typeFields.length; i++) {
-      if (typeFields[i] != null) {
-        int curIdx = childFields.size();
-        typeIds[curIdx] = i;
-        childFields.add(typeFields[i]);
-      }
+    // The children keep their order, which is not necessarily the order of their type ids
+    List<org.apache.arrow.vector.types.pojo.Field> childFields = new ArrayList<>(nextTypeId);
+    int[] typeIds = new int[nextTypeId];
+    for (int i = 0; i < nextTypeId; i++) {
+      typeIds[i] = typeMapFields[i];
+      childFields.add(typeFields[typeMapFields[i]]);
     }
 
     FieldType fieldType;
@@ -622,15 +619,19 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
       createTransferPairs();
     }
 
+    // The transfer pairs follow the order of the children, while typeFields and childVectors are
+    // indexed by type id. typeMapFields maps the position of a child to its type id.
     private void createTransferPairs() {
       for (int i = 0; i < nextTypeId; i++) {
+        byte typeId = typeMapFields[i];
         ValueVector srcVec = internalStruct.getVectorById(i);
         ValueVector dstVec = to.internalStruct.getVectorById(i);
-        to.typeFields[i] = typeFields[i];
-        to.typeMapFields[i] = typeMapFields[i];
-        to.childVectors[i] = dstVec;
+        to.typeFields[typeId] = typeFields[typeId];
+        to.typeMapFields[i] = typeId;
+        to.childVectors[typeId] = dstVec;
         internalTransferPairs[i] = srcVec.makeTransferPair(dstVec);
       }
+      to.nextTypeId = (byte) Math.max(to.nextTypeId, nextTypeId);
     }
 
     @Override
@@ -646,7 +647,7 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
       for (int i = 0; i < nextTypeId; i++) {
         if (internalTransferPairs[i] != null) {
           internalTransferPairs[i].transfer();
-          to.childVectors[i] = internalTransferPairs[i].getTo();
+          to.childVectors[typeMapFields[i]] = internalTransferPairs[i].getTo();
         }
       }
       to.valueCount = valueCount;
@@ -669,29 +670,68 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
         to.reallocOffsetBuffer();
       }
 
-      int [] typeCounts = new int[nextTypeId];
-      int [] typeStarts = new int[nextTypeId];
-      for (int i = 0; i < typeCounts.length; i++) {
-        typeCounts[i] = 0;
-        typeStarts[i] = -1;
+      int[] childIndexes = new int[typeFields.length];
+      Arrays.fill(childIndexes, -1);
+      for (int i = 0; i < nextTypeId; i++) {
+        childIndexes[typeMapFields[i]] = i;
       }
 
+      // The window selects childCounts[i] values of child i, which are renumbered from 0. The
+      // offsets of a child only have to increase, so the selected values may have gaps.
+      int[] childCounts = new int[nextTypeId];
+      int[] childStarts = new int[nextTypeId];
+      int[] childEnds = new int[nextTypeId];
+      boolean[] contiguous = new boolean[nextTypeId];
+      Arrays.fill(contiguous, true);
       for (int i = startIndex; i < startIndex + length; i++) {
         byte typeId = typeBuffer.getByte(i);
         if (typeId >= 0) {
-          to.offsetBuffer.setInt((long) (i - startIndex) * OFFSET_WIDTH, typeCounts[typeId]);
-          typeCounts[typeId] += 1;
-          if (typeStarts[typeId] == -1) {
-            typeStarts[typeId] = offsetBuffer.getInt((long) i * OFFSET_WIDTH);
+          int child = childIndexes[typeId];
+          int offset = offsetBuffer.getInt((long) i * OFFSET_WIDTH);
+          if (childCounts[child] == 0) {
+            childStarts[child] = offset;
+          } else if (offset != childEnds[child]) {
+            contiguous[child] = false;
           }
+          childEnds[child] = offset + 1;
+          to.offsetBuffer.setInt((long) (i - startIndex) * OFFSET_WIDTH, childCounts[child]);
+          childCounts[child] += 1;
         }
       }
 
-      // transfer vector values
+      // copy the values of children whose selected values have gaps, before transferring those of
+      // the other children, so that a child that cannot copy its values leaves the target empty
+      for (int i = startIndex; i < startIndex + length; i++) {
+        byte typeId = typeBuffer.getByte(i);
+        if (typeId >= 0 && !contiguous[childIndexes[typeId]]) {
+          int child = childIndexes[typeId];
+          try {
+            internalTransferPairs[child].copyValueSafe(
+                offsetBuffer.getInt((long) i * OFFSET_WIDTH),
+                to.offsetBuffer.getInt((long) (i - startIndex) * OFFSET_WIDTH));
+          } catch (UnsupportedOperationException e) {
+            to.clear();
+            ValueVector childVector = internalStruct.getVectorById(child);
+            throw new UnsupportedOperationException(
+                String.format(
+                    "Cannot split dense union %s: the values its rows select from child %s (%s)"
+                        + " are not consecutive, and copying them is not supported",
+                    getName(), childVector.getName(), childVector.getClass().getSimpleName()),
+                e);
+          }
+        }
+      }
+      // transfer the values of the other children
       for (int i = 0; i < nextTypeId; i++) {
-        if (typeCounts[i] > 0 && typeStarts[i] != -1) {
-          internalTransferPairs[i].splitAndTransfer(typeStarts[i], typeCounts[i]);
-          to.childVectors[i] = internalTransferPairs[i].getTo();
+        if (childCounts[i] > 0 && contiguous[i]) {
+          internalTransferPairs[i].splitAndTransfer(childStarts[i], childCounts[i]);
+          to.childVectors[typeMapFields[i]] = internalTransferPairs[i].getTo();
+        }
+      }
+      for (int i = 0; i < nextTypeId; i++) {
+        if (!contiguous[i]) {
+          internalTransferPairs[i].getTo().setValueCount(childCounts[i]);
+          to.childVectors[typeMapFields[i]] = internalTransferPairs[i].getTo();
         }
       }
 

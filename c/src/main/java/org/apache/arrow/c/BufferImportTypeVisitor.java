@@ -62,6 +62,7 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
   private final ReferenceCountedArrowArray underlyingAllocation;
   private final ArrowFieldNode fieldNode;
   private final long[] buffers;
+  private final long skippedRows;
   private final List<ArrowBuf> imported;
 
   BufferImportTypeVisitor(
@@ -69,10 +70,26 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
       ReferenceCountedArrowArray underlyingAllocation,
       ArrowFieldNode fieldNode,
       long[] buffers) {
+    this(allocator, underlyingAllocation, fieldNode, buffers, /* skippedRows= */ 0);
+  }
+
+  /**
+   * Imports the buffers of the {@code fieldNode.getLength()} rows that follow the first {@code
+   * skippedRows} rows of the C array. The skipped rows must fill whole bytes of a bitmap, which
+   * makes skipping them a matter of advancing the buffer pointers of each row.
+   */
+  BufferImportTypeVisitor(
+      BufferAllocator allocator,
+      ReferenceCountedArrowArray underlyingAllocation,
+      ArrowFieldNode fieldNode,
+      long[] buffers,
+      long skippedRows) {
+    checkState(skippedRows % 8 == 0, "Skipped rows (%s) must be a multiple of 8", skippedRows);
     this.allocator = allocator;
     this.underlyingAllocation = underlyingAllocation;
     this.fieldNode = fieldNode;
     this.buffers = buffers;
+    this.skippedRows = skippedRows;
     this.imported = new ArrayList<>();
   }
 
@@ -83,6 +100,10 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
 
   @VisibleForTesting
   ArrowBuf importBuffer(ArrowType type, int index, long capacity) {
+    return importBuffer(type, index, /* skippedBytes= */ 0, capacity);
+  }
+
+  private ArrowBuf importBuffer(ArrowType type, int index, long skippedBytes, long capacity) {
     checkState(
         buffers.length > index,
         "Expected at least %s buffers for type %s, but found %s",
@@ -102,24 +123,28 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
       }
     }
 
-    ArrowBuf buf = underlyingAllocation.unsafeAssociateAllocation(allocator, capacity, bufferPtr);
+    ArrowBuf buf =
+        underlyingAllocation.unsafeAssociateAllocation(
+            allocator, capacity, Math.addExact(bufferPtr, skippedBytes));
     imported.add(buf);
     return buf;
   }
 
+  /** Imports a buffer that holds {@code bitsPerSlot} bits for each row. */
   private ArrowBuf importFixedBits(ArrowType type, int index, long bitsPerSlot) {
     final long capacity = DataSizeRoundingUtil.divideBy8Ceil(bitsPerSlot * fieldNode.getLength());
-    return importBuffer(type, index, capacity);
+    return importBuffer(type, index, Math.multiplyExact(skippedRows, bitsPerSlot) / 8, capacity);
   }
 
+  /** Imports a buffer that holds {@code bytesPerSlot} bytes for each row. */
   private ArrowBuf importFixedBytes(ArrowType type, int index, long bytesPerSlot) {
     final long capacity = bytesPerSlot * fieldNode.getLength();
-    return importBuffer(type, index, capacity);
+    return importBuffer(type, index, Math.multiplyExact(skippedRows, bytesPerSlot), capacity);
   }
 
   private ArrowBuf importOffsets(ArrowType type, long bytesPerSlot) {
     final long capacity = bytesPerSlot * (fieldNode.getLength() + 1);
-    return importBuffer(type, 1, capacity);
+    return importBuffer(type, 1, Math.multiplyExact(skippedRows, bytesPerSlot), capacity);
   }
 
   private ArrowBuf importData(ArrowType type, long capacity) {
