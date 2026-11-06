@@ -20,6 +20,7 @@ import static org.apache.arrow.vector.util.TestVectorAppender.assertVectorsEqual
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.BigIntVector;
@@ -27,6 +28,10 @@ import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.testing.ValueVectorDataPopulator;
+import org.apache.arrow.vector.types.pojo.ArrowType;
+import org.apache.arrow.vector.types.pojo.Field;
+import org.apache.arrow.vector.types.pojo.FieldType;
+import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -153,6 +158,22 @@ public class TestVectorSchemaRootAppender {
               IllegalArgumentException.class, () -> VectorSchemaRootAppender.append(root1, root2));
 
       assertEquals("Vector schema roots have different schemas.", exp.getMessage());
+    }
+  }
+
+  @Test
+  public void testAppendSliceWithNonNullableNullVector() {
+    Schema schema =
+        new Schema(List.of(new Field("n", FieldType.notNullable(ArrowType.Null.INSTANCE), null)));
+    try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator);
+        VectorSchemaRoot target = VectorSchemaRoot.create(schema, allocator)) {
+      root.setRowCount(3);
+      try (VectorSchemaRoot slice = root.slice(0, 2)) {
+        assertEquals(schema, slice.getSchema());
+        VectorSchemaRootAppender.append(target, slice);
+      }
+      assertEquals(2, target.getRowCount());
+      assertEquals(2, target.getVector("n").getValueCount());
     }
   }
 }
