@@ -126,9 +126,17 @@ public class TestVectorAppender {
 
       target.allocateNew(4);
       ValueVectorDataPopulator.setVector(target, 0, 1, 2, 3);
+      int capacity = target.getValueCapacity();
 
       VectorAppender appender = new VectorAppender(target);
       assertThrows(IndexOutOfBoundsException.class, () -> delta.accept(appender, null));
+
+      // the delta is rejected before the target is touched
+      assertEquals(4, target.getValueCount());
+      assertEquals(capacity, target.getValueCapacity());
+      for (int i = 0; i < 4; i++) {
+        assertEquals(i, target.get(i));
+      }
     }
   }
 
@@ -146,9 +154,17 @@ public class TestVectorAppender {
 
       target.allocateNew(8);
       ValueVectorDataPopulator.setVector(target, 0, 1, 2, 3, 4, 5, 6, 7);
+      int capacity = target.getValueCapacity();
 
       VectorAppender appender = new VectorAppender(target);
       assertThrows(IndexOutOfBoundsException.class, () -> delta.accept(appender, null));
+
+      // the delta is rejected before the target is touched
+      assertEquals(8, target.getValueCount());
+      assertEquals(capacity, target.getValueCapacity());
+      for (int i = 0; i < 8; i++) {
+        assertEquals(i, target.get(i));
+      }
     }
   }
 
