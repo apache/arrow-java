@@ -54,6 +54,7 @@ public class VectorSchemaRoot implements AutoCloseable {
   private int rowCount;
   private final List<FieldVector> fieldVectors;
   private final Map<Field, FieldVector> fieldVectorsMap = new LinkedHashMap<>();
+  private final Map<String, FieldVector> fieldVectorsByName = new LinkedHashMap<>();
 
   /** Constructs new instance containing each of the vectors. */
   public VectorSchemaRoot(Iterable<FieldVector> vectors) {
@@ -116,6 +117,7 @@ public class VectorSchemaRoot implements AutoCloseable {
       Field field = schema.getFields().get(i);
       FieldVector vector = fieldVectors.get(i);
       fieldVectorsMap.put(field, vector);
+      fieldVectorsByName.putIfAbsent(field.getName(), vector);
     }
   }
 
@@ -173,12 +175,7 @@ public class VectorSchemaRoot implements AutoCloseable {
    * <p>if name occurs multiple times this returns the first inserted entry for name
    */
   public FieldVector getVector(String name) {
-    for (Map.Entry<Field, FieldVector> entry : fieldVectorsMap.entrySet()) {
-      if (entry.getKey().getName().equals(name)) {
-        return entry.getValue();
-      }
-    }
-    return null;
+    return fieldVectorsByName.get(name);
   }
 
   public FieldVector getVector(Field field) {
