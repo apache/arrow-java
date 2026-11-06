@@ -89,6 +89,10 @@ public class TestVariableWidthViewVector {
   private static final byte[] STR7 = "K01234567891234567K".getBytes(StandardCharsets.UTF_8);
   // long string (length > 12)
   private static final byte[] STR8 = "M012345678912345678M".getBytes(StandardCharsets.UTF_8);
+  // short value (length <= 12) used to verify the zero padding of inline views
+  private static final byte[] PAD1 = "a".getBytes(StandardCharsets.UTF_8);
+  // short value (length <= 12) used to verify the zero padding of inline views
+  private static final byte[] PAD11 = "0123456789a".getBytes(StandardCharsets.UTF_8);
   private static final String EMPTY_SCHEMA_PATH = "";
 
   private BufferAllocator allocator;
@@ -2936,6 +2940,168 @@ public class TestVariableWidthViewVector {
       vector.setIndexDefined(0);
       var e = assertThrows(IndexOutOfBoundsException.class, vector::validateFull);
       assertTrue(e.getMessage().contains("index: 1024"));
+    }
+  }
+
+  /**
+   * Builds the source values used by the zero padding tests: a sentinel value that stays outside
+   * the split range followed by an empty value, a 1 byte, an 11 byte and a 12 byte value (all
+   * inline views), a 13 byte value (stored in a data buffer) and a null value.
+   */
+  private static byte[][] zeroPaddingTestData() {
+    return new byte[][] {STR3, new byte[0], PAD1, PAD11, STR1, STR2, null};
+  }
+
+  /**
+   * ARROW-1386: the view format documented in {@link BaseVariableWidthViewVector} requires the
+   * bytes after an inline value to be zero padded. This helper checks the padding of every view
+   * transferred by {@link BaseVariableWidthViewVector#splitAndTransferTo(int, int,
+   * BaseVariableWidthViewVector)}, and verifies that the split keeps the value count, the null
+   * count and the source vector intact. Callers pass vectors whose allocator hands out buffers
+   * pre-filled with 0xff, so a missing write is reported instead of being hidden by memory that
+   * happens to be zeroed.
+   */
+  private void testSplitAndTransferZeroPaddingHelper(
+      BaseVariableWidthViewVector targetVector,
+      BaseVariableWidthViewVector sourceVector,
+      int startIndex,
+      int length,
+      byte[][] data) {
+    final int elementSize = BaseVariableWidthViewVector.ELEMENT_SIZE;
+    final int lengthWidth = BaseVariableWidthViewVector.LENGTH_WIDTH;
+    final int prefixWidth = BaseVariableWidthViewVector.PREFIX_WIDTH;
+    final int inlineSize = BaseVariableWidthViewVector.INLINE_SIZE;
+
+    sourceVector.allocateNew(1024 * 10, 1024);
+
+    for (int i = 0; i < data.length; i++) {
+      if (data[i] == null) {
+        sourceVector.setNull(i);
+      } else {
+        sourceVector.set(i, data[i]);
+      }
+    }
+    sourceVector.setValueCount(data.length);
+
+    final ArrowBuf sourceViewBuffer = sourceVector.getDataBuffer();
+    final int sourceViewLength = (int) sourceViewBuffer.capacity();
+    final byte[] sourceViewBefore = new byte[sourceViewLength];
+    sourceViewBuffer.getBytes(0, sourceViewBefore, 0, sourceViewLength);
+    final int sourceViewRefCnt = sourceViewBuffer.refCnt();
+
+    sourceVector.splitAndTransferTo(startIndex, length, targetVector);
+
+    assertEquals(length, targetVector.getValueCount());
+    // the view buffer is allocated for the target vector, it is not shared with the source
+    assertEquals(sourceViewRefCnt, sourceVector.getDataBuffer().refCnt());
+    final ArrowBuf targetViewBuffer = targetVector.getDataBuffer();
+    assertTrue(targetViewBuffer.capacity() >= (long) length * elementSize);
+
+    final byte[] element = new byte[elementSize];
+    int expectedNullCount = 0;
+    for (int i = startIndex; i < startIndex + length; i++) {
+      final int targetIndex = i - startIndex;
+      final int offset = targetIndex * elementSize;
+      final byte[] expected = data[i];
+
+      if (expected == null) {
+        // the view content of a null value is unspecified, only the validity matters
+        expectedNullCount++;
+        assertTrue(targetVector.isNull(targetIndex));
+        continue;
+      }
+
+      assertFalse(targetVector.isNull(targetIndex));
+      assertArrayEquals(expected, targetVector.get(targetIndex));
+      assertEquals(expected.length, targetViewBuffer.getInt(offset));
+      targetViewBuffer.getBytes(offset, element, 0, elementSize);
+
+      if (expected.length <= inlineSize) {
+        assertArrayEquals(
+            expected, Arrays.copyOfRange(element, lengthWidth, lengthWidth + expected.length));
+        // the bytes following an inline value must be zero padded
+        for (int b = lengthWidth + expected.length; b < elementSize; b++) {
+          assertEquals(0, element[b], "inline view byte " + b + " of value " + i);
+        }
+      } else {
+        // long views keep the first bytes of the value as a prefix; the buffer index and the
+        // offset are an implementation detail of the target and are covered by the get() above
+        assertArrayEquals(
+            Arrays.copyOfRange(expected, 0, prefixWidth),
+            Arrays.copyOfRange(element, lengthWidth, lengthWidth + prefixWidth));
+      }
+    }
+    assertEquals(expectedNullCount, targetVector.getNullCount());
+
+    // the split does not modify the source vector
+    assertEquals(data.length, sourceVector.getValueCount());
+    final byte[] sourceViewAfter = new byte[sourceViewLength];
+    sourceVector.getDataBuffer().getBytes(0, sourceViewAfter, 0, sourceViewLength);
+    assertArrayEquals(sourceViewBefore, sourceViewAfter);
+    for (int i = 0; i < data.length; i++) {
+      if (data[i] == null) {
+        assertTrue(sourceVector.isNull(i));
+      } else {
+        assertArrayEquals(data[i], sourceVector.get(i));
+      }
+    }
+  }
+
+  /**
+   * ARROW-1386: split and transfer must zero pad the inline views of the target vector even when
+   * the allocated target view buffer contains stale bytes.
+   */
+  @Test
+  public void testSplitAndTransferZeroPadsInlineViews() {
+    final byte[][] data = zeroPaddingTestData();
+    final int startIndex = 1;
+    final int length = 6;
+
+    try (final DirtyingRootAllocator dirtyAllocator = new DirtyingRootAllocator()) {
+      try (final ViewVarCharVector targetVector =
+              newViewVarCharVector("split-target", dirtyAllocator);
+          final ViewVarCharVector sourceVector =
+              newViewVarCharVector(EMPTY_SCHEMA_PATH, dirtyAllocator)) {
+        testSplitAndTransferZeroPaddingHelper(targetVector, sourceVector, startIndex, length, data);
+      }
+      assertEquals(0, dirtyAllocator.getAllocatedMemory());
+    }
+  }
+
+  /** ARROW-1386: same as {@link #testSplitAndTransferZeroPadsInlineViews()} for binary views. */
+  @Test
+  public void testSplitAndTransferZeroPadsInlineViewsBinary() {
+    final byte[][] data = zeroPaddingTestData();
+    final int startIndex = 1;
+    final int length = 6;
+
+    try (final DirtyingRootAllocator dirtyAllocator = new DirtyingRootAllocator()) {
+      try (final ViewVarBinaryVector targetVector =
+              newViewVarBinaryVector("split-target", dirtyAllocator);
+          final ViewVarBinaryVector sourceVector =
+              newViewVarBinaryVector(EMPTY_SCHEMA_PATH, dirtyAllocator)) {
+        testSplitAndTransferZeroPaddingHelper(targetVector, sourceVector, startIndex, length, data);
+      }
+      assertEquals(0, dirtyAllocator.getAllocatedMemory());
+    }
+  }
+
+  /**
+   * Allocator that fills every buffer it hands out with 0xff. Tests using it do not depend on the
+   * content of recycled or freshly mapped memory, so bytes the vector code fails to write (for
+   * instance a missing inline view padding) are always visible.
+   */
+  private static final class DirtyingRootAllocator extends RootAllocator {
+
+    DirtyingRootAllocator() {
+      super(Integer.MAX_VALUE);
+    }
+
+    @Override
+    public ArrowBuf buffer(final long initialRequestSize) {
+      final ArrowBuf buffer = super.buffer(initialRequestSize);
+      buffer.setOne(0L, buffer.capacity());
+      return buffer;
     }
   }
 }
