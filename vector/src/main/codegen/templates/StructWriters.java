@@ -89,8 +89,7 @@ public class ${mode}StructWriter extends AbstractFieldWriter {
       case NULL: {
         // There is no writer for the Null type, but the child vector still has to exist so that
         // the container matches its field (e.g. when it is created from a Field by a TransferPair).
-        FieldType fieldType = new FieldType(addVectorAsNullable, MinorType.NULL.getType(), null, null);
-        container.addOrGet(child.getName(), fieldType, NullVector.class);
+        container.addOrGet(child.getName(), child.getFieldType(), NullVector.class);
         break;
       }
       case UNION:

@@ -383,13 +383,17 @@ public class TestStructVector {
 
   @Test
   public void testStructVectorTransferPairWithNullType() {
-    Field nullField = new Field("null_child", FieldType.nullable(ArrowType.Null.INSTANCE), null);
+    Field nullField =
+        new Field(
+            "null_child",
+            new FieldType(false, ArrowType.Null.INSTANCE, null, Map.of("k", "v")),
+            null);
     Field structField =
         new Field("struct", FieldType.nullable(new ArrowType.Struct()), List.of(nullField));
 
     try (StructVector s1 = (StructVector) structField.createVector(allocator)) {
       NullVector nullVector =
-          s1.addOrGet("null_child", FieldType.nullable(ArrowType.Null.INSTANCE), NullVector.class);
+          s1.addOrGet("null_child", nullField.getFieldType(), NullVector.class);
       s1.allocateNew();
       s1.setIndexDefined(0);
       s1.setNull(1);
@@ -399,7 +403,7 @@ public class TestStructVector {
 
       TransferPair tp = s1.getTransferPair(structField, allocator);
       try (StructVector toVector = (StructVector) tp.getTo()) {
-        assertEquals(s1.getField(), toVector.getField());
+        assertEquals(structField, toVector.getField());
 
         tp.transfer();
         assertEquals(3, toVector.getValueCount());
@@ -409,14 +413,18 @@ public class TestStructVector {
         NullVector toChild = toVector.getChild("null_child", NullVector.class);
         assertNotNull(toChild);
         assertEquals(3, toChild.getValueCount());
-        assertTrue(toChild.isNull(0));
+        assertEquals(nullField, toChild.getField());
       }
     }
   }
 
   @Test
   public void testStructVectorFromFieldWithNullChild() {
-    Field nullField = new Field("null_child", FieldType.nullable(ArrowType.Null.INSTANCE), null);
+    Field nullField =
+        new Field(
+            "null_child",
+            new FieldType(false, ArrowType.Null.INSTANCE, null, Map.of("k", "v")),
+            null);
     Field intField = new Field("int_child", FieldType.nullable(MinorType.INT.getType()), null);
     Field structField =
         new Field(
