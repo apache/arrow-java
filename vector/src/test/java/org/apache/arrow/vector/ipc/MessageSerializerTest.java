@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +33,9 @@ import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
+import org.apache.arrow.flatbuf.FieldNode;
+import org.apache.arrow.flatbuf.RecordBatch;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -47,6 +51,9 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class MessageSerializerTest {
 
@@ -218,6 +225,62 @@ public class MessageSerializerTest {
     }
 
     alloc.close();
+  }
+
+  @ParameterizedTest
+  @MethodSource("invalidFieldNodes")
+  public void testInvalidFieldNodeRejectedWithoutLeakingBody(long length, long nullCount) {
+    RecordBatch recordBatchFB = recordBatchWithNode(length, nullCount);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> invalidFieldNodes() {
+    return Stream.of(
+        Arguments.of(-100L, 0L),
+        Arguments.of(Long.MIN_VALUE, 0L),
+        Arguments.of(Integer.MAX_VALUE + 1L, 0L),
+        Arguments.of(1L << 32, 0L),
+        Arguments.of(10L, -2L));
+  }
+
+  @ParameterizedTest
+  @MethodSource("validFieldNodes")
+  public void testValidFieldNodeDeserialized(long length, long nullCount) throws IOException {
+    RecordBatch recordBatchFB = recordBatchWithNode(length, nullCount);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      try (ArrowRecordBatch batch = MessageSerializer.deserializeRecordBatch(recordBatchFB, body)) {
+        ArrowFieldNode node = batch.getNodes().get(0);
+        assertEquals(length, node.getLength());
+        assertEquals(nullCount, node.getNullCount());
+      }
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> validFieldNodes() {
+    return Stream.of(
+        Arguments.of(0L, 0L), Arguments.of(10L, -1L), Arguments.of((long) Integer.MAX_VALUE, 0L));
+  }
+
+  private static RecordBatch recordBatchWithNode(long length, long nullCount) {
+    FlatBufferBuilder builder = new FlatBufferBuilder();
+    RecordBatch.startNodesVector(builder, 1);
+    FieldNode.createFieldNode(builder, length, nullCount);
+    int nodes = builder.endVector();
+    RecordBatch.startBuffersVector(builder, 0);
+    int buffers = builder.endVector();
+    RecordBatch.startRecordBatch(builder);
+    RecordBatch.addLength(builder, 0);
+    RecordBatch.addNodes(builder, nodes);
+    RecordBatch.addBuffers(builder, buffers);
+    builder.finish(RecordBatch.endRecordBatch(builder));
+    return RecordBatch.getRootAsRecordBatch(builder.dataBuffer());
   }
 
   public static Schema testSchema() {

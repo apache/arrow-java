@@ -196,7 +196,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
     JsonToken t = parser.nextToken();
     if (t == START_OBJECT) {
       {
-        int count = readNextField("count", Integer.class);
+        int count = readCount();
         nextFieldIs("columns");
         readToken(START_ARRAY);
         {
@@ -224,7 +224,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
     if (t == START_OBJECT) {
       VectorSchemaRoot recordBatch = VectorSchemaRoot.create(schema, allocator);
       {
-        int count = readNextField("count", Integer.class);
+        int count = readCount();
         recordBatch.setRowCount(count);
         nextFieldIs("columns");
         readToken(START_ARRAY);
@@ -885,7 +885,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
       /* Initialize the vector with required capacity but don't allocateNew since we would
        * be doing loadFieldBuffers.
        */
-      int valueCount = readNextField("count", Integer.class);
+      int valueCount = readCount();
 
       vector.setInitialCapacity(valueCount);
 
@@ -973,6 +973,14 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
     nextFieldIs(expectedFieldName);
     parser.nextToken();
     return parser.readValueAs(c);
+  }
+
+  private int readCount() throws IOException {
+    int count = readNextField("count", Integer.class);
+    if (count < 0) {
+      throw new IllegalArgumentException("Expected count >= 0, got " + count);
+    }
+    return count;
   }
 
   private void nextFieldIs(String expectedFieldName) throws IOException, JsonParseException {

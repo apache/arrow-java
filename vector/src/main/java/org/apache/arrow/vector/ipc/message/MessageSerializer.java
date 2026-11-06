@@ -411,50 +411,58 @@ public class MessageSerializer {
    */
   public static ArrowRecordBatch deserializeRecordBatch(RecordBatch recordBatchFB, ArrowBuf body)
       throws IOException {
-    // Now read the body
-    int nodesLength = recordBatchFB.nodesLength();
-    List<ArrowFieldNode> nodes = new ArrayList<>();
-    for (int i = 0; i < nodesLength; ++i) {
-      FieldNode node = recordBatchFB.nodes(i);
-      if ((int) node.length() != node.length() || (int) node.nullCount() != node.nullCount()) {
-        throw new IOException(
-            "Cannot currently deserialize record batches with "
-                + "node length larger than INT_MAX records.");
+    try {
+      // Now read the body
+      int nodesLength = recordBatchFB.nodesLength();
+      List<ArrowFieldNode> nodes = new ArrayList<>();
+      for (int i = 0; i < nodesLength; ++i) {
+        FieldNode node = recordBatchFB.nodes(i);
+        if (node.length() < 0) {
+          throw new IOException("Record batch node " + i + " has negative length " + node.length());
+        }
+        if (node.nullCount() < -1) {
+          throw new IOException(
+              "Record batch node " + i + " has invalid null count " + node.nullCount());
+        }
+        if ((int) node.length() != node.length() || (int) node.nullCount() != node.nullCount()) {
+          throw new IOException(
+              "Cannot currently deserialize record batches with "
+                  + "node length larger than INT_MAX records.");
+        }
+        nodes.add(new ArrowFieldNode(node.length(), node.nullCount()));
       }
-      nodes.add(new ArrowFieldNode(node.length(), node.nullCount()));
-    }
-    List<ArrowBuf> buffers = new ArrayList<>();
-    for (int i = 0; i < recordBatchFB.buffersLength(); ++i) {
-      Buffer bufferFB = recordBatchFB.buffers(i);
-      ArrowBuf vectorBuffer = body.slice(bufferFB.offset(), bufferFB.length());
-      buffers.add(vectorBuffer);
-    }
+      List<ArrowBuf> buffers = new ArrayList<>();
+      for (int i = 0; i < recordBatchFB.buffersLength(); ++i) {
+        Buffer bufferFB = recordBatchFB.buffers(i);
+        ArrowBuf vectorBuffer = body.slice(bufferFB.offset(), bufferFB.length());
+        buffers.add(vectorBuffer);
+      }
 
-    ArrowBodyCompression bodyCompression =
-        recordBatchFB.compression() == null
-            ? NoCompressionCodec.DEFAULT_BODY_COMPRESSION
-            : new ArrowBodyCompression(
-                recordBatchFB.compression().codec(), recordBatchFB.compression().method());
+      ArrowBodyCompression bodyCompression =
+          recordBatchFB.compression() == null
+              ? NoCompressionCodec.DEFAULT_BODY_COMPRESSION
+              : new ArrowBodyCompression(
+                  recordBatchFB.compression().codec(), recordBatchFB.compression().method());
 
-    List<Long> variadicBufferCounts = new ArrayList<>();
-    for (int i = 0; i < recordBatchFB.variadicBufferCountsLength(); i++) {
-      variadicBufferCounts.add(recordBatchFB.variadicBufferCounts(i));
-    }
+      List<Long> variadicBufferCounts = new ArrayList<>();
+      for (int i = 0; i < recordBatchFB.variadicBufferCountsLength(); i++) {
+        variadicBufferCounts.add(recordBatchFB.variadicBufferCounts(i));
+      }
 
-    if ((int) recordBatchFB.length() != recordBatchFB.length()) {
-      throw new IOException(
-          "Cannot currently deserialize record batches with more than INT_MAX records.");
+      if ((int) recordBatchFB.length() != recordBatchFB.length()) {
+        throw new IOException(
+            "Cannot currently deserialize record batches with more than INT_MAX records.");
+      }
+      return new ArrowRecordBatch(
+          checkedCastToInt(recordBatchFB.length()),
+          nodes,
+          buffers,
+          bodyCompression,
+          variadicBufferCounts,
+          /*alignBuffers*/ true);
+    } finally {
+      body.getReferenceManager().release();
     }
-    ArrowRecordBatch arrowRecordBatch =
-        new ArrowRecordBatch(
-            checkedCastToInt(recordBatchFB.length()),
-            nodes,
-            buffers,
-            bodyCompression,
-            variadicBufferCounts,
-            /*alignBuffers*/ true);
-    body.getReferenceManager().release();
-    return arrowRecordBatch;
   }
 
   /**
