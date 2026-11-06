@@ -16,12 +16,15 @@
  */
 package org.apache.arrow.driver.jdbc;
 
+import java.sql.BatchUpdateException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.flight.FlightInfo;
+import org.apache.arrow.flight.sql.FlightSqlBatchUpdateException;
 import org.apache.arrow.util.Preconditions;
 import org.apache.calcite.avatica.AvaticaPreparedStatement;
+import org.apache.calcite.avatica.Meta.ExecuteBatchResult;
 import org.apache.calcite.avatica.Meta.Signature;
 import org.apache.calcite.avatica.Meta.StatementHandle;
 
@@ -72,6 +75,21 @@ public class ArrowFlightPreparedStatement extends AvaticaPreparedStatement
   public synchronized void close() throws SQLException {
     this.preparedStatement.close();
     super.close();
+  }
+
+  @Override
+  public long[] executeLargeBatch() throws SQLException {
+    checkOpen();
+    try {
+      final ExecuteBatchResult result =
+          getConnection().getMeta().executeBatch(handle, getParameterValueBatch());
+      return result.updateCounts;
+    } catch (FlightSqlBatchUpdateException e) {
+      throw new BatchUpdateException(
+          e.getMessage(), null, 0, ArrowFlightMetaImpl.toIntArray(e.getUpdateCounts()), e);
+    } finally {
+      parameterValueBatch.clear();
+    }
   }
 
   @Override
