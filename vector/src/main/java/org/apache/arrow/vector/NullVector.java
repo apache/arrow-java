@@ -177,12 +177,12 @@ public class NullVector implements FieldVector, ValueIterableVector<Object> {
 
   @Override
   public TransferPair getTransferPair(String ref, BufferAllocator allocator) {
-    return new TransferImpl(ref);
+    return new TransferImpl(new NullVector(ref, field.getFieldType()));
   }
 
   @Override
   public TransferPair getTransferPair(Field field, BufferAllocator allocator) {
-    return new TransferImpl(field.getName());
+    return new TransferImpl(new NullVector(field));
   }
 
   @Override
@@ -336,10 +336,6 @@ public class NullVector implements FieldVector, ValueIterableVector<Object> {
 
   private class TransferImpl implements TransferPair {
     NullVector to;
-
-    public TransferImpl(String ref) {
-      to = new NullVector(ref);
-    }
 
     @Deprecated
     public TransferImpl() {
