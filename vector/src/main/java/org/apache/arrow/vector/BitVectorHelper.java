@@ -381,6 +381,8 @@ public class BitVectorHelper {
     int numBytesOut = DataSizeRoundingUtil.divideBy8Ceil(numBits1 + numBits2);
 
     if (BoundsChecking.BOUNDS_CHECKING_ENABLED) {
+      input1.checkBytes(0, numBytes1);
+      input2.checkBytes(0, numBytes2);
       output.checkBytes(0, numBytesOut);
     }
 
