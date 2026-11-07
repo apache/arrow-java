@@ -103,7 +103,8 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
    */
   private Field[] typeFields = new Field[Byte.MAX_VALUE + 1];
   /**
-   * The index is the index into the typeFields array, and the value is the logical field id.
+   * The index is the order in which the type was registered, and the value is its type id, i.e.
+   * the index into the typeFields and childVectors arrays.
    */
   private byte[] typeMapFields = new byte[Byte.MAX_VALUE + 1];
 
@@ -623,12 +624,16 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
     }
 
     private void createTransferPairs() {
+      // Expects the i-th registered type to be the i-th child of the internal struct. Type
+      // fields and child vectors are indexed by its type id, which differs from i when the
+      // union declares type ids.
       for (int i = 0; i < nextTypeId; i++) {
+        byte typeId = typeMapFields[i];
         ValueVector srcVec = internalStruct.getVectorById(i);
         ValueVector dstVec = to.internalStruct.getVectorById(i);
-        to.typeFields[i] = typeFields[i];
-        to.typeMapFields[i] = typeMapFields[i];
-        to.childVectors[i] = dstVec;
+        to.typeFields[typeId] = typeFields[typeId];
+        to.typeMapFields[i] = typeId;
+        to.childVectors[typeId] = dstVec;
         internalTransferPairs[i] = srcVec.makeTransferPair(dstVec);
       }
       to.nextTypeId = nextTypeId;
@@ -647,7 +652,7 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
       for (int i = 0; i < nextTypeId; i++) {
         if (internalTransferPairs[i] != null) {
           internalTransferPairs[i].transfer();
-          to.childVectors[i] = internalTransferPairs[i].getTo();
+          to.childVectors[typeMapFields[i]] = internalTransferPairs[i].getTo();
         }
       }
       to.valueCount = valueCount;
@@ -670,8 +675,8 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
         to.reallocOffsetBuffer();
       }
 
-      int [] typeCounts = new int[nextTypeId];
-      int [] typeStarts = new int[nextTypeId];
+      int [] typeCounts = new int[Byte.MAX_VALUE + 1];
+      int [] typeStarts = new int[Byte.MAX_VALUE + 1];
       for (int i = 0; i < typeCounts.length; i++) {
         typeCounts[i] = 0;
         typeStarts[i] = -1;
@@ -690,9 +695,10 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
 
       // transfer vector values
       for (int i = 0; i < nextTypeId; i++) {
-        if (typeCounts[i] > 0 && typeStarts[i] != -1) {
-          internalTransferPairs[i].splitAndTransfer(typeStarts[i], typeCounts[i]);
-          to.childVectors[i] = internalTransferPairs[i].getTo();
+        byte typeId = typeMapFields[i];
+        if (typeCounts[typeId] > 0 && typeStarts[typeId] != -1) {
+          internalTransferPairs[i].splitAndTransfer(typeStarts[typeId], typeCounts[typeId]);
+          to.childVectors[typeId] = internalTransferPairs[i].getTo();
         }
       }
 

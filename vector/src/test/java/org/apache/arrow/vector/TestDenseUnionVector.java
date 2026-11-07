@@ -192,6 +192,48 @@ public class TestDenseUnionVector {
   }
 
   @Test
+  public void testTransferWithDeclaredTypeIds() {
+    try (DenseUnionVector srcVector = newVectorWithTypeIds5And10()) {
+      Field srcField = srcVector.getField();
+      TransferPair pair = srcVector.getTransferPair(allocator);
+      try (DenseUnionVector destVector = (DenseUnionVector) pair.getTo()) {
+        pair.transfer();
+        destVector.setValueCount(3);
+
+        assertEquals(srcField, destVector.getField());
+        assertEquals(5, destVector.getObject(0));
+        assertEquals(true, destVector.getObject(1));
+        assertEquals(7, destVector.getObject(2));
+
+        TransferPair secondPair = destVector.getTransferPair(allocator);
+        try (DenseUnionVector secondDestVector = (DenseUnionVector) secondPair.getTo()) {
+          secondPair.transfer();
+
+          assertEquals(srcField, secondDestVector.getField());
+          assertEquals(3, secondDestVector.getValueCount());
+          assertEquals(5, secondDestVector.getObject(0));
+          assertEquals(true, secondDestVector.getObject(1));
+          assertEquals(7, secondDestVector.getObject(2));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferWithDeclaredTypeIds() {
+    try (DenseUnionVector srcVector = newVectorWithTypeIds5And10()) {
+      TransferPair pair = srcVector.getTransferPair(allocator);
+      try (DenseUnionVector destVector = (DenseUnionVector) pair.getTo()) {
+        pair.splitAndTransfer(1, 2);
+
+        assertEquals(2, destVector.getValueCount());
+        assertEquals(true, destVector.getObject(0));
+        assertEquals(7, destVector.getObject(1));
+      }
+    }
+  }
+
+  @Test
   public void testSplitAndTransfer() throws Exception {
     try (DenseUnionVector sourceVector =
         new DenseUnionVector(EMPTY_SCHEMA_PATH, allocator, null, null)) {
@@ -706,4 +748,26 @@ public class TestDenseUnionVector {
     holder.value = value;
     return holder;
   }
+
+  /** Returns a dense union with declared type ids 5 (int) and 10 (bit), as IPC can produce. */
+  private DenseUnionVector newVectorWithTypeIds5And10() {
+    Field field =
+        new Field(
+            "u",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {5, 10})),
+            List.of(
+                Field.nullable("i", MinorType.INT.getType()),
+                Field.nullable("b", MinorType.BIT.getType())));
+    DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator);
+    vector.allocateNew();
+    vector.setTypeId(0, (byte) 5);
+    vector.setSafe(0, newIntHolder(5));
+    vector.setTypeId(1, (byte) 10);
+    vector.setSafe(1, newBitHolder(true));
+    vector.setTypeId(2, (byte) 5);
+    vector.setSafe(2, newIntHolder(7));
+    vector.setValueCount(3);
+    return vector;
+  }
+
 }
