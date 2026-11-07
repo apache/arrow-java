@@ -46,6 +46,8 @@ import org.apache.arrow.adapter.jdbc.consumer.BitConsumer;
 import org.apache.arrow.adapter.jdbc.consumer.CompositeJdbcConsumer;
 import org.apache.arrow.adapter.jdbc.consumer.DateConsumer;
 import org.apache.arrow.adapter.jdbc.consumer.Decimal256Consumer;
+import org.apache.arrow.adapter.jdbc.consumer.Decimal32Consumer;
+import org.apache.arrow.adapter.jdbc.consumer.Decimal64Consumer;
 import org.apache.arrow.adapter.jdbc.consumer.DecimalConsumer;
 import org.apache.arrow.adapter.jdbc.consumer.DoubleConsumer;
 import org.apache.arrow.adapter.jdbc.consumer.FloatConsumer;
@@ -66,6 +68,8 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.Decimal256Vector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.Float4Vector;
@@ -510,10 +514,21 @@ public class JdbcToArrowUtils {
         }
       case Decimal:
         final RoundingMode bigDecimalRoundingMode = config.getBigDecimalRoundingMode();
-        if (((ArrowType.Decimal) arrowType).getBitWidth() == 256) {
+        final int decimalBitWidth = ((ArrowType.Decimal) arrowType).getBitWidth();
+        if (decimalBitWidth == 256) {
           return Decimal256Consumer.createConsumer(
               (Decimal256Vector) vector, columnIndex, nullable, bigDecimalRoundingMode);
+        } else if (decimalBitWidth == 128) {
+          return DecimalConsumer.createConsumer(
+              (DecimalVector) vector, columnIndex, nullable, bigDecimalRoundingMode);
+        } else if (decimalBitWidth == 64) {
+          return Decimal64Consumer.createConsumer(
+              (Decimal64Vector) vector, columnIndex, nullable, bigDecimalRoundingMode);
+        } else if (decimalBitWidth == 32) {
+          return Decimal32Consumer.createConsumer(
+              (Decimal32Vector) vector, columnIndex, nullable, bigDecimalRoundingMode);
         } else {
+          // Any other bit width maps to MinorType.DECIMAL, so the root created a DecimalVector.
           return DecimalConsumer.createConsumer(
               (DecimalVector) vector, columnIndex, nullable, bigDecimalRoundingMode);
         }

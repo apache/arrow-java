@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
@@ -756,6 +757,33 @@ public class TestPromotableWriter {
       assertEquals("row2", new String(Objects.requireNonNull(uv.get(1)), StandardCharsets.UTF_8));
       assertEquals("row3", new String(Objects.requireNonNull(uv.get(2)), StandardCharsets.UTF_8));
       assertEquals("row4", new String(Objects.requireNonNull(uv.get(3)), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  public void testListWithAllDecimalWidths() {
+    try (ListVector vector = ListVector.empty("decimals", allocator)) {
+      UnionListWriter writer = vector.getWriter();
+      writer.startList();
+      writer.decimal32().writeDecimal32(new BigDecimal("1.23"));
+      writer.decimal64().writeDecimal64(new BigDecimal("-45678901.234"));
+      writer.decimal().writeDecimal(new BigDecimal("1234567890123456789.01"));
+      writer
+          .decimal256()
+          .writeDecimal256(new BigDecimal("123456789012345678901234567890123456789.01"));
+      writer.decimal32().writeDecimal32(new BigDecimal("-9.87"));
+      writer.endList();
+      vector.setValueCount(1);
+
+      assertEquals(
+          Arrays.asList(
+              new BigDecimal("1.23"),
+              new BigDecimal("-45678901.234"),
+              new BigDecimal("1234567890123456789.01"),
+              new BigDecimal("123456789012345678901234567890123456789.01"),
+              new BigDecimal("-9.87")),
+          vector.getObject(0));
+      vector.validateFull();
     }
   }
 

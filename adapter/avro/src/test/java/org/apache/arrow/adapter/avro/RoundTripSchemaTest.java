@@ -218,6 +218,27 @@ public class RoundTripSchemaTest {
   }
 
   @Test
+  public void testRoundTripNarrowDecimalTypes() {
+
+    List<Field> fields =
+        Arrays.asList(
+            new Field(
+                "nullableDecimal32", FieldType.nullable(new ArrowType.Decimal(9, 2, 32)), null),
+            new Field(
+                "nonNullableDecimal32",
+                FieldType.notNullable(new ArrowType.Decimal(5, 0, 32)),
+                null),
+            new Field(
+                "nullableDecimal64", FieldType.nullable(new ArrowType.Decimal(18, 6, 64)), null),
+            new Field(
+                "nonNullableDecimal64",
+                FieldType.notNullable(new ArrowType.Decimal(12, 4, 64)),
+                null));
+
+    doRoundTripTest(fields);
+  }
+
+  @Test
   public void testRoundTripDateTypes() {
 
     List<Field> fields =

@@ -19,9 +19,11 @@ package org.apache.arrow.vector.ipc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +31,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.complex.StructVector;
@@ -431,6 +435,8 @@ public class TestJSONFile extends BaseFileTest {
             Field.nullable("binary", ArrowType.Binary.INSTANCE),
             Field.nullable("largebinary", ArrowType.LargeBinary.INSTANCE),
             Field.nullable("fixedsizebinary", new ArrowType.FixedSizeBinary(2)),
+            Field.nullable("decimal32", new ArrowType.Decimal(3, 2, 32)),
+            Field.nullable("decimal64", new ArrowType.Decimal(3, 2, 64)),
             Field.nullable("decimal128", new ArrowType.Decimal(3, 2, 128)),
             Field.nullable("decimal128", new ArrowType.Decimal(3, 2, 256)),
             new Field(
@@ -518,6 +524,55 @@ public class TestJSONFile extends BaseFileTest {
           }
           assertNull(reader.read());
         }
+      }
+    }
+  }
+
+  @Test
+  public void testRoundtripDecimal32And64() throws Exception {
+    final Schema schema =
+        new Schema(
+            Arrays.asList(
+                Field.nullable("decimal32", new ArrowType.Decimal(9, 4, 32)),
+                Field.nullable("decimal64", new ArrowType.Decimal(18, 4, 64))));
+    try (final VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+      Decimal32Vector v32 = (Decimal32Vector) root.getVector("decimal32");
+      Decimal64Vector v64 = (Decimal64Vector) root.getVector("decimal64");
+      root.allocateNew();
+      v32.set(0, new BigDecimal("12345.6789"));
+      v32.setNull(1);
+      v32.set(2, new BigDecimal("-9876.5432"));
+      v64.set(0, new BigDecimal("12345678901234.5678"));
+      v64.setNull(1);
+      v64.set(2, new BigDecimal("-98765432109876.5432"));
+      root.setRowCount(3);
+
+      Path outputPath = Files.createTempFile("arrow-decimal-", ".json");
+      File outputFile = outputPath.toFile();
+      outputFile.deleteOnExit();
+
+      try (final JsonFileWriter jsonWriter =
+          new JsonFileWriter(outputFile, JsonFileWriter.config().pretty(true))) {
+        jsonWriter.start(schema, null);
+        jsonWriter.write(root);
+      }
+
+      try (JsonFileReader reader = new JsonFileReader(outputFile, allocator)) {
+        Schema readSchema = reader.start();
+        assertEquals(schema, readSchema);
+        try (final VectorSchemaRoot data = reader.read()) {
+          assertNotNull(data);
+          assertEquals(3, data.getRowCount());
+          Decimal32Vector r32 = (Decimal32Vector) data.getVector("decimal32");
+          Decimal64Vector r64 = (Decimal64Vector) data.getVector("decimal64");
+          assertEquals(new BigDecimal("12345.6789"), r32.getObject(0));
+          assertTrue(r32.isNull(1));
+          assertEquals(new BigDecimal("-9876.5432"), r32.getObject(2));
+          assertEquals(new BigDecimal("12345678901234.5678"), r64.getObject(0));
+          assertTrue(r64.isNull(1));
+          assertEquals(new BigDecimal("-98765432109876.5432"), r64.getObject(2));
+        }
+        assertNull(reader.read());
       }
     }
   }

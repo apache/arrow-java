@@ -30,6 +30,8 @@ import org.apache.arrow.vector.BigIntVector;
 import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.DateDayVector;
 import org.apache.arrow.vector.DateMilliVector;
+import org.apache.arrow.vector.Decimal32Vector;
+import org.apache.arrow.vector.Decimal64Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.DurationVector;
 import org.apache.arrow.vector.FieldVector;
@@ -72,6 +74,8 @@ import org.apache.arrow.vector.holders.NullableBigIntHolder;
 import org.apache.arrow.vector.holders.NullableBitHolder;
 import org.apache.arrow.vector.holders.NullableDateDayHolder;
 import org.apache.arrow.vector.holders.NullableDateMilliHolder;
+import org.apache.arrow.vector.holders.NullableDecimal32Holder;
+import org.apache.arrow.vector.holders.NullableDecimal64Holder;
 import org.apache.arrow.vector.holders.NullableDecimalHolder;
 import org.apache.arrow.vector.holders.NullableDurationHolder;
 import org.apache.arrow.vector.holders.NullableFloat4Holder;
@@ -1714,6 +1718,126 @@ public class Row implements Iterator<Row> {
    */
   public ArrowBuf getDecimal(int columnIndex) {
     DecimalVector vector = (DecimalVector) table.getVector(columnIndex);
+    return vector.get(rowNumber);
+  }
+
+  /**
+   * Updates the value of the holder with data from vector at the given index at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public void getDecimal32(int columnIndex, NullableDecimal32Holder holder) {
+    Decimal32Vector vector = (Decimal32Vector) table.getVector(columnIndex);
+    vector.get(rowNumber, holder);
+  }
+
+  /**
+   * Updates the value of the holder with data from the vector with given name at the current row.
+   * An IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public void getDecimal32(String columnName, NullableDecimal32Holder holder) {
+    Decimal32Vector vector = (Decimal32Vector) table.getVector(columnName);
+    vector.get(rowNumber, holder);
+  }
+
+  /**
+   * Returns a BigDecimal from the column of the given name at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public BigDecimal getDecimal32Obj(String columnName) {
+    Decimal32Vector vector = (Decimal32Vector) table.getVector(columnName);
+    return vector.getObject(rowNumber);
+  }
+
+  /**
+   * Returns a BigDecimal from the column with the given index at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public BigDecimal getDecimal32Obj(int columnIndex) {
+    Decimal32Vector vector = (Decimal32Vector) table.getVector(columnIndex);
+    return vector.getObject(rowNumber);
+  }
+
+  /**
+   * Returns an ArrowBuf from the column of the given name at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public ArrowBuf getDecimal32(String columnName) {
+    Decimal32Vector vector = (Decimal32Vector) table.getVector(columnName);
+    return vector.get(rowNumber);
+  }
+
+  /**
+   * Returns an ArrowBuf from the column with the given index at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public ArrowBuf getDecimal32(int columnIndex) {
+    Decimal32Vector vector = (Decimal32Vector) table.getVector(columnIndex);
+    return vector.get(rowNumber);
+  }
+
+  /**
+   * Updates the value of the holder with data from vector at the given index at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public void getDecimal64(int columnIndex, NullableDecimal64Holder holder) {
+    Decimal64Vector vector = (Decimal64Vector) table.getVector(columnIndex);
+    vector.get(rowNumber, holder);
+  }
+
+  /**
+   * Updates the value of the holder with data from the vector with given name at the current row.
+   * An IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public void getDecimal64(String columnName, NullableDecimal64Holder holder) {
+    Decimal64Vector vector = (Decimal64Vector) table.getVector(columnName);
+    vector.get(rowNumber, holder);
+  }
+
+  /**
+   * Returns a BigDecimal from the column of the given name at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public BigDecimal getDecimal64Obj(String columnName) {
+    Decimal64Vector vector = (Decimal64Vector) table.getVector(columnName);
+    return vector.getObject(rowNumber);
+  }
+
+  /**
+   * Returns a BigDecimal from the column with the given index at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public BigDecimal getDecimal64Obj(int columnIndex) {
+    Decimal64Vector vector = (Decimal64Vector) table.getVector(columnIndex);
+    return vector.getObject(rowNumber);
+  }
+
+  /**
+   * Returns an ArrowBuf from the column of the given name at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public ArrowBuf getDecimal64(String columnName) {
+    Decimal64Vector vector = (Decimal64Vector) table.getVector(columnName);
+    return vector.get(rowNumber);
+  }
+
+  /**
+   * Returns an ArrowBuf from the column with the given index at the current row. An
+   * IllegalArgumentException is thrown if the column is not present, and a ClassCastException is
+   * thrown if it is present but has a different type
+   */
+  public ArrowBuf getDecimal64(int columnIndex) {
+    Decimal64Vector vector = (Decimal64Vector) table.getVector(columnIndex);
     return vector.get(rowNumber);
   }
 
