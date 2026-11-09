@@ -407,7 +407,12 @@ public final class Data {
       boolean closeImportedStructs) {
     Field field = importField(allocator, schema, provider, closeImportedStructs);
     FieldVector vector = field.createVector(allocator);
-    importIntoVector(allocator, array, vector, provider, closeImportedStructs);
+    try {
+      importIntoVector(allocator, array, vector, provider, closeImportedStructs);
+    } catch (Exception e) {
+      vector.close();
+      throw e;
+    }
     return vector;
   }
 

@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -115,6 +116,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class RoundtripTest {
   private static final String EMPTY_SCHEMA_PATH = "";
@@ -1058,6 +1060,74 @@ public class RoundtripTest {
       assertEquals(0, consumerArrowSchema.snapshot().release);
       assertNotEquals(0, consumerArrowSchema.memoryAddress());
     }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, Long.MIN_VALUE, Integer.MAX_VALUE + 1L, (1L << 32) - 100})
+  public void testImportRejectsInvalidLength(long length) {
+    try (IntVector vector = new IntVector("ints", allocator)) {
+      setVector(vector, 1, 2, 3);
+      assertImportRejected(vector, "ints", array -> setLength(array, length));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, Long.MIN_VALUE, Integer.MAX_VALUE + 1L, (1L << 32) - 100})
+  public void testImportRejectsInvalidStructLength(long length) {
+    try (StructVector vector = createStructWithTwoChildren()) {
+      assertImportRejected(vector, "struct", array -> setLength(array, length));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, Long.MIN_VALUE, Integer.MAX_VALUE + 1L, (1L << 32) - 100})
+  public void testImportRejectsInvalidChildLength(long length) {
+    try (StructVector vector = createStructWithTwoChildren()) {
+      assertImportRejected(
+          vector,
+          "second",
+          array -> {
+            long[] children = NativeUtil.toJavaArray(array.snapshot().children, 2);
+            setLength(ArrowArray.wrap(children[1]), length);
+          });
+    }
+  }
+
+  private StructVector createStructWithTwoChildren() {
+    StructVector vector = StructVector.empty("struct", allocator);
+    FieldType type = FieldType.nullable(new ArrowType.Int(32, true));
+    IntVector first = vector.addOrGet("first", type, IntVector.class);
+    IntVector second = vector.addOrGet("second", type, IntVector.class);
+    vector.allocateNew();
+    for (int i = 0; i < 3; i++) {
+      first.setSafe(i, i);
+      second.setSafe(i, i);
+      vector.setIndexDefined(i);
+    }
+    vector.setValueCount(3);
+    return vector;
+  }
+
+  private static void setLength(ArrowArray array, long length) {
+    ArrowArray.Snapshot snapshot = array.snapshot();
+    snapshot.length = length;
+    array.save(snapshot);
+  }
+
+  /** Exports the vector, corrupts the export and checks that the import fails cleanly. */
+  private void assertImportRejected(
+      FieldVector vector, String expectedField, Consumer<ArrowArray> corrupt) {
+    try (ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+        ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+      Data.exportVector(allocator, vector, null, arrowArray, arrowSchema);
+      corrupt.accept(arrowArray);
+      IllegalArgumentException e =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> Data.importVector(childAllocator, arrowArray, arrowSchema, null));
+      assertTrue(e.getMessage().contains(expectedField), e.getMessage());
+    }
+    assertEquals(0, childAllocator.getAllocatedMemory());
   }
 
   private void exportSchema(Schema schema, ArrowSchema targetArrowSchema) {

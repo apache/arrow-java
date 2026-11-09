@@ -128,19 +128,21 @@ final class ArrayImporter {
     }
 
     // Import main data
-    ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
-    long[] bufferPointers =
-        NativeUtil.toJavaArray(snapshot.buffers, checkedCastToInt(snapshot.n_buffers));
+    try {
+      ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
+      long[] bufferPointers =
+          NativeUtil.toJavaArray(snapshot.buffers, checkedCastToInt(snapshot.n_buffers));
 
-    try (final BufferImportTypeVisitor visitor =
-        new BufferImportTypeVisitor(allocator, underlyingAllocation, fieldNode, bufferPointers)) {
-      final List<ArrowBuf> buffers;
-      if (bufferPointers == null || bufferPointers.length == 0) {
-        buffers = Collections.emptyList();
-      } else {
-        buffers = vector.getField().getType().accept(visitor);
+      try (final BufferImportTypeVisitor visitor =
+          new BufferImportTypeVisitor(allocator, underlyingAllocation, fieldNode, bufferPointers)) {
+        final List<ArrowBuf> buffers;
+        if (bufferPointers == null || bufferPointers.length == 0) {
+          buffers = Collections.emptyList();
+        } else {
+          buffers = vector.getField().getType().accept(visitor);
+        }
+        vector.loadFieldBuffers(fieldNode, buffers);
       }
-      vector.loadFieldBuffers(fieldNode, buffers);
     } catch (Exception e) {
       throw new IllegalArgumentException(
           "Could not load buffers for field "
