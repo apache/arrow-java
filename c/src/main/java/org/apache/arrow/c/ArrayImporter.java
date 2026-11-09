@@ -298,20 +298,22 @@ final class ArrayImporter {
    * skippedRows} rows, which must be a multiple of 8.
    */
   private void importBuffers(FieldVector target, ArrowArray.Snapshot snapshot, long skippedRows) {
-    ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
-    long[] bufferPointers =
-        NativeUtil.toJavaArray(snapshot.buffers, checkedCastToInt(snapshot.n_buffers));
+    try {
+      ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
+      long[] bufferPointers =
+          NativeUtil.toJavaArray(snapshot.buffers, checkedCastToInt(snapshot.n_buffers));
 
-    try (final BufferImportTypeVisitor visitor =
-        new BufferImportTypeVisitor(
-            allocator, underlyingAllocation, fieldNode, bufferPointers, skippedRows)) {
-      final List<ArrowBuf> buffers;
-      if (bufferPointers == null || bufferPointers.length == 0) {
-        buffers = Collections.emptyList();
-      } else {
-        buffers = target.getField().getType().accept(visitor);
+      try (final BufferImportTypeVisitor visitor =
+          new BufferImportTypeVisitor(
+              allocator, underlyingAllocation, fieldNode, bufferPointers, skippedRows)) {
+        final List<ArrowBuf> buffers;
+        if (bufferPointers == null || bufferPointers.length == 0) {
+          buffers = Collections.emptyList();
+        } else {
+          buffers = target.getField().getType().accept(visitor);
+        }
+        target.loadFieldBuffers(fieldNode, buffers);
       }
-      target.loadFieldBuffers(fieldNode, buffers);
     } catch (Exception e) {
       throw new IllegalArgumentException(
           "Could not load buffers for field "
