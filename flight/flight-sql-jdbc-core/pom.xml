@@ -181,7 +181,7 @@ under the License.
     <dependency>
       <groupId>com.nimbusds</groupId>
       <artifactId>oauth2-oidc-sdk</artifactId>
-      <version>11.38.2</version>
+      <version>11.39</version>
     </dependency>
 
   </dependencies>
