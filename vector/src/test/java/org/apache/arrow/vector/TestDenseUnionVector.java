@@ -425,6 +425,67 @@ public class TestDenseUnionVector {
   }
 
   @Test
+  public void testMaximumNumberOfChildren() {
+    int[] typeIds = new int[Byte.MAX_VALUE + 1];
+    List<Field> children = new ArrayList<>();
+    for (int i = 0; i < typeIds.length; i++) {
+      typeIds[i] = i;
+      children.add(Field.nullable("c" + i, MinorType.INT.getType()));
+    }
+    Field field =
+        new Field(
+            "duv", FieldType.nullable(new ArrowType.Union(UnionMode.Dense, typeIds)), children);
+    try (DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator)) {
+      assertEquals(field, vector.getField());
+
+      vector.allocateNew();
+      IntVector last = (IntVector) vector.getChildrenFromFields().get(Byte.MAX_VALUE);
+      last.setSafe(0, 7);
+      last.setSafe(1, 8);
+      vector.setTypeId(0, Byte.MAX_VALUE);
+      vector.setTypeId(1, Byte.MAX_VALUE);
+      vector.getOffsetBuffer().setInt(DenseUnionVector.OFFSET_WIDTH, 1);
+      vector.setValueCount(2);
+
+      TransferPair pair = vector.getTransferPair(allocator);
+      try (DenseUnionVector target = (DenseUnionVector) pair.getTo()) {
+        pair.splitAndTransfer(1, 1);
+        assertEquals(field, target.getField());
+        assertEquals(8, target.getObject(0));
+      }
+
+      assertThrows(
+          IllegalStateException.class,
+          () -> vector.registerNewTypeId(Field.nullable("extra", MinorType.INT.getType())));
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferWithUnknownTypeId() {
+    Field field =
+        new Field(
+            "duv",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {10, 5})),
+            Arrays.asList(
+                Field.nullable("a", MinorType.INT.getType()),
+                Field.nullable("b", MinorType.INT.getType())));
+    try (DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator)) {
+      vector.allocateNew();
+      vector.setTypeId(0, (byte) 10);
+      vector.setTypeId(1, (byte) 7);
+      vector.setValueCount(2);
+
+      TransferPair pair = vector.getTransferPair(allocator);
+      try (DenseUnionVector target = (DenseUnionVector) pair.getTo()) {
+        IllegalArgumentException e =
+            assertThrows(IllegalArgumentException.class, () -> pair.splitAndTransfer(0, 2));
+        assertTrue(e.getMessage().contains("type id 7"), e.getMessage());
+        assertEquals(0, target.getValueCount());
+      }
+    }
+  }
+
+  @Test
   public void testSplitAndTransferWithOffsetGapsInRunEndEncodedChild() {
     Field child =
         new Field(

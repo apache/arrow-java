@@ -51,6 +51,8 @@ import org.apache.arrow.vector.compare.Range;
 import org.apache.arrow.vector.compare.RangeEqualsVisitor;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.extension.OpaqueType;
+import org.apache.arrow.vector.extension.OpaqueVector;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.ipc.ArrowFileReader;
 import org.apache.arrow.vector.ipc.ArrowFileWriter;
@@ -227,6 +229,25 @@ public class TestExtensionType {
       assertEquals(4, target.getValueCount());
       assertEquals(last, target.getObject(3));
       assertEquals(0, source.getValueCount());
+    }
+  }
+
+  @Test
+  public void testTransferPairRejectsDifferentExtensionVector() {
+    // Both vectors store FixedSizeBinary(16), so only their extension types differ
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(new OpaqueType(new ArrowType.FixedSizeBinary(16), "type", "vendor")),
+            Collections.emptyList());
+    try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
+        final OpaqueVector source =
+            new OpaqueVector(
+                field, allocator, new FixedSizeBinaryVector("storage", allocator, 16));
+        final UuidVector target = new UuidVector("target", allocator)) {
+      IllegalArgumentException e =
+          assertThrows(IllegalArgumentException.class, () -> source.makeTransferPair(target));
+      assertTrue(e.getMessage().contains("UuidVector"), e.getMessage());
     }
   }
 

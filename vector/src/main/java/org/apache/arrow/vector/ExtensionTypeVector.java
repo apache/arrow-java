@@ -161,6 +161,12 @@ public abstract class ExtensionTypeVector<T extends ValueVector & FieldVector>
   @Override
   public TransferPair makeTransferPair(ValueVector target) {
     if (target instanceof ExtensionTypeVector) {
+      if (!getClass().isInstance(target)) {
+        throw new IllegalArgumentException(
+            String.format(
+                "Cannot transfer %s to %s",
+                getClass().getSimpleName(), target.getClass().getSimpleName()));
+      }
       return new TransferImpl((ExtensionTypeVector<?>) target);
     }
     return underlyingVector.makeTransferPair(target);
