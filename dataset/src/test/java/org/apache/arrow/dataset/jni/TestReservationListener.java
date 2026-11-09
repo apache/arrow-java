@@ -122,9 +122,9 @@ public class TestReservationListener extends TestDataset {
         },
         errorMessage);
     long reservation = reserved.get();
-    AutoCloseables.close(pool);
-    long finalReservation = reserved.get();
     assertEquals(initReservation, reservation);
-    assertEquals(initReservation, finalReservation);
+    // The failed scan can leave work running on Arrow C++ threads that still uses the pool,
+    // and closing the scanner doesn't wait for it. Closing the pool here would free it under
+    // that work and crash the JVM, so the pool is left open (GH-1455).
   }
 }
