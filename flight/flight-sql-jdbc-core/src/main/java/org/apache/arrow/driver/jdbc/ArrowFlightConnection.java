@@ -52,8 +52,9 @@ public final class ArrowFlightConnection extends AvaticaConnection {
   private final ArrowFlightConnectionConfigImpl config;
   private ExecutorService executorService;
   private int metadataResultSetCount;
-  // Track result sets and statements owned by this connection so close() can release them.
+  // Track metadata result sets so connection close can release them.
   private Map<Integer, ArrowFlightJdbcFlightStreamResultSet> metadataResultSetMap = new HashMap<>();
+  // Track original statement owners when execution replaces their statement-map entries.
   private final Set<AvaticaStatement> statementOwners =
       Collections.newSetFromMap(new IdentityHashMap<>());
 
@@ -293,7 +294,6 @@ public final class ArrowFlightConnection extends AvaticaConnection {
 
   @Override
   public PreparedStatement prepareStatement(final String sql) throws SQLException {
-    checkOpen();
     return prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
   }
 
@@ -301,7 +301,6 @@ public final class ArrowFlightConnection extends AvaticaConnection {
   public PreparedStatement prepareStatement(
       final String sql, final int resultSetType, final int resultSetConcurrency)
       throws SQLException {
-    checkOpen();
     return prepareStatement(sql, resultSetType, resultSetConcurrency, getHoldability());
   }
 
