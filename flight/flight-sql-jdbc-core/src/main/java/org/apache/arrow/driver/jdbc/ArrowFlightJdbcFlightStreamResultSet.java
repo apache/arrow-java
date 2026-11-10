@@ -54,6 +54,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
   private final FlightInfo flightInfo;
   private CloseableEndpointStreamPair currentEndpointData;
   private FlightEndpointDataQueue flightEndpointDataQueue;
+  private volatile boolean cancelled;
 
   private VectorSchemaRootTransformer transformer;
   private VectorSchemaRoot currentVectorSchemaRoot;
@@ -213,7 +214,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
       } catch (final FlightRuntimeException e) {
         // A concurrent statement.cancel() (or close) cancels in-flight FlightStreams,
         // which surface here as CANCELLED. Normalize to Avatica's "Statement canceled".
-        if (flightEndpointDataQueue.isClosed()
+        if ((cancelled || flightEndpointDataQueue.isClosed())
             && e.status().code() == CallStatus.CANCELLED.code()) {
           throw AvaticaConnection.HELPER.createException("Statement canceled");
         }
@@ -225,10 +226,8 @@ public final class ArrowFlightJdbcFlightStreamResultSet
         continue;
       }
 
-      // No more data. If the queue was closed concurrently (e.g. statement.cancel()
-      // racing with the reader past super.next()), surface as "Statement canceled"
-      // to match Avatica's cancellation semantics.
-      if (flightEndpointDataQueue.isClosed()) {
+      // Cancellation can wake the reader before queue cleanup completes.
+      if (cancelled || flightEndpointDataQueue.isClosed()) {
         throw AvaticaConnection.HELPER.createException("Statement canceled");
       }
 
@@ -242,6 +241,7 @@ public final class ArrowFlightJdbcFlightStreamResultSet
 
   @Override
   protected void cancel() {
+    cancelled = true;
     super.cancel();
     final CloseableEndpointStreamPair currentEndpoint = this.currentEndpointData;
     if (currentEndpoint != null) {

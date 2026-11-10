@@ -161,7 +161,6 @@ public final class ArrowFlightConnection extends AvaticaConnection {
     }
 
     statementMap.clear();
-    statementOwners.clear();
 
     // Reset Holdability
     this.setHoldability(this.metaData.getResultSetHoldability());

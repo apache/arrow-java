@@ -18,6 +18,9 @@ package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.protobuf.Message;
@@ -28,6 +31,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
 import org.apache.arrow.flight.FlightProducer.ServerStreamListener;
@@ -124,6 +130,74 @@ public class ArrowFlightStatementProtocolTest {
   @AfterAll
   public static void tearDownAfterClass() throws Exception {
     AutoCloseables.close(PRODUCER);
+  }
+
+  @Test
+  public void testCancelWhileNextIsBlockedReportsSQLException() throws Exception {
+    final String query = "SELECT * FROM BLOCKED_CANCELLATION";
+    final int endpointCount = 8;
+    final CountDownLatch streamsStarted = new CountDownLatch(endpointCount);
+    final CountDownLatch releaseStreams = new CountDownLatch(1);
+    PRODUCER.addSelectQuery(
+        query,
+        QUERY_SCHEMA,
+        Collections.nCopies(
+            endpointCount,
+            listener -> {
+              try (final BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+                  final VectorSchemaRoot root = VectorSchemaRoot.create(QUERY_SCHEMA, allocator)) {
+                ((IntVector) root.getVector("id")).setSafe(0, 1);
+                root.setRowCount(1);
+                listener.start(root);
+                listener.putNext();
+                streamsStarted.countDown();
+                assertTrue(releaseStreams.await(10, TimeUnit.SECONDS), "Stream was not released");
+              } catch (final Throwable throwable) {
+                listener.error(throwable);
+              } finally {
+                listener.completed();
+              }
+            }));
+
+    try (Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery(query)) {
+      assertTrue(streamsStarted.await(5, TimeUnit.SECONDS), "Streams did not start");
+      assertTrue(resultSet.next());
+      final AtomicReference<Throwable> readerFailure = new AtomicReference<>();
+      final Thread reader =
+          new Thread(
+              () -> {
+                try {
+                  resultSet.next();
+                } catch (final Throwable throwable) {
+                  readerFailure.set(throwable);
+                }
+              },
+              "blocked-result-set-reader");
+      reader.start();
+      try {
+        final long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(5);
+        while (reader.isAlive()
+            && reader.getState() != Thread.State.WAITING
+            && System.nanoTime() < deadline) {
+          Thread.sleep(1);
+        }
+        assertEquals(Thread.State.WAITING, reader.getState(), "Reader did not block");
+
+        statement.cancel();
+        reader.join(5000);
+
+        assertFalse(reader.isAlive(), "Reader did not observe cancellation");
+        final SQLException exception = assertInstanceOf(SQLException.class, readerFailure.get());
+        assertEquals("Statement canceled", exception.getMessage());
+      } finally {
+        releaseStreams.countDown();
+        reader.interrupt();
+        reader.join(5000);
+      }
+    } finally {
+      releaseStreams.countDown();
+    }
   }
 
   @Test
