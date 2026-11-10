@@ -113,6 +113,8 @@ public class ArrowFlightJdbcConnectionPoolDataSourceTest {
     assertFalse(connection.isClosed());
     connection.close();
     assertTrue(connection.isClosed());
+    connection.close();
+    assertTrue(connection.isClosed());
   }
 
   @Test

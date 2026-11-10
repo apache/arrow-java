@@ -242,11 +242,12 @@ public class ResultSetTest {
       final ResultSet resultSet =
           statement.executeQuery(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD);
       statement.closeOnCompletion();
+      assertThat(((ArrowFlightConnection) connection).isStatementOwner(statement), is(true));
 
       resultSet.close();
 
       assertThat(statement.isClosed(), is(true));
-      assertThat(isStatementOwner(statement), is(false));
+      assertThat(((ArrowFlightConnection) connection).isStatementOwner(statement), is(false));
     }
   }
 
@@ -257,20 +258,13 @@ public class ResultSetTest {
         connection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD)) {
       final ResultSet resultSet = statement.executeQuery();
       statement.closeOnCompletion();
+      assertThat(((ArrowFlightConnection) connection).isStatementOwner(statement), is(true));
 
       resultSet.close();
 
       assertThat(statement.isClosed(), is(true));
-      assertThat(isStatementOwner(statement), is(false));
+      assertThat(((ArrowFlightConnection) connection).isStatementOwner(statement), is(false));
     }
-  }
-
-  private static boolean isStatementOwner(final Statement statement)
-      throws ReflectiveOperationException {
-    final java.lang.reflect.Field statementOwnersField =
-        ArrowFlightConnection.class.getDeclaredField("statementOwners");
-    statementOwnersField.setAccessible(true);
-    return ((Set<?>) statementOwnersField.get(connection)).contains(statement);
   }
 
   /**

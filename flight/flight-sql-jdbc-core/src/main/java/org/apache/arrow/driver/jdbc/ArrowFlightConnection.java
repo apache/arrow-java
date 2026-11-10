@@ -22,6 +22,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ import org.apache.arrow.flight.FlightClient;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Preconditions;
+import org.apache.arrow.util.VisibleForTesting;
 import org.apache.calcite.avatica.AvaticaConnection;
 import org.apache.calcite.avatica.AvaticaFactory;
 import org.apache.calcite.avatica.AvaticaStatement;
@@ -221,6 +223,11 @@ public final class ArrowFlightConnection extends AvaticaConnection {
 
   synchronized void unregisterStatementOwner(final AvaticaStatement statement) {
     statementOwners.remove(statement);
+  }
+
+  @VisibleForTesting
+  synchronized boolean isStatementOwner(final Statement statement) {
+    return statementOwners.contains(statement);
   }
 
   private synchronized ArrayList<AutoCloseable> getStatementsToClose() {

@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -104,8 +105,9 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   private final Map<String, List<List<Object>>> expectedParameterValues = new HashMap<>();
   private final Map<String, Boolean> isUpdateMap = new HashMap<>();
 
-  private final Map<String, Integer> actionTypeCounter = new HashMap<>();
-  private final Map<String, Integer> commandTypeCounter = new HashMap<>();
+  private final Map<String, Integer> actionTypeCounter = new ConcurrentHashMap<>();
+  private final Map<String, Integer> commandTypeCounter = new ConcurrentHashMap<>();
+  private volatile @Nullable CallStatus closePreparedStatementFailure;
 
   public static final String COMMAND_STATEMENT_QUERY = "statement_query";
   public static final String COMMAND_STATEMENT_UPDATE = "statement_update";
@@ -308,8 +310,16 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
       final ActionClosePreparedStatementRequest actionClosePreparedStatementRequest,
       final CallContext callContext,
       final StreamListener<Result> streamListener) {
-    // TODO Implement this method.
-    streamListener.onCompleted();
+    final CallStatus failure = closePreparedStatementFailure;
+    if (failure == null) {
+      streamListener.onCompleted();
+    } else {
+      streamListener.onError(failure.toRuntimeException());
+    }
+  }
+
+  public void setClosePreparedStatementFailure(final @Nullable CallStatus failure) {
+    closePreparedStatementFailure = failure;
   }
 
   @Override
@@ -692,9 +702,8 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
 
   @Override
   public void doAction(CallContext context, Action action, StreamListener<Result> listener) {
+    actionTypeCounter.merge(action.getType(), 1, Integer::sum);
     FlightSqlProducer.super.doAction(context, action, listener);
-    actionTypeCounter.put(
-        action.getType(), actionTypeCounter.getOrDefault(action.getType(), 0) + 1);
   }
 
   /**
@@ -718,7 +727,7 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
   }
 
   private void incrementCommandTypeCounter(String commandType) {
-    commandTypeCounter.put(commandType, commandTypeCounter.getOrDefault(commandType, 0) + 1);
+    commandTypeCounter.merge(commandType, 1, Integer::sum);
   }
 
   private void getStreamCatalogFunctions(
