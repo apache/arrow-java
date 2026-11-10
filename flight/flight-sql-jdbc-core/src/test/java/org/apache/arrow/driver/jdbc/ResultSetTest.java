@@ -341,7 +341,8 @@ public class ResultSetTest {
   public void testShouldInterruptFlightStreamsIfQueryIsCancelledMidQuerying()
       throws SQLException, InterruptedException {
     try (final Statement statement = connection.createStatement()) {
-      final CountDownLatch latch = new CountDownLatch(1);
+      final CountDownLatch executed = new CountDownLatch(1);
+      final CountDownLatch canceled = new CountDownLatch(1);
       final Set<Exception> exceptions = synchronizedSet(new HashSet<>(1));
       final Thread thread =
           new Thread(
@@ -349,19 +350,27 @@ public class ResultSetTest {
                 try (final ResultSet resultSet =
                     statement.executeQuery(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD)) {
                   final int cachedColumnCount = resultSet.getMetaData().getColumnCount();
-                  Thread.sleep(300);
+                  executed.countDown();
+                  canceled.await();
                   while (resultSet.next()) {
                     resultSet.getObject(RANDOM.nextInt(cachedColumnCount) + 1);
                   }
                 } catch (final SQLException | InterruptedException e) {
                   exceptions.add(e);
                 } finally {
-                  latch.countDown();
+                  executed.countDown();
                 }
               });
       thread.setName("Test Case: interrupt query execution before first retrieval");
       thread.start();
-      statement.cancel();
+      // Cancel only after executeQuery returns, so the cancellation lands before the first
+      // retrieval instead of racing with query execution.
+      executed.await();
+      try {
+        statement.cancel();
+      } finally {
+        canceled.countDown();
+      }
       thread.join();
       assertThat(
           exceptions.stream()
