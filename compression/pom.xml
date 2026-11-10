@@ -60,7 +60,7 @@ under the License.
     <dependency>
       <groupId>at.yawk.lz4</groupId>
       <artifactId>lz4-java</artifactId>
-      <version>1.12.1</version>
+      <version>1.13.0</version>
     </dependency>
   </dependencies>
 </project>
