@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.vector.complex.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -24,6 +25,7 @@ import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.DecimalVector;
+import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.compare.VectorEqualsVisitor;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.ListVector;
@@ -36,6 +38,7 @@ import org.apache.arrow.vector.complex.writer.BaseWriter.StructWriter;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.DecimalHolder;
+import org.apache.arrow.vector.holders.NullableUuidHolder;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -952,6 +955,55 @@ public class TestComplexCopier {
 
       // validate equals
       assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  /**
+   * {@link ComplexCopier#copy} must work when the source reader is a holder-backed extension reader
+   * (here {@link NullableUuidHolderReaderImpl}). Holder readers do not implement {@link
+   * FieldReader#getField()}, so the copier obtains the extension {@link ArrowType} via {@code
+   * getExtensionType()} instead.
+   */
+  @Test
+  public void testCopyExtensionTypeFromNullableUuidHolderReader() {
+    try (UuidVector source = new UuidVector("v", allocator);
+        UuidVector target = new UuidVector("v", allocator)) {
+      UUID uuid = UUID.randomUUID();
+      source.setSafe(0, uuid);
+      source.setValueCount(1);
+
+      NullableUuidHolder holder = new NullableUuidHolder();
+      source.get(0, holder);
+
+      NullableUuidHolderReaderImpl reader = new NullableUuidHolderReaderImpl(holder);
+      UuidWriterImpl writer = new UuidWriterImpl(target);
+      writer.setPosition(0);
+
+      ComplexCopier.copy(reader, writer);
+      target.setValueCount(1);
+
+      assertEquals(uuid, target.getObject(0));
+    }
+  }
+
+  /**
+   * {@link ComplexCopier#copy} on a null-valued holder reader must take the not-set branch and
+   * write a null without invoking {@code getField()} or {@code readObject()}.
+   */
+  @Test
+  public void testCopyExtensionTypeFromNullValuedNullableUuidHolderReader() {
+    try (UuidVector target = new UuidVector("v", allocator)) {
+      NullableUuidHolder holder = new NullableUuidHolder();
+      holder.isSet = 0;
+
+      NullableUuidHolderReaderImpl reader = new NullableUuidHolderReaderImpl(holder);
+      UuidWriterImpl writer = new UuidWriterImpl(target);
+      writer.setPosition(0);
+
+      ComplexCopier.copy(reader, writer);
+      target.setValueCount(1);
+
+      assertTrue(target.isNull(0));
     }
   }
 }
