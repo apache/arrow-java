@@ -155,14 +155,16 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
   }
 
   @Test
-  public void testHostnameOverrideIsCopied() {
+  public void testHostnameOverrideIsNotCopied() {
     final ArrowFlightSqlClientHandler.Builder rootBuilder =
         new ArrowFlightSqlClientHandler.Builder().withHostnameOverride("flight.example.com");
 
     final ArrowFlightSqlClientHandler.Builder copiedBuilder =
         new ArrowFlightSqlClientHandler.Builder(rootBuilder);
 
-    assertEquals("flight.example.com", copiedBuilder.hostnameOverride);
+    // The override is only valid for the original host and port, so a copy must not carry it to
+    // another location by default.
+    assertNull(copiedBuilder.hostnameOverride);
   }
 
   @Test
