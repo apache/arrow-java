@@ -61,6 +61,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class AvaticaParameterBinder {
   private final PreparedStatement preparedStatement;
   private final VectorSchemaRoot parameters;
+  private boolean parametersHandedOff = false;
 
   /**
    * Instantiate a new AvaticaParameterBinder.
@@ -98,13 +99,23 @@ public class AvaticaParameterBinder {
               preparedStatement.getParameterSchema().getFields().size(), typedValues.size()));
     }
 
-    for (int i = 0; i < typedValues.size(); i++) {
-      bind(parameters.getVector(i), typedValues.get(i), index);
+    try {
+      for (int i = 0; i < typedValues.size(); i++) {
+        bind(parameters.getVector(i), typedValues.get(i), index);
+      }
+    } catch (RuntimeException e) {
+      // Until the root is handed to the prepared statement, nothing else owns it, so release the
+      // memory held by any values bound before the failure.
+      if (!parametersHandedOff) {
+        parameters.close();
+      }
+      throw e;
     }
 
     if (!typedValues.isEmpty()) {
       parameters.setRowCount(index + 1);
       preparedStatement.setParameters(parameters);
+      parametersHandedOff = true;
     }
   }
 
