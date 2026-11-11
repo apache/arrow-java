@@ -17,10 +17,13 @@
 package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -33,8 +36,10 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 import org.apache.arrow.driver.jdbc.utils.CoreMockedSqlProducers;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.sql.FlightSqlUtils;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -47,6 +52,10 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Text;
+import org.apache.calcite.avatica.AvaticaResultSet;
+import org.apache.calcite.avatica.AvaticaStatement;
+import org.apache.calcite.avatica.Meta;
+import org.apache.calcite.avatica.QueryState;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -136,6 +145,138 @@ public class ArrowFlightPreparedStatementTest {
   }
 
   @Test
+  public void testConnectionCloseClosesPreparedStatementAndResultSet() throws SQLException {
+    try (final Connection localConnection = FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        final PreparedStatement preparedStatement =
+            localConnection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD);
+        final ResultSet resultSet = preparedStatement.executeQuery()) {
+      assertTrue(resultSet.next());
+
+      localConnection.close();
+
+      assertTrue(preparedStatement.isClosed());
+      assertTrue(resultSet.isClosed());
+      assertEquals(
+          1,
+          PRODUCER
+              .getActionTypeCounter()
+              .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0));
+    }
+  }
+
+  @Test
+  public void testPrepareFailureIsReportedAsSQLException() {
+    final SQLException exception =
+        assertThrows(
+            SQLException.class,
+            () -> connection.prepareStatement("SELECT * FROM unregistered_table"));
+
+    assertThat(exception.getCause(), instanceOf(FlightRuntimeException.class));
+  }
+
+  @Test
+  public void testNullQueryIsReportedAsSQLException() {
+    assertThrows(SQLException.class, () -> connection.prepareStatement(null));
+  }
+
+  @Test
+  public void testCloseReleasesPreparedResourcesWhenResultSetCloseFails() throws Exception {
+    final RuntimeException resultSetCloseFailure = new RuntimeException("Result set close failed");
+    final ArrowFlightJdbcFactory factory =
+        new ArrowFlightJdbcFactory() {
+          @Override
+          public ArrowFlightJdbcVectorSchemaRootResultSet newResultSet(
+              final AvaticaStatement statement,
+              final QueryState state,
+              final Meta.Signature signature,
+              final TimeZone timeZone,
+              final Meta.Frame frame)
+              throws SQLException {
+            return new ArrowFlightJdbcVectorSchemaRootResultSet(
+                statement,
+                state,
+                signature,
+                newResultSetMetaData(statement, signature),
+                timeZone,
+                frame) {
+              @Override
+              protected AvaticaResultSet execute() {
+                populateData(VectorSchemaRoot.of());
+                return this;
+              }
+
+              @Override
+              public void close() {
+                super.close();
+                throw resultSetCloseFailure;
+              }
+            };
+          }
+        };
+    try (final Connection localConnection =
+            factory.newConnection(
+                new ArrowFlightJdbcDriver(),
+                factory,
+                connection.getMetaData().getURL(),
+                connection.getClientInfo());
+        final PreparedStatement preparedStatement =
+            localConnection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD)) {
+      final ResultSet resultSet = preparedStatement.executeQuery();
+
+      final SQLException exception = assertThrows(SQLException.class, preparedStatement::close);
+
+      assertSame(resultSetCloseFailure, exception.getCause());
+      assertTrue(preparedStatement.isClosed());
+      assertTrue(resultSet.isClosed());
+      assertEquals(
+          1,
+          PRODUCER
+              .getActionTypeCounter()
+              .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0));
+    }
+  }
+
+  @Test
+  public void testMetaRejectsForeignStatementHandle() throws SQLException {
+    try (final ArrowFlightConnection firstConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        final ArrowFlightConnection secondConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        final PreparedStatement firstStatement =
+            firstConnection.prepareStatement(CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD);
+        final PreparedStatement secondStatement =
+            secondConnection.prepareStatement(
+                CoreMockedSqlProducers.UUID_PREPARED_SELECT_SQL_CMD)) {
+      final ArrowFlightPreparedStatement firstPreparedStatement =
+          (ArrowFlightPreparedStatement) firstStatement;
+      final ArrowFlightPreparedStatement secondPreparedStatement =
+          (ArrowFlightPreparedStatement) secondStatement;
+      assertEquals(firstPreparedStatement.handle.id, secondPreparedStatement.handle.id);
+
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> firstConnection.getMeta().closeStatement(secondPreparedStatement.handle));
+      assertFalse(firstPreparedStatement.isClosed());
+    }
+  }
+
+  @Test
+  public void testMetaRejectsForeignConnectionHandle() throws SQLException {
+    try (final ArrowFlightConnection firstConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+        final ArrowFlightConnection secondConnection =
+            (ArrowFlightConnection) FLIGHT_SERVER_TEST_EXTENSION.getConnection(false)) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () ->
+              firstConnection
+                  .getMeta()
+                  .prepare(
+                      secondConnection.handle, CoreMockedSqlProducers.LEGACY_REGULAR_SQL_CMD, -1));
+    }
+  }
+
+  @Test
   public void testQueryWithParameterBinding() throws SQLException {
     final String query = "Fake query with parameters";
     final Schema schema =
@@ -177,8 +318,9 @@ public class ArrowFlightPreparedStatementTest {
           2, connection.createArrayOf("INTEGER", new Integer[] {1, 2, null}));
 
       try (final ResultSet resultSet = preparedStatement.executeQuery()) {
-        resultSet.next();
-        assert true;
+        assertTrue(resultSet.next());
+        assertEquals(10, resultSet.getInt(1));
+        assertFalse(resultSet.next());
       }
     }
   }
@@ -220,8 +362,9 @@ public class ArrowFlightPreparedStatementTest {
       preparedStatement.setDate(1, Date.valueOf(date));
 
       try (final ResultSet resultSet = preparedStatement.executeQuery()) {
-        resultSet.next();
-        assert true;
+        assertTrue(resultSet.next());
+        assertEquals(10, resultSet.getInt(1));
+        assertFalse(resultSet.next());
       }
     }
   }
