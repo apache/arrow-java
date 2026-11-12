@@ -25,6 +25,7 @@ import java.util.Collections;
 import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.OutOfMemoryException;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -114,10 +115,62 @@ public class AvaticaParameterBinderTest {
     assertEquals(0, allocator.getAllocatedMemory());
   }
 
+  @Test
+  public void testFailedSetRowCountReleasesBoundValues() {
+    Schema nullableFixedSizeListSchema =
+        new Schema(
+            Collections.singletonList(
+                new Field(
+                    "list",
+                    FieldType.nullable(new ArrowType.FixedSizeList(4)),
+                    Collections.singletonList(
+                        new Field(
+                            "item", FieldType.nullable(new ArrowType.Int(64, true)), null)))));
+    // Binding null to a FixedSizeListVector only allocates its validity buffer (512 bytes) during
+    // bind(), while setRowCount(1) allocates the child vector's buffers (32 KiB).
+    try (BufferAllocator cappedAllocator = allocator.newChildAllocator("capped", 0, 1024);
+        StubPreparedStatement statement = new StubPreparedStatement(nullableFixedSizeListSchema)) {
+      AvaticaParameterBinder binder = new AvaticaParameterBinder(statement, cappedAllocator);
+      assertThrows(OutOfMemoryException.class, () -> binder.bind(Collections.singletonList(null)));
+      assertEquals(0, cappedAllocator.getAllocatedMemory());
+    }
+    assertEquals(0, allocator.getAllocatedMemory());
+  }
+
+  @Test
+  public void testFailedSetParametersReleasesBoundValues() {
+    try (StubPreparedStatement statement =
+        new StubPreparedStatement(PARAMETER_SCHEMA) {
+          @Override
+          public void setParameters(VectorSchemaRoot parameters) {
+            throw new IllegalStateException("Statement closed");
+          }
+        }) {
+      AvaticaParameterBinder binder = new AvaticaParameterBinder(statement, allocator);
+      assertThrows(
+          IllegalStateException.class,
+          () ->
+              binder.bind(
+                  Arrays.asList(
+                      TypedValue.ofLocal(ColumnMetaData.Rep.STRING, "text"),
+                      TypedValue.ofLocal(ColumnMetaData.Rep.LONG, 42L))));
+    }
+    assertEquals(0, allocator.getAllocatedMemory());
+  }
+
   /** A prepared statement that owns the parameters it is given, like the Flight SQL client. */
-  private static final class StubPreparedStatement
+  private static class StubPreparedStatement
       implements ArrowFlightSqlClientHandler.PreparedStatement {
+    private final Schema parameterSchema;
     private VectorSchemaRoot parameters;
+
+    StubPreparedStatement() {
+      this(PARAMETER_SCHEMA);
+    }
+
+    StubPreparedStatement(Schema parameterSchema) {
+      this.parameterSchema = parameterSchema;
+    }
 
     @Override
     public FlightInfo executeQuery() {
@@ -141,7 +194,7 @@ public class AvaticaParameterBinderTest {
 
     @Override
     public Schema getParameterSchema() {
-      return PARAMETER_SCHEMA;
+      return parameterSchema;
     }
 
     @Override
