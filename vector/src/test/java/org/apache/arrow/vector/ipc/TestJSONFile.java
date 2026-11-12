@@ -597,18 +597,56 @@ public class TestJSONFile extends BaseFileTest {
     assertReadRejectedWithoutLeak(file);
   }
 
+  @Test
+  public void testNullColumnCountRejected() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": null, \"VALIDITY\": [1], \"DATA\": [5]}]}]}");
+    assertReadRejectedWithoutLeak(file);
+  }
+
+  @Test
+  public void testExtraBufferValueDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": 1, \"VALIDITY\": [1, 1], \"DATA\": [5]}]}]}");
+    assertReadRejectedWithoutLeak(file, IllegalStateException.class);
+  }
+
+  @Test
+  public void testInvalidBufferValueDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": 1, \"VALIDITY\": [1], \"DATA\": [\"x\"]}]}]}");
+    assertReadRejectedWithoutLeak(file, IOException.class);
+  }
+
   /** Checks that both read methods reject the file and release everything they allocated. */
   private void assertReadRejectedWithoutLeak(File file) throws IOException {
+    assertReadRejectedWithoutLeak(file, IllegalArgumentException.class);
+  }
+
+  private void assertReadRejectedWithoutLeak(File file, Class<? extends Throwable> expectedType)
+      throws IOException {
     try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
         JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
       reader.start();
-      assertThrows(IllegalArgumentException.class, () -> reader.read());
+      assertThrows(expectedType, () -> reader.read());
     }
     try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
         JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
       Schema schema = reader.start();
       try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, readerAllocator)) {
-        assertThrows(IllegalArgumentException.class, () -> reader.read(root));
+        assertThrows(expectedType, () -> reader.read(root));
       }
     }
   }
