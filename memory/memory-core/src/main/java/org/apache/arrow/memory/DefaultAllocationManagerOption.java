@@ -88,8 +88,11 @@ public class DefaultAllocationManagerOption {
         DEFAULT_ALLOCATION_MANAGER_FACTORY = getUnsafeFactory();
         break;
       case Unknown:
-        LOGGER.info("allocation manager type not specified, using netty as the default type");
-        DEFAULT_ALLOCATION_MANAGER_FACTORY = getFactory(CheckAllocator.check());
+        String allocationManagerClass = CheckAllocator.check();
+        DEFAULT_ALLOCATION_MANAGER_FACTORY = getFactory(allocationManagerClass);
+        LOGGER.info(
+            "allocation manager type not specified, inferred {} from the classpath",
+            allocationManagerClass);
         break;
       default:
         throw new IllegalStateException("Unknown allocation manager type: " + type);
