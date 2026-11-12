@@ -17,7 +17,6 @@
 package org.apache.arrow.c;
 
 import static org.apache.arrow.c.NativeUtil.NULL;
-import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 import static org.apache.arrow.util.Preconditions.checkNotNull;
 import static org.apache.arrow.util.Preconditions.checkState;
 
@@ -104,6 +103,9 @@ final class ArrayImporter {
   private void doImport(ArrowArray.Snapshot snapshot) {
     checkState(snapshot.offset >= 0, "ArrowArray struct has negative offset (%s)", snapshot.offset);
     checkState(snapshot.length >= 0, "ArrowArray struct has negative length (%s)", snapshot.length);
+    // Check the length and null count before importing children or the dictionary, so that an
+    // invalid array is rejected before it modifies the child vectors or the dictionary provider
+    checkLengthAndNullCount(vector, snapshot);
     if (snapshot.offset != 0 && snapshot.length != 0) {
       if (storageType().getTypeID() == ArrowTypeID.Struct) {
         importSlicedStruct(snapshot);
@@ -112,6 +114,22 @@ final class ArrayImporter {
       }
     } else {
       importUnsliced(snapshot, /* skippedRows= */ 0, /* trimChildren= */ false);
+    }
+  }
+
+  /**
+   * Checks that the length and null count of {@code snapshot} fit an import into {@code vector}.
+   */
+  private static void checkLengthAndNullCount(FieldVector vector, ArrowArray.Snapshot snapshot) {
+    try {
+      new ArrowFieldNode(snapshot.length, snapshot.null_count);
+    } catch (IllegalArgumentException | ArithmeticException e) {
+      throw new IllegalArgumentException(
+          "Invalid length or null count for field "
+              + vector.getField()
+              + ". error message: "
+              + e.getMessage(),
+          e);
     }
   }
 
@@ -240,7 +258,7 @@ final class ArrayImporter {
   private void importChildren(
       ArrowArray.Snapshot snapshot, long skippedRows, long childRowsPerRow) {
     long[] children =
-        NativeUtil.toJavaArray(snapshot.children, checkedCastToInt(snapshot.n_children));
+        NativeUtil.toJavaArray(snapshot.children, Math.toIntExact(snapshot.n_children));
     if (children == null || children.length == 0) {
       return;
     }
@@ -301,7 +319,7 @@ final class ArrayImporter {
     try {
       ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
       long[] bufferPointers =
-          NativeUtil.toJavaArray(snapshot.buffers, checkedCastToInt(snapshot.n_buffers));
+          NativeUtil.toJavaArray(snapshot.buffers, Math.toIntExact(snapshot.n_buffers));
 
       try (final BufferImportTypeVisitor visitor =
           new BufferImportTypeVisitor(

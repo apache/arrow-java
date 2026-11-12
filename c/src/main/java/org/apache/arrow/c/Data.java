@@ -18,6 +18,7 @@ package org.apache.arrow.c;
 
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorLoader;
 import org.apache.arrow.vector.VectorSchemaRoot;
@@ -430,9 +431,9 @@ public final class Data {
     FieldVector vector = field.createVector(allocator);
     try {
       importIntoVector(allocator, array, vector, field, provider, closeImportedStructs);
-    } catch (Exception e) {
-      vector.close();
-      throw e;
+    } catch (Throwable t) {
+      AutoCloseables.close(t, vector);
+      throw t;
     }
     return vector;
   }
