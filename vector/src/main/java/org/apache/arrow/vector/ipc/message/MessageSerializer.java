@@ -434,7 +434,21 @@ public class MessageSerializer {
       List<ArrowBuf> buffers = new ArrayList<>();
       for (int i = 0; i < recordBatchFB.buffersLength(); ++i) {
         Buffer bufferFB = recordBatchFB.buffers(i);
-        ArrowBuf vectorBuffer = body.slice(bufferFB.offset(), bufferFB.length());
+        long offset = bufferFB.offset();
+        long length = bufferFB.length();
+        if (offset < 0 || length < 0 || offset > body.capacity() - length) {
+          throw new IOException(
+              "Record batch buffer "
+                  + i
+                  + " (offset "
+                  + offset
+                  + ", length "
+                  + length
+                  + ") does not fit in a body of "
+                  + body.capacity()
+                  + " bytes");
+        }
+        ArrowBuf vectorBuffer = body.slice(offset, length);
         buffers.add(vectorBuffer);
       }
 
@@ -449,6 +463,9 @@ public class MessageSerializer {
         variadicBufferCounts.add(recordBatchFB.variadicBufferCounts(i));
       }
 
+      if (recordBatchFB.length() < 0) {
+        throw new IOException("Record batch has negative length " + recordBatchFB.length());
+      }
       if ((int) recordBatchFB.length() != recordBatchFB.length()) {
         throw new IOException(
             "Cannot currently deserialize record batches with more than INT_MAX records.");
@@ -639,11 +656,17 @@ public class MessageSerializer {
               + result.getMessage().version());
     }
 
+    ArrowBuf bodyBuffer = result.getBodyBuffer();
+    // For zero-length batches, need an empty buffer to deserialize the batch
+    if (bodyBuffer == null) {
+      bodyBuffer = reader.allocator.getEmpty();
+    }
+
     switch (result.getMessage().headerType()) {
       case MessageHeader.RecordBatch:
-        return deserializeRecordBatch(result.getMessage(), result.getBodyBuffer());
+        return deserializeRecordBatch(result.getMessage(), bodyBuffer);
       case MessageHeader.DictionaryBatch:
-        return deserializeDictionaryBatch(result.getMessage(), result.getBodyBuffer());
+        return deserializeDictionaryBatch(result.getMessage(), bodyBuffer);
       default:
         throw new IOException("Unexpected message header type " + result.getMessage().headerType());
     }

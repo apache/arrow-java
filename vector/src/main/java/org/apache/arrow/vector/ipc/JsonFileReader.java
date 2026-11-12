@@ -52,6 +52,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
 import org.apache.arrow.vector.BigIntVector;
@@ -223,7 +224,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
     JsonToken t = parser.nextToken();
     if (t == START_OBJECT) {
       VectorSchemaRoot recordBatch = VectorSchemaRoot.create(schema, allocator);
-      {
+      try {
         int count = readCount();
         recordBatch.setRowCount(count);
         nextFieldIs("columns");
@@ -235,8 +236,11 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
           }
         }
         readToken(END_ARRAY);
+        readToken(END_OBJECT);
+      } catch (Throwable e) {
+        AutoCloseables.close(e, recordBatch);
+        throw e;
       }
-      readToken(END_OBJECT);
       return recordBatch;
     } else if (t == END_ARRAY) {
       return null;
@@ -874,7 +878,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
      * releasing the local buffers.
      */
     readToken(START_OBJECT);
-    {
+    try {
       // If currently reading dictionaries, field name is not important so don't check
       String name = readNextField("name", String.class);
       if (started && !Objects.equals(field.getName(), name)) {
@@ -898,7 +902,7 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
             && !(type instanceof ListView)
             && !(type instanceof LargeListView)) {
           /* offset buffer has 1 additional value capacity except for dense unions and ListView */
-          innerBufferValueCount = valueCount + 1;
+          innerBufferValueCount = Math.addExact(valueCount, 1);
         }
 
         vectorBuffers.addAll(
@@ -941,13 +945,13 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
         }
         readToken(END_ARRAY);
       }
+    } finally {
+      for (ArrowBuf buffer : vectorBuffers) {
+        buffer.getReferenceManager().release();
+      }
     }
 
     readToken(END_OBJECT);
-
-    for (ArrowBuf buffer : vectorBuffers) {
-      buffer.getReferenceManager().release();
-    }
   }
 
   private byte[] decodeHexSafe(String hexString) throws IOException {

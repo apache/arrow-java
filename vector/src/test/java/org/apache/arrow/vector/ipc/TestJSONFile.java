@@ -44,6 +44,7 @@ import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Validator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,11 @@ public class TestJSONFile extends BaseFileTest {
           + " \"isSigned\": true, \"bitWidth\": 32}, \"nullable\": true, \"children\": []}]},"
           + " \"batches\": [{\"count\": -100, \"columns\": [{\"name\": \"i\", \"count\": 0,"
           + " \"VALIDITY\": [], \"DATA\": []}]}]}";
+  private static final String INT_FIELD_JSON =
+      "{\"name\": \"NAME\", \"type\": {\"name\": \"int\", \"isSigned\": true,"
+          + " \"bitWidth\": 32}, \"nullable\": true, \"children\": []}";
+
+  @TempDir Path tempDir;
 
   @Test
   public void testNoBatches() throws IOException {
@@ -564,9 +570,51 @@ public class TestJSONFile extends BaseFileTest {
     }
   }
 
-  private static File writeJson(String json) throws IOException {
-    Path path = Files.createTempFile("arrow-", ".json");
-    path.toFile().deleteOnExit();
+  @Test
+  public void testNegativeCountInLaterColumnDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + ", "
+                + INT_FIELD_JSON.replace("NAME", "b")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": 1, \"VALIDITY\": [1], \"DATA\": [5]},"
+                + " {\"name\": \"b\", \"count\": -1, \"VALIDITY\": [], \"DATA\": []}]}]}");
+    assertReadRejectedWithoutLeak(file);
+  }
+
+  @Test
+  public void testNegativeChildCountDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": [{\"name\": \"s\", \"type\": {\"name\": \"struct\"},"
+                + " \"nullable\": true, \"children\": ["
+                + INT_FIELD_JSON.replace("NAME", "c")
+                + "]}]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"s\", \"count\": 1, \"VALIDITY\": [1], \"children\": ["
+                + "{\"name\": \"c\", \"count\": -1, \"VALIDITY\": [], \"DATA\": []}]}]}]}");
+    assertReadRejectedWithoutLeak(file);
+  }
+
+  /** Checks that both read methods reject the file and release everything they allocated. */
+  private void assertReadRejectedWithoutLeak(File file) throws IOException {
+    try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
+        JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+      reader.start();
+      assertThrows(IllegalArgumentException.class, () -> reader.read());
+    }
+    try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
+        JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+      Schema schema = reader.start();
+      try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, readerAllocator)) {
+        assertThrows(IllegalArgumentException.class, () -> reader.read(root));
+      }
+    }
+  }
+
+  private File writeJson(String json) throws IOException {
+    Path path = Files.createTempFile(tempDir, "arrow-", ".json");
     Files.writeString(path, json);
     return path.toFile();
   }
