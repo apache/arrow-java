@@ -309,6 +309,8 @@ public class BitVectorHelper {
    * @param allocator The allocator to use for creating a new buffer if necessary.
    * @return A new buffer that is either allocated or points to the same memory as
    *     sourceValidityBuffer.
+   * @throws IllegalArgumentException if the source validity buffer is missing, but the null count
+   *     says that only some values are null
    */
   public static ArrowBuf loadValidityBuffer(
       final ArrowFieldNode fieldNode,
@@ -317,17 +319,24 @@ public class BitVectorHelper {
     final int valueCount = fieldNode.getLength();
     ArrowBuf newBuffer = null;
 
-    // Create a new validity buffer iff both of the following are true:
-    //   - validity buffer is not present, that is, it is either null or empty (in the case of
-    //     IPC for instance).
-    //   - values are either all NULLs or all non-NULLs
+    // Create a new validity buffer iff the validity buffer is not present, that is, it is either
+    // null or empty (in the case of IPC for instance). The values are then either all NULLs, or
+    // all non-NULLs when the null count is 0 or unknown (-1).
     boolean isValidityBufferNull =
         sourceValidityBuffer == null || sourceValidityBuffer.capacity() == 0;
-    if (isValidityBufferNull
-        && (fieldNode.getNullCount() == 0 || fieldNode.getNullCount() == valueCount)) {
+    if (isValidityBufferNull) {
+      final int nullCount = fieldNode.getNullCount();
+      final boolean allNull = valueCount > 0 && nullCount == valueCount;
+      if (!allNull && nullCount != 0 && nullCount != -1) {
+        throw new IllegalArgumentException(
+            "Validity buffer is missing for "
+                + valueCount
+                + " values with a null count of "
+                + nullCount);
+      }
       newBuffer = allocator.buffer(getValidityBufferSizeFromCount(valueCount));
       newBuffer.setZero(0, newBuffer.capacity());
-      if (fieldNode.getNullCount() != 0) {
+      if (allNull) {
         /* all NULLs */
         return newBuffer;
       }

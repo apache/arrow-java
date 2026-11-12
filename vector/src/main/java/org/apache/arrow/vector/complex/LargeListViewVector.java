@@ -202,8 +202,11 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     ArrowBuf offBuffer = ownBuffers.get(1);
     ArrowBuf szBuffer = ownBuffers.get(2);
 
+    // Load the new validity buffer first, so that a failure leaves the vector unchanged
+    ArrowBuf newValidityBuffer =
+        BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
     validityBuffer.getReferenceManager().release();
-    validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
+    validityBuffer = newValidityBuffer;
     offsetBuffer.getReferenceManager().release();
     offsetBuffer = offBuffer.getReferenceManager().retain(offBuffer, allocator);
     sizeBuffer.getReferenceManager().release();

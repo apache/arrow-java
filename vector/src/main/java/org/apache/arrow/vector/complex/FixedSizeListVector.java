@@ -170,8 +170,11 @@ public class FixedSizeListVector extends BaseValueVector
 
     ArrowBuf bitBuffer = ownBuffers.get(0);
 
+    // Load the new validity buffer first, so that a failure leaves the vector unchanged
+    ArrowBuf newValidityBuffer =
+        BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
     validityBuffer.getReferenceManager().release();
-    validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
+    validityBuffer = newValidityBuffer;
     valueCount = fieldNode.getLength();
 
     validityAllocationSizeInBytes = checkedCastToInt(validityBuffer.capacity());

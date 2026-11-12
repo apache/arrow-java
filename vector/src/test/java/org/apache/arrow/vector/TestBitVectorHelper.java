@@ -18,6 +18,7 @@ package org.apache.arrow.vector;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.apache.arrow.memory.ArrowBuf;
@@ -273,6 +274,38 @@ public class TestBitVectorHelper {
           }
         }
       }
+    }
+  }
+
+  @Test
+  public void testLoadMissingValidityBufferWithUnknownNullCount() {
+    try (RootAllocator allocator = new RootAllocator(1024);
+        ArrowBuf empty = allocator.buffer(0)) {
+      // Without a validity buffer, an unknown null count (-1) means that no value is null
+      ArrowFieldNode fieldNode = new ArrowFieldNode(1024, -1);
+      for (ArrowBuf src : new ArrowBuf[] {null, empty}) {
+        try (ArrowBuf buf = BitVectorHelper.loadValidityBuffer(fieldNode, src, allocator)) {
+          assertEquals(128, allocator.getAllocatedMemory());
+          for (int i = 0; i < 128; i++) {
+            assertEquals((byte) 0xff, buf.getByte(i));
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testLoadMissingValidityBufferWithSomeNullsRejected() {
+    try (RootAllocator allocator = new RootAllocator(1024);
+        ArrowBuf empty = allocator.buffer(0)) {
+      ArrowFieldNode fieldNode = new ArrowFieldNode(1024, 100);
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> BitVectorHelper.loadValidityBuffer(fieldNode, null, allocator));
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> BitVectorHelper.loadValidityBuffer(fieldNode, empty, allocator));
+      assertEquals(0, allocator.getAllocatedMemory());
     }
   }
 
