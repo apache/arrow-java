@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+import org.apache.arrow.flatbuf.Buffer;
 import org.apache.arrow.flatbuf.FieldNode;
 import org.apache.arrow.flatbuf.RecordBatch;
 import org.apache.arrow.memory.ArrowBuf;
@@ -268,15 +269,78 @@ public class MessageSerializerTest {
         Arguments.of(0L, 0L), Arguments.of(10L, -1L), Arguments.of((long) Integer.MAX_VALUE, 0L));
   }
 
+  @Test
+  public void testNegativeRecordBatchLengthRejectedWithoutLeakingBody() {
+    RecordBatch recordBatchFB = recordBatch(-100, 0, 0);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("invalidBuffers")
+  public void testInvalidBufferRejectedWithoutLeakingBody(long offset, long length) {
+    RecordBatch recordBatchFB = recordBatch(0, 0, 0, offset, length);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> invalidBuffers() {
+    return Stream.of(
+        // Negative length, but offset + length is still within the body
+        Arguments.of(8L, -4L),
+        Arguments.of(-8L, 8L),
+        Arguments.of(4L, 8L),
+        Arguments.of(8L, Long.MAX_VALUE));
+  }
+
+  @Test
+  public void testDeserializeMessageBatchWithoutBody() throws Exception {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    try (ArrowRecordBatch batch =
+        new ArrowRecordBatch(0, Collections.emptyList(), Collections.emptyList())) {
+      MessageSerializer.serialize(new WriteChannel(Channels.newChannel(out)), batch);
+    }
+
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ReadChannel channel =
+          new ReadChannel(Channels.newChannel(new ByteArrayInputStream(out.toByteArray())));
+      try (ArrowMessage deserialized =
+          MessageSerializer.deserializeMessageBatch(channel, allocator)) {
+        assertEquals(ArrowRecordBatch.class, deserialized.getClass());
+        assertEquals(0, ((ArrowRecordBatch) deserialized).getLength());
+      }
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
   private static RecordBatch recordBatchWithNode(long length, long nullCount) {
+    return recordBatch(0, length, nullCount);
+  }
+
+  /** Builds a record batch with a single node and, if given, a single buffer. */
+  private static RecordBatch recordBatch(
+      long batchLength, long nodeLength, long nullCount, long... bufferOffsetAndLength) {
     FlatBufferBuilder builder = new FlatBufferBuilder();
     RecordBatch.startNodesVector(builder, 1);
-    FieldNode.createFieldNode(builder, length, nullCount);
+    FieldNode.createFieldNode(builder, nodeLength, nullCount);
     int nodes = builder.endVector();
-    RecordBatch.startBuffersVector(builder, 0);
+    if (bufferOffsetAndLength.length == 0) {
+      RecordBatch.startBuffersVector(builder, 0);
+    } else {
+      RecordBatch.startBuffersVector(builder, 1);
+      Buffer.createBuffer(builder, bufferOffsetAndLength[0], bufferOffsetAndLength[1]);
+    }
     int buffers = builder.endVector();
     RecordBatch.startRecordBatch(builder);
-    RecordBatch.addLength(builder, 0);
+    RecordBatch.addLength(builder, batchLength);
     RecordBatch.addNodes(builder, nodes);
     RecordBatch.addBuffers(builder, buffers);
     builder.finish(RecordBatch.endRecordBatch(builder));
