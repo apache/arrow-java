@@ -36,10 +36,12 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.apache.arrow.flatbuf.Buffer;
 import org.apache.arrow.flatbuf.FieldNode;
+import org.apache.arrow.flatbuf.MessageHeader;
 import org.apache.arrow.flatbuf.RecordBatch;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.ipc.message.ArrowBlock;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowMessage;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
@@ -55,6 +57,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class MessageSerializerTest {
 
@@ -319,6 +322,115 @@ public class MessageSerializerTest {
       }
       assertEquals(0, allocator.getAllocatedMemory());
     }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, 2L, Integer.MAX_VALUE + 1L, Long.MAX_VALUE})
+  public void testInvalidVariadicBufferCountRejectedWithoutLeakingBody(long count) {
+    RecordBatch recordBatchFB = recordBatchWithVariadicBufferCount(count);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @Test
+  public void testVariadicBufferCountDeserialized() throws IOException {
+    RecordBatch recordBatchFB = recordBatchWithVariadicBufferCount(1);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      try (ArrowRecordBatch batch = MessageSerializer.deserializeRecordBatch(recordBatchFB, body)) {
+        assertEquals(Collections.singletonList(1L), batch.getVariadicBufferCounts());
+      }
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("unsupportedMessages")
+  public void testUnsupportedMessageRejectedWithoutLeakingBody(
+      byte headerType, MetadataVersion version, String expectedMessage) throws IOException {
+    byte[] message = messageWithBody(headerType, version);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ReadChannel channel = readChannel(message);
+      IOException e =
+          assertThrows(
+              IOException.class,
+              () -> MessageSerializer.deserializeMessageBatch(channel, allocator));
+      assertTrue(e.getMessage().contains(expectedMessage), e.getMessage());
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> unsupportedMessages() {
+    return Stream.of(
+        Arguments.of(MessageHeader.RecordBatch, MetadataVersion.V3, "incompatible version"),
+        Arguments.of(MessageHeader.Tensor, MetadataVersion.V5, "Unexpected message header type"));
+  }
+
+  @Test
+  public void testTruncatedBlockRejectedWithoutLeaking() {
+    ArrowBlock block = new ArrowBlock(0, 16, 8);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      assertThrows(
+          IOException.class,
+          () ->
+              MessageSerializer.deserializeRecordBatch(readChannel(new byte[4]), block, allocator));
+      assertThrows(
+          IOException.class,
+          () ->
+              MessageSerializer.deserializeDictionaryBatch(
+                  readChannel(new byte[4]), block, allocator));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  private static ReadChannel readChannel(byte[] bytes) {
+    return new ReadChannel(Channels.newChannel(new ByteArrayInputStream(bytes)));
+  }
+
+  /** Writes a message of the given header type and version, with an 8 byte body. */
+  private static byte[] messageWithBody(byte headerType, MetadataVersion version)
+      throws IOException {
+    FlatBufferBuilder builder = new FlatBufferBuilder();
+    RecordBatch.startNodesVector(builder, 0);
+    int nodes = builder.endVector();
+    RecordBatch.startBuffersVector(builder, 0);
+    int buffers = builder.endVector();
+    RecordBatch.startRecordBatch(builder);
+    RecordBatch.addNodes(builder, nodes);
+    RecordBatch.addBuffers(builder, buffers);
+    int header = RecordBatch.endRecordBatch(builder);
+    IpcOption option = new IpcOption(false, version);
+    ByteBuffer metadata =
+        MessageSerializer.serializeMessage(builder, headerType, header, 8, option);
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    WriteChannel channel = new WriteChannel(Channels.newChannel(out));
+    MessageSerializer.writeMessageBuffer(channel, metadata.remaining(), metadata, option);
+    channel.write(new byte[8]);
+    return out.toByteArray();
+  }
+
+  /** Builds a record batch with one node, one 8 byte buffer and the given variadic count. */
+  private static RecordBatch recordBatchWithVariadicBufferCount(long count) {
+    FlatBufferBuilder builder = new FlatBufferBuilder();
+    RecordBatch.startNodesVector(builder, 1);
+    FieldNode.createFieldNode(builder, 0, 0);
+    int nodes = builder.endVector();
+    RecordBatch.startBuffersVector(builder, 1);
+    Buffer.createBuffer(builder, 0, 8);
+    int buffers = builder.endVector();
+    int variadicBufferCounts =
+        RecordBatch.createVariadicBufferCountsVector(builder, new long[] {count});
+    RecordBatch.startRecordBatch(builder);
+    RecordBatch.addNodes(builder, nodes);
+    RecordBatch.addBuffers(builder, buffers);
+    RecordBatch.addVariadicBufferCounts(builder, variadicBufferCounts);
+    builder.finish(RecordBatch.endRecordBatch(builder));
+    return RecordBatch.getRootAsRecordBatch(builder.dataBuffer());
   }
 
   private static RecordBatch recordBatchWithNode(long length, long nullCount) {

@@ -226,7 +226,6 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
       VectorSchemaRoot recordBatch = VectorSchemaRoot.create(schema, allocator);
       try {
         int count = readCount();
-        recordBatch.setRowCount(count);
         nextFieldIs("columns");
         readToken(START_ARRAY);
         {
@@ -236,6 +235,9 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
           }
         }
         readToken(END_ARRAY);
+        // Set the row count once the columns are read, as read(VectorSchemaRoot) does, so that
+        // the vectors are not first sized for a count the columns may not match
+        recordBatch.setRowCount(count);
         readToken(END_OBJECT);
       } catch (Throwable e) {
         AutoCloseables.close(e, recordBatch);

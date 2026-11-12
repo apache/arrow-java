@@ -28,6 +28,7 @@ import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.ExtensionTypeVector;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.TypeLayout;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.dictionary.Dictionary;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
@@ -265,17 +266,18 @@ final class ArrayImporter {
    */
   private void importChildren(
       ArrowArray.Snapshot snapshot, long skippedRows, long childRowsPerRow) {
-    long[] children =
-        NativeUtil.toJavaArray(snapshot.children, Math.toIntExact(snapshot.n_children));
+    // Check the number of children before reading the child pointers, so that an invalid count is
+    // not used to size the read.
+    List<FieldVector> childVectors = vector.getChildrenFromFields();
+    checkState(
+        snapshot.n_children == 0 || snapshot.n_children == childVectors.size(),
+        "ArrowArray struct has %s children (expected %s)",
+        snapshot.n_children,
+        childVectors.size());
+    long[] children = NativeUtil.toJavaArray(snapshot.children, (int) snapshot.n_children);
     if (children == null || children.length == 0) {
       return;
     }
-    List<FieldVector> childVectors = vector.getChildrenFromFields();
-    checkState(
-        children.length == childVectors.size(),
-        "ArrowArray struct has %s children (expected %s)",
-        children.length,
-        childVectors.size());
     List<Field> childFields = field != null ? field.getChildren() : null;
     for (int i = 0; i < children.length; i++) {
       checkState(children[i] != NULL, "ArrowArray struct has NULL child at position %s", i);
@@ -332,6 +334,18 @@ final class ArrayImporter {
   private void importBuffers(FieldVector target, ArrowArray.Snapshot snapshot, long skippedRows) {
     try {
       ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
+      // Check the number of buffers before reading the buffer pointers. Types with variadic
+      // buffers, such as views, have no fixed upper bound.
+      TypeLayout layout = TypeLayout.getTypeLayout(target.getField().getType());
+      checkState(
+          snapshot.n_buffers >= 0,
+          "ArrowArray struct has a negative number of buffers (%s)",
+          snapshot.n_buffers);
+      checkState(
+          !layout.isFixedBufferCount() || snapshot.n_buffers <= layout.getBufferTypes().size(),
+          "ArrowArray struct has %s buffers (expected at most %s)",
+          snapshot.n_buffers,
+          layout.getBufferTypes().size());
       long[] bufferPointers =
           NativeUtil.toJavaArray(snapshot.buffers, Math.toIntExact(snapshot.n_buffers));
 

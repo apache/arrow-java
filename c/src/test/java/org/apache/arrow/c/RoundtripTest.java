@@ -1079,6 +1079,44 @@ public class RoundtripTest {
     }
   }
 
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, 3L, Integer.MAX_VALUE, Long.MAX_VALUE})
+  public void testImportRejectsInvalidBufferCount(long bufferCount) {
+    try (IntVector vector = new IntVector("ints", allocator)) {
+      setVector(vector, 1, 2, 3);
+      assertImportRejected(
+          vector,
+          "ints",
+          array -> {
+            ArrowArray.Snapshot snapshot = array.snapshot();
+            snapshot.n_buffers = bufferCount;
+            array.save(snapshot);
+          });
+    }
+  }
+
+  @Test
+  public void testImportRejectsInvalidChildCount() {
+    try (StructVector vector = createStructWithTwoChildren();
+        ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+        ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+      Data.exportVector(allocator, vector, null, arrowArray, arrowSchema);
+      ArrowArray.Snapshot snapshot = arrowArray.snapshot();
+      // Releasing the array skips the children of a negative count, so release them first
+      for (long child : NativeUtil.toJavaArray(snapshot.children, 2)) {
+        ArrowArray.wrap(child).release();
+      }
+      snapshot.n_children = -1;
+      arrowArray.save(snapshot);
+      IllegalStateException e =
+          assertThrows(
+              IllegalStateException.class,
+              () -> Data.importVector(childAllocator, arrowArray, arrowSchema, null));
+      assertTrue(e.getMessage().contains("children"), e.getMessage());
+    }
+    assertEquals(0, childAllocator.getAllocatedMemory());
+  }
+
   private StructVector createStructWithTwoChildren() {
     StructVector vector = StructVector.empty("struct", allocator);
     FieldType type = FieldType.nullable(new ArrowType.Int(32, true));
