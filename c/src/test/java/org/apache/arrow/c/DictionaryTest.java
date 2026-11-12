@@ -18,6 +18,7 @@ package org.apache.arrow.c;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -131,6 +132,67 @@ public class DictionaryTest {
 
     // Close all
     AutoCloseables.close((AutoCloseable) vector, encodedVector, dictVector);
+  }
+
+  @Test
+  public void testImportRejectsInvalidLengthWithoutReplacingDictionary() throws Exception {
+    DictionaryProvider.MapDictionaryProvider provider =
+        new DictionaryProvider.MapDictionaryProvider();
+    DictionaryProvider.MapDictionaryProvider otherProvider =
+        new DictionaryProvider.MapDictionaryProvider();
+    VarCharVector dictVector = newVarCharVector("dict", "aa", "bb", "cc");
+    VarCharVector otherDictVector = newVarCharVector("dict", "xx", "yy");
+    VarCharVector vector = newVarCharVector("vector", "bb", "cc");
+    VarCharVector otherVector = newVarCharVector("vector", "yy", "xx");
+    Dictionary dictionary = new Dictionary(dictVector, new DictionaryEncoding(0L, false, null));
+    Dictionary otherDictionary =
+        new Dictionary(otherDictVector, new DictionaryEncoding(0L, false, null));
+    provider.put(dictionary);
+    otherProvider.put(otherDictionary);
+    IntVector encoded = (IntVector) DictionaryEncoder.encode(vector, dictionary);
+    IntVector otherEncoded = (IntVector) DictionaryEncoder.encode(otherVector, otherDictionary);
+
+    try (CDataDictionaryProvider cDictionaryProvider = new CDataDictionaryProvider()) {
+      FieldVector imported;
+      try (ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+          ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+        Data.exportVector(allocator, encoded, provider, arrowArray, arrowSchema);
+        imported = Data.importVector(allocator, arrowArray, arrowSchema, cDictionaryProvider);
+      }
+
+      // Import a second batch with a different dictionary and an invalid length into the same
+      // vector and provider
+      try (ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+          ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+        Data.exportVector(allocator, otherEncoded, otherProvider, arrowArray, arrowSchema);
+        // Only the array is imported, so release the exported schema here
+        arrowSchema.release();
+        ArrowArray.Snapshot snapshot = arrowArray.snapshot();
+        snapshot.length = -1;
+        arrowArray.save(snapshot);
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> Data.importIntoVector(allocator, arrowArray, imported, cDictionaryProvider));
+      }
+
+      assertTrue(
+          VectorEqualsVisitor.vectorEquals(dictVector, cDictionaryProvider.lookup(0L).getVector()),
+          "dictionary was modified by the rejected import");
+      imported.close();
+    }
+
+    AutoCloseables.close(
+        (AutoCloseable) vector, otherVector, encoded, otherEncoded, dictVector, otherDictVector);
+  }
+
+  private VarCharVector newVarCharVector(String name, String... values) {
+    VarCharVector vector = new VarCharVector(name, allocator);
+    vector.allocateNewSafe();
+    for (int i = 0; i < values.length; i++) {
+      vector.setSafe(i, values[i].getBytes(StandardCharsets.UTF_8));
+    }
+    vector.setValueCount(values.length);
+    return vector;
   }
 
   @Test

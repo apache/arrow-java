@@ -84,6 +84,8 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
   @VisibleForTesting
   ArrowBuf importBuffer(ArrowType type, int index, long capacity) {
     checkState(
+        capacity >= 0, "Buffer %s for type %s has negative capacity %s", index, type, capacity);
+    checkState(
         buffers.length > index,
         "Expected at least %s buffers for type %s, but found %s",
         index + 1,
@@ -118,7 +120,7 @@ class BufferImportTypeVisitor implements ArrowType.ArrowTypeVisitor<List<ArrowBu
   }
 
   private ArrowBuf importOffsets(ArrowType type, long bytesPerSlot) {
-    final long capacity = bytesPerSlot * (fieldNode.getLength() + 1);
+    final long capacity = bytesPerSlot * ((long) fieldNode.getLength() + 1);
     return importBuffer(type, 1, capacity);
   }
 

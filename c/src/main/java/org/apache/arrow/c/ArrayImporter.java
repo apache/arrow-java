@@ -17,7 +17,6 @@
 package org.apache.arrow.c;
 
 import static org.apache.arrow.c.NativeUtil.NULL;
-import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
 import static org.apache.arrow.util.Preconditions.checkNotNull;
 import static org.apache.arrow.util.Preconditions.checkState;
 
@@ -93,9 +92,23 @@ final class ArrayImporter {
         "ArrowArray struct has non-zero offset (%s), which is not supported",
         snapshot.offset);
 
+    // Check the length and null count before importing children or the dictionary, so that an
+    // invalid array is rejected before it modifies the child vectors or the dictionary provider
+    final ArrowFieldNode fieldNode;
+    try {
+      fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
+    } catch (IllegalArgumentException | ArithmeticException e) {
+      throw new IllegalArgumentException(
+          "Invalid length or null count for field "
+              + vector.getField()
+              + ". error message: "
+              + e.getMessage(),
+          e);
+    }
+
     // First import children (required for reconstituting parent array data)
     long[] children =
-        NativeUtil.toJavaArray(snapshot.children, checkedCastToInt(snapshot.n_children));
+        NativeUtil.toJavaArray(snapshot.children, Math.toIntExact(snapshot.n_children));
     if (children != null && children.length > 0) {
       List<FieldVector> childVectors = vector.getChildrenFromFields();
       checkState(
@@ -129,9 +142,8 @@ final class ArrayImporter {
 
     // Import main data
     try {
-      ArrowFieldNode fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
       long[] bufferPointers =
-          NativeUtil.toJavaArray(snapshot.buffers, checkedCastToInt(snapshot.n_buffers));
+          NativeUtil.toJavaArray(snapshot.buffers, Math.toIntExact(snapshot.n_buffers));
 
       try (final BufferImportTypeVisitor visitor =
           new BufferImportTypeVisitor(allocator, underlyingAllocation, fieldNode, bufferPointers)) {
