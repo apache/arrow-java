@@ -103,9 +103,15 @@ final class ArrayImporter {
   private void doImport(ArrowArray.Snapshot snapshot) {
     checkState(snapshot.offset >= 0, "ArrowArray struct has negative offset (%s)", snapshot.offset);
     checkState(snapshot.length >= 0, "ArrowArray struct has negative length (%s)", snapshot.length);
-    // Check the length and null count before importing children or the dictionary, so that an
-    // invalid array is rejected before it modifies the child vectors or the dictionary provider
+    // Check the length and null count of this array and of its dictionary before importing
+    // anything, so that invalid values are rejected before the child vectors or the dictionary are
+    // modified. Errors found later, such as missing buffers or an invalid child, can still leave
+    // the child vectors or the dictionary partially imported.
     checkLengthAndNullCount(vector, snapshot);
+    if (snapshot.dictionary != NULL) {
+      checkLengthAndNullCount(
+          lookupDictionary().getVector(), ArrowArray.wrap(snapshot.dictionary).snapshot());
+    }
     if (snapshot.offset != 0 && snapshot.length != 0) {
       if (storageType().getTypeID() == ArrowTypeID.Struct) {
         importSlicedStruct(snapshot);
@@ -145,7 +151,6 @@ final class ArrayImporter {
     int offset = (int) (snapshot.offset - skippedRows);
     int length = (int) snapshot.length;
     importChildren(snapshot, snapshot.offset, /* childRowsPerRow= */ 1);
-    importDictionary(snapshot);
 
     snapshot.offset = 0;
     snapshot.length = unslicedLength;
@@ -160,6 +165,8 @@ final class ArrayImporter {
             Collections.singletonList(sliced.getValidityBuffer()));
       }
     }
+    // Import the dictionary last, so that it is not cleared if this array's own data is invalid
+    importDictionary(snapshot);
   }
 
   /**
@@ -246,8 +253,9 @@ final class ArrayImporter {
       ArrowArray.Snapshot snapshot, long skippedRows, boolean trimChildren) {
     // First import children (required for reconstituting parent array data)
     importChildren(snapshot, skippedRows, trimChildren ? childRowsPerRow(storageType()) : 0);
-    importDictionary(snapshot);
     importBuffers(vector, snapshot, skippedRows);
+    // Import the dictionary last, so that it is not cleared if this array's own data is invalid
+    importDictionary(snapshot);
   }
 
   /**
@@ -296,11 +304,7 @@ final class ArrayImporter {
   /** Imports the dictionary of a dictionary encoded array. */
   private void importDictionary(ArrowArray.Snapshot snapshot) {
     if (snapshot.dictionary != NULL) {
-      DictionaryEncoding encoding = vector.getField().getDictionary();
-      checkNotNull(encoding, "Missing encoding on import of ArrowArray with dictionary");
-
-      Dictionary dictionary = dictionaryProvider.lookup(encoding.getId());
-      checkNotNull(dictionary, "Dictionary lookup failed on import of ArrowArray with dictionary");
+      Dictionary dictionary = lookupDictionary();
 
       // reset the dictionary vector to the initial state
       dictionary.getVector().clear();
@@ -309,6 +313,16 @@ final class ArrayImporter {
           new ArrayImporter(allocator, dictionary.getVector(), dictionaryProvider);
       dictionaryImporter.importChild(this, ArrowArray.wrap(snapshot.dictionary).snapshot());
     }
+  }
+
+  /** Looks up the dictionary of a dictionary encoded array in the dictionary provider. */
+  private Dictionary lookupDictionary() {
+    DictionaryEncoding encoding = vector.getField().getDictionary();
+    checkNotNull(encoding, "Missing encoding on import of ArrowArray with dictionary");
+
+    Dictionary dictionary = dictionaryProvider.lookup(encoding.getId());
+    checkNotNull(dictionary, "Dictionary lookup failed on import of ArrowArray with dictionary");
+    return dictionary;
   }
 
   /**
