@@ -67,7 +67,10 @@ import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
+import org.apache.arrow.vector.complex.LargeListViewVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.ListViewVector;
+import org.apache.arrow.vector.complex.MapVector;
 import org.apache.arrow.vector.complex.NonNullableStructVector;
 import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.UnionVector;
@@ -392,7 +395,9 @@ public class ValidateVectorTypeVisitor implements VectorVisitor<Void, Void> {
 
   @Override
   public Void visit(ListVector vector, Void value) {
-    validateVectorCommon(vector, ArrowType.List.class);
+    // A MapVector is a ListVector of type Map
+    validateVectorCommon(
+        vector, vector instanceof MapVector ? ArrowType.Map.class : ArrowType.List.class);
     ValueVector innerVector = vector.getDataVector();
     if (innerVector != null) {
       innerVector.accept(this, null);
@@ -421,6 +426,26 @@ public class ValidateVectorTypeVisitor implements VectorVisitor<Void, Void> {
   @Override
   public Void visit(LargeListVector vector, Void value) {
     validateVectorCommon(vector, ArrowType.LargeList.class);
+    ValueVector innerVector = vector.getDataVector();
+    if (innerVector != null) {
+      innerVector.accept(this, null);
+    }
+    return null;
+  }
+
+  @Override
+  public Void visit(ListViewVector vector, Void value) {
+    validateVectorCommon(vector, ArrowType.ListView.class);
+    ValueVector innerVector = vector.getDataVector();
+    if (innerVector != null) {
+      innerVector.accept(this, null);
+    }
+    return null;
+  }
+
+  @Override
+  public Void visit(LargeListViewVector vector, Void value) {
+    validateVectorCommon(vector, ArrowType.LargeListView.class);
     ValueVector innerVector = vector.getDataVector();
     if (innerVector != null) {
       innerVector.accept(this, null);

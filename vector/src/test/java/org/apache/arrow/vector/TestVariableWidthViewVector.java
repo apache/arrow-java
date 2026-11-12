@@ -2934,8 +2934,9 @@ public class TestVariableWidthViewVector {
       offsets.setInt(12, 1024);
       vector.setValueCount(1);
       vector.setIndexDefined(0);
-      var e = assertThrows(IndexOutOfBoundsException.class, vector::validateFull);
-      assertTrue(e.getMessage().contains("index: 1024"));
+      // The view is checked against the data buffer before the value is read
+      var e = assertThrows(ValidateUtil.ValidateException.class, vector::validateFull);
+      assertTrue(e.getMessage().contains("(offset 1024, length 64) is outside data buffer 0"));
     }
   }
 }

@@ -711,6 +711,9 @@ public class TestRoundTrip extends BaseFileTest {
         ArrowFileReader fileReader =
             new ArrowFileReader(fileInputStream.getChannel(), readerAllocator);
         ArrowStreamReader streamReader = new ArrowStreamReader(inputStream, readerAllocator)) {
+      // Check every batch read back, so that the full validation is run on valid data of each type
+      fileReader.setValidateBatches(true);
+      streamReader.setValidateBatches(true);
       fileValidator.accept(fileReader);
       streamValidator.accept(streamReader);
       assertEquals(writeOption.metadataVersion, fileReader.getFooter().getMetadataVersion());
