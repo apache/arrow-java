@@ -92,18 +92,20 @@ final class ArrayImporter {
         "ArrowArray struct has non-zero offset (%s), which is not supported",
         snapshot.offset);
 
-    // Check the length and null count before importing children or the dictionary, so that an
-    // invalid array is rejected before it modifies the child vectors or the dictionary provider
-    final ArrowFieldNode fieldNode;
-    try {
-      fieldNode = new ArrowFieldNode(snapshot.length, snapshot.null_count);
-    } catch (IllegalArgumentException | ArithmeticException e) {
-      throw new IllegalArgumentException(
-          "Invalid length or null count for field "
-              + vector.getField()
-              + ". error message: "
-              + e.getMessage(),
-          e);
+    // Check the length and null count of this array and of its dictionary before importing
+    // anything, so that invalid values are rejected before the child vectors or the dictionary are
+    // modified. Errors found later, such as missing buffers or an invalid child, can still leave
+    // the child vectors or the dictionary partially imported.
+    final ArrowFieldNode fieldNode = toFieldNode(vector, snapshot);
+    Dictionary dictionary = null;
+    if (snapshot.dictionary != NULL) {
+      DictionaryEncoding encoding = vector.getField().getDictionary();
+      checkNotNull(encoding, "Missing encoding on import of ArrowArray with dictionary");
+
+      dictionary = dictionaryProvider.lookup(encoding.getId());
+      checkNotNull(dictionary, "Dictionary lookup failed on import of ArrowArray with dictionary");
+
+      toFieldNode(dictionary.getVector(), ArrowArray.wrap(snapshot.dictionary).snapshot());
     }
 
     // First import children (required for reconstituting parent array data)
@@ -124,22 +126,6 @@ final class ArrayImporter {
       }
     }
 
-    // Handle import of a dictionary encoded vector
-    if (snapshot.dictionary != NULL) {
-      DictionaryEncoding encoding = vector.getField().getDictionary();
-      checkNotNull(encoding, "Missing encoding on import of ArrowArray with dictionary");
-
-      Dictionary dictionary = dictionaryProvider.lookup(encoding.getId());
-      checkNotNull(dictionary, "Dictionary lookup failed on import of ArrowArray with dictionary");
-
-      // reset the dictionary vector to the initial state
-      dictionary.getVector().clear();
-
-      ArrayImporter dictionaryImporter =
-          new ArrayImporter(allocator, dictionary.getVector(), dictionaryProvider);
-      dictionaryImporter.importChild(this, ArrowArray.wrap(snapshot.dictionary));
-    }
-
     // Import main data
     try {
       long[] bufferPointers =
@@ -158,6 +144,29 @@ final class ArrayImporter {
     } catch (Exception e) {
       throw new IllegalArgumentException(
           "Could not load buffers for field "
+              + vector.getField()
+              + ". error message: "
+              + e.getMessage(),
+          e);
+    }
+
+    // Import the dictionary last, so that it is not cleared if this array's own data is invalid
+    if (dictionary != null) {
+      // reset the dictionary vector to the initial state
+      dictionary.getVector().clear();
+
+      ArrayImporter dictionaryImporter =
+          new ArrayImporter(allocator, dictionary.getVector(), dictionaryProvider);
+      dictionaryImporter.importChild(this, ArrowArray.wrap(snapshot.dictionary));
+    }
+  }
+
+  private static ArrowFieldNode toFieldNode(FieldVector vector, ArrowArray.Snapshot snapshot) {
+    try {
+      return new ArrowFieldNode(snapshot.length, snapshot.null_count);
+    } catch (IllegalArgumentException | ArithmeticException e) {
+      throw new IllegalArgumentException(
+          "Invalid length or null count for field "
               + vector.getField()
               + ". error message: "
               + e.getMessage(),

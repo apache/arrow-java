@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.function.Consumer;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -136,6 +137,42 @@ public class DictionaryTest {
 
   @Test
   public void testImportRejectsInvalidLengthWithoutReplacingDictionary() throws Exception {
+    assertRejectedImportKeepsDictionary(
+        arrowArray -> {
+          ArrowArray.Snapshot snapshot = arrowArray.snapshot();
+          snapshot.length = -1;
+          arrowArray.save(snapshot);
+        });
+  }
+
+  @Test
+  public void testImportRejectsInvalidDictionaryLengthWithoutReplacingDictionary()
+      throws Exception {
+    assertRejectedImportKeepsDictionary(
+        arrowArray -> {
+          ArrowArray dictionaryArray = ArrowArray.wrap(arrowArray.snapshot().dictionary);
+          ArrowArray.Snapshot snapshot = dictionaryArray.snapshot();
+          snapshot.length = -1;
+          dictionaryArray.save(snapshot);
+        });
+  }
+
+  @Test
+  public void testImportRejectsMissingBufferWithoutReplacingDictionary() throws Exception {
+    assertRejectedImportKeepsDictionary(
+        arrowArray -> {
+          ArrowArray.Snapshot snapshot = arrowArray.snapshot();
+          snapshot.n_buffers = 1;
+          arrowArray.save(snapshot);
+        });
+  }
+
+  /**
+   * Imports a dictionary encoded batch, then checks that a second batch with a different
+   * dictionary, made invalid by {@code corrupt}, is rejected without replacing the first
+   * dictionary.
+   */
+  private void assertRejectedImportKeepsDictionary(Consumer<ArrowArray> corrupt) throws Exception {
     DictionaryProvider.MapDictionaryProvider provider =
         new DictionaryProvider.MapDictionaryProvider();
     DictionaryProvider.MapDictionaryProvider otherProvider =
@@ -160,29 +197,31 @@ public class DictionaryTest {
         imported = Data.importVector(allocator, arrowArray, arrowSchema, cDictionaryProvider);
       }
 
-      // Import a second batch with a different dictionary and an invalid length into the same
-      // vector and provider
-      try (ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
-          ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
-        Data.exportVector(allocator, otherEncoded, otherProvider, arrowArray, arrowSchema);
-        // Only the array is imported, so release the exported schema here
-        arrowSchema.release();
-        ArrowArray.Snapshot snapshot = arrowArray.snapshot();
-        snapshot.length = -1;
-        arrowArray.save(snapshot);
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> Data.importIntoVector(allocator, arrowArray, imported, cDictionaryProvider));
+      try {
+        // Import a second, invalid batch with a different dictionary into the same vector and
+        // provider
+        try (ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+            ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+          Data.exportVector(allocator, otherEncoded, otherProvider, arrowArray, arrowSchema);
+          // Only the array is imported, so release the exported schema here
+          arrowSchema.release();
+          corrupt.accept(arrowArray);
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> Data.importIntoVector(allocator, arrowArray, imported, cDictionaryProvider));
+        }
+
+        assertTrue(
+            VectorEqualsVisitor.vectorEquals(
+                dictVector, cDictionaryProvider.lookup(0L).getVector()),
+            "dictionary was modified by the rejected import");
+      } finally {
+        imported.close();
       }
-
-      assertTrue(
-          VectorEqualsVisitor.vectorEquals(dictVector, cDictionaryProvider.lookup(0L).getVector()),
-          "dictionary was modified by the rejected import");
-      imported.close();
+    } finally {
+      AutoCloseables.close(
+          (AutoCloseable) vector, otherVector, encoded, otherEncoded, dictVector, otherDictVector);
     }
-
-    AutoCloseables.close(
-        (AutoCloseable) vector, otherVector, encoded, otherEncoded, dictVector, otherDictVector);
   }
 
   private VarCharVector newVarCharVector(String name, String... values) {
