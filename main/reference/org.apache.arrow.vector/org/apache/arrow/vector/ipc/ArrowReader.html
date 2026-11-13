@@ -74,6 +74,8 @@ loadScripts(document, 'script');</script>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#setValidateBatches(boolean)" tabindex="0">setValidateBatches(boolean)</a></li>
+<li><a href="#isValidateBatches()" tabindex="0">isValidateBatches()</a></li>
 <li><a href="#getVectorSchemaRoot()" tabindex="0">getVectorSchemaRoot()</a></li>
 <li><a href="#getDictionaryVectors()" tabindex="0">getDictionaryVectors()</a></li>
 <li><a href="#lookup(long)" tabindex="0">lookup(long)</a></li>
@@ -223,35 +225,45 @@ source.</div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Reads the schema and initializes the vectors.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadDictionary(org.apache.arrow.vector.ipc.message.ArrowDictionaryBatch)" class="member-name-link">loadDictionary</a><wbr>(<a href="message/ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a>&nbsp;dictionaryBatch)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isValidateBatches()" class="member-name-link">isValidateBatches</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns whether every loaded batch is checked with <a href="../util/ValueVectorUtility.html#validateFull(org.apache.arrow.vector.ValueVector)"><code>ValueVectorUtility.validateFull(ValueVector)</code></a>.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadDictionary(org.apache.arrow.vector.ipc.message.ArrowDictionaryBatch)" class="member-name-link">loadDictionary</a><wbr>(<a href="message/ArrowDictionaryBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowDictionaryBatch</a>&nbsp;dictionaryBatch)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Load an ArrowDictionaryBatch to the readers dictionary vectors.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNextBatch()" class="member-name-link">loadNextBatch</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>abstract boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNextBatch()" class="member-name-link">loadNextBatch</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Load the next ArrowRecordBatch to the vector schema root if available.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadRecordBatch(org.apache.arrow.vector.ipc.message.ArrowRecordBatch)" class="member-name-link">loadRecordBatch</a><wbr>(<a href="message/ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a>&nbsp;batch)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#loadRecordBatch(org.apache.arrow.vector.ipc.message.ArrowRecordBatch)" class="member-name-link">loadRecordBatch</a><wbr>(<a href="message/ArrowRecordBatch.html" title="class in org.apache.arrow.vector.ipc.message">ArrowRecordBatch</a>&nbsp;batch)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Load an ArrowRecordBatch to the readers VectorSchemaRoot.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../dictionary/Dictionary.html" title="class in org.apache.arrow.vector.dictionary">Dictionary</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookup(long)" class="member-name-link">lookup</a><wbr>(long&nbsp;id)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../dictionary/Dictionary.html" title="class in org.apache.arrow.vector.dictionary">Dictionary</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#lookup(long)" class="member-name-link">lookup</a><wbr>(long&nbsp;id)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Lookup a dictionary that has been loaded using the dictionary id.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#prepareLoadNextBatch()" class="member-name-link">prepareLoadNextBatch</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#prepareLoadNextBatch()" class="member-name-link">prepareLoadNextBatch</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Ensure the reader has been initialized and reset the VectorSchemaRoot row count to 0.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readSchema()" class="member-name-link">readSchema</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract <a href="../types/pojo/Schema.html" title="class in org.apache.arrow.vector.types.pojo">Schema</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readSchema()" class="member-name-link">readSchema</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Read the Schema from the source, will be invoked at the beginning the initialization.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setValidateBatches(boolean)" class="member-name-link">setValidateBatches</a><wbr>(boolean&nbsp;validateBatches)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets whether every record batch and dictionary batch is checked with <a href="../util/ValueVectorUtility.html#validateFull(org.apache.arrow.vector.ValueVector)"><code>ValueVectorUtility.validateFull(ValueVector)</code></a> once it is loaded.</div>
 </div>
 </div>
 </div>
@@ -319,6 +331,45 @@ source.</div>
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="setValidateBatches(boolean)">
+<h3>setValidateBatches</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">setValidateBatches</span><wbr><span class="parameters">(boolean&nbsp;validateBatches)</span></div>
+<div class="block">Sets whether every record batch and dictionary batch is checked with <a href="../util/ValueVectorUtility.html#validateFull(org.apache.arrow.vector.ValueVector)"><code>ValueVectorUtility.validateFull(ValueVector)</code></a> once it is loaded. This is off by default, because the check
+reads every value of the batch.
+
+<p>Turn it on when the data comes from an untrusted source. The IPC format does not guarantee
+that offsets, views or run ends stay within the buffers they point into, and reading such a
+batch can read past the end of a buffer, without bounds checks when <code>
+arrow.enable_unsafe_memory_access</code> is set. With this option, a batch that fails the check is
+cleared and the load throws <a href="../validate/ValidateUtil.ValidateException.html" title="class in org.apache.arrow.vector.validate"><code>ValidateUtil.ValidateException</code></a>.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>validateBatches</code> - whether to check each loaded batch</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="isValidateBatches()">
+<h3>isValidateBatches</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isValidateBatches</span>()</div>
+<div class="block">Returns whether every loaded batch is checked with <a href="../util/ValueVectorUtility.html#validateFull(org.apache.arrow.vector.ValueVector)"><code>ValueVectorUtility.validateFull(ValueVector)</code></a>.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>true if loaded batches are checked</dd>
+<dt>See Also:</dt>
+<dd>
+<ul class="tag-list">
+<li><a href="#setValidateBatches(boolean)"><code>setValidateBatches(boolean)</code></a></li>
+</ul>
+</dd>
+</dl>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="getVectorSchemaRoot()">
 <h3>getVectorSchemaRoot</h3>

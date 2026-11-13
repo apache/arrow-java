@@ -41088,6 +41088,10 @@ semantic meaning.</div>
 <div class="deprecation-block"><span class="deprecated-label">Deprecated.</span></div>
 <div class="block">Validate the client token provided on each call.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ipc/ArrowReader.html#isValidateBatches()" class="member-name-link">isValidateBatches()</a> - Method in class org.apache.arrow.vector.ipc.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ipc/ArrowReader.html" title="class in org.apache.arrow.vector.ipc">ArrowReader</a></dt>
+<dd>
+<div class="block">Returns whether every loaded batch is checked with <a href="org.apache.arrow.vector/org/apache/arrow/vector/util/ValueVectorUtility.html#validateFull(org.apache.arrow.vector.ValueVector)"><code>ValueVectorUtility.validateFull(ValueVector)</code></a>.</div>
+</dd>
 <dt><a href="org.apache.arrow.memory.core/org/apache/arrow/util/AutoCloseables.html#iter(java.lang.AutoCloseable...)" class="member-name-link">iter(AutoCloseable...)</a> - Static method in class org.apache.arrow.util.<a href="org.apache.arrow.memory.core/org/apache/arrow/util/AutoCloseables.html" title="class in org.apache.arrow.util">AutoCloseables</a></dt>
 <dd>
 <div class="block">Converts <code>ac</code> to a <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html" title="class or interface in java.lang" class="external-link"><code>Iterable</code></a> filtering out any null values.</div>
@@ -60686,6 +60690,10 @@ Include the query as part of this transaction (if unset, the query is auto-commi
 <dd>
 <div class="block">Toggle whether to use the zero-copy write optimization.</div>
 </dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/ipc/ArrowReader.html#setValidateBatches(boolean)" class="member-name-link">setValidateBatches(boolean)</a> - Method in class org.apache.arrow.vector.ipc.<a href="org.apache.arrow.vector/org/apache/arrow/vector/ipc/ArrowReader.html" title="class in org.apache.arrow.vector.ipc">ArrowReader</a></dt>
+<dd>
+<div class="block">Sets whether every record batch and dictionary batch is checked with <a href="org.apache.arrow.vector/org/apache/arrow/vector/util/ValueVectorUtility.html#validateFull(org.apache.arrow.vector.ValueVector)"><code>ValueVectorUtility.validateFull(ValueVector)</code></a> once it is loaded.</div>
+</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/LargeListViewVector.html#setValidity(int,int)" class="member-name-link">setValidity(int, int)</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/LargeListViewVector.html" title="class in org.apache.arrow.vector.complex">LargeListViewVector</a></dt>
 <dd>
 <div class="block">Set the validity at the given index.</div>
@@ -75154,6 +75162,12 @@ otherwise should not be referenced by other classes.</div>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/TypeEqualsVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,java.lang.Void)" class="member-name-link">visit(LargeListViewVector, Void)</a> - Method in class org.apache.arrow.vector.compare.<a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/TypeEqualsVisitor.html" title="class in org.apache.arrow.vector.compare">TypeEqualsVisitor</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorBufferVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,java.lang.Void)" class="member-name-link">visit(LargeListViewVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorBufferVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorBufferVisitor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorDataVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,java.lang.Void)" class="member-name-link">visit(LargeListViewVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorDataVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorDataVisitor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorTypeVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,java.lang.Void)" class="member-name-link">visit(LargeListViewVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorTypeVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorTypeVisitor</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/RangeEqualsVisitor.html#visit(org.apache.arrow.vector.complex.LargeListViewVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit(LargeListViewVector, Range)</a> - Method in class org.apache.arrow.vector.compare.<a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/RangeEqualsVisitor.html" title="class in org.apache.arrow.vector.compare">RangeEqualsVisitor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListVector,IN)" class="member-name-link">visit(ListVector, IN)</a> - Method in interface org.apache.arrow.vector.compare.<a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a></dt>
@@ -75175,6 +75189,12 @@ otherwise should not be referenced by other classes.</div>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/VectorVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,IN)" class="member-name-link">visit(ListViewVector, IN)</a> - Method in interface org.apache.arrow.vector.compare.<a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/VectorVisitor.html" title="interface in org.apache.arrow.vector.compare">VectorVisitor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/TypeEqualsVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,java.lang.Void)" class="member-name-link">visit(ListViewVector, Void)</a> - Method in class org.apache.arrow.vector.compare.<a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/TypeEqualsVisitor.html" title="class in org.apache.arrow.vector.compare">TypeEqualsVisitor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorBufferVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,java.lang.Void)" class="member-name-link">visit(ListViewVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorBufferVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorBufferVisitor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorDataVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,java.lang.Void)" class="member-name-link">visit(ListViewVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorDataVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorDataVisitor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorTypeVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,java.lang.Void)" class="member-name-link">visit(ListViewVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorTypeVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorTypeVisitor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/RangeEqualsVisitor.html#visit(org.apache.arrow.vector.complex.ListViewVector,org.apache.arrow.vector.compare.Range)" class="member-name-link">visit(ListViewVector, Range)</a> - Method in class org.apache.arrow.vector.compare.<a href="org.apache.arrow.vector/org/apache/arrow/vector/compare/RangeEqualsVisitor.html" title="class in org.apache.arrow.vector.compare">RangeEqualsVisitor</a></dt>
 <dd>&nbsp;</dd>
@@ -75201,6 +75221,8 @@ otherwise should not be referenced by other classes.</div>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/util/VectorAppender.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,java.lang.Void)" class="member-name-link">visit(RunEndEncodedVector, Void)</a> - Method in class org.apache.arrow.vector.util.<a href="org.apache.arrow.vector/org/apache/arrow/vector/util/VectorAppender.html" title="class in org.apache.arrow.vector.util">VectorAppender</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorBufferVisitor.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,java.lang.Void)" class="member-name-link">visit(RunEndEncodedVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorBufferVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorBufferVisitor</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorDataVisitor.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,java.lang.Void)" class="member-name-link">visit(RunEndEncodedVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorDataVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorDataVisitor</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorTypeVisitor.html#visit(org.apache.arrow.vector.complex.RunEndEncodedVector,java.lang.Void)" class="member-name-link">visit(RunEndEncodedVector, Void)</a> - Method in class org.apache.arrow.vector.validate.<a href="org.apache.arrow.vector/org/apache/arrow/vector/validate/ValidateVectorTypeVisitor.html" title="class in org.apache.arrow.vector.validate">ValidateVectorTypeVisitor</a></dt>
 <dd>&nbsp;</dd>
