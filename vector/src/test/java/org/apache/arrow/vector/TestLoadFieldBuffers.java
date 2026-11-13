@@ -19,6 +19,7 @@ package org.apache.arrow.vector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -38,7 +39,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-/** Checks that a vector whose buffers fail to load can still be used and closed. */
+/** Checks that a vector whose buffers fail to load is left empty, and can still be closed. */
 public class TestLoadFieldBuffers {
 
   static Stream<Arguments> vectors() {
@@ -55,18 +56,24 @@ public class TestLoadFieldBuffers {
         vector(a -> StructVector.empty("v", a), 1));
   }
 
+  static Stream<Arguments> vectorsWithRetainedBuffers() {
+    // The validity buffer is the only buffer of a fixed size list or a struct vector
+    return vectors().filter(arguments -> (int) arguments.get()[1] > 1);
+  }
+
   private static Arguments vector(Function<BufferAllocator, FieldVector> create, int bufferCount) {
     return Arguments.of(create, bufferCount);
   }
 
   @ParameterizedTest
   @MethodSource("vectors")
-  public void testFailedValidityLoadKeepsVector(
+  public void testFailedValidityLoadClearsVector(
       Function<BufferAllocator, FieldVector> create, int bufferCount) {
     try (BufferAllocator allocator = new RootAllocator(64 * 1024)) {
       FieldVector vector = create.apply(allocator);
       vector.setInitialCapacity(16);
       vector.allocateNew();
+      vector.setValueCount(16);
       List<ArrowBuf> buffers = Collections.nCopies(bufferCount, allocator.getEmpty());
 
       // Without a validity buffer, 1,000,000 values need a 125 KB validity buffer, which is more
@@ -74,12 +81,41 @@ public class TestLoadFieldBuffers {
       assertThrows(
           OutOfMemoryException.class,
           () -> vector.loadFieldBuffers(new ArrowFieldNode(1_000_000, 0), buffers));
+      assertEquals(0, vector.getValueCount());
       // A missing validity buffer is rejected when only some values are null
       assertThrows(
           IllegalArgumentException.class,
           () -> vector.loadFieldBuffers(new ArrowFieldNode(16, 3), buffers));
+      assertEquals(0, vector.getValueCount());
 
-      // The vector still owns its own buffers, so closing it releases each of them once
+      // Closing the vector releases each of its buffers once
+      vector.close();
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("vectorsWithRetainedBuffers")
+  public void testFailedBufferRetainClearsVector(
+      Function<BufferAllocator, FieldVector> create, int bufferCount) {
+    try (BufferAllocator allocator = new RootAllocator();
+        BufferAllocator otherAllocator = new RootAllocator();
+        ArrowBuf otherBuffer = otherAllocator.buffer(64)) {
+      FieldVector vector = create.apply(allocator);
+      vector.setInitialCapacity(16);
+      vector.allocateNew();
+      vector.setValueCount(16);
+      // The validity buffer is created by the vector, but the next buffer belongs to another root
+      // allocator, so the vector's allocator can't retain it
+      List<ArrowBuf> buffers = new ArrayList<>(Collections.nCopies(bufferCount, otherBuffer));
+      buffers.set(0, allocator.getEmpty());
+
+      assertThrows(
+          IllegalStateException.class,
+          () -> vector.loadFieldBuffers(new ArrowFieldNode(16, 0), buffers));
+      assertEquals(0, vector.getValueCount());
+
+      // Closing the vector releases each of its buffers once
       vector.close();
       assertEquals(0, allocator.getAllocatedMemory());
     }

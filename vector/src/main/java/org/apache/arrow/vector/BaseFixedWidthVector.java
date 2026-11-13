@@ -503,12 +503,9 @@ public abstract class BaseFixedWidthVector extends BaseValueVector
     ArrowBuf bitBuffer = ownBuffers.get(0);
     ArrowBuf dataBuffer = ownBuffers.get(1);
 
-    // Load the new validity buffer first, so that a failure leaves the vector unchanged
-    ArrowBuf newValidityBuffer =
-        BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    validityBuffer.getReferenceManager().release();
-    validityBuffer = newValidityBuffer;
-    valueBuffer.getReferenceManager().release();
+    // Clear the vector first, so that a failure while loading leaves it empty but usable
+    clear();
+    validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
     valueBuffer = dataBuffer.getReferenceManager().retain(dataBuffer, allocator);
     refreshValueCapacity();
 

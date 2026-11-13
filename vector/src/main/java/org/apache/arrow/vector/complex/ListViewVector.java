@@ -201,14 +201,15 @@ public class ListViewVector extends BaseRepeatedValueViewVector
     ArrowBuf offBuffer = ownBuffers.get(1);
     ArrowBuf szBuffer = ownBuffers.get(2);
 
-    // Load the new validity buffer first, so that a failure leaves the vector unchanged
-    ArrowBuf newValidityBuffer =
-        BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    validityBuffer.getReferenceManager().release();
-    validityBuffer = newValidityBuffer;
-    offsetBuffer.getReferenceManager().release();
+    // Release this vector's buffers first, so that a failure while loading leaves it empty but
+    // usable. Unlike clear(), this keeps the child vectors.
+    validityBuffer = releaseBuffer(validityBuffer);
+    offsetBuffer = releaseBuffer(offsetBuffer);
+    sizeBuffer = releaseBuffer(sizeBuffer);
+    valueCount = 0;
+
+    validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
     offsetBuffer = offBuffer.getReferenceManager().retain(offBuffer, allocator);
-    sizeBuffer.getReferenceManager().release();
     sizeBuffer = szBuffer.getReferenceManager().retain(szBuffer, allocator);
 
     validityAllocationSizeInBytes = checkedCastToInt(validityBuffer.capacity());

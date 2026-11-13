@@ -166,11 +166,12 @@ public class StructVector extends NonNullableStructVector
 
     ArrowBuf bitBuffer = ownBuffers.get(0);
 
-    // Load the new validity buffer first, so that a failure leaves the vector unchanged
-    ArrowBuf newValidityBuffer =
-        BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    validityBuffer.getReferenceManager().release();
-    validityBuffer = newValidityBuffer;
+    // Release the validity buffer first, so that a failure while loading leaves the vector empty
+    // but usable. Unlike clear(), this keeps the child vectors.
+    clearValidityBuffer();
+    valueCount = 0;
+
+    validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
     valueCount = fieldNode.getLength();
     validityAllocationSizeInBytes = checkedCastToInt(validityBuffer.capacity());
   }

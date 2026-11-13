@@ -354,13 +354,10 @@ public abstract class BaseVariableWidthViewVector extends BaseValueVector
     ArrowBuf viewBuf = ownBuffers.get(1);
     List<ArrowBuf> dataBufs = ownBuffers.subList(2, ownBuffers.size());
 
-    // Load the new validity buffer first, so that a failure leaves the vector unchanged
-    ArrowBuf newValidityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuf, allocator);
-
     this.clear();
 
     this.viewBuffer = viewBuf.getReferenceManager().retain(viewBuf, allocator);
-    this.validityBuffer = newValidityBuffer;
+    this.validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuf, allocator);
 
     for (ArrowBuf dataBuf : dataBufs) {
       this.dataBuffers.add(dataBuf.getReferenceManager().retain(dataBuf, allocator));

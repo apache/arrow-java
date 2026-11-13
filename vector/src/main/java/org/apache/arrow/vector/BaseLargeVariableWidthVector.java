@@ -304,14 +304,10 @@ public abstract class BaseLargeVariableWidthVector extends BaseValueVector
     ArrowBuf offBuffer = ownBuffers.get(1);
     ArrowBuf dataBuffer = ownBuffers.get(2);
 
-    // Load the new validity buffer first, so that a failure leaves the vector unchanged
-    ArrowBuf newValidityBuffer =
-        BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    validityBuffer.getReferenceManager().release();
-    validityBuffer = newValidityBuffer;
-    offsetBuffer.getReferenceManager().release();
+    // Clear the vector first, so that a failure while loading leaves it empty but usable
+    clear();
+    validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
     offsetBuffer = offBuffer.getReferenceManager().retain(offBuffer, allocator);
-    valueBuffer.getReferenceManager().release();
     valueBuffer = dataBuffer.getReferenceManager().retain(dataBuffer, allocator);
 
     lastSet = fieldNode.getLength() - 1;
