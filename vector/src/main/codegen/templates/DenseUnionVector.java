@@ -166,9 +166,26 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
     }
   }
 
+  /**
+   * Returns the children in the order of {@link #getField()}, which is the order their type ids
+   * were registered in, followed by any child that was added without registering a type id. The
+   * vectors of the children may have been created in another order.
+   */
   @Override
   public List<FieldVector> getChildrenFromFields() {
-    return internalStruct.getChildrenFromFields();
+    List<FieldVector> children = new ArrayList<>(internalStruct.size());
+    for (int i = 0; i < typeCount(); i++) {
+      ValueVector child = childVectors[typeMapFields[i]];
+      if (child != null) {
+        children.add((FieldVector) child);
+      }
+    }
+    for (FieldVector child : internalStruct.getChildrenFromFields()) {
+      if (children.stream().noneMatch(registered -> registered == child)) {
+        children.add(child);
+      }
+    }
+    return children;
   }
 
   @Override
@@ -241,20 +258,32 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
               typeFields.length + " relative types. Please use union of union instead");
     }
     byte typeId = nextTypeId;
-    if (this.fieldType != null) {
-      int[] typeIds = ((ArrowType.Union) this.fieldType.getType()).getTypeIds();
-      if (typeIds != null) {
-        int thisTypeId = typeIds[nextTypeId];
-        if (thisTypeId > Byte.MAX_VALUE) {
-          throw new IllegalStateException("Dense union vector types must be bytes. " + thisTypeId + " is too large");
-        }
-        typeId = (byte) thisTypeId;
+    int[] typeIds = this.fieldType == null ? null : ((ArrowType.Union) this.fieldType.getType()).getTypeIds();
+    if (typeIds != null) {
+      int thisTypeId = typeIds[nextTypeId];
+      if (thisTypeId > Byte.MAX_VALUE) {
+        throw new IllegalStateException("Dense union vector types must be bytes. " + thisTypeId + " is too large");
+      }
+      typeId = (byte) thisTypeId;
+    } else {
+      // A transfer pair can give this vector type ids other than 0 to n - 1, so skip those in use
+      while (isRegistered(typeId)) {
+        typeId = (byte) ((typeId + 1) % typeFields.length);
       }
     }
     typeFields[typeId] = field;
     typeMapFields[nextTypeId] = typeId;
     this.nextTypeId += 1;
     return typeId;
+  }
+
+  private boolean isRegistered(byte typeId) {
+    for (int i = 0; i < typeCount(); i++) {
+      if (typeMapFields[i] == typeId) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private <T extends FieldVector> T addOrGet(byte typeId, MinorType minorType, Class<T> c) {
@@ -625,16 +654,20 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
     }
 
     // The transfer pairs follow the order of the children, while typeFields and childVectors are
-    // indexed by type id. typeMapFields maps the position of a child to its type id.
+    // indexed by type id. typeMapFields maps the position of a child to its type id. The vectors
+    // of the children may have been created in another order, so internalStruct, whose transfer
+    // pair created the children of the target under the same names, is not indexed by position.
     private void createTransferPairs() {
       for (int i = 0; i < typeCount(); i++) {
         byte typeId = typeMapFields[i];
-        ValueVector srcVec = internalStruct.getVectorById(i);
-        ValueVector dstVec = to.internalStruct.getVectorById(i);
         to.typeFields[typeId] = typeFields[typeId];
         to.typeMapFields[i] = typeId;
-        to.childVectors[typeId] = dstVec;
-        internalTransferPairs[i] = srcVec.makeTransferPair(dstVec);
+        ValueVector srcVec = childVectors[typeId];
+        if (srcVec != null) {
+          ValueVector dstVec = to.internalStruct.getChild(srcVec.getName());
+          to.childVectors[typeId] = dstVec;
+          internalTransferPairs[i] = srcVec.makeTransferPair(dstVec);
+        }
       }
       to.nextTypeId = (byte) Math.max(to.typeCount(), typeCount());
     }
@@ -724,7 +757,7 @@ public class DenseUnionVector extends AbstractContainerVector implements FieldVe
                 to.offsetBuffer.getInt((long) (i - startIndex) * OFFSET_WIDTH));
           } catch (UnsupportedOperationException e) {
             to.clear();
-            ValueVector childVector = internalStruct.getVectorById(child);
+            ValueVector childVector = childVectors[typeId];
             throw new UnsupportedOperationException(
                 String.format(
                     "Cannot split dense union %s: the values its rows select from child %s (%s)"
