@@ -88,11 +88,7 @@ public class DefaultAllocationManagerOption {
         DEFAULT_ALLOCATION_MANAGER_FACTORY = getUnsafeFactory();
         break;
       case Unknown:
-        String allocationManagerClass = CheckAllocator.check();
-        DEFAULT_ALLOCATION_MANAGER_FACTORY = getFactory(allocationManagerClass);
-        LOGGER.info(
-            "allocation manager type not specified, inferred {} from the classpath",
-            allocationManagerClass);
+        DEFAULT_ALLOCATION_MANAGER_FACTORY = getFactory(CheckAllocator.check());
         break;
       default:
         throw new IllegalStateException("Unknown allocation manager type: " + type);
