@@ -70,9 +70,11 @@ public class ServerAuthWrapper {
 
   private static class AuthObserver implements StreamObserver<HandshakeRequest> {
 
+    // Queued after the last message so a blocked reader wakes up when the client is done.
+    private static final byte[] END_OF_STREAM = new byte[0];
+
     private final StreamObserver<HandshakeResponse> responseObserver;
     private volatile Future<?> future;
-    private volatile boolean completed = false;
     private final LinkedBlockingQueue<byte[]> messages = new LinkedBlockingQueue<>();
     private final AuthSender sender = new AuthSender();
 
@@ -92,26 +94,30 @@ public class ServerAuthWrapper {
 
           @Override
           public byte[] next() {
-            while (!completed || !messages.isEmpty()) {
-              byte[] bytes = messages.poll();
-              if (bytes == null) {
-                // busy wait.
-                continue;
-              }
-              return bytes;
+            final byte[] bytes;
+            try {
+              bytes = messages.take();
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+              throw new IllegalStateException("Interrupted while waiting for a message.", e);
             }
-            throw new IllegalStateException("Requesting more messages than client sent.");
+            if (bytes == END_OF_STREAM) {
+              messages.add(END_OF_STREAM);
+              throw new IllegalStateException("Requesting more messages than client sent.");
+            }
+            return bytes;
           }
 
           @Override
           public boolean hasNext() {
-            return !messages.isEmpty();
+            final byte[] head = messages.peek();
+            return head != null && head != END_OF_STREAM;
           }
         };
 
     @Override
     public void onError(Throwable t) {
-      completed = true;
+      messages.add(END_OF_STREAM);
       while (future == null) {
         /* busy wait */
       }
@@ -120,7 +126,7 @@ public class ServerAuthWrapper {
 
     @Override
     public void onCompleted() {
-      completed = true;
+      messages.add(END_OF_STREAM);
     }
 
     private class AuthSender implements ServerAuthSender {

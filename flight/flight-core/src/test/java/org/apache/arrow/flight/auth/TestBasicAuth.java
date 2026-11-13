@@ -19,13 +19,19 @@ package org.apache.arrow.flight.auth;
 import static org.apache.arrow.flight.FlightTestUtil.LOCALHOST;
 import static org.apache.arrow.flight.Location.forGrpcInsecure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.ImmutableList;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.apache.arrow.flight.Criteria;
 import org.apache.arrow.flight.FlightClient;
 import org.apache.arrow.flight.FlightInfo;
@@ -35,6 +41,8 @@ import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.flight.FlightTestUtil;
 import org.apache.arrow.flight.NoOpFlightProducer;
 import org.apache.arrow.flight.Ticket;
+import org.apache.arrow.flight.impl.Flight.HandshakeResponse;
+import org.apache.arrow.flight.impl.FlightServiceGrpc;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -97,6 +105,51 @@ public class TestBasicAuth {
         () -> {
           client.listFlights(Criteria.ALL).forEach(action -> fail());
         });
+  }
+
+  @Test
+  public void handshakeBlocksWhileWaitingForClient() throws Exception {
+    final ManagedChannel channel =
+        ManagedChannelBuilder.forAddress(LOCALHOST, server.getPort()).usePlaintext().build();
+    try {
+      // Open a handshake but never send a message, so the server waits for the first one.
+      FlightServiceGrpc.newStub(channel)
+          .handshake(
+              new StreamObserver<HandshakeResponse>() {
+                @Override
+                public void onNext(HandshakeResponse value) {}
+
+                @Override
+                public void onError(Throwable t) {}
+
+                @Override
+                public void onCompleted() {}
+              });
+
+      Thread handshakeThread = null;
+      for (int i = 0; i < 100 && handshakeThread == null; i++) {
+        Thread.sleep(50);
+        handshakeThread = findServerHandshakeThread();
+      }
+      assertNotNull(handshakeThread, "server handshake did not start");
+      Thread.sleep(200);
+      // The thread must park until a message arrives rather than spin on the queue.
+      assertEquals(Thread.State.WAITING, handshakeThread.getState());
+    } finally {
+      channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+    }
+  }
+
+  private static Thread findServerHandshakeThread() {
+    for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+      for (StackTraceElement frame : entry.getValue()) {
+        if (frame.getClassName().startsWith(ServerAuthWrapper.class.getName())
+            && frame.getMethodName().equals("next")) {
+          return entry.getKey();
+        }
+      }
+    }
+    return null;
   }
 
   @BeforeEach
