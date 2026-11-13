@@ -305,7 +305,7 @@ capacity of the vector needs to be expanded before copy.</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#makeTransferPair(org.apache.arrow.vector.ValueVector)" class="member-name-link">makeTransferPair</a><wbr>(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Makes a new transfer pair used to transfer underlying buffers.</div>
+<div class="block">Make a transfer pair to <code>target</code>.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#set(int,org.apache.arrow.variant.holders.NullableVariantHolder)" class="member-name-link">set</a><wbr>(int&nbsp;index,
@@ -511,8 +511,9 @@ vector will be index 1.</div>
 <h3>makeTransferPair</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/TransferPair.html" title="interface in org.apache.arrow.vector.util">TransferPair</a></span>&nbsp;<span class="element-name">makeTransferPair</span><wbr><span class="parameters">(<a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a>&nbsp;target)</span></div>
-<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)">ValueVector</a></code></span></div>
-<div class="block">Makes a new transfer pair used to transfer underlying buffers.</div>
+<div class="block"><span class="description-from-type-label">Description copied from class:&nbsp;<code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ExtensionTypeVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)">ExtensionTypeVector</a></code></span></div>
+<div class="block">Make a transfer pair to <code>target</code>. An extension vector target receives the data in its
+underlying vector, any other target is passed to the transfer pair of the underlying vector.</div>
 <dl class="notes">
 <dt>Specified by:</dt>
 <dd><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html#makeTransferPair(org.apache.arrow.vector.ValueVector)">makeTransferPair</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html" title="interface in org.apache.arrow.vector">ValueVector</a></code></dd>

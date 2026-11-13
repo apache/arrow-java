@@ -104,8 +104,12 @@ loadScripts(document, 'script');</script>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">Functions for working with the C data interface.
 
-<p>This API is EXPERIMENTAL. Note that currently only 64bit systems are supported. Importing
-<a href="ArrowArray.html" title="class in org.apache.arrow.c"><code>ArrowArrays</code></a> with a non-zero offset is not supported.</div>
+<p>This API is EXPERIMENTAL. Note that currently only 64bit systems are supported.
+
+<p>Importing <a href="ArrowArray.html" title="class in org.apache.arrow.c"><code>ArrowArrays</code></a> with a non-zero offset is not always zero-copy:
+buffers that cannot be sliced at the offset, such as offset buffers or view data, are copied.
+Importing such an array into an existing vector fails if an extension vector nested in a list,
+map, union or other vector that is not a struct does not report its extension type in <a href="../../../../../org.apache.arrow.vector/org/apache/arrow/vector/ValueVector.html#getField()"><code>ValueVector.getField()</code></a>.</div>
 </div>
 </section>
 <section class="summary">
