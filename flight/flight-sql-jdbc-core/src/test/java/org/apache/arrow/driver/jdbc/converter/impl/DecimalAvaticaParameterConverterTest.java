@@ -105,6 +105,16 @@ public class DecimalAvaticaParameterConverterTest {
   }
 
   @Test
+  public void testBindFloatKeepsTheDigitsTheClientSent() {
+    // 2.5f is exact in binary, so it cannot show the difference. 1.0005f read as a double is
+    // 1.000499963760376, which rounds down to 1.000 instead of the 1.001 the client asked for.
+    TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.FLOAT, 1.0005f);
+
+    assertTrue(converter.bindParameter(vector, typedValue, 0));
+    assertThat(vector.getObject(0), is(new BigDecimal("1.001")));
+  }
+
+  @Test
   public void testBindInteger() {
     TypedValue typedValue = TypedValue.ofLocal(ColumnMetaData.Rep.INTEGER, 42);
 

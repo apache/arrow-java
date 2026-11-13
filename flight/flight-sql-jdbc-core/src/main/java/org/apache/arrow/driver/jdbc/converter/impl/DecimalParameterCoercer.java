@@ -52,6 +52,11 @@ final class DecimalParameterCoercer {
         // raise NumberFormatException, which the binder does not catch.
         throw new ClassCastException("NaN and infinity have no " + BigDecimal.class.getName());
       }
+      if (local instanceof Float) {
+        // Read the float at float width: widening to double first exposes the gap between the two
+        // binary formats, so 1.0005f would arrive as 1.000499963760376 and round down.
+        return new BigDecimal(local.toString());
+      }
       // valueOf, not new BigDecimal(double): the constructor keeps the binary expansion, so 0.1
       // arrives as 0.1000000000000000055511151231257827.
       return BigDecimal.valueOf(value);
