@@ -446,6 +446,9 @@ otherwise returns a buffer pointing to the same memory as source.</div>
 <dt>Returns:</dt>
 <dd>A new buffer that is either allocated or points to the same memory as
     sourceValidityBuffer.</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalArgumentException.html" title="class or interface in java.lang" class="external-link">IllegalArgumentException</a></code> - if the source validity buffer is missing, but the null count
+    says that only some values are null</dd>
 </dl>
 </div>
 </section>
