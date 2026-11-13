@@ -179,7 +179,80 @@ public class ArrowFlightJdbcFloat4VectorAccessorTest {
     accessorIterator.assertAccessorGetter(
         vector,
         ArrowFlightJdbcFloat4VectorAccessor::getDouble,
-        accessor -> is((double) accessor.getFloat()));
+        accessor -> is(Double.parseDouble(Float.toString(accessor.getFloat()))));
+  }
+
+  @Test
+  public void testShouldGetDoubleThatRoundTripsToTheSameFloat() throws Exception {
+    accessorIterator.iterate(
+        vector,
+        (accessor, currentRow) ->
+            assertThat((float) accessor.getDouble(), is(accessor.getFloat())));
+  }
+
+  @Test
+  public void testShouldGetDecimalValuesWithoutFloatWideningArtifacts() throws Exception {
+    final float[] values = {0.1f, -0.1f, 0.2f, 0.3f, 1.1f, 123.456f, 3.4e-5f, -0.0f};
+    try (final Float4Vector float4Vector =
+        new Float4Vector("ID", rootAllocatorTestExtension.getRootAllocator())) {
+      for (int i = 0; i < values.length; i++) {
+        float4Vector.setSafe(i, values[i]);
+      }
+      float4Vector.setValueCount(values.length);
+
+      accessorIterator.iterate(
+          float4Vector,
+          (accessor, currentRow) -> {
+            final String expected = Float.toString(values[currentRow]);
+            assertThat(accessor.getDouble(), is(Double.parseDouble(expected)));
+            assertThat(accessor.getObject(Double.class), is(Double.parseDouble(expected)));
+            assertThat(accessor.getBigDecimal(), is(new BigDecimal(expected)));
+            assertThat(
+                accessor.getBigDecimal(9),
+                is(new BigDecimal(expected).setScale(9, RoundingMode.HALF_UP)));
+          });
+    }
+  }
+
+  @Test
+  public void testShouldGetDoubleFromFloat4VectorWithZeroPointOne() throws Exception {
+    try (final Float4Vector float4Vector =
+        new Float4Vector("ID", rootAllocatorTestExtension.getRootAllocator())) {
+      float4Vector.setSafe(0, 0.1f);
+      float4Vector.setValueCount(1);
+
+      accessorIterator.iterate(
+          float4Vector,
+          (accessor, currentRow) -> {
+            assertThat(accessor.getDouble(), is(0.1));
+            assertThat(accessor.getBigDecimal(), is(new BigDecimal("0.1")));
+            assertThat(accessor.getBigDecimal(9), is(new BigDecimal("0.100000000")));
+          });
+    }
+  }
+
+  @Test
+  public void testShouldGetDoubleMethodFromFloat4VectorWithNull() throws Exception {
+    try (final Float4Vector float4Vector =
+        new Float4Vector("ID", rootAllocatorTestExtension.getRootAllocator())) {
+      float4Vector.setNull(0);
+      float4Vector.setValueCount(1);
+
+      accessorIterator.assertAccessorGetter(
+          float4Vector, ArrowFlightJdbcFloat4VectorAccessor::getDouble, is(0.0));
+    }
+  }
+
+  @Test
+  public void testShouldGetDoubleMethodFromFloat4VectorWithNaN() throws Exception {
+    try (final Float4Vector float4Vector =
+        new Float4Vector("ID", rootAllocatorTestExtension.getRootAllocator())) {
+      float4Vector.setSafe(0, Float.NaN);
+      float4Vector.setValueCount(1);
+
+      accessorIterator.assertAccessorGetter(
+          float4Vector, ArrowFlightJdbcFloat4VectorAccessor::getDouble, is(Double.NaN));
+    }
   }
 
   @Test
@@ -191,7 +264,7 @@ public class ArrowFlightJdbcFloat4VectorAccessorTest {
           if (Float.isInfinite(value) || Float.isNaN(value)) {
             assertThrows(SQLException.class, accessor::getBigDecimal);
           } else {
-            assertThat(accessor.getBigDecimal(), is(BigDecimal.valueOf(value)));
+            assertThat(accessor.getBigDecimal(), is(new BigDecimal(Float.toString(value))));
           }
         });
   }
@@ -207,7 +280,7 @@ public class ArrowFlightJdbcFloat4VectorAccessorTest {
           } else {
             assertThat(
                 accessor.getBigDecimal(9),
-                is(BigDecimal.valueOf(value).setScale(9, RoundingMode.HALF_UP)));
+                is(new BigDecimal(Float.toString(value)).setScale(9, RoundingMode.HALF_UP)));
           }
         });
   }
