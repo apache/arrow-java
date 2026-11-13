@@ -86,6 +86,10 @@ under the License.
           <excludes>
             <!-- Test is only useful when NOT running with add-opens -->
             <exclude>**/TestOpens.java</exclude>
+            <!-- Test requires arrow.memory.accessor.type=FFM with arrow-memory-ffm absent -->
+            <exclude>**/TestMemoryUtilAccessorResolution.java</exclude>
+            <!-- Test requires arrow.allocation.manager.type=FFM with arrow-memory-ffm absent -->
+            <exclude>**/TestMemoryUtilAllocationManagerFallback.java</exclude>
           </excludes>
         </configuration>
         <executions>
@@ -103,6 +107,41 @@ under the License.
               <includes>
                 <include>**/TestOpens.java</include>
               </includes>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Requires arrow.memory.accessor.type=FFM, isolated from the default run -->
+            <id>ffm-accessor-resolution-tests</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <excludes combine.self="override"/>
+              <includes>
+                <include>**/TestMemoryUtilAccessorResolution.java</include>
+              </includes>
+              <systemPropertyVariables>
+                <arrow.memory.accessor.type>FFM</arrow.memory.accessor.type>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Requires arrow.allocation.manager.type=FFM (with arrow.memory.accessor.type left
+                 unset), isolated from the default run -->
+            <id>ffm-allocation-manager-fallback-tests</id>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <phase>test</phase>
+            <configuration>
+              <excludes combine.self="override"/>
+              <includes>
+                <include>**/TestMemoryUtilAllocationManagerFallback.java</include>
+              </includes>
+              <systemPropertyVariables>
+                <arrow.allocation.manager.type>FFM</arrow.allocation.manager.type>
+              </systemPropertyVariables>
             </configuration>
           </execution>
         </executions>

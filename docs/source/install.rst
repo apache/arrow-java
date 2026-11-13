@@ -35,6 +35,7 @@ Note that some JDK internals must be exposed by adding these flags to the ``java
 - ``--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED`` (always required)
 - ``--enable-native-access=io.netty.common`` (Java 25+, when using ``arrow-memory-netty``)
 - ``--sun-misc-unsafe-memory-access=allow`` (Java 25+; not stricly necessary, but suppresses certain warnings)
+- ``--enable-native-access=ALL-UNNAMED`` (when using ``arrow-memory-ffm``, which also requires JDK 22+)
 
 .. code-block:: shell
 
