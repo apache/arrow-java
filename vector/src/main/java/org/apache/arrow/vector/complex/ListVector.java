@@ -213,9 +213,14 @@ public class ListVector extends BaseRepeatedValueVector
     ArrowBuf bitBuffer = ownBuffers.get(0);
     ArrowBuf offBuffer = ownBuffers.get(1);
 
-    validityBuffer.getReferenceManager().release();
+    // Release this vector's buffers first, so that a failure while loading leaves it empty but
+    // usable. Unlike clear(), this keeps the child vectors.
+    validityBuffer = releaseBuffer(validityBuffer);
+    offsetBuffer = releaseBuffer(offsetBuffer);
+    lastSet = -1;
+    valueCount = 0;
+
     validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    offsetBuffer.getReferenceManager().release();
     offsetBuffer = offBuffer.getReferenceManager().retain(offBuffer, allocator);
 
     validityAllocationSizeInBytes = checkedCastToInt(validityBuffer.capacity());
