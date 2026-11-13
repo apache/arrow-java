@@ -21385,7 +21385,10 @@ for complex data types like structs, unions</div>
 <div class="block">Get the inner child vectors.</div>
 </dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/DenseUnionVector.html#getChildrenFromFields()" class="member-name-link">getChildrenFromFields()</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/DenseUnionVector.html" title="class in org.apache.arrow.vector.complex">DenseUnionVector</a></dt>
-<dd>&nbsp;</dd>
+<dd>
+<div class="block">Returns the children in the order of <a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/DenseUnionVector.html#getField()"><code>DenseUnionVector.getField()</code></a>, which is the order their type ids
+were registered in, followed by any child that was added without registering a type id.</div>
+</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/FixedSizeListVector.html#getChildrenFromFields()" class="member-name-link">getChildrenFromFields()</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/FixedSizeListVector.html" title="class in org.apache.arrow.vector.complex">FixedSizeListVector</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/LargeListVector.html#getChildrenFromFields()" class="member-name-link">getChildrenFromFields()</a> - Method in class org.apache.arrow.vector.complex.<a href="org.apache.arrow.vector/org/apache/arrow/vector/complex/LargeListVector.html" title="class in org.apache.arrow.vector.complex">LargeListVector</a></dt>

@@ -1094,7 +1094,10 @@ exists or null.</div>
 </div>
 <div class="col-first odd-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</code></div>
 <div class="col-second odd-row-color"><span class="type-name-label">DenseUnionVector.</span><code><a href="../complex/DenseUnionVector.html#getChildrenFromFields()" class="member-name-link">getChildrenFromFields</a>()</code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">Returns the children in the order of <a href="../complex/DenseUnionVector.html#getField()"><code>DenseUnionVector.getField()</code></a>, which is the order their type ids
+were registered in, followed by any child that was added without registering a type id.</div>
+</div>
 <div class="col-first even-row-color"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../FieldVector.html" title="interface in org.apache.arrow.vector">FieldVector</a>&gt;</code></div>
 <div class="col-second even-row-color"><span class="type-name-label">FixedSizeListVector.</span><code><a href="../complex/FixedSizeListVector.html#getChildrenFromFields()" class="member-name-link">getChildrenFromFields</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
