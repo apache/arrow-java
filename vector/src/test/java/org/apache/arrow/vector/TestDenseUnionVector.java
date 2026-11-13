@@ -39,8 +39,10 @@ import org.apache.arrow.vector.complex.VectorWithOrdinal;
 import org.apache.arrow.vector.holders.NullableBigIntHolder;
 import org.apache.arrow.vector.holders.NullableBitHolder;
 import org.apache.arrow.vector.holders.NullableFloat4Holder;
+import org.apache.arrow.vector.holders.NullableFloat8Holder;
 import org.apache.arrow.vector.holders.NullableIntHolder;
 import org.apache.arrow.vector.holders.NullableUInt4Holder;
+import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.testing.ValueVectorDataPopulator;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.Types.MinorType;
@@ -421,6 +423,106 @@ public class TestDenseUnionVector {
       try (ValueVector target = vector.getTransferPair(allocator).getTo()) {
         assertEquals(field, target.getField());
       }
+    }
+  }
+
+  /** Registers an int child and then a double child, but creates the double vector first. */
+  private DenseUnionVector newVectorWithChildrenCreatedOutOfOrder() {
+    DenseUnionVector vector = DenseUnionVector.empty("duv", allocator);
+    vector.allocateNew();
+    byte intTypeId = vector.registerNewTypeId(Field.nullable("i", MinorType.INT.getType()));
+    byte doubleTypeId = vector.registerNewTypeId(Field.nullable("d", MinorType.FLOAT8.getType()));
+
+    NullableFloat8Holder doubleHolder = new NullableFloat8Holder();
+    doubleHolder.isSet = 1;
+    NullableIntHolder intHolder = new NullableIntHolder();
+    intHolder.isSet = 1;
+
+    vector.setTypeId(0, doubleTypeId);
+    doubleHolder.value = 1.5;
+    vector.setSafe(0, doubleHolder);
+    vector.setTypeId(1, intTypeId);
+    intHolder.value = 42;
+    vector.setSafe(1, intHolder);
+    vector.setTypeId(2, doubleTypeId);
+    doubleHolder.value = 2.5;
+    vector.setSafe(2, doubleHolder);
+    vector.setValueCount(3);
+    return vector;
+  }
+
+  @Test
+  public void testChildrenCreatedOutOfOrderFollowGetField() {
+    try (DenseUnionVector vector = newVectorWithChildrenCreatedOutOfOrder()) {
+      List<Field> fields = vector.getField().getChildren();
+      List<FieldVector> children = vector.getChildrenFromFields();
+      assertEquals(fields.size(), children.size());
+      for (int i = 0; i < fields.size(); i++) {
+        assertEquals(fields.get(i).getType(), children.get(i).getField().getType());
+      }
+    }
+  }
+
+  @Test
+  public void testTransferWithChildrenCreatedOutOfOrder() {
+    try (DenseUnionVector source = newVectorWithChildrenCreatedOutOfOrder()) {
+      TransferPair pair = source.getTransferPair(allocator);
+      try (DenseUnionVector target = (DenseUnionVector) pair.getTo()) {
+        assertEquals(source.getField().getChildren(), target.getField().getChildren());
+
+        pair.splitAndTransfer(1, 2);
+        assertEquals(2, target.getValueCount());
+        assertEquals(42, target.getObject(0));
+        assertEquals(2.5, target.getObject(1));
+
+        pair.transfer();
+        assertEquals(3, target.getValueCount());
+        assertEquals(1.5, target.getObject(0));
+        assertEquals(42, target.getObject(1));
+        assertEquals(2.5, target.getObject(2));
+      }
+    }
+  }
+
+  @Test
+  public void testUnloadWithChildrenCreatedOutOfOrder() {
+    // The unloader takes the schema from getField() and the buffers from getChildrenFromFields()
+    try (VectorSchemaRoot root = VectorSchemaRoot.of(newVectorWithChildrenCreatedOutOfOrder());
+        ArrowRecordBatch batch = new VectorUnloader(root).getRecordBatch();
+        VectorSchemaRoot loaded = VectorSchemaRoot.create(root.getSchema(), allocator)) {
+      new VectorLoader(loaded).load(batch);
+
+      FieldVector vector = loaded.getVector(0);
+      assertEquals(3, vector.getValueCount());
+      assertEquals(1.5, vector.getObject(0));
+      assertEquals(42, vector.getObject(1));
+      assertEquals(2.5, vector.getObject(2));
+    }
+  }
+
+  @Test
+  public void testRegisterNewTypeIdSkipsTypeIdsOfTransferTarget() {
+    Field field =
+        new Field(
+            "duv",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {2, 0})),
+            Arrays.asList(
+                Field.nullable("i", MinorType.INT.getType()),
+                Field.nullable("s", MinorType.VARCHAR.getType())));
+    try (DenseUnionVector source = (DenseUnionVector) field.createVector(allocator);
+        DenseUnionVector target = (DenseUnionVector) source.getTransferPair(allocator).getTo()) {
+      byte typeId = target.registerNewTypeId(Field.nullable("d", MinorType.FLOAT8.getType()));
+
+      assertEquals(3, typeId);
+      Field expected =
+          new Field(
+              "duv",
+              FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {2, 0, 3})),
+              Arrays.asList(
+                  Field.nullable("i", MinorType.INT.getType()),
+                  Field.nullable("s", MinorType.VARCHAR.getType()),
+                  Field.nullable("d", MinorType.FLOAT8.getType())));
+      assertEquals(expected, target.getField());
     }
   }
 
