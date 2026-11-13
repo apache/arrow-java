@@ -54,7 +54,8 @@ public class TestCheckAllocator {
   public void testCheckUnsafeBeforeNetty() {
     ClassLoader classLoader =
         classLoaderWith(
-            Map.of(NETTY, "file:/lib/arrow-memory-netty/", UNSAFE, "file:/lib/arrow-memory-unsafe/"));
+            Map.of(
+                NETTY, "file:/lib/arrow-memory-netty/", UNSAFE, "file:/lib/arrow-memory-unsafe/"));
     assertEquals(UNSAFE, CheckAllocator.check(classLoader));
   }
 
