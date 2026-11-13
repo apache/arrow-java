@@ -16,6 +16,7 @@
  */
 package org.apache.arrow.c;
 
+import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VectorLoader;
@@ -35,8 +36,13 @@ import org.apache.arrow.vector.types.pojo.Schema;
 /**
  * Functions for working with the C data interface.
  *
- * <p>This API is EXPERIMENTAL. Note that currently only 64bit systems are supported. Importing
- * {@link ArrowArray ArrowArrays} with a non-zero offset is not supported.
+ * <p>This API is EXPERIMENTAL. Note that currently only 64bit systems are supported.
+ *
+ * <p>Importing {@link ArrowArray ArrowArrays} with a non-zero offset is not always zero-copy:
+ * buffers that cannot be sliced at the offset, such as offset buffers or view data, are copied.
+ * Importing such an array into an existing vector fails if an extension vector nested in a list,
+ * map, union or other vector that is not a struct does not report its extension type in {@link
+ * FieldVector#getField()}.
  */
 public final class Data {
 
@@ -358,7 +364,22 @@ public final class Data {
       FieldVector vector,
       DictionaryProvider provider,
       boolean closeImportedStructs) {
-    ArrayImporter importer = new ArrayImporter(allocator, vector, provider);
+    importIntoVector(allocator, array, vector, /* field= */ null, provider, closeImportedStructs);
+  }
+
+  /**
+   * Import Java vector from the C data interface, given the field that the vector was created from,
+   * if any. The field reports the type of extension vectors whose getField() only reports their
+   * storage type, which an import with a non-zero offset needs to create a temporary vector.
+   */
+  private static void importIntoVector(
+      BufferAllocator allocator,
+      ArrowArray array,
+      FieldVector vector,
+      Field field,
+      DictionaryProvider provider,
+      boolean closeImportedStructs) {
+    ArrayImporter importer = new ArrayImporter(allocator, vector, field, provider);
     importer.importArray(array);
     if (closeImportedStructs) {
       array.close();
@@ -407,7 +428,7 @@ public final class Data {
       boolean closeImportedStructs) {
     Field field = importField(allocator, schema, provider, closeImportedStructs);
     FieldVector vector = field.createVector(allocator);
-    importIntoVector(allocator, array, vector, provider, closeImportedStructs);
+    importIntoVector(allocator, array, vector, field, provider, closeImportedStructs);
     return vector;
   }
 
@@ -454,8 +475,10 @@ public final class Data {
       DictionaryProvider provider,
       boolean closeImportedStructs) {
     try (StructVector structVector = StructVector.emptyWithDuplicates("", allocator)) {
-      structVector.initializeChildrenFromFields(root.getSchema().getFields());
-      importIntoVector(allocator, array, structVector, provider, closeImportedStructs);
+      List<Field> fields = root.getSchema().getFields();
+      structVector.initializeChildrenFromFields(fields);
+      Field field = new Field("", structVector.getField().getFieldType(), fields);
+      importIntoVector(allocator, array, structVector, field, provider, closeImportedStructs);
       StructVectorUnloader unloader = new StructVectorUnloader(structVector);
       VectorLoader loader = new VectorLoader(root);
       try (ArrowRecordBatch recordBatch = unloader.getRecordBatch()) {

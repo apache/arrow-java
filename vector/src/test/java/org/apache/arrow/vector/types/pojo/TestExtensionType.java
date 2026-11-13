@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -50,11 +51,14 @@ import org.apache.arrow.vector.compare.Range;
 import org.apache.arrow.vector.compare.RangeEqualsVisitor;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.writer.FieldWriter;
+import org.apache.arrow.vector.extension.OpaqueType;
+import org.apache.arrow.vector.extension.OpaqueVector;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.ipc.ArrowFileReader;
 import org.apache.arrow.vector.ipc.ArrowFileWriter;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.pojo.ArrowType.ExtensionType;
+import org.apache.arrow.vector.util.TransferPair;
 import org.apache.arrow.vector.util.VectorBatchAppender;
 import org.apache.arrow.vector.validate.ValidateVectorVisitor;
 import org.junit.jupiter.api.Test;
@@ -195,6 +199,56 @@ public class TestExtensionType {
               }
             });
     assertTrue(e.getMessage().contains("underlyingVector cannot be null."));
+  }
+
+  @Test
+  public void testTransferPairBetweenExtensionVectors() {
+    // LocationVector overrides neither makeTransferPair() nor getField()
+    try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
+        final LocationVector source = new LocationVector("source", allocator);
+        final LocationVector target = new LocationVector("target", allocator)) {
+      source.allocateNew();
+      for (int i = 0; i < 4; i++) {
+        source.set(i, i, -i);
+      }
+      source.setValueCount(4);
+
+      TransferPair pair = source.makeTransferPair(target);
+      assertSame(target, pair.getTo());
+
+      pair.splitAndTransfer(1, 2);
+      assertEquals(2, target.getValueCount());
+      assertEquals(source.getObject(1), target.getObject(0));
+      assertEquals(source.getObject(2), target.getObject(1));
+
+      pair.copyValueSafe(3, 1);
+      assertEquals(source.getObject(3), target.getObject(1));
+
+      java.util.Map<String, ?> last = source.getObject(3);
+      pair.transfer();
+      assertEquals(4, target.getValueCount());
+      assertEquals(last, target.getObject(3));
+      assertEquals(0, source.getValueCount());
+    }
+  }
+
+  @Test
+  public void testTransferPairRejectsDifferentExtensionVector() {
+    // Both vectors store FixedSizeBinary(16), so only their extension types differ
+    Field field =
+        new Field(
+            "source",
+            FieldType.nullable(new OpaqueType(new ArrowType.FixedSizeBinary(16), "type", "vendor")),
+            Collections.emptyList());
+    try (final BufferAllocator allocator = new RootAllocator(Integer.MAX_VALUE);
+        final OpaqueVector source =
+            new OpaqueVector(
+                field, allocator, new FixedSizeBinaryVector("storage", allocator, 16));
+        final UuidVector target = new UuidVector("target", allocator)) {
+      IllegalArgumentException e =
+          assertThrows(IllegalArgumentException.class, () -> source.makeTransferPair(target));
+      assertTrue(e.getMessage().contains("UuidVector"), e.getMessage());
+    }
   }
 
   /** Test that a custom Location type can be round-tripped through a temporary file. */

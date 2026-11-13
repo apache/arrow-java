@@ -414,5 +414,78 @@ class TestPythonIntegration(unittest.TestCase):
         # run end string vector
         self.round_trip_array(lambda: pa.RunEndEncodedArray.from_arrays([3, 5, 10, 12, 19], ["1", "2", "1", None, "3"]))
 
+    def round_trip_slices(self, array_generator, check_metadata=True):
+        length = len(array_generator())
+        # Offsets within the first byte of a bitmap, at a byte boundary, and close to the end
+        for offset in (1, 3, 8, length - 2):
+            with self.subTest(offset=offset):
+                self.round_trip_array(
+                    lambda: array_generator().slice(offset, length - offset - 1),
+                    check_metadata=check_metadata)
+
+    def test_sliced_primitive_arrays(self):
+        self.round_trip_slices(lambda: pa.array([i if i % 3 else None for i in range(12)], pa.int32()))
+        self.round_trip_slices(lambda: pa.array([None if i % 5 == 0 else i % 2 == 0 for i in range(12)]))
+        self.round_trip_slices(lambda: pa.array(
+            [None if i % 4 == 0 else decimal.Decimal(i) / 100 for i in range(12)], pa.decimal128(10, 2)))
+
+    def test_sliced_string_arrays(self):
+        values = [None if i % 4 == 0 else f"é日本語{i}" * (i % 3 + 1) for i in range(12)]
+        self.round_trip_slices(lambda: pa.array(values, pa.string()))
+        self.round_trip_slices(lambda: pa.array(values, pa.large_string()))
+        self.round_trip_slices(lambda: pa.array(values, pa.string_view()))
+
+    def test_sliced_list_arrays(self):
+        values = [None if i % 4 == 0 else list(range(i % 3)) for i in range(12)]
+        # disabled check_metadata since the list internal field name is not preserved
+        self.round_trip_slices(lambda: pa.array(values, pa.list_(pa.int64())), check_metadata=False)
+        self.round_trip_slices(lambda: pa.array(values, pa.large_list(pa.int64())), check_metadata=False)
+        self.round_trip_slices(lambda: pa.array(values, pa.list_view(pa.int64())), check_metadata=False)
+        self.round_trip_slices(lambda: pa.array(
+            [None if i % 4 == 0 else [i, i + 1] for i in range(12)], pa.list_(pa.int64(), 2)),
+            check_metadata=False)
+
+    def test_sliced_map_array(self):
+        values = [None if i % 4 == 0 else [(f"k{j}", j) for j in range(i % 3)] for i in range(12)]
+        self.round_trip_slices(lambda: pa.array(values, pa.map_(pa.string(), pa.int32())),
+                               check_metadata=False)
+
+    def test_sliced_struct_array(self):
+        values = [None if i % 4 == 0 else {"f1": i if i % 3 else None, "f2": str(i)} for i in range(12)]
+        self.round_trip_slices(lambda: pa.array(values, pa.struct([("f1", pa.int32()), ("f2", pa.string())])))
+
+    def test_sliced_nested_slices(self):
+        # A list whose values array has an offset of its own
+        def generator():
+            values = pa.array(range(40), pa.int64()).slice(5)
+            offsets = pa.array([2 * i for i in range(13)], pa.int32())
+            return pa.ListArray.from_arrays(offsets, values)
+        self.round_trip_slices(generator, check_metadata=False)
+
+    def test_sliced_dictionary_array(self):
+        values = [None if i % 4 == 0 else "abc"[i % 3] for i in range(12)]
+        self.round_trip_slices(lambda: pa.array(values, pa.dictionary(pa.int32(), pa.utf8())))
+
+    def test_sliced_run_end_encoded_array(self):
+        self.round_trip_slices(lambda: pa.RunEndEncodedArray.from_arrays(
+            [3, 5, 10, 12], [1, None, 3, 4], pa.run_end_encoded(pa.int32(), pa.int64())))
+
+    def test_sliced_dense_union_array(self):
+        def generator():
+            types = pa.array([i % 2 for i in range(12)], pa.int8())
+            offsets = pa.array([i // 2 for i in range(12)], pa.int32())
+            return pa.UnionArray.from_dense(types, offsets, [
+                pa.array(range(6), pa.int32()), pa.array([str(i) for i in range(6)], pa.string())
+            ], ["a", "b"])
+        self.round_trip_slices(generator)
+
+    def test_sliced_record_batch(self):
+        def generator():
+            return pa.record_batch(
+                [pa.array([i if i % 3 else None for i in range(12)], pa.int32()),
+                 pa.array([str(i) for i in range(12)], pa.string())],
+                names=["a", "b"]).slice(3, 7)
+        self.round_trip_record_batch(generator)
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
