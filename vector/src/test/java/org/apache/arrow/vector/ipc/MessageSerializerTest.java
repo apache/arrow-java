@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.google.flatbuffers.FlatBufferBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,9 +33,15 @@ import java.nio.channels.Channels;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
+import org.apache.arrow.flatbuf.Buffer;
+import org.apache.arrow.flatbuf.FieldNode;
+import org.apache.arrow.flatbuf.MessageHeader;
+import org.apache.arrow.flatbuf.RecordBatch;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.ipc.message.ArrowBlock;
 import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.ipc.message.ArrowMessage;
 import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
@@ -47,6 +54,10 @@ import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class MessageSerializerTest {
 
@@ -218,6 +229,234 @@ public class MessageSerializerTest {
     }
 
     alloc.close();
+  }
+
+  @ParameterizedTest
+  @MethodSource("invalidFieldNodes")
+  public void testInvalidFieldNodeRejectedWithoutLeakingBody(long length, long nullCount) {
+    RecordBatch recordBatchFB = recordBatchWithNode(length, nullCount);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> invalidFieldNodes() {
+    return Stream.of(
+        Arguments.of(-100L, 0L),
+        Arguments.of(Long.MIN_VALUE, 0L),
+        Arguments.of(Integer.MAX_VALUE + 1L, 0L),
+        Arguments.of(1L << 32, 0L),
+        Arguments.of(10L, -2L));
+  }
+
+  @ParameterizedTest
+  @MethodSource("validFieldNodes")
+  public void testValidFieldNodeDeserialized(long length, long nullCount) throws IOException {
+    RecordBatch recordBatchFB = recordBatchWithNode(length, nullCount);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      try (ArrowRecordBatch batch = MessageSerializer.deserializeRecordBatch(recordBatchFB, body)) {
+        ArrowFieldNode node = batch.getNodes().get(0);
+        assertEquals(length, node.getLength());
+        assertEquals(nullCount, node.getNullCount());
+      }
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> validFieldNodes() {
+    return Stream.of(
+        Arguments.of(0L, 0L), Arguments.of(10L, -1L), Arguments.of((long) Integer.MAX_VALUE, 0L));
+  }
+
+  @Test
+  public void testNegativeRecordBatchLengthRejectedWithoutLeakingBody() {
+    RecordBatch recordBatchFB = recordBatch(-100, 0, 0);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("invalidBuffers")
+  public void testInvalidBufferRejectedWithoutLeakingBody(long offset, long length) {
+    RecordBatch recordBatchFB = recordBatch(0, 0, 0, offset, length);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> invalidBuffers() {
+    return Stream.of(
+        // Negative length, but offset + length is still within the body
+        Arguments.of(8L, -4L),
+        Arguments.of(-8L, 8L),
+        Arguments.of(4L, 8L),
+        Arguments.of(8L, Long.MAX_VALUE));
+  }
+
+  @Test
+  public void testDeserializeMessageBatchWithoutBody() throws Exception {
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    try (ArrowRecordBatch batch =
+        new ArrowRecordBatch(0, Collections.emptyList(), Collections.emptyList())) {
+      MessageSerializer.serialize(new WriteChannel(Channels.newChannel(out)), batch);
+    }
+
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ReadChannel channel =
+          new ReadChannel(Channels.newChannel(new ByteArrayInputStream(out.toByteArray())));
+      try (ArrowMessage deserialized =
+          MessageSerializer.deserializeMessageBatch(channel, allocator)) {
+        assertEquals(ArrowRecordBatch.class, deserialized.getClass());
+        assertEquals(0, ((ArrowRecordBatch) deserialized).getLength());
+      }
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, 2L, Integer.MAX_VALUE + 1L, Long.MAX_VALUE})
+  public void testInvalidVariadicBufferCountRejectedWithoutLeakingBody(long count) {
+    RecordBatch recordBatchFB = recordBatchWithVariadicBufferCount(count);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      assertThrows(
+          IOException.class, () -> MessageSerializer.deserializeRecordBatch(recordBatchFB, body));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @Test
+  public void testVariadicBufferCountDeserialized() throws IOException {
+    RecordBatch recordBatchFB = recordBatchWithVariadicBufferCount(1);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ArrowBuf body = allocator.buffer(8);
+      try (ArrowRecordBatch batch = MessageSerializer.deserializeRecordBatch(recordBatchFB, body)) {
+        assertEquals(Collections.singletonList(1L), batch.getVariadicBufferCounts());
+      }
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource("unsupportedMessages")
+  public void testUnsupportedMessageRejectedWithoutLeakingBody(
+      byte headerType, MetadataVersion version, String expectedMessage) throws IOException {
+    byte[] message = messageWithBody(headerType, version);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      ReadChannel channel = readChannel(message);
+      IOException e =
+          assertThrows(
+              IOException.class,
+              () -> MessageSerializer.deserializeMessageBatch(channel, allocator));
+      assertTrue(e.getMessage().contains(expectedMessage), e.getMessage());
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  static Stream<Arguments> unsupportedMessages() {
+    return Stream.of(
+        Arguments.of(MessageHeader.RecordBatch, MetadataVersion.V3, "incompatible version"),
+        Arguments.of(MessageHeader.Tensor, MetadataVersion.V5, "Unexpected message header type"));
+  }
+
+  @Test
+  public void testTruncatedBlockRejectedWithoutLeaking() {
+    ArrowBlock block = new ArrowBlock(0, 16, 8);
+    try (BufferAllocator allocator = new RootAllocator()) {
+      assertThrows(
+          IOException.class,
+          () ->
+              MessageSerializer.deserializeRecordBatch(readChannel(new byte[4]), block, allocator));
+      assertThrows(
+          IOException.class,
+          () ->
+              MessageSerializer.deserializeDictionaryBatch(
+                  readChannel(new byte[4]), block, allocator));
+      assertEquals(0, allocator.getAllocatedMemory());
+    }
+  }
+
+  private static ReadChannel readChannel(byte[] bytes) {
+    return new ReadChannel(Channels.newChannel(new ByteArrayInputStream(bytes)));
+  }
+
+  /** Writes a message of the given header type and version, with an 8 byte body. */
+  private static byte[] messageWithBody(byte headerType, MetadataVersion version)
+      throws IOException {
+    FlatBufferBuilder builder = new FlatBufferBuilder();
+    RecordBatch.startNodesVector(builder, 0);
+    int nodes = builder.endVector();
+    RecordBatch.startBuffersVector(builder, 0);
+    int buffers = builder.endVector();
+    RecordBatch.startRecordBatch(builder);
+    RecordBatch.addNodes(builder, nodes);
+    RecordBatch.addBuffers(builder, buffers);
+    int header = RecordBatch.endRecordBatch(builder);
+    IpcOption option = new IpcOption(false, version);
+    ByteBuffer metadata =
+        MessageSerializer.serializeMessage(builder, headerType, header, 8, option);
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    WriteChannel channel = new WriteChannel(Channels.newChannel(out));
+    MessageSerializer.writeMessageBuffer(channel, metadata.remaining(), metadata, option);
+    channel.write(new byte[8]);
+    return out.toByteArray();
+  }
+
+  /** Builds a record batch with one node, one 8 byte buffer and the given variadic count. */
+  private static RecordBatch recordBatchWithVariadicBufferCount(long count) {
+    FlatBufferBuilder builder = new FlatBufferBuilder();
+    RecordBatch.startNodesVector(builder, 1);
+    FieldNode.createFieldNode(builder, 0, 0);
+    int nodes = builder.endVector();
+    RecordBatch.startBuffersVector(builder, 1);
+    Buffer.createBuffer(builder, 0, 8);
+    int buffers = builder.endVector();
+    int variadicBufferCounts =
+        RecordBatch.createVariadicBufferCountsVector(builder, new long[] {count});
+    RecordBatch.startRecordBatch(builder);
+    RecordBatch.addNodes(builder, nodes);
+    RecordBatch.addBuffers(builder, buffers);
+    RecordBatch.addVariadicBufferCounts(builder, variadicBufferCounts);
+    builder.finish(RecordBatch.endRecordBatch(builder));
+    return RecordBatch.getRootAsRecordBatch(builder.dataBuffer());
+  }
+
+  private static RecordBatch recordBatchWithNode(long length, long nullCount) {
+    return recordBatch(0, length, nullCount);
+  }
+
+  /** Builds a record batch with a single node and, if given, a single buffer. */
+  private static RecordBatch recordBatch(
+      long batchLength, long nodeLength, long nullCount, long... bufferOffsetAndLength) {
+    FlatBufferBuilder builder = new FlatBufferBuilder();
+    RecordBatch.startNodesVector(builder, 1);
+    FieldNode.createFieldNode(builder, nodeLength, nullCount);
+    int nodes = builder.endVector();
+    if (bufferOffsetAndLength.length == 0) {
+      RecordBatch.startBuffersVector(builder, 0);
+    } else {
+      RecordBatch.startBuffersVector(builder, 1);
+      Buffer.createBuffer(builder, bufferOffsetAndLength[0], bufferOffsetAndLength[1]);
+    }
+    int buffers = builder.endVector();
+    RecordBatch.startRecordBatch(builder);
+    RecordBatch.addLength(builder, batchLength);
+    RecordBatch.addNodes(builder, nodes);
+    RecordBatch.addBuffers(builder, buffers);
+    builder.finish(RecordBatch.endRecordBatch(builder));
+    return RecordBatch.getRootAsRecordBatch(builder.dataBuffer());
   }
 
   public static Schema testSchema() {

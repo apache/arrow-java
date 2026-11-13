@@ -108,6 +108,20 @@ class ArrowArrayUtilityTest {
   }
 
   @Test
+  void importBufferRejectsNegativeCapacity() throws Exception {
+    // Note values are all dummy values here
+    long address = MemoryUtil.allocateMemory(16);
+    try (BufferImportTypeVisitor visitor =
+        new BufferImportTypeVisitor(
+            allocator, dummyHandle, new ArrowFieldNode(1, 0), new long[] {address})) {
+      assertThrows(
+          IllegalStateException.class, () -> visitor.importBuffer(new ArrowType.Bool(), 0, -1));
+    } finally {
+      MemoryUtil.freeMemory(address);
+    }
+  }
+
+  @Test
   void cleanupAfterFailure() throws Exception {
     // Note values are all dummy values here
     long address = MemoryUtil.allocateMemory(16);

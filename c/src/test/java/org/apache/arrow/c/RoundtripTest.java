@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.stream.Collectors;
@@ -1044,6 +1045,137 @@ public class RoundtripTest {
       assertEquals(0, consumerArrowSchema.snapshot().release);
       assertNotEquals(0, consumerArrowSchema.memoryAddress());
     }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, Long.MIN_VALUE, Integer.MAX_VALUE + 1L, (1L << 32) - 100})
+  public void testImportRejectsInvalidLength(long length) {
+    try (IntVector vector = new IntVector("ints", allocator)) {
+      setVector(vector, 1, 2, 3);
+      assertLengthRejected(vector, "ints", length, array -> setLength(array, length));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, Long.MIN_VALUE, Integer.MAX_VALUE + 1L, (1L << 32) - 100})
+  public void testImportRejectsInvalidStructLength(long length) {
+    try (StructVector vector = createStructWithTwoChildren()) {
+      assertLengthRejected(vector, "struct", length, array -> setLength(array, length));
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, Long.MIN_VALUE, Integer.MAX_VALUE + 1L, (1L << 32) - 100})
+  public void testImportRejectsInvalidChildLength(long length) {
+    try (StructVector vector = createStructWithTwoChildren()) {
+      assertLengthRejected(
+          vector,
+          "second",
+          length,
+          array -> {
+            long[] children = NativeUtil.toJavaArray(array.snapshot().children, 2);
+            setLength(ArrowArray.wrap(children[1]), length);
+          });
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-1L, 3L, Integer.MAX_VALUE, Long.MAX_VALUE})
+  public void testImportRejectsInvalidBufferCount(long bufferCount) {
+    try (IntVector vector = new IntVector("ints", allocator)) {
+      setVector(vector, 1, 2, 3);
+      assertImportRejected(
+          vector,
+          "ints",
+          array -> {
+            ArrowArray.Snapshot snapshot = array.snapshot();
+            snapshot.n_buffers = bufferCount;
+            array.save(snapshot);
+          });
+    }
+  }
+
+  @Test
+  public void testImportRejectsInvalidChildCount() {
+    try (StructVector vector = createStructWithTwoChildren();
+        ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+        ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+      Data.exportVector(allocator, vector, null, arrowArray, arrowSchema);
+      ArrowArray.Snapshot snapshot = arrowArray.snapshot();
+      // Releasing the array skips the children of a negative count, so release them first
+      for (long child : NativeUtil.toJavaArray(snapshot.children, 2)) {
+        ArrowArray.wrap(child).release();
+      }
+      snapshot.n_children = -1;
+      arrowArray.save(snapshot);
+      IllegalStateException e =
+          assertThrows(
+              IllegalStateException.class,
+              () -> Data.importVector(childAllocator, arrowArray, arrowSchema, null));
+      assertTrue(e.getMessage().contains("children"), e.getMessage());
+    }
+    assertEquals(0, childAllocator.getAllocatedMemory());
+  }
+
+  private StructVector createStructWithTwoChildren() {
+    StructVector vector = StructVector.empty("struct", allocator);
+    FieldType type = FieldType.nullable(new ArrowType.Int(32, true));
+    IntVector first = vector.addOrGet("first", type, IntVector.class);
+    IntVector second = vector.addOrGet("second", type, IntVector.class);
+    vector.allocateNew();
+    for (int i = 0; i < 3; i++) {
+      first.setSafe(i, i);
+      second.setSafe(i, i);
+      vector.setIndexDefined(i);
+    }
+    vector.setValueCount(3);
+    return vector;
+  }
+
+  private static void setLength(ArrowArray array, long length) {
+    ArrowArray.Snapshot snapshot = array.snapshot();
+    snapshot.length = length;
+    array.save(snapshot);
+  }
+
+  /**
+   * Checks that an import with an invalid length fails cleanly. Negative lengths are rejected as
+   * such before anything is imported, other invalid lengths name the field they belong to.
+   */
+  private void assertLengthRejected(
+      FieldVector vector, String expectedField, long length, Consumer<ArrowArray> corrupt) {
+    if (length < 0) {
+      assertImportRejected(
+          vector,
+          IllegalStateException.class,
+          "ArrowArray struct has negative length (" + length + ")",
+          corrupt);
+    } else {
+      assertImportRejected(vector, expectedField, corrupt);
+    }
+  }
+
+  /** Exports the vector, corrupts the export and checks that the import fails cleanly. */
+  private void assertImportRejected(
+      FieldVector vector, String expectedField, Consumer<ArrowArray> corrupt) {
+    assertImportRejected(vector, IllegalArgumentException.class, expectedField, corrupt);
+  }
+
+  private void assertImportRejected(
+      FieldVector vector,
+      Class<? extends RuntimeException> expectedType,
+      String expectedMessage,
+      Consumer<ArrowArray> corrupt) {
+    try (ArrowSchema arrowSchema = ArrowSchema.allocateNew(allocator);
+        ArrowArray arrowArray = ArrowArray.allocateNew(allocator)) {
+      Data.exportVector(allocator, vector, null, arrowArray, arrowSchema);
+      corrupt.accept(arrowArray);
+      RuntimeException e =
+          assertThrows(
+              expectedType, () -> Data.importVector(childAllocator, arrowArray, arrowSchema, null));
+      assertTrue(e.getMessage().contains(expectedMessage), e.getMessage());
+    }
+    assertEquals(0, childAllocator.getAllocatedMemory());
   }
 
   private void exportSchema(Schema schema, ArrowSchema targetArrowSchema) {
