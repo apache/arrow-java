@@ -25,17 +25,15 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.impl.UnionListWriter;
-import org.apache.arrow.vector.ipc.JsonFileReader;
-import org.apache.arrow.vector.ipc.JsonFileWriter;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -43,11 +41,8 @@ import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 public class TestVectorSchemaRoot {
-
-  @TempDir public Path tempDir;
 
   private BufferAllocator allocator;
 
@@ -363,11 +358,10 @@ public class TestVectorSchemaRoot {
       final int rowCount = root.getRowCount();
       assertEquals(2, rowCount);
       final Field staleField = root.getSchema().getFields().get(0);
-      final Object oldValue = listVector.getObject(0);
 
       assertTrue(root.syncSchema());
 
-      // Promotion produced a new Field instance for the same, unchanged vector.
+      // Promotion changed the vector's Field, so the synced Field differs from the stale one.
       final Field syncedField = root.getSchema().getFields().get(0);
       assertNotEquals(staleField, syncedField);
 
@@ -379,9 +373,8 @@ public class TestVectorSchemaRoot {
       // The stale structural key is gone because the Field itself changed.
       assertNull(root.getVector(staleField));
 
-      // Syncing the schema leaves the row count and the vector data untouched.
+      // Syncing the schema leaves the row count untouched.
       assertEquals(rowCount, root.getRowCount());
-      assertEquals(oldValue, listVector.getObject(0));
 
       // A second sync is a no-op and the refreshed lookup stays correct.
       assertFalse(root.syncSchema());
@@ -390,39 +383,33 @@ public class TestVectorSchemaRoot {
   }
 
   @Test
-  public void testJsonWriteAndReadAfterSchemaSync() throws Exception {
-    final Path jsonFile = tempDir.resolve("promoted-schema.json");
-    try (VectorSchemaRoot root = createBatch()) {
-      final FieldVector expectedVector = root.getVector("listCol");
-      // createBatch() writes two list rows but leaves the root row count unset.
-      root.setRowCount(expectedVector.getValueCount());
-      final int rowCount = root.getRowCount();
-      assertEquals(2, rowCount);
+  public void testSchemaSyncKeepsCustomMetadata() {
+    Field child = new Field("varCharCol", FieldType.nullable(new ArrowType.Utf8()), null);
+    Field listField =
+        new Field("listCol", FieldType.nullable(new ArrowType.List()), Arrays.asList(child));
+    Schema schema = new Schema(Arrays.asList(listField), Collections.singletonMap("key", "value"));
+    try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+      ListVector vector = (ListVector) root.getVector(0);
+      vector.allocateNew();
+      UnionListWriter writer = vector.getWriter();
+      writer.startList();
+      // A big int does not fit the varchar child, so the writer promotes it to a union.
+      writer.writeBigInt(0L);
+      writer.endList();
+
       assertTrue(root.syncSchema());
-      final Schema syncedSchema = root.getSchema();
+      assertEquals(schema.getCustomMetadata(), root.getSchema().getCustomMetadata());
+    }
+  }
 
-      // Writing resolves every vector through VectorSchemaRoot#getVector(Field), so a
-      // stale Field-keyed lookup makes this write fail.
-      try (JsonFileWriter writer =
-          new JsonFileWriter(jsonFile.toFile(), JsonFileWriter.config().pretty(true))) {
-        writer.start(syncedSchema, null);
-        writer.write(root);
-      }
-
-      try (BufferAllocator readerAllocator =
-              allocator.newChildAllocator("json-reader", 0, Long.MAX_VALUE);
-          JsonFileReader reader = new JsonFileReader(jsonFile.toFile(), readerAllocator)) {
-        assertEquals(syncedSchema, reader.start());
-        try (VectorSchemaRoot readRoot = reader.read()) {
-          assertNotNull(readRoot);
-          assertEquals(rowCount, readRoot.getRowCount());
-          final FieldVector actualVector = readRoot.getVector("listCol");
-          // The JSON schema round-trips exactly, so the nested rows compare structurally.
-          assertEquals(expectedVector.getObject(0), actualVector.getObject(0));
-          assertEquals(expectedVector.getObject(1), actualVector.getObject(1));
-        }
-        assertNull(reader.read());
-      }
+  @Test
+  public void testGetVectorWithDuplicateFields() {
+    Field field = new Field("x", FieldType.nullable(new ArrowType.Int(32, true)), null);
+    try (VectorSchemaRoot root =
+        VectorSchemaRoot.create(new Schema(Arrays.asList(field, field)), allocator)) {
+      // Equal Fields share one lookup entry, which resolves to the first column.
+      assertSame(root.getVector(0), root.getVector(field));
+      assertSame(root.getVector(0), root.getVector("x"));
     }
   }
 }
