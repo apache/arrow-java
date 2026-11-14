@@ -268,6 +268,86 @@ For example, the code below shows how to build a :class:`ListVector` of int's us
      }
   }
 
+Building MapVector
+==================
+
+A :class:`MapVector` stores a collection of key-value pairs at each index.
+Each map entry consists of a non-nullable key and a value that can be nullable.
+The key and value can have different data types.
+
+The following example creates a MapVector with BIGINT keys and INT values.
+The :class:`UnionMapWriter` is used to write entries into the map. Each entry
+must be started with ``startEntry()`` and completed with ``endEntry()``.
+After all entries have been written, ``endMap()`` completes the map.
+
+.. code-block:: Java
+
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+      MapVector mapVector = MapVector.empty("map", allocator, false)) {
+
+      mapVector.allocateNew();
+
+      UnionMapWriter writer = mapVector.getWriter();
+
+      // Write the first map: {1L -> 100, 2L -> 200}
+      writer.setPosition(0);
+      writer.startMap();
+
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(1L);
+      writer.value().integer().writeInt(100);
+      writer.endEntry();
+
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(2L);
+      writer.value().integer().writeInt(200);
+      writer.endEntry();
+
+      writer.endMap();
+
+      // Write the second map: {3L -> 300}
+      writer.setPosition(1);
+      writer.startMap();
+
+      writer.startEntry();
+      writer.key().bigInt().writeBigInt(3L);
+      writer.value().integer().writeInt(300);
+      writer.endEntry();
+
+      writer.endMap();
+
+      writer.setValueCount(2);
+
+      // Read the maps
+      UnionMapReader reader = mapVector.getReader();
+
+      for (int i = 0; i < mapVector.getValueCount(); i++) {
+        reader.setPosition(i);
+
+        while (reader.next()) {
+          long key = reader.key().readLong();
+          int value = reader.value().readInteger();
+
+          System.out.println(key + " -> " + value);
+        }
+      }
+    }
+
+The output is:
+
+.. code-block:: text
+
+    1 -> 100
+    2 -> 200
+    3 -> 300
+
+The example demonstrates that the key and value writers can use different
+data types. For example, ``bigInt()`` is used for keys while ``integer()``
+is used for values.
+
+The child vectors are initialized by the writer as entries are written,
+so there is no need to manually construct the key and value child fields.
+
 Dictionary Encoding
 ===================
 
