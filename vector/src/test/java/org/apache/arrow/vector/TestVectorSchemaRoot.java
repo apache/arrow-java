@@ -19,11 +19,15 @@ package org.apache.arrow.vector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.arrow.memory.BufferAllocator;
@@ -342,6 +346,70 @@ public class TestVectorSchemaRoot {
 
       // no schema update this time.
       assertFalse(schemaRoot.syncSchema());
+    }
+  }
+
+  @Test
+  public void testSchemaSyncRefreshesFieldVectorLookup() {
+    try (VectorSchemaRoot root = createBatch()) {
+      final FieldVector listVector = root.getVector("listCol");
+      // createBatch() writes two list rows but leaves the root row count unset.
+      root.setRowCount(listVector.getValueCount());
+      final int rowCount = root.getRowCount();
+      assertEquals(2, rowCount);
+      final Field staleField = root.getSchema().getFields().get(0);
+
+      assertTrue(root.syncSchema());
+
+      // Promotion changed the vector's Field, so the synced Field differs from the stale one.
+      final Field syncedField = root.getSchema().getFields().get(0);
+      assertNotEquals(staleField, syncedField);
+
+      // Looking up by the synced Field must resolve to the very same vector instance.
+      assertNotNull(root.getVector(syncedField));
+      assertSame(listVector, root.getVector(syncedField));
+      assertSame(listVector, root.getVector("listCol"));
+
+      // The stale structural key is gone because the Field itself changed.
+      assertNull(root.getVector(staleField));
+
+      // Syncing the schema leaves the row count untouched.
+      assertEquals(rowCount, root.getRowCount());
+
+      // A second sync is a no-op and the refreshed lookup stays correct.
+      assertFalse(root.syncSchema());
+      assertSame(listVector, root.getVector(syncedField));
+    }
+  }
+
+  @Test
+  public void testSchemaSyncKeepsCustomMetadata() {
+    Field child = new Field("varCharCol", FieldType.nullable(new ArrowType.Utf8()), null);
+    Field listField =
+        new Field("listCol", FieldType.nullable(new ArrowType.List()), Arrays.asList(child));
+    Schema schema = new Schema(Arrays.asList(listField), Collections.singletonMap("key", "value"));
+    try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+      ListVector vector = (ListVector) root.getVector(0);
+      vector.allocateNew();
+      UnionListWriter writer = vector.getWriter();
+      writer.startList();
+      // A big int does not fit the varchar child, so the writer promotes it to a union.
+      writer.writeBigInt(0L);
+      writer.endList();
+
+      assertTrue(root.syncSchema());
+      assertEquals(schema.getCustomMetadata(), root.getSchema().getCustomMetadata());
+    }
+  }
+
+  @Test
+  public void testGetVectorWithDuplicateFields() {
+    Field field = new Field("x", FieldType.nullable(new ArrowType.Int(32, true)), null);
+    try (VectorSchemaRoot root =
+        VectorSchemaRoot.create(new Schema(Arrays.asList(field, field)), allocator)) {
+      // Equal Fields share one lookup entry, which resolves to the first column.
+      assertSame(root.getVector(0), root.getVector(field));
+      assertSame(root.getVector(0), root.getVector("x"));
     }
   }
 }

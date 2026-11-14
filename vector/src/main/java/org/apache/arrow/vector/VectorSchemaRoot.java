@@ -112,10 +112,18 @@ public class VectorSchemaRoot implements AutoCloseable {
     this.schema = schema;
     this.rowCount = rowCount;
     this.fieldVectors = fieldVectors;
-    for (int i = 0; i < schema.getFields().size(); ++i) {
-      Field field = schema.getFields().get(i);
-      FieldVector vector = fieldVectors.get(i);
-      fieldVectorsMap.put(field, vector);
+    indexFieldVectors();
+  }
+
+  /**
+   * Rebuilds the Field lookup from the current schema. Fields compare structurally, so columns with
+   * equal Fields share one entry, which keeps the first of them.
+   */
+  private void indexFieldVectors() {
+    fieldVectorsMap.clear();
+    List<Field> fields = schema.getFields();
+    for (int i = 0; i < fields.size(); ++i) {
+      fieldVectorsMap.putIfAbsent(fields.get(i), fieldVectors.get(i));
     }
   }
 
@@ -311,7 +319,10 @@ public class VectorSchemaRoot implements AutoCloseable {
     List<Field> newFields =
         this.fieldVectors.stream().map(ValueVector::getField).collect(Collectors.toList());
     if (!oldFields.equals(newFields)) {
-      this.schema = new Schema(newFields);
+      this.schema = new Schema(newFields, this.schema.getCustomMetadata());
+      // A promoted vector (e.g. a Struct/List child promoted to a union) reports a structurally
+      // different Field, so the lookup keyed by the old Fields no longer matches.
+      indexFieldVectors();
       return true;
     }
     return false;
