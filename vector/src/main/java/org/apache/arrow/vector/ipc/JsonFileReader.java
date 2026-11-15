@@ -201,9 +201,10 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
         nextFieldIs("columns");
         readToken(START_ARRAY);
         {
-          for (Field field : root.getSchema().getFields()) {
-            FieldVector vector = root.getVector(field);
-            readFromJsonIntoVector(field, vector);
+          // Look vectors up by position: columns can have equal Fields, e.g. duplicate names
+          List<Field> fields = root.getSchema().getFields();
+          for (int i = 0; i < fields.size(); i++) {
+            readFromJsonIntoVector(fields.get(i), root.getVector(i));
           }
         }
         readToken(END_ARRAY);
@@ -229,9 +230,9 @@ public class JsonFileReader implements AutoCloseable, DictionaryProvider {
         nextFieldIs("columns");
         readToken(START_ARRAY);
         {
-          for (Field field : schema.getFields()) {
-            FieldVector vector = recordBatch.getVector(field);
-            readFromJsonIntoVector(field, vector);
+          List<Field> fields = schema.getFields();
+          for (int i = 0; i < fields.size(); i++) {
+            readFromJsonIntoVector(fields.get(i), recordBatch.getVector(i));
           }
         }
         readToken(END_ARRAY);

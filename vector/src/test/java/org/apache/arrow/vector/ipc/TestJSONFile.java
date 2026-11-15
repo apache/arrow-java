@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +32,12 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.impl.ComplexWriterImpl;
+import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.dictionary.DictionaryProvider.MapDictionaryProvider;
@@ -191,6 +195,73 @@ public class TestJSONFile extends BaseFileTest {
             Validator.compareVectorSchemaRoot(root, rootFromJson);
           }
         }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteReadAfterSchemaSync() throws IOException {
+    File file = tempDir.resolve("promoted.json").toFile();
+    Field child = new Field("varchar", FieldType.nullable(new ArrowType.Utf8()), null);
+    Field listField =
+        new Field("list", FieldType.nullable(new ArrowType.List()), Arrays.asList(child));
+    try (BufferAllocator vectorAllocator =
+            allocator.newChildAllocator("original vectors", 0, Integer.MAX_VALUE);
+        VectorSchemaRoot root =
+            VectorSchemaRoot.create(new Schema(Arrays.asList(listField)), vectorAllocator)) {
+      ListVector vector = (ListVector) root.getVector(0);
+      vector.allocateNew();
+      UnionListWriter writer = vector.getWriter();
+      writer.startList();
+      writer.writeVarChar("a");
+      // A big int does not fit the varchar child, so the writer promotes it to a union
+      writer.writeBigInt(1L);
+      writer.endList();
+      root.setRowCount(1);
+      assertTrue(root.syncSchema());
+
+      writeJSON(file, root, null);
+
+      try (BufferAllocator readerAllocator =
+              allocator.newChildAllocator("reader", 0, Integer.MAX_VALUE);
+          JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+        assertEquals(root.getSchema(), reader.start());
+        try (VectorSchemaRoot rootFromJson = reader.read()) {
+          Validator.compareVectorSchemaRoot(root, rootFromJson);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteReadDuplicateFields() throws IOException {
+    File file = tempDir.resolve("duplicate-fields.json").toFile();
+    Field field = new Field("x", FieldType.nullable(new ArrowType.Int(32, true)), null);
+    try (BufferAllocator vectorAllocator =
+            allocator.newChildAllocator("original vectors", 0, Integer.MAX_VALUE);
+        VectorSchemaRoot root =
+            VectorSchemaRoot.create(new Schema(Arrays.asList(field, field)), vectorAllocator)) {
+      ((IntVector) root.getVector(0)).setSafe(0, 1);
+      ((IntVector) root.getVector(1)).setSafe(0, 2);
+      root.setRowCount(1);
+
+      writeJSON(file, root, null);
+
+      try (BufferAllocator readerAllocator =
+              allocator.newChildAllocator("reader", 0, Integer.MAX_VALUE);
+          JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+        reader.start();
+        try (VectorSchemaRoot rootFromJson = reader.read()) {
+          Validator.compareVectorSchemaRoot(root, rootFromJson);
+        }
+      }
+      try (BufferAllocator readerAllocator =
+              allocator.newChildAllocator("reader", 0, Integer.MAX_VALUE);
+          JsonFileReader reader = new JsonFileReader(file, readerAllocator);
+          VectorSchemaRoot rootFromJson =
+              VectorSchemaRoot.create(reader.start(), readerAllocator)) {
+        assertTrue(reader.read(rootFromJson));
+        Validator.compareVectorSchemaRoot(root, rootFromJson);
       }
     }
   }
