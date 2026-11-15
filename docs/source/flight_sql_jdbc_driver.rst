@@ -144,7 +144,10 @@ case-sensitive. The supported parameters are:
 
    * - useEncryption
      - true
-     - Whether to use TLS (the default is an encrypted connection)
+     - Whether to use TLS (the default is an encrypted connection).
+       When true, endpoint locations returned by the server that do not
+       use TLS, such as ``grpc+tcp``, are refused and the endpoint's
+       other locations are tried instead.
 
    * - user
      - null

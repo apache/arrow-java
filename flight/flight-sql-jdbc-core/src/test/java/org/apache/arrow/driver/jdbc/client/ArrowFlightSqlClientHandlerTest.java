@@ -17,17 +17,21 @@
 package org.apache.arrow.driver.jdbc.client;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.apache.arrow.flight.CallOption;
 import org.apache.arrow.flight.CallStatus;
@@ -36,11 +40,13 @@ import org.apache.arrow.flight.FlightDescriptor;
 import org.apache.arrow.flight.FlightEndpoint;
 import org.apache.arrow.flight.FlightInfo;
 import org.apache.arrow.flight.FlightStatusCode;
+import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.flight.Location;
 import org.apache.arrow.flight.Ticket;
 import org.apache.arrow.flight.sql.FlightSqlClient;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.util.AutoCloseables;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,36 +58,62 @@ public class ArrowFlightSqlClientHandlerTest {
   public void testGetStreamsRejectsUnencryptedEndpointOnEncryptedConnection() throws Exception {
     try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
       final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
-      final ArrowFlightSqlClientHandler.Builder builder =
-          new ArrowFlightSqlClientHandler.Builder()
-              .withHost("localhost")
-              .withPort(443)
-              .withEncryption(true)
-              .withUsername("user")
-              .withPassword("password")
-              .withBufferAllocator(allocator);
+      try (ArrowFlightSqlClientHandler handler = encryptedHandler(sqlClient, allocator)) {
+        // A server-supplied location that asks the driver to drop back to plaintext.
+        final FlightInfo flightInfo =
+            flightInfoWithLocations(Location.forGrpcInsecure("other.example.com", 443));
 
-      final ArrowFlightSqlClientHandler handler =
-          new ArrowFlightSqlClientHandler(
-              "cacheKey", sqlClient, builder, new ArrayList<>(), Optional.empty(), null);
-
-      // A server-supplied location that asks the driver to drop back to plaintext.
-      final FlightInfo flightInfo =
-          new FlightInfo(
-              new Schema(Collections.emptyList()),
-              FlightDescriptor.command(new byte[0]),
-              Collections.singletonList(
-                  new FlightEndpoint(
-                      new Ticket(new byte[0]), Location.forGrpcInsecure("other.example.com", 443))),
-              -1,
-              -1);
-
-      final SQLException ex =
-          assertThrows(SQLException.class, () -> handler.getStreams(flightInfo));
-      assertTrue(ex.getMessage().contains("without encryption"), ex.getMessage());
-      // The credentials must not have been sent anywhere.
-      verifyNoInteractions(sqlClient);
+        // A connection attempt would fail with a different error, so the message shows that the
+        // location was refused before connecting and sending the credentials.
+        final SQLException ex =
+            assertThrows(SQLException.class, () -> handler.getStreams(flightInfo));
+        assertTrue(ex.getMessage().contains("without encryption"), ex.getMessage());
+        // The stream is not fetched over the original connection instead.
+        verifyNoInteractions(sqlClient);
+      }
     }
+  }
+
+  @Test
+  public void testGetStreamsFallsBackToNextLocationAfterUnencryptedEndpoint() throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      final FlightStream stream = mock(FlightStream.class);
+      when(sqlClient.getStream(any(Ticket.class), any(CallOption[].class))).thenReturn(stream);
+      try (ArrowFlightSqlClientHandler handler = encryptedHandler(sqlClient, allocator)) {
+        final FlightInfo flightInfo =
+            flightInfoWithLocations(
+                Location.forGrpcInsecure("other.example.com", 443), Location.reuseConnection());
+
+        final List<CloseableEndpointStreamPair> streams = handler.getStreams(flightInfo);
+        assertEquals(1, streams.size());
+        assertSame(stream, streams.get(0).getStream());
+        AutoCloseables.close(streams);
+      }
+    }
+  }
+
+  private static ArrowFlightSqlClientHandler encryptedHandler(
+      final FlightSqlClient sqlClient, final BufferAllocator allocator) {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("localhost")
+            .withPort(443)
+            .withEncryption(true)
+            .withUsername("user")
+            .withPassword("password")
+            .withBufferAllocator(allocator);
+    return new ArrowFlightSqlClientHandler(
+        "cacheKey", sqlClient, builder, new ArrayList<>(), Optional.empty(), null);
+  }
+
+  private static FlightInfo flightInfoWithLocations(final Location... locations) {
+    return new FlightInfo(
+        new Schema(Collections.emptyList()),
+        FlightDescriptor.command(new byte[0]),
+        Collections.singletonList(new FlightEndpoint(new Ticket(new byte[0]), locations)),
+        -1,
+        -1);
   }
 
   @ParameterizedTest
