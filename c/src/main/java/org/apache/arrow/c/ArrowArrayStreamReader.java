@@ -64,7 +64,16 @@ final class ArrowArrayStreamReader extends ArrowReader {
       if (array.snapshot().release == NULL) {
         return false;
       }
-      Data.importIntoVectorSchemaRoot(allocator, array, getVectorSchemaRoot(), provider);
+      try {
+        Data.importIntoVectorSchemaRoot(allocator, array, getVectorSchemaRoot(), provider);
+      } catch (Throwable t) {
+        // If the import failed before moving the batch out of the array, e.g. allocating the
+        // schema, the batch is still in the array: release it.
+        if (array.snapshot().release != NULL) {
+          array.release();
+        }
+        throw t;
+      }
       return true;
     }
   }
