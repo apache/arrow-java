@@ -70,6 +70,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#next()" tabindex="0">next()</a></li>
 <li><a href="#setPosition(int)" tabindex="0">setPosition(int)</a></li>
 <li><a href="#getMinorType()" tabindex="0">getMinorType()</a></li>
+<li><a href="#getExtensionType()" tabindex="0">getExtensionType()</a></li>
 <li><a href="#isSet()" tabindex="0">isSet()</a></li>
 <li><a href="#read(org.apache.arrow.vector.holders.ExtensionHolder)" tabindex="0">read(ExtensionHolder)</a></li>
 <li><a href="#readObject()" tabindex="0">readObject()</a></li>
@@ -172,59 +173,64 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#copyAsValue(org.apache.arrow.vector.complex.writer.BaseWriter.MapWriter)" class="member-name-link">copyAsValue</a><wbr>(<a href="../writer/BaseWriter.MapWriter.html" title="interface in org.apache.arrow.vector.complex.writer">BaseWriter.MapWriter</a>&nbsp;writer)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../types/Types.MinorType.html" title="enum class in org.apache.arrow.vector.types">Types.MinorType</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMinorType()" class="member-name-link">getMinorType</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPosition()" class="member-name-link">getPosition</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#idx()" class="member-name-link">idx</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSet()" class="member-name-link">isSet</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Returns true if the current value of the reader is not null</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getExtensionType()" class="member-name-link">getExtensionType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a> of the extension data this reader exposes.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#iterator()" class="member-name-link">iterator</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(int,org.apache.arrow.vector.holders.DenseUnionHolder)" class="member-name-link">read</a><wbr>(int&nbsp;index,
- <a href="../../holders/DenseUnionHolder.html" title="class in org.apache.arrow.vector.holders">DenseUnionHolder</a>&nbsp;holder)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(int,org.apache.arrow.vector.holders.UnionHolder)" class="member-name-link">read</a><wbr>(int&nbsp;index,
- <a href="../../holders/UnionHolder.html" title="class in org.apache.arrow.vector.holders">UnionHolder</a>&nbsp;holder)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(org.apache.arrow.vector.holders.DenseUnionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/DenseUnionHolder.html" title="class in org.apache.arrow.vector.holders">DenseUnionHolder</a>&nbsp;holder)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;h)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Reads to the given extension holder.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(org.apache.arrow.vector.holders.UnionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/UnionHolder.html" title="class in org.apache.arrow.vector.holders">UnionHolder</a>&nbsp;holder)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readObject()" class="member-name-link">readObject</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Reads and returns an object representation of the extension type.</div>
-</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPosition(int)" class="member-name-link">setPosition</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../types/Types.MinorType.html" title="enum class in org.apache.arrow.vector.types">Types.MinorType</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getMinorType()" class="member-name-link">getMinorType</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getPosition()" class="member-name-link">getPosition</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#idx()" class="member-name-link">idx</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isSet()" class="member-name-link">isSet</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns true if the current value of the reader is not null</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Iterator.html" title="class or interface in java.util" class="external-link">Iterator</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#iterator()" class="member-name-link">iterator</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#next()" class="member-name-link">next</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(int,org.apache.arrow.vector.holders.DenseUnionHolder)" class="member-name-link">read</a><wbr>(int&nbsp;index,
+ <a href="../../holders/DenseUnionHolder.html" title="class in org.apache.arrow.vector.holders">DenseUnionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(int,org.apache.arrow.vector.holders.UnionHolder)" class="member-name-link">read</a><wbr>(int&nbsp;index,
+ <a href="../../holders/UnionHolder.html" title="class in org.apache.arrow.vector.holders">UnionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(org.apache.arrow.vector.holders.DenseUnionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/DenseUnionHolder.html" title="class in org.apache.arrow.vector.holders">DenseUnionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;h)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Reads to the given extension holder.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#read(org.apache.arrow.vector.holders.UnionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/UnionHolder.html" title="class in org.apache.arrow.vector.holders">UnionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#readObject()" class="member-name-link">readObject</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Reads and returns an object representation of the extension type.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#reset()" class="member-name-link">reset</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setPosition(int)" class="member-name-link">setPosition</a><wbr>(int&nbsp;index)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#size()" class="member-name-link">size</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -332,6 +338,28 @@ loadScripts(document, 'script');</script>
 <h3>getMinorType</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../types/Types.MinorType.html" title="enum class in org.apache.arrow.vector.types">Types.MinorType</a></span>&nbsp;<span class="element-name">getMinorType</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getExtensionType()">
+<h3>getExtensionType</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></span>&nbsp;<span class="element-name">getExtensionType</span>()</div>
+<div class="block"><span class="description-from-type-label">Description copied from interface:&nbsp;<code><a href="../reader/ExtensionReader.html#getExtensionType()">ExtensionReader</a></code></span></div>
+<div class="block">Returns the <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a> of the extension data this reader exposes.
+
+<p>The default derives the type from <a href="../reader/BaseReader.html#getField()"><code>BaseReader.getField()</code></a>, which works for vector-backed
+readers. Holder-backed readers (which have no notion of a <code>Field</code>) must override this to
+return the type carried by their <a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders"><code>ExtensionHolder</code></a> directly.
+
+<p>Callers that need the extension <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a> (e.g. to route a value through a union or
+promotable writer) should prefer this over <code>getField().getType()</code> so the call is
+well-defined regardless of how the reader is backed.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the extension <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a></dd>
+</dl>
 </div>
 </section>
 </li>

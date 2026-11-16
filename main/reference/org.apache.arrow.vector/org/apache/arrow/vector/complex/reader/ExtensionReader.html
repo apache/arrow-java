@@ -63,6 +63,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#read(org.apache.arrow.vector.holders.ExtensionHolder)" tabindex="0">read(ExtensionHolder)</a></li>
 <li><a href="#readObject()" tabindex="0">readObject()</a></li>
 <li><a href="#isSet()" tabindex="0">isSet()</a></li>
+<li><a href="#getExtensionType()" tabindex="0">getExtensionType()</a></li>
 </ol>
 </li>
 </ol>
@@ -108,25 +109,30 @@ extends <a href="BaseReader.html" title="interface in org.apache.arrow.vector.co
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button><button id="method-summary-table-tab5" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab5', 3)" class="table-tab">Default Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isSet()" class="member-name-link">isSet</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code>default <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5"><code><a href="#getExtensionType()" class="member-name-link">getExtensionType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab5">
+<div class="block">Returns the <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a> of the extension data this reader exposes.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>boolean</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#isSet()" class="member-name-link">isSet</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Checks if the current value is set.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#read(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#read(org.apache.arrow.vector.holders.ExtensionHolder)" class="member-name-link">read</a><wbr>(<a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders">ExtensionHolder</a>&nbsp;holder)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Reads to the given extension holder.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readObject()" class="member-name-link">readObject</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#readObject()" class="member-name-link">readObject</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Reads and returns an object representation of the extension type.</div>
 </div>
 </div>
@@ -186,6 +192,27 @@ extends <a href="BaseReader.html" title="interface in org.apache.arrow.vector.co
 <dd><code><a href="BaseReader.html#isSet()">isSet</a></code>&nbsp;in interface&nbsp;<code><a href="BaseReader.html" title="interface in org.apache.arrow.vector.complex.reader">BaseReader</a></code></dd>
 <dt>Returns:</dt>
 <dd>true if the value is set, false otherwise</dd>
+</dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getExtensionType()">
+<h3>getExtensionType</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">default</span>&nbsp;<span class="return-type"><a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo">ArrowType</a></span>&nbsp;<span class="element-name">getExtensionType</span>()</div>
+<div class="block">Returns the <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a> of the extension data this reader exposes.
+
+<p>The default derives the type from <a href="BaseReader.html#getField()"><code>BaseReader.getField()</code></a>, which works for vector-backed
+readers. Holder-backed readers (which have no notion of a <code>Field</code>) must override this to
+return the type carried by their <a href="../../holders/ExtensionHolder.html" title="class in org.apache.arrow.vector.holders"><code>ExtensionHolder</code></a> directly.
+
+<p>Callers that need the extension <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a> (e.g. to route a value through a union or
+promotable writer) should prefer this over <code>getField().getType()</code> so the call is
+well-defined regardless of how the reader is backed.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>the extension <a href="../../types/pojo/ArrowType.html" title="class in org.apache.arrow.vector.types.pojo"><code>ArrowType</code></a></dd>
 </dl>
 </div>
 </section>
