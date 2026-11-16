@@ -310,6 +310,7 @@ public class LargeListVector extends BaseValueVector
 
   /** Set the reader and writer indexes for the inner buffers. */
   private void setReaderAndWriterIndex() {
+    final long requiredOffsetBufferCapacity = (long) (valueCount + 1) * OFFSET_WIDTH;
     validityBuffer.readerIndex(0);
     offsetBuffer.readerIndex(0);
     if (valueCount == 0) {
@@ -321,18 +322,29 @@ public class LargeListVector extends BaseValueVector
     // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
     // in other libraries. According to Arrow spec, we should still output the offset buffer which
     // is [0].
-    final long requiredOffsetBufferSize = (long) (valueCount + 1) * OFFSET_WIDTH;
-    if (offsetBuffer.capacity() < requiredOffsetBufferSize) {
-      // An empty vector may still hold the allocator's shared empty buffer
-      ArrowBuf newOffsetBuffer = allocator.buffer(requiredOffsetBufferSize);
-      newOffsetBuffer.setZero(0, newOffsetBuffer.capacity());
-      if (offsetBuffer.capacity() > 0) {
-        newOffsetBuffer.setBytes(0, offsetBuffer, 0, offsetBuffer.capacity());
-      }
-      offsetBuffer.getReferenceManager().release();
-      offsetBuffer = newOffsetBuffer;
+    ensureOffsetBufferCapacity(requiredOffsetBufferCapacity);
+    offsetBuffer.writerIndex(requiredOffsetBufferCapacity);
+  }
+
+  private void ensureOffsetBufferCapacity(long requiredCapacity) {
+    if (offsetBuffer.capacity() >= requiredCapacity) {
+      return;
     }
-    offsetBuffer.writerIndex(requiredOffsetBufferSize);
+    long previousOffsetAllocationSizeInBytes = offsetAllocationSizeInBytes;
+    ArrowBuf oldOffsetBuffer = offsetBuffer;
+    offsetBuffer = allocateOffsetBuffer(requiredCapacity);
+    final long bytesToCopy = Math.min(oldOffsetBuffer.capacity(), requiredCapacity);
+    offsetBuffer.setBytes(0, oldOffsetBuffer, 0, bytesToCopy);
+
+    final int copiedOffsets = (int) (bytesToCopy / OFFSET_WIDTH);
+    final int requiredOffsets = (int) (requiredCapacity / OFFSET_WIDTH);
+    final long lastCopiedOffset =
+        copiedOffsets == 0 ? 0 : offsetBuffer.getLong((long) (copiedOffsets - 1) * OFFSET_WIDTH);
+    for (int i = copiedOffsets; i < requiredOffsets; i++) {
+      offsetBuffer.setLong((long) i * OFFSET_WIDTH, lastCopiedOffset);
+    }
+    offsetAllocationSizeInBytes = previousOffsetAllocationSizeInBytes;
+    oldOffsetBuffer.getReferenceManager().release();
   }
 
   /**
@@ -690,24 +702,30 @@ public class LargeListVector extends BaseValueVector
           startIndex,
           length,
           valueCount);
-      final long startPoint = offsetBuffer.getLong((long) startIndex * OFFSET_WIDTH);
-      final long sliceLength =
-          offsetBuffer.getLong((long) (startIndex + length) * OFFSET_WIDTH) - startPoint;
       to.clear();
-      to.offsetBuffer = to.allocateOffsetBuffer((length + 1) * OFFSET_WIDTH);
-      /* splitAndTransfer offset buffer */
-      for (int i = 0; i < length + 1; i++) {
-        final long relativeOffset =
-            offsetBuffer.getLong((long) (startIndex + i) * OFFSET_WIDTH) - startPoint;
-        to.offsetBuffer.setLong((long) i * OFFSET_WIDTH, relativeOffset);
+      if (length > 0) {
+        final long startPoint = offsetBuffer.getLong((long) startIndex * OFFSET_WIDTH);
+        final long sliceLength =
+            offsetBuffer.getLong((long) (startIndex + length) * OFFSET_WIDTH) - startPoint;
+        to.offsetBuffer = to.allocateOffsetBuffer((length + 1) * OFFSET_WIDTH);
+        /* splitAndTransfer offset buffer */
+        for (int i = 0; i < length + 1; i++) {
+          final long relativeOffset =
+              offsetBuffer.getLong((long) (startIndex + i) * OFFSET_WIDTH) - startPoint;
+          to.offsetBuffer.setLong((long) i * OFFSET_WIDTH, relativeOffset);
+        }
+        /* splitAndTransfer validity buffer */
+        splitAndTransferValidityBuffer(startIndex, length, to);
+        /* splitAndTransfer data buffer */
+        dataTransferPair.splitAndTransfer(
+            checkedCastToInt(startPoint), checkedCastToInt(sliceLength));
+        to.lastSet = length - 1;
+        to.setValueCount(length);
+      } else {
+        to.ensureOffsetBufferCapacity(OFFSET_WIDTH);
+        dataTransferPair.splitAndTransfer(0, 0);
+        to.setValueCount(0);
       }
-      /* splitAndTransfer validity buffer */
-      splitAndTransferValidityBuffer(startIndex, length, to);
-      /* splitAndTransfer data buffer */
-      dataTransferPair.splitAndTransfer(
-          checkedCastToInt(startPoint), checkedCastToInt(sliceLength));
-      to.lastSet = length - 1;
-      to.setValueCount(length);
     }
 
     @Override
