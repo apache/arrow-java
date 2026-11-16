@@ -56,6 +56,17 @@ public class ClobConsumerTest extends AbstractConsumerTest {
     assertConsume(false, repeat('a', INITIAL_VALUE_ALLOCATION * DEFAULT_RECORD_BYTE_COUNT * 4));
   }
 
+  @Test
+  public void testConsumeSurrogatePairsAcrossChunks() throws SQLException, IOException {
+    // The clob is read in chunks of 256 characters, so the first chunk of these values ends with
+    // the high surrogate of an emoji and the next one starts with its low surrogate.
+    String emoji = Character.toString(0x1F600);
+    for (String value : new String[] {repeat('a', 255) + emoji, "a" + emoji.repeat(300)}) {
+      assertConsume(true, value);
+      assertConsume(false, value);
+    }
+  }
+
   private static String repeat(char c, int count) {
     char[] chars = new char[count];
     java.util.Arrays.fill(chars, c);
