@@ -207,3 +207,14 @@ This binary artifact contains Google Flatbuffers 25.2.10.
 
 Home page: https://flatbuffers.dev/
 License: https://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+
+This binary artifact contains code from Netty, in the following classes:
+
+* org.apache.arrow.vector.util.IntObjectHashMap
+* org.apache.arrow.vector.util.IntObjectMap
+
+Copyright: Copyright 2014 The Netty Project
+Home page: https://netty.io/
+License: https://www.apache.org/licenses/LICENSE-2.0
