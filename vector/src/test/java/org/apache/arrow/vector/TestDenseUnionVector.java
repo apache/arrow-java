@@ -1160,5 +1160,4 @@ public class TestDenseUnionVector {
     vector.setValueCount(3);
     return vector;
   }
-
 }
