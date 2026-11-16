@@ -124,7 +124,9 @@ public class ClobConsumerTest extends AbstractConsumerTest {
     }
   }
 
-  /** A {@link java.sql.ResultSet} whose CLOB is {@code value}, or NULL when {@code value} is null. */
+  /**
+   * A {@link java.sql.ResultSet} whose CLOB is {@code value}, or NULL when {@code value} is null.
+   */
   private static class ClobRowResultSet extends ResultSetUtility.ThrowingResultSet {
     private String value;
 
