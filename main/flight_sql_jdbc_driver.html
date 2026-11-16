@@ -383,7 +383,10 @@ SQL server requires client verification.</p></td>
 </tr>
 <tr class="row-even"><td><p>useEncryption</p></td>
 <td><p>true</p></td>
-<td><p>Whether to use TLS (the default is an encrypted connection)</p></td>
+<td><p>Whether to use TLS (the default is an encrypted connection).
+When true, endpoint locations returned by the server that do not
+use TLS, such as <code class="docutils literal notranslate"><span class="pre">grpc+tcp</span></code>, are refused and the endpoint’s
+other locations are tried instead.</p></td>
 </tr>
 <tr class="row-odd"><td><p>user</p></td>
 <td><p>null</p></td>
