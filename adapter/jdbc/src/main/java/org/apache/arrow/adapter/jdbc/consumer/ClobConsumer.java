@@ -87,6 +87,8 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
       Clob clob = resultSet.getClob(columnIndexInResultSet);
       if (!resultSet.wasNull()) {
         if (clob != null) {
+          // Fill the offsets of the NULL rows before this one, so it starts after the last value.
+          vector.fillEmpties(currentIndex);
           long length = clob.length();
 
           int read = 1;
@@ -131,6 +133,8 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
     public void consume(ResultSet resultSet) throws SQLException {
       Clob clob = resultSet.getClob(columnIndexInResultSet);
       if (clob != null) {
+        // Fill the offsets of the NULL rows before this one, so it starts after the last value.
+        vector.fillEmpties(currentIndex);
         long length = clob.length();
 
         int read = 1;

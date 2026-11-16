@@ -18,6 +18,7 @@ package org.apache.arrow.adapter.jdbc.consumer;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ import java.sql.SQLException;
 import org.apache.arrow.adapter.jdbc.ResultSetUtility;
 import org.apache.arrow.vector.BaseValueVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.util.ValueVectorUtility;
 import org.junit.jupiter.api.Test;
 
 public class ClobConsumerTest extends AbstractConsumerTest {
@@ -44,9 +46,50 @@ public class ClobConsumerTest extends AbstractConsumerTest {
     }
   }
 
+  private void assertConsumeRows(boolean nullable, String... values)
+      throws SQLException, IOException {
+    try (final VarCharVector vector = new VarCharVector("clob", allocator)) {
+      ClobConsumer consumer = ClobConsumer.createConsumer(vector, 0, nullable);
+      ClobRowResultSet resultSet = new ClobRowResultSet();
+      for (String value : values) {
+        resultSet.value = value;
+        consumer.consume(resultSet);
+      }
+      vector.setValueCount(values.length);
+      ValueVectorUtility.validateFull(vector);
+      for (int i = 0; i < values.length; i++) {
+        if (values[i] == null) {
+          assertTrue(vector.isNull(i), "row " + i);
+        } else {
+          assertArrayEquals(values[i].getBytes(StandardCharsets.UTF_8), vector.get(i), "row " + i);
+        }
+      }
+    }
+  }
+
   @Test
   public void testConsumeSmallClob() throws SQLException, IOException {
     assertConsume(false, repeat('a', DEFAULT_RECORD_BYTE_COUNT));
+  }
+
+  @Test
+  public void testConsumeNullableClobsAfterNulls() throws SQLException, IOException {
+    // The values after a NULL row must be written after the previous value, not over it.
+    assertConsumeRows(true, null, "AAAA", null, null, "BB", null);
+  }
+
+  @Test
+  public void testConsumeNonNullableClobsAfterNullClobs() throws SQLException, IOException {
+    assertConsumeRows(false, null, "AAAA", null, null, "BB", null);
+  }
+
+  @Test
+  public void testConsumeMoreClobsThanValueCapacity() throws SQLException, IOException {
+    String[] values = new String[INITIAL_VALUE_ALLOCATION * 2];
+    for (int i = 0; i < values.length; i++) {
+      values[i] = i % 3 == 0 ? null : String.valueOf(i);
+    }
+    assertConsumeRows(true, values);
   }
 
   @Test
@@ -89,6 +132,23 @@ public class ClobConsumerTest extends AbstractConsumerTest {
     @Override
     public boolean wasNull() {
       return false;
+    }
+  }
+
+  /**
+   * A {@link java.sql.ResultSet} whose CLOB is {@code value}, or NULL when {@code value} is null.
+   */
+  private static class ClobRowResultSet extends ResultSetUtility.ThrowingResultSet {
+    private String value;
+
+    @Override
+    public Clob getClob(int columnIndex) {
+      return value == null ? null : new StringClob(value);
+    }
+
+    @Override
+    public boolean wasNull() {
+      return value == null;
     }
   }
 
