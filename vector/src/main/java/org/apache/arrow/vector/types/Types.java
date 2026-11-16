@@ -164,7 +164,7 @@ public class Types {
       @Override
       public FieldVector getNewVector(
           Field field, BufferAllocator allocator, CallBack schemaChangeCallback) {
-        return new NullVector(field.getName());
+        return new NullVector(field);
       }
 
       @Override

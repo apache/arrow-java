@@ -217,6 +217,22 @@ public class TestSplitAndTransfer {
   }
 
   @Test
+  public void testNullVectorTransferPairKeepsField() {
+    Field field =
+        new Field("n", new FieldType(false, ArrowType.Null.INSTANCE, null, Map.of("k", "v")), null);
+    NullVector fromNullVector = new NullVector(field);
+
+    assertEquals(field, fromNullVector.getTransferPair(allocator).getTo().getField());
+    assertEquals(
+        new Field("renamed", field.getFieldType(), null),
+        fromNullVector.getTransferPair("renamed", allocator).getTo().getField());
+
+    Field targetField = new Field("target", FieldType.nullable(ArrowType.Null.INSTANCE), null);
+    assertEquals(
+        targetField, fromNullVector.getTransferPair(targetField, allocator).getTo().getField());
+  }
+
+  @Test
   public void testWithZeroVector() {
     ZeroVector fromZeroVector = new ZeroVector("zeroVector");
     TransferPair transferPair = fromZeroVector.getTransferPair(fromZeroVector.getAllocator());
