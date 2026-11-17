@@ -207,6 +207,7 @@ This product includes code from Netty 4.1.117.Final:
 * vector/src/main/java/org/apache/arrow/vector/util/IntObjectHashMap.java
 * vector/src/main/java/org/apache/arrow/vector/util/IntObjectMap.java
 * memory/memory-core/src/main/java/org/apache/arrow/memory/rounding/DefaultRoundingPolicy.java
+* memory/memory-netty-buffer-patch/src/main/java/io/netty/buffer/MutableWrappedByteBuf.java
 
 Copyright: 2014 The Netty Project
 Home page: https://netty.io/
@@ -217,6 +218,6 @@ This product includes code from Google Guava 33.4.0-jre
 
 * memory/memory-core/src/main/java/org/apache/arrow/util/Preconditions.java
 
-Copyright: (C) 2011 The Guava Authors
+Copyright: (C) 2007 The Guava Authors
 Home page: https://github.com/google/guava/
 License: https://www.apache.org/licenses/LICENSE-2.0
