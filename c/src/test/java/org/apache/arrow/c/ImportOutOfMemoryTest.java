@@ -39,6 +39,8 @@ import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Regression test: a mid-import {@link OutOfMemoryException} must not leak the imported array.
@@ -106,17 +108,13 @@ final class ImportOutOfMemoryTest {
     }
   }
 
-  @Test
-  public void streamImportOomDoesNotLeakExportedBatch() throws Exception {
-    // Reading the schema lazily, the first batch can fail allocating the schema struct.
-    streamImportOomDoesNotLeakExportedBatch(false);
-    // Reading the schema first, it can fail allocating the struct the batch moves into.
-    streamImportOomDoesNotLeakExportedBatch(true);
-  }
-
-  private void streamImportOomDoesNotLeakExportedBatch(boolean schemaFirst) throws Exception {
-    // Each limit fails the import at a later allocation. Whichever fails, the exported batch must
-    // be released, which drains the producer.
+  @ParameterizedTest(name = "schemaFirst = {0}")
+  @ValueSource(booleans = {false, true})
+  public void streamImportOomDoesNotLeakExportedBatch(boolean schemaFirst) throws Exception {
+    // Reading the schema lazily, the first batch can fail allocating the schema struct. Reading the
+    // schema first, it can fail allocating the struct the batch moves into. Each limit fails the
+    // import at a later allocation. Whichever fails, the exported batch must be released, which
+    // drains the producer.
     boolean imported = false;
     for (long limit = 0; !imported; limit += 8) {
       try (BufferAllocator producer = root.newChildAllocator("producer", 0, Long.MAX_VALUE)) {
