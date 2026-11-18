@@ -40,11 +40,14 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import org.apache.arrow.flight.Action;
 import org.apache.arrow.flight.CallStatus;
+import org.apache.arrow.flight.CloseSessionRequest;
+import org.apache.arrow.flight.CloseSessionResult;
 import org.apache.arrow.flight.Criteria;
 import org.apache.arrow.flight.FlightDescriptor;
 import org.apache.arrow.flight.FlightEndpoint;
@@ -756,6 +759,22 @@ public final class MockFlightSqlProducer implements FlightSqlProducer {
 
   public Map<String, SessionOptionValue> getSessionOptions() {
     return sessionOptions;
+  }
+
+  private final AtomicInteger closeSessionCount = new AtomicInteger();
+
+  @Override
+  public void closeSession(
+      final CloseSessionRequest request,
+      final CallContext context,
+      final StreamListener<CloseSessionResult> listener) {
+    closeSessionCount.incrementAndGet();
+    listener.onNext(new CloseSessionResult(CloseSessionResult.Status.CLOSED));
+    listener.onCompleted();
+  }
+
+  public int getCloseSessionCount() {
+    return closeSessionCount.get();
   }
 
   private static final class TicketConversionUtils {
