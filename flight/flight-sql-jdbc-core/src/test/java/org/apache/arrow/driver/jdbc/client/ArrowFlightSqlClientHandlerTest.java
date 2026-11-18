@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -190,5 +191,24 @@ public class ArrowFlightSqlClientHandlerTest {
       new Object[] {false, unknownError, false},
       new Object[] {true, CallStatus.CANCELLED, false},
     };
+  }
+
+  @Test
+  public void testCloseFromBuilderCopyDoesNotCloseSession() throws Exception {
+    FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+    ArrowFlightSqlClientHandler sqlClientHandler =
+        new ArrowFlightSqlClientHandler(
+            "cacheKey",
+            sqlClient,
+            new ArrowFlightSqlClientHandler.Builder(new ArrowFlightSqlClientHandler.Builder()),
+            new ArrayList<>(),
+            Optional.of("test_catalog"),
+            null);
+
+    sqlClientHandler.close();
+
+    verify(sqlClient, never())
+        .closeSession(any(CloseSessionRequest.class), any(CallOption[].class));
+    verify(sqlClient).close();
   }
 }

@@ -48,15 +48,19 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.arrow.driver.jdbc.utils.CoreMockedSqlProducers;
 import org.apache.arrow.driver.jdbc.utils.FallbackFlightSqlProducer;
 import org.apache.arrow.driver.jdbc.utils.PartitionedFlightSqlProducer;
+import org.apache.arrow.flight.Action;
+import org.apache.arrow.flight.FlightConstants;
 import org.apache.arrow.flight.FlightEndpoint;
 import org.apache.arrow.flight.FlightProducer;
 import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.flight.FlightServer;
 import org.apache.arrow.flight.FlightStatusCode;
 import org.apache.arrow.flight.Location;
+import org.apache.arrow.flight.Result;
 import org.apache.arrow.flight.Ticket;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
@@ -556,6 +560,58 @@ public class ResultSetTest {
         final FlightRuntimeException fre = (FlightRuntimeException) cause;
         assertEquals(FlightStatusCode.UNAVAILABLE, fre.status().code());
       }
+    }
+  }
+
+  @Test
+  public void testEndpointFailureDoesNotCloseSession() throws Exception {
+    final Schema schema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullablePrimitive("int_column", new ArrowType.Int(32, true))));
+    final AtomicInteger closeSessionCount = new AtomicInteger();
+    final FlightProducer dataProducer =
+        new PartitionedFlightSqlProducer.DataOnlyFlightSqlProducer(
+            new Ticket("first".getBytes(StandardCharsets.UTF_8)), null) {
+          @Override
+          public void doAction(
+              CallContext context, Action action, StreamListener<Result> listener) {
+            if (action.getType().equals(FlightConstants.CLOSE_SESSION.getType())) {
+              closeSessionCount.incrementAndGet();
+            }
+            super.doAction(context, action, listener);
+          }
+        };
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+        FlightServer dataServer =
+            FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), dataProducer)
+                .build()
+                .start()) {
+      final FlightEndpoint endpoint =
+          new FlightEndpoint(
+              new Ticket("wrong".getBytes(StandardCharsets.UTF_8)), dataServer.getLocation());
+
+      try (final PartitionedFlightSqlProducer rootProducer =
+              new PartitionedFlightSqlProducer(schema, endpoint);
+          FlightServer rootServer =
+              FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), rootProducer)
+                  .build()
+                  .start();
+          Connection newConnection =
+              DriverManager.getConnection(
+                  String.format(
+                      "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false",
+                      rootServer.getLocation().getUri().getHost(), rootServer.getPort()));
+          Statement newStatement = newConnection.createStatement()) {
+        assertThrows(
+            SQLException.class,
+            () -> {
+              ResultSet result = newStatement.executeQuery("Select partitioned_data");
+              while (result.next()) {}
+            });
+      }
+
+      assertEquals(0, closeSessionCount.get());
     }
   }
 
