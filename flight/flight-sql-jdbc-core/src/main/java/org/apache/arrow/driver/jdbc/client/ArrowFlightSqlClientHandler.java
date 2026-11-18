@@ -300,7 +300,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     final CallOption[] closeSessionOptions = Arrays.copyOf(baseOptions, baseOptions.length + 1);
     closeSessionOptions[baseOptions.length] = CLOSE_SESSION_TIMEOUT;
     try {
-      sqlClient.closeSession(new CloseSessionRequest(), closeSessionOptions);
+      if (builder.ownsSession) {
+        sqlClient.closeSession(new CloseSessionRequest(), closeSessionOptions);
+      }
     } catch (FlightRuntimeException fre) {
       if (catalog.isPresent()) {
         handleBenignCloseException(
@@ -729,6 +731,11 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting Optional<String> catalog = Optional.empty();
 
+    // Copies (getStreams endpoint handlers) authenticate as the connection; on servers that key
+    // sessions by token, closing one would end the connection's session. With retainAuth=false a
+    // copy's own session is left to expire.
+    @VisibleForTesting boolean ownsSession = true;
+
     @VisibleForTesting @Nullable FlightClientCache flightClientCache;
 
     @VisibleForTesting @Nullable Duration connectTimeout;
@@ -776,6 +783,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.allocator = original.allocator;
       this.catalog = original.catalog;
       this.oauthConfig = original.oauthConfig;
+      this.ownsSession = false;
 
       if (original.retainCookies) {
         this.cookieFactory = original.cookieFactory;
