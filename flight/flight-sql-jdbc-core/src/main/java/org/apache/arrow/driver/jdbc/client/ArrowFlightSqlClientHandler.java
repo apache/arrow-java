@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import org.apache.arrow.driver.jdbc.client.oauth.OAuthConfiguration;
 import org.apache.arrow.driver.jdbc.client.oauth.OAuthCredentialWriter;
 import org.apache.arrow.driver.jdbc.client.oauth.OAuthTokenProvider;
@@ -40,6 +41,7 @@ import org.apache.arrow.driver.jdbc.client.utils.ClientAuthenticationUtils;
 import org.apache.arrow.driver.jdbc.client.utils.FlightClientCache;
 import org.apache.arrow.driver.jdbc.client.utils.FlightLocationQueue;
 import org.apache.arrow.flight.CallOption;
+import org.apache.arrow.flight.CallOptions;
 import org.apache.arrow.flight.CallStatus;
 import org.apache.arrow.flight.CloseSessionRequest;
 import org.apache.arrow.flight.FlightClient;
@@ -80,6 +82,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   private static final Logger LOGGER = LoggerFactory.getLogger(ArrowFlightSqlClientHandler.class);
   // JDBC connection string query parameter
   private static final String CATALOG = "catalog";
+
+  @VisibleForTesting
+  static final CallOption CLOSE_SESSION_TIMEOUT = CallOptions.timeout(5, TimeUnit.SECONDS);
 
   private final String cacheKey;
   private final FlightSqlClient sqlClient;
@@ -293,7 +298,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   @Override
   public void close() throws SQLException {
     try {
-      AutoCloseables.close(this::closeCatalogSession, sqlClient);
+      AutoCloseables.close(this::closeSession, sqlClient);
     } catch (FlightRuntimeException fre) {
       handleBenignCloseException(
           fre, "Failed to clean up client resources.", "closing Flight SQL client");
@@ -304,13 +309,19 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     }
   }
 
-  private void closeCatalogSession() throws SQLException {
-    if (catalog.isPresent()) {
-      try {
-        sqlClient.closeSession(new CloseSessionRequest(), getOptions());
-      } catch (FlightRuntimeException fre) {
+  private void closeSession() throws SQLException {
+    final CallOption[] baseOptions = getOptions();
+    final CallOption[] closeSessionOptions = Arrays.copyOf(baseOptions, baseOptions.length + 1);
+    closeSessionOptions[baseOptions.length] = CLOSE_SESSION_TIMEOUT;
+    try {
+      sqlClient.closeSession(new CloseSessionRequest(), closeSessionOptions);
+    } catch (FlightRuntimeException fre) {
+      if (catalog.isPresent()) {
         handleBenignCloseException(
             fre, "Failed to close Flight SQL session.", "closing Flight SQL session");
+      } else {
+        // Without a catalog the driver never asked for a session; the server may not support them.
+        logSuppressedCloseException(fre, "closing Flight SQL session");
       }
     }
   }

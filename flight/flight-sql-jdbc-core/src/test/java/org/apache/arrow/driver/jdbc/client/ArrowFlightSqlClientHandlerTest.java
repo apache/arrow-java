@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -146,6 +147,28 @@ public class ArrowFlightSqlClientHandlerTest {
     } else {
       assertThrows(SQLException.class, sqlClientHandler::close);
     }
+    verify(sqlClient).close();
+  }
+
+  @Test
+  public void testCloseSessionWithoutCatalogIsBestEffortWithTimeout() throws Exception {
+    FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+    doThrow(CallStatus.UNKNOWN.toRuntimeException())
+        .when(sqlClient)
+        .closeSession(any(CloseSessionRequest.class), any(CallOption[].class));
+    ArrowFlightSqlClientHandler sqlClientHandler =
+        new ArrowFlightSqlClientHandler(
+            "cacheKey",
+            sqlClient,
+            new ArrowFlightSqlClientHandler.Builder(),
+            new ArrayList<>(),
+            Optional.empty(),
+            null);
+
+    assertDoesNotThrow(sqlClientHandler::close);
+    verify(sqlClient)
+        .closeSession(
+            any(CloseSessionRequest.class), eq(ArrowFlightSqlClientHandler.CLOSE_SESSION_TIMEOUT));
     verify(sqlClient).close();
   }
 
