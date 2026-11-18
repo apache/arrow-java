@@ -155,7 +155,8 @@ case-sensitive. The supported parameters are:
 
    * - useSystemTrustStore
      - true
-     - When TLS is enabled, whether to use the system certificate store
+     - When TLS is enabled, whether to use the system certificate store.
+       Ignored when ``trustStore`` or ``tlsRootCerts`` is set.
 
    * - retainCookies
      - true

@@ -295,6 +295,34 @@ public class ConnectionTlsTest {
   }
 
   /**
+   * Check that a configured trust store is used even when useSystemTrustStore is left at its
+   * default value, rather than being silently replaced by the system trust store.
+   *
+   * @throws Exception on error.
+   */
+  @Test
+  public void testGetEncryptedConnectionWithTrustStoreAndDefaultSystemTrustStore()
+      throws Exception {
+    final Properties properties = new Properties();
+
+    properties.put(
+        ArrowFlightConnectionProperty.HOST.camelName(), FLIGHT_SERVER_TEST_EXTENSION.getHost());
+    properties.put(
+        ArrowFlightConnectionProperty.PORT.camelName(), FLIGHT_SERVER_TEST_EXTENSION.getPort());
+    properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+    properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+    properties.put(ArrowFlightConnectionProperty.USE_ENCRYPTION.camelName(), true);
+    properties.put(ArrowFlightConnectionProperty.TRUST_STORE.camelName(), trustStorePath);
+    properties.put(ArrowFlightConnectionProperty.TRUST_STORE_PASSWORD.camelName(), trustStorePass);
+
+    final ArrowFlightJdbcDataSource dataSource =
+        ArrowFlightJdbcDataSource.createNewDataSource(properties);
+    try (final Connection connection = dataSource.getConnection()) {
+      assertTrue(connection.isValid(300));
+    }
+  }
+
+  /**
    * Check if an encrypted connection can be established successfully when connecting through the
    * DriverManager using just a connection url.
    *
