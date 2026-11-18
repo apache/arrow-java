@@ -84,10 +84,11 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
   /**
    * Gets the KeyStore path.
    *
-   * @return the path.
+   * @return the path, or null if not set or blank.
    */
-  public String getTrustStorePath() {
-    return ArrowFlightConnectionProperty.TRUST_STORE.getString(properties);
+  public @Nullable String getTrustStorePath() {
+    final String trustStorePath = ArrowFlightConnectionProperty.TRUST_STORE.getString(properties);
+    return trustStorePath == null || trustStorePath.trim().isEmpty() ? null : trustStorePath;
   }
 
   /**
@@ -108,8 +109,17 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     return ArrowFlightConnectionProperty.USE_SYSTEM_TRUST_STORE.getBoolean(properties);
   }
 
-  public String getTlsRootCertificatesPath() {
-    return ArrowFlightConnectionProperty.TLS_ROOT_CERTS.getString(properties);
+  /**
+   * Gets the path to PEM-encoded TLS root certificates.
+   *
+   * @return the path, or null if not set or blank.
+   */
+  public @Nullable String getTlsRootCertificatesPath() {
+    final String tlsRootCertificatesPath =
+        ArrowFlightConnectionProperty.TLS_ROOT_CERTS.getString(properties);
+    return tlsRootCertificatesPath == null || tlsRootCertificatesPath.trim().isEmpty()
+        ? null
+        : tlsRootCertificatesPath;
   }
 
   /**

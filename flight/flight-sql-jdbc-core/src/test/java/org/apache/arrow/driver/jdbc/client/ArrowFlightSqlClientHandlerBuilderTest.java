@@ -266,6 +266,39 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
   }
 
   @Test
+  public void testBlankTrustStorePathIsUnset() {
+    assertNull(new ArrowFlightSqlClientHandler.Builder().withTrustStorePath(null).trustStorePath);
+    assertNull(new ArrowFlightSqlClientHandler.Builder().withTrustStorePath("").trustStorePath);
+    assertNull(new ArrowFlightSqlClientHandler.Builder().withTrustStorePath("  ").trustStorePath);
+    assertEquals(
+        "/path/to/truststore.jks",
+        new ArrowFlightSqlClientHandler.Builder()
+            .withTrustStorePath("/path/to/truststore.jks")
+            .trustStorePath);
+  }
+
+  @Test
+  public void testBlankTlsRootCertificatesPathIsUnset() {
+    assertNull(
+        new ArrowFlightSqlClientHandler.Builder()
+            .withTlsRootCertificates(null)
+            .tlsRootCertificatesPath);
+    assertNull(
+        new ArrowFlightSqlClientHandler.Builder()
+            .withTlsRootCertificates("")
+            .tlsRootCertificatesPath);
+    assertNull(
+        new ArrowFlightSqlClientHandler.Builder()
+            .withTlsRootCertificates("  ")
+            .tlsRootCertificatesPath);
+    assertEquals(
+        "/path/to/ca.pem",
+        new ArrowFlightSqlClientHandler.Builder()
+            .withTlsRootCertificates("/path/to/ca.pem")
+            .tlsRootCertificatesPath);
+  }
+
+  @Test
   public void testHostnameOverrideIsTrimmed() {
     assertEquals(
         "flight.example.com",

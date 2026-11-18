@@ -16,13 +16,16 @@
  */
 package org.apache.arrow.driver.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Paths;
+import java.security.UnrecoverableKeyException;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -33,6 +36,7 @@ import org.apache.arrow.driver.jdbc.client.ArrowFlightSqlClientHandler;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.FlightSqlTestCertificates;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.FlightRuntimeException;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -259,13 +263,16 @@ public class ConnectionTlsTest {
     final ArrowFlightJdbcDataSource dataSource =
         ArrowFlightJdbcDataSource.createNewDataSource(properties);
 
-    assertThrows(
-        SQLException.class,
-        () -> {
-          try (final Connection ignored = dataSource.getConnection()) {
-            fail();
-          }
-        });
+    final SQLException exception =
+        assertThrows(
+            SQLException.class,
+            () -> {
+              try (final Connection ignored = dataSource.getConnection()) {
+                fail();
+              }
+            });
+    assertInstanceOf(IOException.class, exception.getCause());
+    assertInstanceOf(UnrecoverableKeyException.class, exception.getCause().getCause());
   }
 
   /**
@@ -320,6 +327,97 @@ public class ConnectionTlsTest {
     try (final Connection connection = dataSource.getConnection()) {
       assertTrue(connection.isValid(300));
     }
+  }
+
+  /**
+   * Check that configuring a trust store without a password throws a {@link SQLException} rather
+   * than an uncaught {@link NullPointerException}.
+   */
+  @Test
+  public void testGetEncryptedConnectionWithTrustStoreMissingPassword() {
+    final Properties properties = new Properties();
+
+    properties.put(
+        ArrowFlightConnectionProperty.HOST.camelName(), FLIGHT_SERVER_TEST_EXTENSION.getHost());
+    properties.put(
+        ArrowFlightConnectionProperty.PORT.camelName(), FLIGHT_SERVER_TEST_EXTENSION.getPort());
+    properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+    properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+    properties.put(ArrowFlightConnectionProperty.USE_ENCRYPTION.camelName(), true);
+    properties.put(ArrowFlightConnectionProperty.TRUST_STORE.camelName(), trustStorePath);
+
+    final ArrowFlightJdbcDataSource dataSource =
+        ArrowFlightJdbcDataSource.createNewDataSource(properties);
+
+    final SQLException exception =
+        assertThrows(
+            SQLException.class,
+            () -> {
+              try (final Connection ignored = dataSource.getConnection()) {
+                fail();
+              }
+            });
+    assertInstanceOf(IllegalArgumentException.class, exception.getCause());
+  }
+
+  /**
+   * Check that a blank tlsRootCerts value is treated as unset and falls through to trustStore.
+   *
+   * @throws Exception on error.
+   */
+  @Test
+  public void testGetEncryptedConnectionWithBlankTlsRootCertsFallsBackToTrustStore()
+      throws Exception {
+    final Driver driver = new ArrowFlightJdbcDriver();
+    DriverManager.registerDriver(driver);
+
+    try (final Connection connection =
+        DriverManager.getConnection(
+            String.format(
+                "jdbc:arrow-flight-sql://localhost:%s?user=%s&password=%s"
+                    + "&useEncryption=true&%s=&%s=%s&%s=%s",
+                FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+                userTest,
+                passTest,
+                ArrowFlightConnectionProperty.TLS_ROOT_CERTS.camelName(),
+                ArrowFlightConnectionProperty.TRUST_STORE.camelName(),
+                URLEncoder.encode(trustStorePath, "UTF-8"),
+                ArrowFlightConnectionProperty.TRUST_STORE_PASSWORD.camelName(),
+                URLEncoder.encode(trustStorePass, "UTF-8")))) {
+      assertTrue(connection.isValid(0));
+    }
+  }
+
+  /**
+   * Check that a blank trustStore value is treated as unset rather than attempting to open an empty
+   * path or requiring a trustStorePassword.
+   *
+   * @throws Exception on error.
+   */
+  @Test
+  public void testGetEncryptedConnectionWithBlankTrustStoreIsIgnored() throws Exception {
+    final Driver driver = new ArrowFlightJdbcDriver();
+    DriverManager.registerDriver(driver);
+
+    final SQLException exception =
+        assertThrows(
+            SQLException.class,
+            () -> {
+              try (final Connection ignored =
+                  DriverManager.getConnection(
+                      String.format(
+                          "jdbc:arrow-flight-sql://localhost:%s?user=%s&password=%s"
+                              + "&useEncryption=true&useSystemTrustStore=false&%s=",
+                          FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+                          userTest,
+                          passTest,
+                          ArrowFlightConnectionProperty.TRUST_STORE.camelName()))) {
+                fail();
+              }
+            });
+    // Blank trustStore is skipped, so connection reaches TLS handshake and fails certificate
+    // verification instead of failing on missing trustStorePassword or an empty file path.
+    assertInstanceOf(FlightRuntimeException.class, exception.getCause());
   }
 
   /**

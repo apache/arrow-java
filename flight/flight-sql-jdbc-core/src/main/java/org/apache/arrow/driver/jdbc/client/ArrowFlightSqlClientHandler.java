@@ -689,7 +689,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting String password;
 
-    @VisibleForTesting String trustStorePath;
+    @VisibleForTesting @Nullable String trustStorePath;
 
     @VisibleForTesting String trustStorePassword;
 
@@ -703,7 +703,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting boolean useSystemTrustStore = true;
 
-    @VisibleForTesting String tlsRootCertificatesPath;
+    @VisibleForTesting @Nullable String tlsRootCertificatesPath;
 
     @VisibleForTesting String clientCertificatePath;
 
@@ -821,13 +821,16 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     }
 
     /**
-     * Sets the KeyStore path for this handler.
+     * Sets the KeyStore path for this handler. Takes precedence over {@link
+     * #withSystemTrustStore(boolean)}, while {@link #withTlsRootCertificates(String)} takes
+     * precedence over this setting.
      *
-     * @param trustStorePath the KeyStore path.
+     * @param trustStorePath the KeyStore path, or null or blank to unset.
      * @return this instance.
      */
-    public Builder withTrustStorePath(final String trustStorePath) {
-      this.trustStorePath = trustStorePath;
+    public Builder withTrustStorePath(@Nullable final String trustStorePath) {
+      this.trustStorePath =
+          trustStorePath == null || trustStorePath.trim().isEmpty() ? null : trustStorePath;
       return this;
     }
 
@@ -915,7 +918,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     }
 
     /**
-     * Sets whether to use the certificates from the operating system.
+     * Sets whether to use the certificates from the operating system. Ignored when {@link
+     * #withTrustStorePath(String)} or {@link #withTlsRootCertificates(String)} is set.
      *
      * @param useSystemTrustStore whether to use the system operating certificates.
      * @return this instance.
@@ -929,11 +933,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      * Sets the TLS root certificate path as an alternative to using the System or other Trust
      * Store. The path must contain a valid PEM file.
      *
-     * @param tlsRootCertificatesPath the TLS root certificate path (if TLS is required).
+     * @param tlsRootCertificatesPath the TLS root certificate path (if TLS is required), or null or
+     *     blank to unset.
      * @return this instance.
      */
-    public Builder withTlsRootCertificates(final String tlsRootCertificatesPath) {
-      this.tlsRootCertificatesPath = tlsRootCertificatesPath;
+    public Builder withTlsRootCertificates(@Nullable final String tlsRootCertificatesPath) {
+      this.tlsRootCertificatesPath =
+          tlsRootCertificatesPath == null || tlsRootCertificatesPath.trim().isEmpty()
+              ? null
+              : tlsRootCertificatesPath;
       return this;
     }
 
@@ -1155,6 +1163,10 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
               clientBuilder.trustedCertificates(
                   ClientAuthenticationUtils.getTlsRootCertificatesStream(tlsRootCertificatesPath));
             } else if (trustStorePath != null) {
+              if (trustStorePassword == null) {
+                throw new IllegalArgumentException(
+                    "trustStorePassword must be specified when trustStore is set.");
+              }
               clientBuilder.trustedCertificates(
                   ClientAuthenticationUtils.getCertificateStream(
                       trustStorePath, trustStorePassword));
