@@ -651,6 +651,27 @@ public class ConnectionTest {
   }
 
   @Test
+  public void testCloseWithoutCatalogClosesSession() throws Exception {
+    final Properties properties = new Properties();
+    properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
+    properties.put(ArrowFlightConnectionProperty.PASSWORD.camelName(), passTest);
+    properties.put("useEncryption", false);
+    final int closeSessionCountBefore = PRODUCER.getCloseSessionCount();
+
+    try (Connection connection =
+        DriverManager.getConnection(
+            "jdbc:arrow-flight-sql://"
+                + FLIGHT_SERVER_TEST_EXTENSION.getHost()
+                + ":"
+                + FLIGHT_SERVER_TEST_EXTENSION.getPort(),
+            properties)) {
+      assertTrue(connection.isValid(300));
+    }
+
+    assertEquals(closeSessionCountBefore + 1, PRODUCER.getCloseSessionCount());
+  }
+
+  @Test
   public void testSetCatalogShouldUpdateSessionOptions() throws Exception {
     final Properties properties = new Properties();
     properties.put(ArrowFlightConnectionProperty.USER.camelName(), userTest);
