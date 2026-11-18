@@ -74,6 +74,18 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
       return targetVector; // optimization, nothing to append, return
     }
 
+    // validate the delta before the target is touched, so a malformed delta leaves it unchanged
+    int deltaCount = deltaVector.getValueCount();
+    checkCapacity(
+        deltaVector.getValidityBuffer(),
+        BitVectorHelper.getValidityBufferSizeFromCount(deltaCount),
+        "validity");
+    long dataSize =
+        deltaVector instanceof BitVector
+            ? BitVectorHelper.getValidityBufferSizeFromCount(deltaCount)
+            : (long) deltaVector.getTypeWidth() * deltaCount;
+    checkCapacity(deltaVector.getDataBuffer(), dataSize, "data");
+
     int newValueCount = targetVector.getValueCount() + deltaVector.getValueCount();
 
     // make sure there is enough capacity
@@ -336,6 +348,16 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     if (deltaVector.getValueCount() == 0) {
       return targetVector; // nothing to append, return
     }
+
+    // validate the delta before the target is touched, so a malformed delta leaves it unchanged
+    checkCapacity(
+        deltaVector.getValidityBuffer(),
+        BitVectorHelper.getValidityBufferSizeFromCount(deltaVector.getValueCount()),
+        "validity");
+    checkCapacity(
+        deltaVector.getDataBuffer(),
+        (long) BaseVariableWidthViewVector.ELEMENT_SIZE * deltaVector.getValueCount(),
+        "view");
 
     int oldTargetValueCount = targetVector.getValueCount();
     int newValueCount = oldTargetValueCount + deltaVector.getValueCount();
@@ -664,6 +686,11 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
       return targetVector; // optimization, nothing to append, return
     }
 
+    checkCapacity(
+        deltaVector.getTypeBuffer(),
+        (long) deltaVector.getValueCount() * UnionVector.TYPE_WIDTH,
+        "type");
+
     UnionVector targetUnionVector = (UnionVector) targetVector;
     int newValueCount = targetVector.getValueCount() + deltaVector.getValueCount();
 
@@ -727,6 +754,11 @@ public class VectorAppender implements VectorVisitor<ValueVector, Void> {
     if (deltaVector.getValueCount() == 0) {
       return targetVector; // optimization, nothing to append, return
     }
+
+    checkCapacity(
+        deltaVector.getTypeBuffer(),
+        (long) deltaVector.getValueCount() * DenseUnionVector.TYPE_WIDTH,
+        "type");
 
     DenseUnionVector targetDenseUnionVector = (DenseUnionVector) targetVector;
     int newValueCount = targetVector.getValueCount() + deltaVector.getValueCount();

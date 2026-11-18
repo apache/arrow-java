@@ -26,7 +26,6 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.ArrowBufPointer;
 import org.apache.arrow.memory.util.ByteFunctionHelpers;
-import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.compare.VectorVisitor;
@@ -833,10 +832,12 @@ public abstract class BaseFixedWidthVector extends BaseValueVector
       BitVectorHelper.unsetBit(this.getValidityBuffer(), thisIndex);
     } else {
       BitVectorHelper.setBit(this.getValidityBuffer(), thisIndex);
-      MemoryUtil.copyMemory(
-          from.getDataBuffer().memoryAddress() + (long) fromIndex * typeWidth,
-          this.getDataBuffer().memoryAddress() + (long) thisIndex * typeWidth,
-          typeWidth);
+      from.getDataBuffer()
+          .getBytes(
+              (long) fromIndex * typeWidth,
+              this.getDataBuffer(),
+              (long) thisIndex * typeWidth,
+              typeWidth);
     }
   }
 
