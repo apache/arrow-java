@@ -25,6 +25,8 @@ import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.DecimalVector;
+import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.compare.VectorEqualsVisitor;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
@@ -39,6 +41,8 @@ import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.DecimalHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
+import org.apache.arrow.vector.holders.TimeStampNanoTZHolder;
+import org.apache.arrow.vector.types.TimeUnit;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.FieldType;
@@ -1004,6 +1008,144 @@ public class TestComplexCopier {
       target.setValueCount(1);
 
       assertTrue(target.isNull(0));
+    }
+  }
+
+  @Test
+  public void testCopyListOfTimeStampNanoTZVector() {
+    try (ListVector from = ListVector.empty("v", allocator);
+        ListVector to = ListVector.empty("v", allocator)) {
+
+      UnionListWriter listWriter = from.getWriter();
+      listWriter.allocate();
+
+      TimeStampNanoTZHolder holder = new TimeStampNanoTZHolder();
+      holder.timezone = "America/Sao_Paulo";
+      for (int i = 0; i < COUNT; i++) {
+        listWriter.setPosition(i);
+        listWriter.startList();
+        holder.value = i * 1_000_000L;
+        listWriter.timeStampNanoTZ().write(holder);
+        holder.value = i * 2_000_000L;
+        listWriter.timeStampNanoTZ().write(holder);
+        listWriter.endList();
+      }
+      from.setValueCount(COUNT);
+
+      // copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
+      // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyStructOfTimeStampNanoTZVector() {
+    try (final StructVector from = StructVector.empty("v", allocator);
+        final StructVector to = StructVector.empty("v", allocator)) {
+
+      from.allocateNewSafe();
+
+      NullableStructWriter structWriter = from.getWriter();
+      TimeStampNanoTZHolder holder = new TimeStampNanoTZHolder();
+      holder.timezone = "America/Sao_Paulo";
+      for (int i = 0; i < COUNT; i++) {
+        structWriter.setPosition(i);
+        structWriter.start();
+        holder.value = i * 1_000_000L;
+        structWriter.timeStampNanoTZ("ts", holder.timezone).write(holder);
+        structWriter.end();
+      }
+      from.setValueCount(COUNT);
+
+      // copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      for (int i = 0; i < COUNT; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(COUNT);
+
+      // validate equals
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
+    }
+  }
+
+  @Test
+  public void testCopyStructOfTimeStampNanoTZInUnionThrows() {
+    try (final StructVector from = StructVector.empty("v", allocator);
+        final StructVector to = StructVector.empty("v", allocator)) {
+
+      from.allocateNewSafe();
+
+      NullableStructWriter structWriter = from.getWriter();
+      TimeStampNanoTZHolder holder = new TimeStampNanoTZHolder();
+      holder.timezone = "America/Sao_Paulo";
+      holder.value = 1_000_000L;
+      structWriter.setPosition(0);
+      structWriter.start();
+      structWriter.timeStampNanoTZ("ts", holder.timezone).write(holder);
+      structWriter.end();
+      // writing an int to the same field promotes it to a union
+      structWriter.setPosition(1);
+      structWriter.start();
+      structWriter.integer("ts").writeInt(1);
+      structWriter.end();
+      from.setValueCount(2);
+
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      in.setPosition(0);
+      out.setPosition(0);
+      assertThrows(UnsupportedOperationException.class, () -> ComplexCopier.copy(in, out));
+    }
+  }
+
+  @Test
+  public void testCopyMapOfTimeStampNanoTZVectorThrows() {
+    try (final MapVector from = MapVector.empty("v", allocator, false);
+        final MapVector to = MapVector.empty("v", allocator, false)) {
+
+      StructVector entries =
+          (StructVector)
+              from.addOrGetVector(FieldType.notNullable(ArrowType.Struct.INSTANCE)).getVector();
+      IntVector keys =
+          entries.addOrGet(
+              MapVector.KEY_NAME,
+              FieldType.notNullable(Types.MinorType.INT.getType()),
+              IntVector.class);
+      TimeStampNanoTZVector values =
+          entries.addOrGet(
+              MapVector.VALUE_NAME,
+              FieldType.nullable(new ArrowType.Timestamp(TimeUnit.NANOSECOND, "America/Sao_Paulo")),
+              TimeStampNanoTZVector.class);
+      from.allocateNew();
+
+      int offset = from.startNewValue(0);
+      keys.setSafe(offset, 1);
+      values.setSafe(offset, 1_000_000L);
+      entries.setIndexDefined(offset);
+      from.endValue(0, 1);
+      from.setValueCount(1);
+
+      // copy values
+      FieldReader in = from.getReader();
+      FieldWriter out = to.getWriter();
+      in.setPosition(0);
+      out.setPosition(0);
+      UnsupportedOperationException e =
+          assertThrows(UnsupportedOperationException.class, () -> ComplexCopier.copy(in, out));
+      assertEquals("TIMESTAMPNANOTZ", e.getMessage());
     }
   }
 }
