@@ -107,16 +107,19 @@ case-sensitive. The supported parameters are:
 
    * - trustStore
      - null
-     - When TLS is enabled, the path to the certificate store
+     - When TLS is enabled, the path to the certificate store. Blank values
+       are treated as unset. Takes precedence over ``useSystemTrustStore``,
+       and is ignored when ``tlsRootCerts`` is set.
 
    * - trustStorePassword
      - null
-     - When TLS is enabled, the password for the certificate store
+     - When TLS is enabled, the password for the certificate store. Required
+       when ``trustStore`` is set.
 
    * - tlsRootCerts
      - null
      - Path to PEM-encoded root certificates for TLS - use this as
-       an alternative to ``trustStore``
+       an alternative to ``trustStore``. Blank values are treated as unset.
 
    * - hostnameOverride
      - null
