@@ -787,6 +787,31 @@ under the License.
 
   <profiles>
     <profile>
+      <id>apache-release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>source-release-assembly</id>
+                <configuration>
+                  <!-- Skip the parent's source-release zip. Release CI unpacks
+                       JNI tarballs into the working tree before Maven runs, so
+                       that assembly would package binaries. The artifact we
+                       vote on and publish is the git-archive tarball instead
+                       (same approach as bom/pom.xml). See GH-743. -->
+                  <skipAssembly>true</skipAssembly>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <!-- Certain flags are required on newer JDK but not recognized on earlier JDK -->
       <id>jdk24</id>
       <activation>
