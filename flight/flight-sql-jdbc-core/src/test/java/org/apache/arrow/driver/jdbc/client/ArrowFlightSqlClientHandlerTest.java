@@ -22,8 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -145,6 +148,46 @@ public class ArrowFlightSqlClientHandlerTest {
     } else {
       assertThrows(SQLException.class, sqlClientHandler::close);
     }
+    verify(sqlClient).close();
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void testCloseSessionWithoutCatalog(FlightStatusCode code, boolean shouldSuppress)
+      throws Exception {
+    FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+    doThrow(new CallStatus(code, null, null, null).toRuntimeException())
+        .when(sqlClient)
+        .closeSession(any(CloseSessionRequest.class), any(CallOption[].class));
+    ArrowFlightSqlClientHandler sqlClientHandler =
+        new ArrowFlightSqlClientHandler(
+            "cacheKey",
+            sqlClient,
+            new ArrowFlightSqlClientHandler.Builder(),
+            new ArrayList<>(),
+            Optional.empty(),
+            null);
+
+    if (shouldSuppress) {
+      assertDoesNotThrow(sqlClientHandler::close);
+    } else {
+      assertThrows(SQLException.class, sqlClientHandler::close);
+    }
+    verify(sqlClient)
+        .closeSession(
+            any(CloseSessionRequest.class), eq(ArrowFlightSqlClientHandler.CLOSE_SESSION_TIMEOUT));
+    verify(sqlClient).close();
+  }
+
+  private static Object[] testCloseSessionWithoutCatalog() {
+    return new Object[] {
+      new Object[] {FlightStatusCode.UNIMPLEMENTED, true},
+      new Object[] {FlightStatusCode.INVALID_ARGUMENT, true},
+      new Object[] {FlightStatusCode.NOT_FOUND, true},
+      new Object[] {FlightStatusCode.UNAVAILABLE, true},
+      new Object[] {FlightStatusCode.UNAUTHENTICATED, true},
+      new Object[] {FlightStatusCode.UNKNOWN, false},
+    };
   }
 
   private static Object[] testCloseHandlesFlightRuntimeException() {
@@ -164,5 +207,24 @@ public class ArrowFlightSqlClientHandlerTest {
       new Object[] {true, unknownError, false},
       new Object[] {false, unknownError, false},
     };
+  }
+
+  @Test
+  public void testCloseFromBuilderCopyDoesNotCloseSession() throws Exception {
+    FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+    ArrowFlightSqlClientHandler sqlClientHandler =
+        new ArrowFlightSqlClientHandler(
+            "cacheKey",
+            sqlClient,
+            new ArrowFlightSqlClientHandler.Builder(new ArrowFlightSqlClientHandler.Builder()),
+            new ArrayList<>(),
+            Optional.of("test_catalog"),
+            null);
+
+    sqlClientHandler.close();
+
+    verify(sqlClient, never())
+        .closeSession(any(CloseSessionRequest.class), any(CallOption[].class));
+    verify(sqlClient).close();
   }
 }
