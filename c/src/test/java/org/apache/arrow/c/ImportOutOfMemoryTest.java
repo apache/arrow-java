@@ -16,11 +16,14 @@
  */
 package org.apache.arrow.c;
 
+import static org.apache.arrow.c.NativeUtil.NULL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.OutOfMemoryException;
@@ -28,10 +31,16 @@ import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.VectorUnloader;
+import org.apache.arrow.vector.dictionary.DictionaryProvider;
+import org.apache.arrow.vector.ipc.ArrowReader;
+import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Regression test: a mid-import {@link OutOfMemoryException} must not leak the imported array.
@@ -96,6 +105,70 @@ final class ImportOutOfMemoryTest {
             producer.getAllocatedMemory(),
             "import OOM leaked the exported batch (producer not drained)");
       }
+    }
+  }
+
+  @ParameterizedTest(name = "schemaFirst = {0}")
+  @ValueSource(booleans = {false, true})
+  public void streamImportOomDoesNotLeakExportedBatch(boolean schemaFirst) throws Exception {
+    // Reading the schema lazily, the first batch can fail allocating the schema struct. Reading the
+    // schema first, it can fail allocating the struct the batch moves into. Each limit fails the
+    // import at a later allocation. Whichever fails, the exported batch must be released, which
+    // drains the producer.
+    boolean imported = false;
+    for (long limit = 0; !imported; limit += 8) {
+      try (BufferAllocator producer = root.newChildAllocator("producer", 0, Long.MAX_VALUE)) {
+        try (ArrowArrayStream stream = ArrowArrayStream.allocateNew(producer)) {
+          Data.exportArrayStream(producer, streamOfOneBatch(producer), stream);
+          try (BufferAllocator consumer = root.newChildAllocator("consumer", 0, limit)) {
+            imported = importStream(consumer, stream, schemaFirst);
+          } finally {
+            // The stream is still ours if importing it failed.
+            if (stream.snapshot().release != NULL) {
+              stream.release();
+            }
+          }
+        }
+        assertEquals(
+            0L,
+            producer.getAllocatedMemory(),
+            "import OOM leaked the exported batch with a consumer limit of "
+                + limit
+                + (schemaFirst ? ", reading the schema first" : ""));
+      }
+    }
+  }
+
+  /** Reads {@code stream} in {@code consumer}; returns false if it ran out of memory. */
+  private static boolean importStream(
+      BufferAllocator consumer, ArrowArrayStream stream, boolean schemaFirst) throws Exception {
+    // Keep the struct open, so the caller can tell whether the import took the stream.
+    try (ArrowReader reader = Data.importArrayStream(consumer, stream, false)) {
+      if (schemaFirst) {
+        reader.getVectorSchemaRoot();
+      }
+      assertTrue(reader.loadNextBatch());
+      assertEquals(ROWS, reader.getVectorSchemaRoot().getRowCount());
+      return !reader.loadNextBatch();
+    } catch (Exception e) {
+      assertTrue(hasOutOfMemoryCause(e), "import failure must be an allocator OOM: " + e);
+      return false;
+    }
+  }
+
+  /** A reader of one VarChar batch allocated on {@code alloc}. */
+  private static ArrowReader streamOfOneBatch(BufferAllocator alloc) {
+    VarCharVector vector = new VarCharVector("col", alloc);
+    vector.allocateNew((long) ROWS * 8, ROWS);
+    for (int r = 0; r < ROWS; r++) {
+      vector.setSafe(r, ("v" + r).getBytes(StandardCharsets.UTF_8));
+    }
+    vector.setValueCount(ROWS);
+    try (VectorSchemaRoot source = new VectorSchemaRoot(Collections.singletonList(vector))) {
+      List<ArrowRecordBatch> batches = new ArrayList<>();
+      batches.add(new VectorUnloader(source).getRecordBatch());
+      return new StreamTest.InMemoryArrowReader(
+          alloc, source.getSchema(), batches, new DictionaryProvider.MapDictionaryProvider());
     }
   }
 
