@@ -346,16 +346,19 @@ case-sensitive. The supported parameters are:</p>
 </tr>
 <tr class="row-even"><td><p>trustStore</p></td>
 <td><p>null</p></td>
-<td><p>When TLS is enabled, the path to the certificate store</p></td>
+<td><p>When TLS is enabled, the path to the certificate store. Blank values
+are treated as unset. Takes precedence over <code class="docutils literal notranslate"><span class="pre">useSystemTrustStore</span></code>,
+and is ignored when <code class="docutils literal notranslate"><span class="pre">tlsRootCerts</span></code> is set.</p></td>
 </tr>
 <tr class="row-odd"><td><p>trustStorePassword</p></td>
 <td><p>null</p></td>
-<td><p>When TLS is enabled, the password for the certificate store</p></td>
+<td><p>When TLS is enabled, the password for the certificate store. Required
+when <code class="docutils literal notranslate"><span class="pre">trustStore</span></code> is set.</p></td>
 </tr>
 <tr class="row-even"><td><p>tlsRootCerts</p></td>
 <td><p>null</p></td>
 <td><p>Path to PEM-encoded root certificates for TLS - use this as
-an alternative to <code class="docutils literal notranslate"><span class="pre">trustStore</span></code></p></td>
+an alternative to <code class="docutils literal notranslate"><span class="pre">trustStore</span></code>. Blank values are treated as unset.</p></td>
 </tr>
 <tr class="row-odd"><td><p>hostnameOverride</p></td>
 <td><p>null</p></td>
