@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
   @VisibleForTesting
   static final CallOption CLOSE_SESSION_TIMEOUT = CallOptions.timeout(5, TimeUnit.SECONDS);
+
+  // No session to close: CloseSession is unsupported or unknown, none was created, or the
+  // client is not (or no longer) authenticated.
+  private static final Set<FlightStatusCode> NO_SESSION_STATUS_CODES =
+      EnumSet.of(
+          FlightStatusCode.UNIMPLEMENTED,
+          FlightStatusCode.INVALID_ARGUMENT,
+          FlightStatusCode.NOT_FOUND,
+          FlightStatusCode.UNAUTHENTICATED);
 
   private final String cacheKey;
   private final FlightSqlClient sqlClient;
@@ -304,12 +314,11 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         sqlClient.closeSession(new CloseSessionRequest(), closeSessionOptions);
       }
     } catch (FlightRuntimeException fre) {
-      if (catalog.isPresent()) {
+      if (catalog.isEmpty() && NO_SESSION_STATUS_CODES.contains(fre.status().code())) {
+        logSuppressedCloseException(fre, "closing Flight SQL session");
+      } else {
         handleBenignCloseException(
             fre, "Failed to close Flight SQL session.", "closing Flight SQL session");
-      } else {
-        // Without a catalog the driver never asked for a session; the server may not support them.
-        logSuppressedCloseException(fre, "closing Flight SQL session");
       }
     } finally {
       try {

@@ -151,10 +151,12 @@ public class ArrowFlightSqlClientHandlerTest {
     verify(sqlClient).close();
   }
 
-  @Test
-  public void testCloseSessionWithoutCatalogIsBestEffortWithTimeout() throws Exception {
+  @ParameterizedTest
+  @MethodSource
+  public void testCloseSessionWithoutCatalog(FlightStatusCode code, boolean shouldSuppress)
+      throws Exception {
     FlightSqlClient sqlClient = mock(FlightSqlClient.class);
-    doThrow(CallStatus.UNKNOWN.toRuntimeException())
+    doThrow(new CallStatus(code, null, null, null).toRuntimeException())
         .when(sqlClient)
         .closeSession(any(CloseSessionRequest.class), any(CallOption[].class));
     ArrowFlightSqlClientHandler sqlClientHandler =
@@ -166,11 +168,26 @@ public class ArrowFlightSqlClientHandlerTest {
             Optional.empty(),
             null);
 
-    assertDoesNotThrow(sqlClientHandler::close);
+    if (shouldSuppress) {
+      assertDoesNotThrow(sqlClientHandler::close);
+    } else {
+      assertThrows(SQLException.class, sqlClientHandler::close);
+    }
     verify(sqlClient)
         .closeSession(
             any(CloseSessionRequest.class), eq(ArrowFlightSqlClientHandler.CLOSE_SESSION_TIMEOUT));
     verify(sqlClient).close();
+  }
+
+  private static Object[] testCloseSessionWithoutCatalog() {
+    return new Object[] {
+      new Object[] {FlightStatusCode.UNIMPLEMENTED, true},
+      new Object[] {FlightStatusCode.INVALID_ARGUMENT, true},
+      new Object[] {FlightStatusCode.NOT_FOUND, true},
+      new Object[] {FlightStatusCode.UNAVAILABLE, true},
+      new Object[] {FlightStatusCode.UNAUTHENTICATED, true},
+      new Object[] {FlightStatusCode.UNKNOWN, false},
+    };
   }
 
   private static Object[] testCloseHandlesFlightRuntimeException() {
