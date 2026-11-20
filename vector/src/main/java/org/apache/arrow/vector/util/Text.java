@@ -504,6 +504,10 @@ public class Text extends ReusableByteArray {
       } // switch (state)
       count++;
     }
+    if (state != LEAD_BYTE) {
+      // the input ended in the middle of a multi-byte sequence
+      return Optional.of(count);
+    }
     return Optional.empty();
   }
 
