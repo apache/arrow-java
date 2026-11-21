@@ -17,6 +17,7 @@
 package org.apache.arrow.driver.jdbc.client;
 
 import com.google.common.collect.ImmutableMap;
+import io.grpc.ManagedChannel;
 import io.grpc.netty.NettyChannelBuilder;
 import io.netty.channel.ChannelOption;
 import java.io.IOException;
@@ -291,6 +292,19 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
   @Override
   public void close() throws SQLException {
+    try {
+      AutoCloseables.close(this::closeCatalogSession, sqlClient);
+    } catch (FlightRuntimeException fre) {
+      handleBenignCloseException(
+          fre, "Failed to clean up client resources.", "closing Flight SQL client");
+    } catch (SQLException e) {
+      throw e;
+    } catch (final Exception e) {
+      throw new SQLException("Failed to clean up client resources.", e);
+    }
+  }
+
+  private void closeCatalogSession() throws SQLException {
     if (catalog.isPresent()) {
       try {
         sqlClient.closeSession(new CloseSessionRequest(), getOptions());
@@ -298,14 +312,6 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         handleBenignCloseException(
             fre, "Failed to close Flight SQL session.", "closing Flight SQL session");
       }
-    }
-    try {
-      AutoCloseables.close(sqlClient);
-    } catch (FlightRuntimeException fre) {
-      handleBenignCloseException(
-          fre, "Failed to clean up client resources.", "closing Flight SQL client");
-    } catch (final Exception e) {
-      throw new SQLException("Failed to clean up client resources.", e);
     }
   }
 
@@ -1125,6 +1131,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       // itself.
       Set<FlightClientMiddleware.Factory> buildTimeMiddlewareFactories =
           new HashSet<>(this.middlewareFactories);
+      ManagedChannel channel = null;
       FlightClient client = null;
       boolean isUsingUserPasswordAuth = username != null && token == null;
 
@@ -1192,9 +1199,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           channelBuilder.withOption(
               ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) connectTimeout.toMillis());
         }
-        client =
-            FlightGrpcUtils.createFlightClient(
-                allocator, channelBuilder.build(), clientBuilder.middleware());
+        channel = channelBuilder.build();
+        client = FlightGrpcUtils.createFlightClient(allocator, channel, clientBuilder.middleware());
         final ArrayList<CallOption> credentialOptions = new ArrayList<>();
         // Authentication priority: OAuth > token > username/password
         if (oauthConfig != null) {
@@ -1229,14 +1235,20 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           | IOException
           | FlightRuntimeException e) {
         final SQLException originalException = new SQLException(e);
-        if (client != null) {
-          try {
-            client.close();
-          } catch (final InterruptedException interruptedException) {
-            originalException.addSuppressed(interruptedException);
-          }
-        }
+        closeFailedClient(originalException, client, channel);
         throw originalException;
+      } catch (RuntimeException | Error e) {
+        closeFailedClient(e, client, channel);
+        throw e;
+      }
+    }
+
+    private static void closeFailedClient(
+        Throwable failure, @Nullable FlightClient client, @Nullable ManagedChannel channel) {
+      if (client != null) {
+        AutoCloseables.close(failure, client);
+      } else if (channel != null) {
+        AutoCloseables.close(failure, channel::shutdownNow);
       }
     }
   }

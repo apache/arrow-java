@@ -21,24 +21,42 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
+import io.grpc.Attributes;
+import io.grpc.MethodDescriptor;
+import io.grpc.Server;
+import io.grpc.ServerBuilder;
+import io.grpc.ServerCall;
+import io.grpc.ServerServiceDefinition;
+import io.grpc.ServerTransportFilter;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.impl.FlightServiceGrpc;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /** Tests for {@link ArrowFlightJdbcDriver}. */
 public class ArrowFlightJdbcDriverTest {
@@ -89,6 +107,112 @@ public class ArrowFlightJdbcDriverTest {
     assertTrue(
         DriverManager.getDriver("jdbc:arrow-flight-sql://localhost:32010")
             instanceof ArrowFlightJdbcDriver);
+  }
+
+  @ParameterizedTest(name = "connection setup with catalog={0}")
+  @ValueSource(booleans = {false, true})
+  @Timeout(15)
+  @ResourceLock("DriverManager.loginTimeout")
+  public void testDriverManagerLoginTimeoutCancelsConnectionSetup(boolean catalog)
+      throws Exception {
+    final CountDownLatch loginRpcStarted = new CountDownLatch(1);
+    final CountDownLatch loginRpcCancelled = new CountDownLatch(1);
+    final CountDownLatch transportClosed = new CountDownLatch(1);
+    final MethodDescriptor<?, ?> loginMethod =
+        catalog ? FlightServiceGrpc.getDoActionMethod() : FlightServiceGrpc.getHandshakeMethod();
+    final Server server =
+        ServerBuilder.forPort(0)
+            .addTransportFilter(
+                new ServerTransportFilter() {
+                  @Override
+                  public void transportTerminated(Attributes transportAttributes) {
+                    transportClosed.countDown();
+                  }
+                })
+            .addService(stalledLoginService(loginMethod, loginRpcStarted, loginRpcCancelled))
+            .build()
+            .start();
+    final int previousTimeout = DriverManager.getLoginTimeout();
+    try {
+      DriverManager.setLoginTimeout(2);
+      final String url =
+          "jdbc:arrow-flight-sql://localhost:" + server.getPort() + "?useEncryption=false";
+      final Properties properties = new Properties();
+      if (catalog) {
+        properties.setProperty("catalog", "test");
+      } else {
+        properties.setProperty("user", "user");
+        properties.setProperty("password", "pass");
+      }
+      // Other tests register additional Arrow drivers, which DriverManager would also try.
+      final Driver driver = DriverManager.getDriver(url);
+      assertThrows(SQLTimeoutException.class, () -> driver.connect(url, properties));
+      assertEquals(0, loginRpcStarted.getCount(), "The server should have received the login RPC");
+      assertTrue(loginRpcCancelled.await(5, TimeUnit.SECONDS), "The login RPC should be cancelled");
+      assertTrue(transportClosed.await(5, TimeUnit.SECONDS), "The client channel should close");
+    } finally {
+      DriverManager.setLoginTimeout(previousTimeout);
+      server.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+    }
+  }
+
+  private static <RequestT, ResponseT> ServerServiceDefinition stalledLoginService(
+      MethodDescriptor<RequestT, ResponseT> method,
+      CountDownLatch started,
+      CountDownLatch cancelled) {
+    return ServerServiceDefinition.builder(FlightServiceGrpc.SERVICE_NAME)
+        .addMethod(
+            method,
+            (call, headers) -> {
+              call.request(1);
+              started.countDown();
+              return new ServerCall.Listener<RequestT>() {
+                @Override
+                public void onCancel() {
+                  cancelled.countDown();
+                }
+              };
+            })
+        .build();
+  }
+
+  @ParameterizedTest
+  @ValueSource(ints = {0, 10})
+  @ResourceLock("DriverManager.loginTimeout")
+  public void testDriverManagerConnectsWithLoginTimeout(int loginTimeout) throws Exception {
+    final int previousTimeout = DriverManager.getLoginTimeout();
+    try {
+      DriverManager.setLoginTimeout(loginTimeout);
+      final String url =
+          "jdbc:arrow-flight-sql://localhost:"
+              + FLIGHT_SERVER_TEST_EXTENSION.getPort()
+              + "?useEncryption=false";
+      try (Connection connection = DriverManager.getConnection(url, "user1", "pass1")) {
+        assertTrue(connection.isValid(0));
+      }
+    } finally {
+      DriverManager.setLoginTimeout(previousTimeout);
+    }
+  }
+
+  @Test
+  public void testConnectionCompletedAfterLoginTimeoutIsClosed() throws Exception {
+    final ArrowFlightConnection connection = mock(ArrowFlightConnection.class);
+    final CountDownLatch finishConnecting = new CountDownLatch(1);
+    try {
+      assertThrows(
+          SQLTimeoutException.class,
+          () ->
+              ArrowFlightJdbcDriver.connectWithTimeout(
+                  () -> {
+                    assertTrue(finishConnecting.await(5, TimeUnit.SECONDS));
+                    return connection;
+                  },
+                  1));
+    } finally {
+      finishConnecting.countDown();
+    }
+    verify(connection, timeout(5000)).close();
   }
 
   /**

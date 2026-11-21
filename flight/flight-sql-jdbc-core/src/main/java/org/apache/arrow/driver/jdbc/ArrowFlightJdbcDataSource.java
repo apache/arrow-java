@@ -87,7 +87,7 @@ public class ArrowFlightJdbcDataSource implements DataSource {
   public ArrowFlightConnection getConnection(final String username, final String password)
       throws SQLException {
     final Properties properties = getProperties(username, password);
-    return new ArrowFlightJdbcDriver().connect(config.url(), properties);
+    return new ArrowFlightJdbcDriver().connect(config.url(), properties, 0);
   }
 
   @Override
