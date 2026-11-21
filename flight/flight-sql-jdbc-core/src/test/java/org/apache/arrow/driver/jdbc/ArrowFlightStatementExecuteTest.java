@@ -171,6 +171,33 @@ public class ArrowFlightStatementExecuteTest {
   }
 
   @Test
+  public void testExecuteMultipleTimesClosesAllPreparedStatements() throws SQLException {
+    PRODUCER.clearActionTypeCounter();
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CREATE_PREPARED_STATEMENT.getType(), 0),
+        is(2));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
+
+    statement.close();
+
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
+        is(2));
+  }
+
+  @Test
   public void testExecutePrepareFailurePreservesServerError() {
     final SQLException exception =
         assertThrows(
