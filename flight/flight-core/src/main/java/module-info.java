@@ -30,7 +30,6 @@ module org.apache.arrow.flight.core {
   requires com.google.protobuf;
   requires com.google.protobuf.util;
   requires io.grpc;
-  requires io.grpc.internal;
   requires io.grpc.netty;
   requires io.grpc.protobuf;
   requires io.grpc.stub;
