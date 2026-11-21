@@ -20,8 +20,14 @@ import static com.google.protobuf.ByteString.copyFrom;
 import static java.lang.String.format;
 import static java.sql.Types.BIGINT;
 import static java.sql.Types.BIT;
+import static java.sql.Types.BOOLEAN;
+import static java.sql.Types.DECIMAL;
 import static java.sql.Types.INTEGER;
 import static java.sql.Types.JAVA_OBJECT;
+import static java.sql.Types.SMALLINT;
+import static java.sql.Types.TIMESTAMP;
+import static java.sql.Types.TINYINT;
+import static java.sql.Types.VARCHAR;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
@@ -31,9 +37,11 @@ import static org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportsConvert.SQL_
 import static org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportsConvert.SQL_CONVERT_INTEGER_VALUE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -43,9 +51,11 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -53,6 +63,7 @@ import java.util.function.Consumer;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
 import org.apache.arrow.driver.jdbc.utils.ResultSetTestUtils;
 import org.apache.arrow.driver.jdbc.utils.ThrowableAssertionUtils;
+import org.apache.arrow.flight.CallStatus;
 import org.apache.arrow.flight.FlightProducer.ServerStreamListener;
 import org.apache.arrow.flight.sql.FlightSqlColumnMetadata;
 import org.apache.arrow.flight.sql.FlightSqlProducer.Schemas;
@@ -69,11 +80,13 @@ import org.apache.arrow.flight.sql.impl.FlightSql.SqlSupportedSubqueries;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
+import org.apache.arrow.vector.BitVector;
 import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.UInt1Vector;
 import org.apache.arrow.vector.VarBinaryVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.types.DateUnit;
 import org.apache.arrow.vector.types.FloatingPointPrecision;
 import org.apache.arrow.vector.types.TimeUnit;
@@ -95,6 +108,16 @@ public class ArrowDatabaseMetadataTest {
   private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER = new MockFlightSqlProducer();
   private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER_EMPTY_SQLINFO =
       new MockFlightSqlProducer();
+  private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER_EMPTY_TYPE_INFO =
+      new MockFlightSqlProducer();
+  private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_FAILURE =
+      new MockFlightSqlProducer();
+  private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_FAILURE =
+      new MockFlightSqlProducer();
+  private static final MockFlightSqlProducer FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_UNIMPLEMENTED =
+      new MockFlightSqlProducer();
+  private static final MockFlightSqlProducer
+      FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED = new MockFlightSqlProducer();
 
   @RegisterExtension
   public static final FlightServerTestExtension FLIGHT_SERVER_TEST_EXTENSION =
@@ -103,6 +126,33 @@ public class ArrowDatabaseMetadataTest {
   @RegisterExtension
   public static final FlightServerTestExtension FLIGHT_SERVER_EMPTY_SQLINFO_TEST_RULE =
       FlightServerTestExtension.createStandardTestExtension(FLIGHT_SQL_PRODUCER_EMPTY_SQLINFO);
+
+  @RegisterExtension
+  public static final FlightServerTestExtension FLIGHT_SERVER_EMPTY_TYPE_INFO_TEST_RULE =
+      FlightServerTestExtension.createStandardTestExtension(FLIGHT_SQL_PRODUCER_EMPTY_TYPE_INFO);
+
+  @RegisterExtension
+  public static final FlightServerTestExtension FLIGHT_SERVER_TYPE_INFO_GET_INFO_FAILURE_TEST_RULE =
+      FlightServerTestExtension.createStandardTestExtension(
+          FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_FAILURE);
+
+  @RegisterExtension
+  public static final FlightServerTestExtension
+      FLIGHT_SERVER_TYPE_INFO_GET_STREAM_FAILURE_TEST_RULE =
+          FlightServerTestExtension.createStandardTestExtension(
+              FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_FAILURE);
+
+  @RegisterExtension
+  public static final FlightServerTestExtension
+      FLIGHT_SERVER_TYPE_INFO_GET_INFO_UNIMPLEMENTED_TEST_RULE =
+          FlightServerTestExtension.createStandardTestExtension(
+              FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_UNIMPLEMENTED);
+
+  @RegisterExtension
+  public static final FlightServerTestExtension
+      FLIGHT_SERVER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED_TEST_RULE =
+          FlightServerTestExtension.createStandardTestExtension(
+              FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED);
 
   private static final int ROW_COUNT = 10;
   private static final List<List<Object>> EXPECTED_GET_CATALOGS_RESULTS =
@@ -342,11 +392,193 @@ public class ArrowDatabaseMetadataTest {
             .collect(toList());
   }
 
+  /** The 18 columns {@code DatabaseMetaData#getTypeInfo()} must expose, in JDBC ordinal order. */
+  private static final List<String> TYPE_INFO_COLUMNS =
+      ImmutableList.of(
+          "TYPE_NAME",
+          "DATA_TYPE",
+          "PRECISION",
+          "LITERAL_PREFIX",
+          "LITERAL_SUFFIX",
+          "CREATE_PARAMS",
+          "NULLABLE",
+          "CASE_SENSITIVE",
+          "SEARCHABLE",
+          "UNSIGNED_ATTRIBUTE",
+          "FIXED_PREC_SCALE",
+          "AUTO_INCREMENT",
+          "LOCAL_TYPE_NAME",
+          "MINIMUM_SCALE",
+          "MAXIMUM_SCALE",
+          "SQL_DATA_TYPE",
+          "SQL_DATETIME_SUB",
+          "NUM_PREC_RADIX");
+
+  /**
+   * The JDBC types of the 18 {@code getTypeInfo()} columns: {@code NULLABLE}, {@code SEARCHABLE},
+   * {@code MINIMUM_SCALE} and {@code MAXIMUM_SCALE} are {@code short} per the JDBC specification,
+   * and {@code CREATE_PARAMS} is a comma separated {@code String} (never a list).
+   */
+  private static final List<Integer> TYPE_INFO_COLUMN_TYPES =
+      ImmutableList.of(
+          VARCHAR, INTEGER, INTEGER, VARCHAR, VARCHAR, VARCHAR, SMALLINT, BOOLEAN, SMALLINT,
+          BOOLEAN, BOOLEAN, BOOLEAN, VARCHAR, SMALLINT, SMALLINT, INTEGER, INTEGER, INTEGER);
+
+  /** The type names the server sends, in server preference order (same type keeps its order). */
+  private static final List<String> EXPECTED_TYPE_INFO_TYPE_NAMES =
+      ImmutableList.of("BIT", "TINYINT", "DECIMAL", "INTEGER", "INT", "VARCHAR", "TIMESTAMP");
+
+  /**
+   * Canonical {@code GetXdbcTypeInfo} rows served by {@link #FLIGHT_SQL_PRODUCER}, in the exact
+   * order the server sends them: one {@code Object[19]} per row, ordered like {@link
+   * Schemas#GET_TYPE_INFO_SCHEMA} (the trailing {@code interval_precision} has no JDBC column).
+   *
+   * <p>Rows are sorted by {@code data_type} ascending, and the two {@code INTEGER} rows pin the
+   * stable server preference ("INTEGER" before its "INT" alias). The {@code create_params} values
+   * cover the three required shapes: a non-empty list, an empty list and a NULL list.
+   */
+  private static final List<Object[]> EXPECTED_TYPE_INFO_SERVER_ROWS =
+      ImmutableList.of(
+          // BIT: empty create_params list -> empty string, optional columns NULL.
+          new Object[] {
+            "BIT",
+            BIT,
+            null,
+            null,
+            null,
+            ImmutableList.of(),
+            0,
+            false,
+            0,
+            null,
+            false,
+            null,
+            null,
+            null,
+            null,
+            0,
+            null,
+            null,
+            null
+          },
+          // TINYINT: NULL create_params list -> NULL, all optional numeric columns NULL.
+          new Object[] {
+            "TINYINT", TINYINT, 3, null, null, null, 2, false, 3, null, false, null, null, 0, 0, 0,
+            null, 10, null
+          },
+          // DECIMAL: [PRECISION, SCALE] -> "PRECISION,SCALE".
+          new Object[] {
+            "DECIMAL",
+            DECIMAL,
+            10,
+            null,
+            null,
+            ImmutableList.of("PRECISION", "SCALE"),
+            1,
+            false,
+            3,
+            null,
+            false,
+            null,
+            "DECIMAL",
+            0,
+            10,
+            0,
+            null,
+            10,
+            null
+          },
+          // INTEGER: empty create_params list (first of the two INTEGER rows).
+          new Object[] {
+            "INTEGER",
+            INTEGER,
+            10,
+            null,
+            null,
+            ImmutableList.of(),
+            1,
+            false,
+            3,
+            null,
+            false,
+            true,
+            "INTEGER",
+            0,
+            0,
+            0,
+            null,
+            10,
+            null
+          },
+          // INT: same data_type as INTEGER, keeps the server preference order.
+          new Object[] {
+            "INT", INTEGER, 10, null, null, null, 1, false, 3, true, false, false, null, 0, 0, 0,
+            null, 10, 32
+          },
+          // VARCHAR: literal prefixes/suffixes, [LENGTH] -> "LENGTH", NULL scales.
+          new Object[] {
+            "VARCHAR",
+            VARCHAR,
+            255,
+            "'",
+            "'",
+            ImmutableList.of("LENGTH"),
+            1,
+            true,
+            3,
+            null,
+            false,
+            null,
+            "VARCHAR",
+            null,
+            null,
+            12,
+            null,
+            null,
+            12
+          },
+          // TIMESTAMP: datetime subcode set, NULL num_prec_radix.
+          new Object[] {
+            "TIMESTAMP",
+            TIMESTAMP,
+            29,
+            null,
+            null,
+            ImmutableList.of("precision"),
+            0,
+            false,
+            3,
+            null,
+            false,
+            null,
+            "TIMESTAMP",
+            0,
+            9,
+            0,
+            6,
+            null,
+            null
+          });
+
   public final ResultSetTestUtils resultSetTestUtils = new ResultSetTestUtils();
 
   @BeforeAll
   public static void setUpBeforeClass() throws SQLException {
     connection = FLIGHT_SERVER_TEST_EXTENSION.getConnection(false);
+
+    final Message commandGetXdbcTypeInfo = FlightSql.CommandGetXdbcTypeInfo.getDefaultInstance();
+    FLIGHT_SQL_PRODUCER.addTypeInfoQuery(
+        commandGetXdbcTypeInfo, typeInfoResultProducer(EXPECTED_TYPE_INFO_SERVER_ROWS));
+    FLIGHT_SQL_PRODUCER_EMPTY_TYPE_INFO.addTypeInfoQuery(
+        commandGetXdbcTypeInfo, typeInfoResultProducer(Collections.emptyList()));
+    FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_FAILURE.setTypeInfoFlightInfoFailure(
+        CallStatus.INTERNAL.withDescription("GetXdbcTypeInfo is unavailable"));
+    FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_FAILURE.setTypeInfoStreamFailure(
+        CallStatus.INTERNAL.withDescription("GetXdbcTypeInfo streams are unavailable"));
+    FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_INFO_UNIMPLEMENTED.setTypeInfoFlightInfoFailure(
+        CallStatus.UNIMPLEMENTED.withDescription("GetXdbcTypeInfo is unimplemented"));
+    FLIGHT_SQL_PRODUCER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED.setTypeInfoStreamFailure(
+        CallStatus.UNIMPLEMENTED.withDescription("GetXdbcTypeInfo streams are unimplemented"));
 
     final Message commandGetCatalogs = CommandGetCatalogs.getDefaultInstance();
     final Consumer<ServerStreamListener> commandGetCatalogsResultProducer =
@@ -1180,31 +1412,179 @@ public class ArrowDatabaseMetadataTest {
   @Test
   public void testGetTypeInfo() throws SQLException {
     try (ResultSet resultSet = connection.getMetaData().getTypeInfo()) {
-      // Maps ordinal index to column name according to JDBC documentation
-      final Map<Integer, String> expectedGetTypeInfoSchema =
-          new HashMap<Integer, String>() {
-            {
-              put(1, "TYPE_NAME");
-              put(2, "DATA_TYPE");
-              put(3, "PRECISION");
-              put(4, "LITERAL_PREFIX");
-              put(5, "LITERAL_SUFFIX");
-              put(6, "CREATE_PARAMS");
-              put(7, "NULLABLE");
-              put(8, "CASE_SENSITIVE");
-              put(9, "SEARCHABLE");
-              put(10, "UNSIGNED_ATTRIBUTE");
-              put(11, "FIXED_PREC_SCALE");
-              put(12, "AUTO_INCREMENT");
-              put(13, "LOCAL_TYPE_NAME");
-              put(14, "MINIMUM_SCALE");
-              put(15, "MAXIMUM_SCALE");
-              put(16, "SQL_DATA_TYPE");
-              put(17, "SQL_DATETIME_SUB");
-              put(18, "NUM_PREC_RADIX");
+      assertTypeInfoSchema(resultSet.getMetaData());
+      ResultSetTestUtils.testData(resultSet, TYPE_INFO_COLUMNS, expectedTypeInfoRows());
+    }
+  }
+
+  @Test
+  public void testGetTypeInfoRowsAreOrderedByDataTypeAscending() throws SQLException {
+    try (ResultSet resultSet = connection.getMetaData().getTypeInfo()) {
+      final List<String> actualTypeNames = new ArrayList<>();
+      int previousDataType = Integer.MIN_VALUE;
+      while (resultSet.next()) {
+        final int dataType = resultSet.getInt("DATA_TYPE");
+        assertTrue(
+            dataType >= previousDataType,
+            format(
+                "getTypeInfo rows must be ordered by DATA_TYPE ascending, but %d came after %d",
+                dataType, previousDataType));
+        previousDataType = dataType;
+        actualTypeNames.add(resultSet.getString("TYPE_NAME"));
+      }
+
+      assertEquals(EXPECTED_TYPE_INFO_SERVER_ROWS.size(), actualTypeNames.size());
+      // Rows sharing a DATA_TYPE keep the order (server preference) they were received in.
+      assertEquals(EXPECTED_TYPE_INFO_TYPE_NAMES, actualTypeNames);
+    }
+  }
+
+  @Test
+  public void testGetTypeInfoCreateParamsConversion() throws SQLException {
+    try (ResultSet resultSet = connection.getMetaData().getTypeInfo()) {
+      final Map<String, Object> createParamsByTypeName = new LinkedHashMap<>();
+      final Map<String, Boolean> wasNullByTypeName = new LinkedHashMap<>();
+      while (resultSet.next()) {
+        final String typeName = resultSet.getString("TYPE_NAME");
+        final Object createParams = resultSet.getObject("CREATE_PARAMS");
+        wasNullByTypeName.put(typeName, resultSet.wasNull());
+        createParamsByTypeName.put(typeName, createParams);
+
+        if (createParams != null) {
+          assertTrue(
+              createParams instanceof String,
+              format(
+                  "CREATE_PARAMS must be a String for %s, but was %s",
+                  typeName, createParams.getClass().getName()));
+        }
+      }
+
+      // A list of parameters is joined into a comma separated String, in list order.
+      assertEquals("PRECISION,SCALE", createParamsByTypeName.get("DECIMAL"));
+      assertEquals("LENGTH", createParamsByTypeName.get("VARCHAR"));
+      assertEquals("precision", createParamsByTypeName.get("TIMESTAMP"));
+
+      // An empty list is an empty String, which is not NULL.
+      assertEquals("", createParamsByTypeName.get("BIT"));
+      assertEquals(Boolean.FALSE, wasNullByTypeName.get("BIT"));
+
+      // A NULL list stays NULL, and is not conflated with the empty String.
+      assertNull(createParamsByTypeName.get("TINYINT"));
+      assertEquals(Boolean.TRUE, wasNullByTypeName.get("TINYINT"));
+
+      // The Flight schema's trailing interval_precision must not be exposed as a 19th column.
+      assertEquals(18, resultSet.getMetaData().getColumnCount());
+    }
+  }
+
+  @Test
+  public void testGetTypeInfoUnknownPrecision() throws SQLException {
+    try (ResultSet resultSet = connection.getMetaData().getTypeInfo()) {
+      assertTrue(resultSet.next());
+      assertEquals("BIT", resultSet.getString("TYPE_NAME"));
+      assertNull(resultSet.getObject("PRECISION"));
+      assertTrue(resultSet.wasNull());
+      assertEquals(0, resultSet.getInt("PRECISION"));
+      assertTrue(resultSet.wasNull());
+    }
+  }
+
+  @Test
+  public void testGetTypeInfoEmpty() throws Exception {
+    try (Connection emptyTypeInfoConnection =
+            FLIGHT_SERVER_EMPTY_TYPE_INFO_TEST_RULE.getConnection(false);
+        ResultSet resultSet = emptyTypeInfoConnection.getMetaData().getTypeInfo()) {
+      assertTypeInfoSchema(resultSet.getMetaData());
+      assertFalse(resultSet.next(), "a server without type info rows must return no rows");
+    }
+  }
+
+  @Test
+  public void testGetTypeInfoGetFlightInfoFailure() throws Exception {
+    try (Connection failingConnection =
+        FLIGHT_SERVER_TYPE_INFO_GET_INFO_FAILURE_TEST_RULE.getConnection(false)) {
+      assertTypeInfoCallFails(failingConnection);
+    }
+  }
+
+  @Test
+  public void testGetTypeInfoGetStreamFailure() throws Exception {
+    try (Connection failingConnection =
+        FLIGHT_SERVER_TYPE_INFO_GET_STREAM_FAILURE_TEST_RULE.getConnection(false)) {
+      assertTypeInfoCallFails(failingConnection);
+    }
+  }
+
+  /**
+   * A server that reports {@link CallStatus#UNIMPLEMENTED} while fetching the type info {@code
+   * FlightInfo} must keep the historical JDBC contract: the empty 18 column result of {@code
+   * super.getTypeInfo()}, not a {@link SQLException}.
+   */
+  @Test
+  public void testGetTypeInfoGetFlightInfoUnimplementedFallsBack() throws Exception {
+    try (Connection unimplementedConnection =
+        FLIGHT_SERVER_TYPE_INFO_GET_INFO_UNIMPLEMENTED_TEST_RULE.getConnection(false)) {
+      assertTypeInfoUnimplementedFallsBack(unimplementedConnection);
+    }
+  }
+
+  /**
+   * A server that reports {@link CallStatus#UNIMPLEMENTED} while the type info stream is
+   * initialized must keep the historical JDBC contract: the empty 18 column result of {@code
+   * super.getTypeInfo()}, not a {@link SQLException}.
+   */
+  @Test
+  public void testGetTypeInfoGetStreamUnimplementedFallsBack() throws Exception {
+    try (Connection unimplementedConnection =
+        FLIGHT_SERVER_TYPE_INFO_GET_STREAM_UNIMPLEMENTED_TEST_RULE.getConnection(false)) {
+      assertTypeInfoUnimplementedFallsBack(unimplementedConnection);
+    }
+  }
+
+  @Test
+  public void testGetTypeInfoReleasesResources() throws Exception {
+    // Normal close after consuming every row.
+    assertTypeInfoMemoryReleased(
+        resultSet -> ResultSetTestUtils.testData(resultSet, expectedTypeInfoRows()));
+    // Early close while rows are still pending.
+    assertTypeInfoMemoryReleased(
+        resultSet -> {
+          assertTrue(resultSet.next());
+          resultSet.getString("TYPE_NAME");
+        });
+    // Repeated next() calls after the last row are stable and do not leak.
+    assertTypeInfoMemoryReleased(
+        resultSet -> {
+          while (resultSet.next()) {
+            resultSet.getString("TYPE_NAME");
+          }
+          assertFalse(resultSet.next());
+          assertFalse(resultSet.next());
+        });
+  }
+
+  @Test
+  public void testGetTypeInfoReleasesResourcesOnStreamFailure() throws Exception {
+    try (Connection failingConnection =
+        FLIGHT_SERVER_TYPE_INFO_GET_STREAM_FAILURE_TEST_RULE.getConnection(false)) {
+      final BufferAllocator allocator =
+          ((ArrowFlightConnection) failingConnection).getBufferAllocator();
+      final long baseline = allocator.getAllocatedMemory();
+
+      ThrowableAssertionUtils.simpleAssertThrowableClass(
+          SQLException.class,
+          () -> {
+            try (ResultSet resultSet = failingConnection.getMetaData().getTypeInfo()) {
+              while (resultSet.next()) {
+                resultSet.getString("TYPE_NAME");
+              }
             }
-          };
-      testEmptyResultSet(resultSet, expectedGetTypeInfoSchema);
+          });
+
+      assertEquals(
+          baseline,
+          waitForAllocatedMemory(allocator, baseline),
+          "a failed type info stream must release its buffers");
     }
   }
 
@@ -1425,6 +1805,234 @@ public class ArrowDatabaseMetadataTest {
     for (final Map.Entry<Integer, String> entry : expectedResultSetSchema.entrySet()) {
       assertEquals(entry.getValue(), resultSetMetaData.getColumnLabel(entry.getKey()));
     }
+  }
+
+  /**
+   * Asserts the JDBC contract of the 18 {@code getTypeInfo()} columns: exact labels, exact ordinals
+   * and exact JDBC types (so a metadata type mismatch fails here rather than silently coercing).
+   */
+  private static void assertTypeInfoSchema(final ResultSetMetaData resultSetMetaData)
+      throws SQLException {
+    assertEquals(18, resultSetMetaData.getColumnCount());
+    for (int ordinal = 1; ordinal <= TYPE_INFO_COLUMNS.size(); ordinal++) {
+      assertEquals(
+          TYPE_INFO_COLUMNS.get(ordinal - 1),
+          resultSetMetaData.getColumnLabel(ordinal),
+          format("unexpected column label at ordinal %d", ordinal));
+      assertEquals(
+          TYPE_INFO_COLUMN_TYPES.get(ordinal - 1),
+          resultSetMetaData.getColumnType(ordinal),
+          format(
+              "unexpected JDBC type for column %s at ordinal %d",
+              TYPE_INFO_COLUMNS.get(ordinal - 1), ordinal));
+    }
+  }
+
+  /**
+   * Asserts that {@code getTypeInfo()} fails with a {@link SQLException}, whether the server error
+   * surfaces while fetching the {@code FlightInfo} or while streaming the rows.
+   */
+  private static void assertTypeInfoCallFails(final Connection metadataConnection) {
+    ThrowableAssertionUtils.simpleAssertThrowableClass(
+        SQLException.class,
+        () -> {
+          try (ResultSet resultSet = metadataConnection.getMetaData().getTypeInfo()) {
+            while (resultSet.next()) {
+              resultSet.getString("TYPE_NAME");
+            }
+          }
+        });
+  }
+
+  /**
+   * Asserts that a server which reports {@link CallStatus#UNIMPLEMENTED} for type info still
+   * satisfies the JDBC fallback contract: {@code getTypeInfo()} does not throw, exposes the 18
+   * empty {@code super.getTypeInfo()} columns, returns no rows and releases its buffers on close.
+   */
+  private static void assertTypeInfoUnimplementedFallsBack(final Connection metadataConnection)
+      throws Exception {
+    final BufferAllocator allocator =
+        ((ArrowFlightConnection) metadataConnection).getBufferAllocator();
+    final long baseline = allocator.getAllocatedMemory();
+
+    assertDoesNotThrow(
+        () -> {
+          try (ResultSet resultSet = metadataConnection.getMetaData().getTypeInfo()) {
+            assertTypeInfoSchema(resultSet.getMetaData());
+            assertFalse(resultSet.next(), "a server without type info support must return no rows");
+          }
+        },
+        "unimplemented type info must fall back to the empty JDBC result instead of failing");
+
+    assertEquals(
+        baseline,
+        waitForAllocatedMemory(allocator, baseline),
+        "the fallback type info result set must release its buffers when closed");
+  }
+
+  /**
+   * Runs {@code consumer} against {@code getTypeInfo()} and asserts the connection allocator
+   * returns to the memory baseline it had before the call, once the {@link ResultSet} is closed.
+   */
+  private static void assertTypeInfoMemoryReleased(final TypeInfoResultSetConsumer consumer)
+      throws Exception {
+    try (Connection cleanupConnection = FLIGHT_SERVER_TEST_EXTENSION.getConnection(false)) {
+      final BufferAllocator allocator =
+          ((ArrowFlightConnection) cleanupConnection).getBufferAllocator();
+      final long baseline = allocator.getAllocatedMemory();
+      try (ResultSet resultSet = cleanupConnection.getMetaData().getTypeInfo()) {
+        consumer.accept(resultSet);
+      }
+      assertEquals(
+          baseline,
+          waitForAllocatedMemory(allocator, baseline),
+          "the type info result set must release its buffers when closed");
+    }
+  }
+
+  /**
+   * Stream buffers may be released shortly after the logical close, so poll briefly before failing.
+   */
+  private static long waitForAllocatedMemory(final BufferAllocator allocator, final long baseline)
+      throws InterruptedException {
+    long allocated = allocator.getAllocatedMemory();
+    for (int attempt = 0; attempt < 100 && allocated > baseline; attempt++) {
+      Thread.sleep(20L);
+      allocated = allocator.getAllocatedMemory();
+    }
+    return allocated;
+  }
+
+  /** The JDBC view of the canonical server rows: 18 columns, {@code CREATE_PARAMS} stringified. */
+  private static List<List<Object>> expectedTypeInfoRows() {
+    return EXPECTED_TYPE_INFO_SERVER_ROWS.stream()
+        .map(ArrowDatabaseMetadataTest::expectedTypeInfoRow)
+        .collect(toList());
+  }
+
+  @SuppressWarnings("unchecked")
+  private static List<Object> expectedTypeInfoRow(final Object[] serverRow) {
+    final List<String> createParams = (List<String>) serverRow[5];
+    return Arrays.asList(
+        serverRow[0],
+        serverRow[1],
+        serverRow[2],
+        serverRow[3],
+        serverRow[4],
+        createParams == null ? null : String.join(",", createParams),
+        toJdbcShort(serverRow[6]),
+        serverRow[7],
+        toJdbcShort(serverRow[8]),
+        serverRow[9],
+        serverRow[10],
+        serverRow[11],
+        serverRow[12],
+        toJdbcShort(serverRow[13]),
+        toJdbcShort(serverRow[14]),
+        serverRow[15],
+        serverRow[16],
+        serverRow[17]);
+  }
+
+  /** {@code NULLABLE}, {@code SEARCHABLE} and the scale columns are {@code short} in JDBC. */
+  private static Short toJdbcShort(final Object value) {
+    return value == null ? null : ((Integer) value).shortValue();
+  }
+
+  /** Builds a real {@code GetXdbcTypeInfo} result stream for the given rows, in server order. */
+  private static Consumer<ServerStreamListener> typeInfoResultProducer(final List<Object[]> rows) {
+    return listener -> {
+      try (final BufferAllocator allocator = new RootAllocator();
+          final VectorSchemaRoot root =
+              VectorSchemaRoot.create(Schemas.GET_TYPE_INFO_SCHEMA, allocator)) {
+        listener.start(root);
+        for (int start = 0; start < Math.max(1, rows.size()); start += 4) {
+          root.clear();
+          root.allocateNew();
+          final int batchSize = Math.min(4, rows.size() - start);
+          for (int row = 0; row < batchSize; row++) {
+            final Object[] values = rows.get(start + row);
+            setVarCharValue(root, "type_name", row, (String) values[0]);
+            setIntValue(root, "data_type", row, (Integer) values[1]);
+            setIntValue(root, "column_size", row, (Integer) values[2]);
+            setVarCharValue(root, "literal_prefix", row, (String) values[3]);
+            setVarCharValue(root, "literal_suffix", row, (String) values[4]);
+            setCreateParamsValue(root, "create_params", row, (List<?>) values[5]);
+            setIntValue(root, "nullable", row, (Integer) values[6]);
+            setBitValue(root, "case_sensitive", row, (Boolean) values[7]);
+            setIntValue(root, "searchable", row, (Integer) values[8]);
+            setBitValue(root, "unsigned_attribute", row, (Boolean) values[9]);
+            setBitValue(root, "fixed_prec_scale", row, (Boolean) values[10]);
+            setBitValue(root, "auto_increment", row, (Boolean) values[11]);
+            setVarCharValue(root, "local_type_name", row, (String) values[12]);
+            setIntValue(root, "minimum_scale", row, (Integer) values[13]);
+            setIntValue(root, "maximum_scale", row, (Integer) values[14]);
+            setIntValue(root, "sql_data_type", row, (Integer) values[15]);
+            setIntValue(root, "datetime_subcode", row, (Integer) values[16]);
+            setIntValue(root, "num_prec_radix", row, (Integer) values[17]);
+            setIntValue(root, "interval_precision", row, (Integer) values[18]);
+          }
+          root.setRowCount(batchSize);
+          listener.putNext();
+        }
+      } catch (final Throwable throwable) {
+        listener.error(throwable);
+      } finally {
+        listener.completed();
+      }
+    };
+  }
+
+  private static void setVarCharValue(
+      final VectorSchemaRoot root, final String column, final int row, final String value) {
+    final VarCharVector vector = (VarCharVector) root.getVector(column);
+    if (value == null) {
+      vector.setNull(row);
+    } else {
+      vector.setSafe(row, new Text(value));
+    }
+  }
+
+  private static void setIntValue(
+      final VectorSchemaRoot root, final String column, final int row, final Integer value) {
+    final IntVector vector = (IntVector) root.getVector(column);
+    if (value == null) {
+      vector.setNull(row);
+    } else {
+      vector.setSafe(row, value);
+    }
+  }
+
+  private static void setBitValue(
+      final VectorSchemaRoot root, final String column, final int row, final Boolean value) {
+    final BitVector vector = (BitVector) root.getVector(column);
+    if (value == null) {
+      vector.setNull(row);
+    } else {
+      vector.setSafe(row, value ? 1 : 0);
+    }
+  }
+
+  private static void setCreateParamsValue(
+      final VectorSchemaRoot root, final String column, final int row, final List<?> values) {
+    final ListVector vector = (ListVector) root.getVector(column);
+    final VarCharVector child = (VarCharVector) vector.getDataVector();
+    final int start = vector.startNewValue(row);
+    if (values == null) {
+      vector.setNull(row);
+      vector.endValue(row, 0);
+      return;
+    }
+    for (int i = 0; i < values.size(); i++) {
+      child.setSafe(start + i, new Text((String) values.get(i)));
+    }
+    vector.endValue(row, values.size());
+  }
+
+  /** A {@link ResultSet} consumer that may throw, used by the resource cleanup tests. */
+  @FunctionalInterface
+  private interface TypeInfoResultSetConsumer {
+    void accept(ResultSet resultSet) throws SQLException;
   }
 
   @Test
