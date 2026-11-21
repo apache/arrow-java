@@ -68,6 +68,11 @@ class ArrowMessage implements AutoCloseable {
   // If true, serialize Arrow data by giving gRPC a reference to the underlying Arrow buffer
   // instead of copying the data. Defaults to false.
   public static final boolean ENABLE_ZERO_COPY_WRITE;
+  // Maximum nesting depth of groups in unknown fields that are skipped. Defaults to 100, like the
+  // recursion limit of protobuf-java.
+  static final int MAX_PROTOBUF_SKIP_GROUP_DEPTH;
+
+  private static final int DEFAULT_MAX_PROTOBUF_SKIP_GROUP_DEPTH = 100;
 
   static {
     String zeroCopyReadFlag = System.getProperty("arrow.flight.enable_zero_copy_read");
@@ -80,6 +85,31 @@ class ArrowMessage implements AutoCloseable {
     }
     ENABLE_ZERO_COPY_READ = !"false".equalsIgnoreCase(zeroCopyReadFlag);
     ENABLE_ZERO_COPY_WRITE = "true".equalsIgnoreCase(zeroCopyWriteFlag);
+
+    String maxGroupDepth = System.getProperty("arrow.flight.max_protobuf_skip_group_depth");
+    if (maxGroupDepth == null) {
+      maxGroupDepth = System.getenv("ARROW_FLIGHT_MAX_PROTOBUF_SKIP_GROUP_DEPTH");
+    }
+    MAX_PROTOBUF_SKIP_GROUP_DEPTH = parseMaxGroupDepth(maxGroupDepth);
+  }
+
+  private static int parseMaxGroupDepth(String value) {
+    if (value == null) {
+      return DEFAULT_MAX_PROTOBUF_SKIP_GROUP_DEPTH;
+    }
+    try {
+      final int depth = Integer.parseInt(value.trim());
+      if (depth >= 0) {
+        return depth;
+      }
+    } catch (NumberFormatException e) {
+      // fall through to the default
+    }
+    LOG.warn(
+        "Invalid maximum protobuf group depth '{}', using the default of {}",
+        value,
+        DEFAULT_MAX_PROTOBUF_SKIP_GROUP_DEPTH);
+    return DEFAULT_MAX_PROTOBUF_SKIP_GROUP_DEPTH;
   }
 
   private static final Marshaller<FlightData> NO_BODY_MARSHALLER =

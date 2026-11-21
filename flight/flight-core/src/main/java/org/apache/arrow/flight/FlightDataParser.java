@@ -57,6 +57,9 @@ final class FlightDataParser {
       (FlightData.DATA_BODY_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
   private static final int APP_METADATA_TAG =
       (FlightData.APP_METADATA_FIELD_NUMBER << 3) | WireFormat.WIRETYPE_LENGTH_DELIMITED;
+  private static final int FIXED32_SIZE = 4;
+  private static final int FIXED64_SIZE = 8;
+  private static final int MAX_VARINT_SIZE = 10;
 
   private static int validateFieldLength(int size) throws IOException {
     if (size < 0) {
@@ -73,13 +76,27 @@ final class FlightDataParser {
     return size;
   }
 
-  private static IOException fieldTooLong(int size, int remaining) {
+  private static IOException fieldTooLong(long size, long remaining) {
     return new IOException(
         "Malformed FlightData frame: field length "
             + size
             + " exceeds "
             + remaining
             + " bytes remaining in the message");
+  }
+
+  private static void skipFully(InputStream stream, long size) throws IOException {
+    long remaining = size;
+    while (remaining > 0) {
+      long skipped = stream.skip(remaining);
+      if (skipped > 0) {
+        remaining -= skipped;
+      } else if (stream.read() == -1) {
+        throw fieldTooLong(size, size - remaining);
+      } else {
+        remaining--;
+      }
+    }
   }
 
   /** Base class for FlightData readers with common parsing logic. */
@@ -144,22 +161,23 @@ final class FlightDataParser {
         if (tag == -1) {
           break;
         }
-        int size = readLength();
         switch (tag) {
           case DESCRIPTOR_TAG:
             {
-              byte[] bytes = readBytes(size);
+              byte[] bytes = readBytes(readLength());
               descriptor = FlightDescriptor.parseFrom(bytes);
               break;
             }
           case HEADER_TAG:
             {
+              int size = readLength();
               byte[] bytes = readBytes(size);
               header = MessageMetadataResult.create(ByteBuffer.wrap(bytes), size);
               break;
             }
           case APP_METADATA_TAG:
             {
+              int size = readLength();
               // Called before reading a new value to handle duplicate protobuf fields
               // (last occurrence wins per spec) and prevent memory leaks.
               closeAppMetadata();
@@ -168,6 +186,7 @@ final class FlightDataParser {
             }
           case BODY_TAG:
             {
+              int size = readLength();
               // Called before reading a new value to handle duplicate protobuf fields
               // (last occurrence wins per spec) and prevent memory leaks.
               closeBody();
@@ -175,9 +194,81 @@ final class FlightDataParser {
               break;
             }
           default:
-            // ignore unknown fields
+            // As in protobuf, unknown fields and known field numbers with a different wire type
+            // are skipped.
+            skipField(tag, 0);
         }
       }
+    }
+
+    private void skipField(int tag, int depth) throws IOException {
+      switch (WireFormat.getTagWireType(tag)) {
+        case WireFormat.WIRETYPE_VARINT:
+          skipVarint();
+          break;
+        case WireFormat.WIRETYPE_FIXED64:
+          skipBytes(FIXED64_SIZE);
+          break;
+        case WireFormat.WIRETYPE_LENGTH_DELIMITED:
+          skipBytes(readLength());
+          break;
+        case WireFormat.WIRETYPE_START_GROUP:
+          if (depth >= ArrowMessage.MAX_PROTOBUF_SKIP_GROUP_DEPTH) {
+            throw new IOException(
+                "Malformed FlightData frame: groups nested deeper than "
+                    + ArrowMessage.MAX_PROTOBUF_SKIP_GROUP_DEPTH
+                    + " levels");
+          }
+          skipGroup(WireFormat.getTagFieldNumber(tag), depth + 1);
+          break;
+        case WireFormat.WIRETYPE_FIXED32:
+          skipBytes(FIXED32_SIZE);
+          break;
+        default:
+          throw new IOException(
+              "Malformed FlightData frame: unexpected wire type "
+                  + WireFormat.getTagWireType(tag)
+                  + " for field "
+                  + WireFormat.getTagFieldNumber(tag));
+      }
+    }
+
+    private void skipGroup(int fieldNumber, int depth) throws IOException {
+      while (hasRemaining()) {
+        int tag = readTag();
+        if (tag < 0) {
+          break;
+        }
+        if (tag == 0) {
+          throw new IOException("Malformed FlightData frame: invalid tag 0 in group " + fieldNumber);
+        }
+        if (WireFormat.getTagWireType(tag) == WireFormat.WIRETYPE_END_GROUP) {
+          if (WireFormat.getTagFieldNumber(tag) != fieldNumber) {
+            throw new IOException(
+                "Malformed FlightData frame: group "
+                    + fieldNumber
+                    + " ended by group "
+                    + WireFormat.getTagFieldNumber(tag));
+          }
+          return;
+        }
+        skipField(tag, depth);
+      }
+      throw new IOException("Malformed FlightData frame: unterminated group " + fieldNumber);
+    }
+
+    private void skipVarint() throws IOException {
+      for (int i = 0; i < MAX_VARINT_SIZE; i++) {
+        int b = readByte();
+        if (b == -1) {
+          throw new IOException("Malformed FlightData frame: truncated varint");
+        }
+        if ((b & 0x80) == 0) {
+          return;
+        }
+      }
+      throw new IOException(
+          "Malformed FlightData frame: varint longer than " + MAX_VARINT_SIZE + " bytes");
     }
 
     /** Returns true if there is more data to read. */
@@ -194,6 +285,12 @@ final class FlightDataParser {
 
     /** Reads the specified number of bytes into an ArrowBuf. */
     protected abstract ArrowBuf readBuffer(int size) throws IOException;
+
+    /** Reads one byte, or returns -1 at end of input. */
+    protected abstract int readByte() throws IOException;
+
+    /** Skips exactly the specified number of bytes. */
+    protected abstract void skipBytes(int size) throws IOException;
 
     /** Additional resources that should be transferred to the parsed ArrowMessage. */
     protected BufferAllocator getMessageAllocator() {
@@ -242,6 +339,16 @@ final class FlightDataParser {
         return -1;
       }
       return CodedInputStream.readRawVarint32(tagFirstByte, stream);
+    }
+
+    @Override
+    protected int readByte() throws IOException {
+      return stream.read();
+    }
+
+    @Override
+    protected void skipBytes(int size) throws IOException {
+      skipFully(stream, size);
     }
 
     @Override
@@ -383,8 +490,17 @@ final class FlightDataParser {
 
     @Override
     protected int readTag() throws IOException {
-      int tag = codedInput.readTag();
-      return tag == 0 ? -1 : tag;
+      return codedInput.isAtEnd() ? -1 : codedInput.readTag();
+    }
+
+    @Override
+    protected int readByte() throws IOException {
+      return codedInput.readRawByte() & 0xFF;
+    }
+
+    @Override
+    protected void skipBytes(int size) throws IOException {
+      codedInput.skipRawBytes(size);
     }
 
     @Override
