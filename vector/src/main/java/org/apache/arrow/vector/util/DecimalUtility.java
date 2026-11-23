@@ -45,9 +45,17 @@ public class DecimalUtility {
    */
   public static BigDecimal getBigDecimalFromArrowBuf(
       ArrowBuf bytebuf, int index, int scale, int byteWidth) {
+    return getBigDecimalFromArrowBufAtOffset(bytebuf, (long) index * byteWidth, scale, byteWidth);
+  }
+
+  /**
+   * Read an ArrowType.Decimal at the given byte offset in the ArrowBuf and convert to a BigDecimal
+   * with the given scale.
+   */
+  public static BigDecimal getBigDecimalFromArrowBufAtOffset(
+      ArrowBuf bytebuf, long startIndex, int scale, int byteWidth) {
     byte[] value = new byte[byteWidth];
     byte temp;
-    final long startIndex = (long) index * byteWidth;
 
     bytebuf.getBytes(startIndex, value, 0, byteWidth);
     if (LITTLE_ENDIAN) {
