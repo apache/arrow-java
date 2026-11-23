@@ -67,6 +67,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#getBigDecimalFromArrowBuf(org.apache.arrow.memory.ArrowBuf,int,int,int)" tabindex="0">getBigDecimalFromArrowBuf(ArrowBuf, int, int, int)</a></li>
+<li><a href="#getBigDecimalFromArrowBufAtOffset(org.apache.arrow.memory.ArrowBuf,long,int,int)" tabindex="0">getBigDecimalFromArrowBufAtOffset(ArrowBuf, long, int, int)</a></li>
 <li><a href="#getBigDecimalFromByteBuffer(java.nio.ByteBuffer,int,int)" tabindex="0">getBigDecimalFromByteBuffer(ByteBuffer, int, int)</a></li>
 <li><a href="#getByteArrayFromArrowBuf(org.apache.arrow.memory.ArrowBuf,int,int)" tabindex="0">getByteArrayFromArrowBuf(ArrowBuf, int, int)</a></li>
 <li><a href="#checkPrecisionAndScale(java.math.BigDecimal,int,int)" tabindex="0">checkPrecisionAndScale(BigDecimal, int, int)</a></li>
@@ -161,42 +162,51 @@ less than or equal to the vectorPrecision.</div>
 with the given scale.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getBigDecimalFromByteBuffer(java.nio.ByteBuffer,int,int)" class="member-name-link">getBigDecimalFromByteBuffer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;bytebuf,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getBigDecimalFromArrowBufAtOffset(org.apache.arrow.memory.ArrowBuf,long,int,int)" class="member-name-link">getBigDecimalFromArrowBufAtOffset</a><wbr>(<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
+ long&nbsp;startIndex,
  int&nbsp;scale,
  int&nbsp;byteWidth)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Read an ArrowType.Decimal from the ByteBuffer and convert to a BigDecimal with the given scale.</div>
+<div class="block">Read an ArrowType.Decimal at the given byte offset in the ArrowBuf and convert to a BigDecimal
+with the given scale.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static byte[]</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getByteArrayFromArrowBuf(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getByteArrayFromArrowBuf</a><wbr>(<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
- int&nbsp;index,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getBigDecimalFromByteBuffer(java.nio.ByteBuffer,int,int)" class="member-name-link">getBigDecimalFromByteBuffer</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/ByteBuffer.html" title="class or interface in java.nio" class="external-link">ByteBuffer</a>&nbsp;bytebuf,
+ int&nbsp;scale,
  int&nbsp;byteWidth)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Read an ArrowType.Decimal from the ByteBuffer and convert to a BigDecimal with the given scale.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static byte[]</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#getByteArrayFromArrowBuf(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getByteArrayFromArrowBuf</a><wbr>(<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
+ int&nbsp;index,
+ int&nbsp;byteWidth)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Read an ArrowType.Decimal from the ArrowBuf at the given value index and return it as a byte
 array.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeBigDecimalToArrowBuf(java.math.BigDecimal,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeBigDecimalToArrowBuf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value,
- <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
- int&nbsp;index,
- int&nbsp;byteWidth)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Write the given BigDecimal to the ArrowBuf at the given value index.</div>
-</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeByteArrayToArrowBuf(byte%5B%5D,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeByteArrayToArrowBuf</a><wbr>(byte[]&nbsp;bytes,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeBigDecimalToArrowBuf(java.math.BigDecimal,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeBigDecimalToArrowBuf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
  int&nbsp;index,
  int&nbsp;byteWidth)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
-<div class="block">Write the given byte array to the ArrowBuf at the given value index.</div>
+<div class="block">Write the given BigDecimal to the ArrowBuf at the given value index.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeLongToArrowBuf(long,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeLongToArrowBuf</a><wbr>(long&nbsp;value,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeByteArrayToArrowBuf(byte%5B%5D,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeByteArrayToArrowBuf</a><wbr>(byte[]&nbsp;bytes,
  <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
  int&nbsp;index,
  int&nbsp;byteWidth)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
+<div class="block">Write the given byte array to the ArrowBuf at the given value index.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code>static void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4"><code><a href="#writeLongToArrowBuf(long,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeLongToArrowBuf</a><wbr>(long&nbsp;value,
+ <a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
+ int&nbsp;index,
+ int&nbsp;byteWidth)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab1 method-summary-table-tab4">
 <div class="block">Write the given long to the ArrowBuf at the given value index.</div>
 </div>
 </div>
@@ -249,6 +259,19 @@ array.</div>
  int&nbsp;scale,
  int&nbsp;byteWidth)</span></div>
 <div class="block">Read an ArrowType.Decimal at the given value index in the ArrowBuf and convert to a BigDecimal
+with the given scale.</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getBigDecimalFromArrowBufAtOffset(org.apache.arrow.memory.ArrowBuf,long,int,int)">
+<h3>getBigDecimalFromArrowBufAtOffset</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public static</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a></span>&nbsp;<span class="element-name">getBigDecimalFromArrowBufAtOffset</span><wbr><span class="parameters">(<a href="../../../../../../org.apache.arrow.memory.core/org/apache/arrow/memory/ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
+ long&nbsp;startIndex,
+ int&nbsp;scale,
+ int&nbsp;byteWidth)</span></div>
+<div class="block">Read an ArrowType.Decimal at the given byte offset in the ArrowBuf and convert to a BigDecimal
 with the given scale.</div>
 </div>
 </section>

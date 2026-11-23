@@ -3109,47 +3109,56 @@ to fully specify this field type.</div>
 <div class="block">Read an ArrowType.Decimal at the given value index in the ArrowBuf and convert to a BigDecimal
 with the given scale.</div>
 </div>
-<div class="col-first odd-row-color"><code>static byte[]</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#getByteArrayFromArrowBuf(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getByteArrayFromArrowBuf</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
- int&nbsp;index,
+<div class="col-first odd-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a></code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#getBigDecimalFromArrowBufAtOffset(org.apache.arrow.memory.ArrowBuf,long,int,int)" class="member-name-link">getBigDecimalFromArrowBufAtOffset</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
+ long&nbsp;startIndex,
+ int&nbsp;scale,
  int&nbsp;byteWidth)</code></div>
 <div class="col-last odd-row-color">
+<div class="block">Read an ArrowType.Decimal at the given byte offset in the ArrowBuf and convert to a BigDecimal
+with the given scale.</div>
+</div>
+<div class="col-first even-row-color"><code>static byte[]</code></div>
+<div class="col-second even-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#getByteArrayFromArrowBuf(org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">getByteArrayFromArrowBuf</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
+ int&nbsp;index,
+ int&nbsp;byteWidth)</code></div>
+<div class="col-last even-row-color">
 <div class="block">Read an ArrowType.Decimal from the ArrowBuf at the given value index and return it as a byte
 array.</div>
 </div>
-<div class="col-first even-row-color"><code>void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">ReusableByteArray.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/ReusableByteArray.html#set(org.apache.arrow.memory.ArrowBuf,long,long)" class="member-name-link">set</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;srcBytes,
+<div class="col-first odd-row-color"><code>void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">ReusableByteArray.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/ReusableByteArray.html#set(org.apache.arrow.memory.ArrowBuf,long,long)" class="member-name-link">set</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;srcBytes,
  long&nbsp;start,
  long&nbsp;len)</code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-<div class="col-first odd-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a></code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">UuidUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/UuidUtility.html#uuidFromArrowBuf(org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">uuidFromArrowBuf</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>static <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a></code></div>
+<div class="col-second even-row-color"><span class="type-name-label">UuidUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/UuidUtility.html#uuidFromArrowBuf(org.apache.arrow.memory.ArrowBuf,long)" class="member-name-link">uuidFromArrowBuf</a><wbr>(<a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;buffer,
  long&nbsp;index)</code></div>
-<div class="col-last odd-row-color">
+<div class="col-last even-row-color">
 <div class="block">Constructs a UUID from bytes stored in an ArrowBuf at the specified index.</div>
 </div>
-<div class="col-first even-row-color"><code>static void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#writeBigDecimalToArrowBuf(java.math.BigDecimal,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeBigDecimalToArrowBuf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value,
- <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
- int&nbsp;index,
- int&nbsp;byteWidth)</code></div>
-<div class="col-last even-row-color">
-<div class="block">Write the given BigDecimal to the ArrowBuf at the given value index.</div>
-</div>
 <div class="col-first odd-row-color"><code>static void</code></div>
-<div class="col-second odd-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#writeByteArrayToArrowBuf(byte%5B%5D,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeByteArrayToArrowBuf</a><wbr>(byte[]&nbsp;bytes,
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#writeBigDecimalToArrowBuf(java.math.BigDecimal,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeBigDecimalToArrowBuf</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/math/BigDecimal.html" title="class or interface in java.math" class="external-link">BigDecimal</a>&nbsp;value,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
  int&nbsp;index,
  int&nbsp;byteWidth)</code></div>
 <div class="col-last odd-row-color">
-<div class="block">Write the given byte array to the ArrowBuf at the given value index.</div>
+<div class="block">Write the given BigDecimal to the ArrowBuf at the given value index.</div>
 </div>
 <div class="col-first even-row-color"><code>static void</code></div>
-<div class="col-second even-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#writeLongToArrowBuf(long,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeLongToArrowBuf</a><wbr>(long&nbsp;value,
+<div class="col-second even-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#writeByteArrayToArrowBuf(byte%5B%5D,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeByteArrayToArrowBuf</a><wbr>(byte[]&nbsp;bytes,
  <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
  int&nbsp;index,
  int&nbsp;byteWidth)</code></div>
 <div class="col-last even-row-color">
+<div class="block">Write the given byte array to the ArrowBuf at the given value index.</div>
+</div>
+<div class="col-first odd-row-color"><code>static void</code></div>
+<div class="col-second odd-row-color"><span class="type-name-label">DecimalUtility.</span><code><a href="../../../../../../org.apache.arrow.vector/org/apache/arrow/vector/util/DecimalUtility.html#writeLongToArrowBuf(long,org.apache.arrow.memory.ArrowBuf,int,int)" class="member-name-link">writeLongToArrowBuf</a><wbr>(long&nbsp;value,
+ <a href="../ArrowBuf.html" title="class in org.apache.arrow.memory">ArrowBuf</a>&nbsp;bytebuf,
+ int&nbsp;index,
+ int&nbsp;byteWidth)</code></div>
+<div class="col-last odd-row-color">
 <div class="block">Write the given long to the ArrowBuf at the given value index.</div>
 </div>
 </div>
