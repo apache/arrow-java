@@ -316,6 +316,7 @@ public class PromotableWriter extends AbstractPromotableFieldWriter {
 
   protected boolean requiresArrowType(MinorType type) {
     return type == MinorType.DECIMAL
+        || type == MinorType.DECIMAL256
         || type == MinorType.MAP
         || type == MinorType.DURATION
         || type == MinorType.FIXEDSIZEBINARY
