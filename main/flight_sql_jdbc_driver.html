@@ -432,6 +432,12 @@ Properties object. When calling the <a class="reference external" href="https://
 DriverManager#getConnection()</a>,
 the username and password supplied on the URI supercede the username and
 password arguments to the function call.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">DriverManager.setLoginTimeout(seconds)</span></code> to limit the time the driver
+waits for a connection, including the authentication handshake and initial
+session setup. On expiration, the driver cancels pending login RPCs and throws
+<code class="docutils literal notranslate"><span class="pre">SQLTimeoutException</span></code>. A value of zero disables the login timeout. The
+<code class="docutils literal notranslate"><span class="pre">connectTimeoutMs</span></code> property separately controls the Netty socket connection
+timeout.</p>
 </section>
 <section id="oauth-2-0-authentication">
 <h2>OAuth 2.0 Authentication<a class="headerlink" href="#oauth-2-0-authentication" title="Link to this heading">¶</a></h2>
