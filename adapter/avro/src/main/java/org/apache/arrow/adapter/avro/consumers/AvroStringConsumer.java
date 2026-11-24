@@ -17,9 +17,9 @@
 package org.apache.arrow.adapter.avro.consumers;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.avro.io.Decoder;
+import org.apache.avro.util.Utf8;
 
 /**
  * Consumer which consume string type values from avro decoder. Write the data to {@link
@@ -27,7 +27,7 @@ import org.apache.avro.io.Decoder;
  */
 public class AvroStringConsumer extends BaseAvroConsumer<VarCharVector> {
 
-  private ByteBuffer cacheBuffer;
+  private Utf8 cacheUtf8;
 
   /** Instantiate a AvroStringConsumer. */
   public AvroStringConsumer(VarCharVector vector) {
@@ -36,9 +36,9 @@ public class AvroStringConsumer extends BaseAvroConsumer<VarCharVector> {
 
   @Override
   public void consume(Decoder decoder) throws IOException {
-    // cacheBuffer is initialized null and create in the first consume,
-    // if its capacity < size to read, decoder will create a new one with new capacity.
-    cacheBuffer = decoder.readBytes(cacheBuffer);
-    vector.setSafe(currentIndex++, cacheBuffer, 0, cacheBuffer.limit());
+    // cacheUtf8 starts null and is reused; the Utf8 grows its backing array
+    // when needed, so only getByteLength() bytes are valid.
+    cacheUtf8 = decoder.readString(cacheUtf8);
+    vector.setSafe(currentIndex++, cacheUtf8.getBytes(), 0, cacheUtf8.getByteLength());
   }
 }
