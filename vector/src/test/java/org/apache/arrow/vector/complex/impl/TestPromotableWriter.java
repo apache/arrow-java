@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.UUID;
 import org.apache.arrow.memory.ArrowBuf;
@@ -756,6 +757,60 @@ public class TestPromotableWriter {
       assertEquals("row2", new String(Objects.requireNonNull(uv.get(1)), StandardCharsets.UTF_8));
       assertEquals("row3", new String(Objects.requireNonNull(uv.get(2)), StandardCharsets.UTF_8));
       assertEquals("row4", new String(Objects.requireNonNull(uv.get(3)), StandardCharsets.UTF_8));
+    }
+  }
+
+  @Test
+  public void testDecimal256InPromotedUnion() {
+    BigDecimal narrow = new BigDecimal("123.45");
+    BigDecimal wide = new BigDecimal("123456789012345678901234567890123456789.01");
+    try (ListVector vector = ListVector.empty("decimals", allocator)) {
+      UnionListWriter writer = vector.getWriter();
+      writer.startList();
+      writer.decimal().writeDecimal(narrow);
+      writer.decimal256().writeDecimal256(wide);
+      writer.decimal().writeDecimal(narrow.negate());
+      writer.decimal256().writeDecimal256(wide.negate());
+      writer.endList();
+      vector.setValueCount(1);
+      assertEquals(
+          Arrays.asList(narrow, wide, narrow.negate(), wide.negate()), vector.getObject(0));
+      vector.validateFull();
+    }
+  }
+
+  @Test
+  public void testAddDecimal256ToExistingUnion() {
+    BigDecimal decimal = new BigDecimal("-123.456");
+    try (ListVector vector = ListVector.empty("values", allocator)) {
+      UnionListWriter writer = vector.getWriter();
+      writer.startList();
+      writer.integer().writeInt(7);
+      writer.bigInt().writeBigInt(8L);
+      writer.decimal256().writeDecimal256(decimal);
+      writer.endList();
+      vector.setValueCount(1);
+      assertEquals(Arrays.asList(7, 8L, decimal), vector.getObject(0));
+    }
+  }
+
+  @Test
+  public void testPromoteStructFieldToDecimal256() throws Exception {
+    BigDecimal decimal = new BigDecimal("123.456");
+    try (StructVector parent = StructVector.empty("parent", allocator);
+        PromotableWriter writer = new PromotableWriter(parent.addOrGetStruct("value"), parent)) {
+      parent.allocateNew();
+      writer.setPosition(0);
+      writer.start();
+      writer.integer("id").writeInt(7);
+      writer.end();
+      writer.setPosition(1);
+      writer.writeDecimal256(decimal);
+      parent.setValueCount(2);
+
+      UnionVector values = parent.getChild("value", UnionVector.class);
+      assertEquals(7, values.getStruct().getObject(0).get("id"));
+      assertEquals(decimal, values.getObject(1));
     }
   }
 
