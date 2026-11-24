@@ -195,6 +195,13 @@ DriverManager#getConnection()
 the username and password supplied on the URI supercede the username and
 password arguments to the function call.
 
+Use ``DriverManager.setLoginTimeout(seconds)`` to limit the time the driver
+waits for a connection, including the authentication handshake and initial
+session setup. On expiration, the driver cancels pending login RPCs and throws
+``SQLTimeoutException``. A value of zero disables the login timeout. The
+``connectTimeoutMs`` property separately controls the Netty socket connection
+timeout.
+
 OAuth 2.0 Authentication
 ========================
 

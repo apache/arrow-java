@@ -18,6 +18,7 @@ package org.apache.arrow.driver.jdbc;
 
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.replaceSemiColons;
 
+import io.grpc.Context;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,11 +26,19 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.UrlParser;
@@ -74,6 +83,11 @@ public class ArrowFlightJdbcDriver extends UnregisteredDriver {
   @Override
   public ArrowFlightConnection connect(final String url, final Properties info)
       throws SQLException {
+    return connect(url, info, DriverManager.getLoginTimeout());
+  }
+
+  ArrowFlightConnection connect(final String url, final Properties info, final int timeoutSeconds)
+      throws SQLException {
     final Properties properties = new Properties(info);
     if (info != null) {
       properties.putAll(info);
@@ -88,11 +102,86 @@ public class ArrowFlightJdbcDriver extends UnregisteredDriver {
       properties.putAll(propertiesFromUrl);
     }
 
+    final Properties connectionProperties = lowerCasePropertyKeys(properties);
+    if (timeoutSeconds <= 0) {
+      return openConnection(url, connectionProperties);
+    }
+    return connectWithTimeout(() -> openConnection(url, connectionProperties), timeoutSeconds);
+  }
+
+  private ArrowFlightConnection openConnection(final String url, final Properties properties)
+      throws SQLException {
     try {
       return ArrowFlightConnection.createNewConnection(
-          this, factory, url, lowerCasePropertyKeys(properties), new RootAllocator(Long.MAX_VALUE));
+          this, factory, url, properties, new RootAllocator(Long.MAX_VALUE));
     } catch (final FlightRuntimeException e) {
       throw new SQLException("Failed to connect.", e);
+    }
+  }
+
+  @VisibleForTesting
+  static ArrowFlightConnection connectWithTimeout(
+      final Callable<ArrowFlightConnection> connect, final int timeoutSeconds) throws SQLException {
+    final CompletableFuture<ArrowFlightConnection> result = new CompletableFuture<>();
+    // Closing the context cancels any in-flight login RPCs.
+    try (Context.CancellableContext context = Context.current().withCancellation()) {
+      final Thread worker =
+          new Thread(
+              context.wrap(
+                  () -> {
+                    if (result.isDone()) {
+                      return;
+                    }
+                    try {
+                      final ArrowFlightConnection connection = connect.call();
+                      // A timed-out attempt still owns any connection it manages to open.
+                      if (!result.complete(connection)) {
+                        closeAbandonedConnection(connection);
+                      }
+                    } catch (Exception | Error e) {
+                      result.completeExceptionally(e);
+                    }
+                  }),
+              "arrow-flight-jdbc-connect");
+      worker.setDaemon(true);
+      result.orTimeout(timeoutSeconds, TimeUnit.SECONDS);
+      worker.start();
+
+      try {
+        return result.get();
+      } catch (InterruptedException e) {
+        if (!result.completeExceptionally(e)) {
+          result.thenAcceptAsync(
+              connection -> context.run(() -> closeAbandonedConnection(connection)));
+        }
+        Thread.currentThread().interrupt();
+        throw new SQLException("Interrupted while connecting.", e);
+      } catch (ExecutionException e) {
+        final Throwable cause = e.getCause();
+        if (cause instanceof TimeoutException) {
+          throw new SQLTimeoutException(
+              "Login timed out after " + timeoutSeconds + " seconds.", cause);
+        }
+        if (cause instanceof SQLException sqlException) {
+          throw sqlException;
+        }
+        if (cause instanceof RuntimeException runtimeException) {
+          throw runtimeException;
+        }
+        if (cause instanceof Error error) {
+          throw error;
+        }
+        throw new SQLException("Failed to connect.", cause);
+      }
+    }
+  }
+
+  private static void closeAbandonedConnection(final ArrowFlightConnection connection) {
+    try {
+      connection.close();
+    } catch (SQLException | RuntimeException e) {
+      Logger.getLogger(ArrowFlightJdbcDriver.class.getPackageName())
+          .log(Level.WARNING, "Failed to close an abandoned flight SQL connection.", e);
     }
   }
 

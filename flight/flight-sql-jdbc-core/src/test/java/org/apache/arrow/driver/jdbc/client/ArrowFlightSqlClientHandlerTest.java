@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -145,6 +146,7 @@ public class ArrowFlightSqlClientHandlerTest {
     } else {
       assertThrows(SQLException.class, sqlClientHandler::close);
     }
+    verify(sqlClient).close();
   }
 
   private static Object[] testCloseHandlesFlightRuntimeException() {
@@ -163,6 +165,7 @@ public class ArrowFlightSqlClientHandlerTest {
       new Object[] {false, unavailableError, true},
       new Object[] {true, unknownError, false},
       new Object[] {false, unknownError, false},
+      new Object[] {true, CallStatus.CANCELLED, false},
     };
   }
 }

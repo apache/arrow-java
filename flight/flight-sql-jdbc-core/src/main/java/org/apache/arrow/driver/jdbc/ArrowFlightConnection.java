@@ -104,12 +104,18 @@ public final class ArrowFlightConnection extends AvaticaConnection {
       final Properties properties,
       final BufferAllocator allocator)
       throws SQLException {
-    url = replaceSemiColons(url);
-    final ArrowFlightConnectionConfigImpl config = new ArrowFlightConnectionConfigImpl(properties);
-    final ArrowFlightSqlClientHandler clientHandler =
-        createNewClientHandler(config, allocator, driver.getDriverVersion());
-    return new ArrowFlightConnection(
-        driver, factory, url, properties, config, allocator, clientHandler);
+    ArrowFlightSqlClientHandler clientHandler = null;
+    try {
+      url = replaceSemiColons(url);
+      final ArrowFlightConnectionConfigImpl config =
+          new ArrowFlightConnectionConfigImpl(properties);
+      clientHandler = createNewClientHandler(config, allocator, driver.getDriverVersion());
+      return new ArrowFlightConnection(
+          driver, factory, url, properties, config, allocator, clientHandler);
+    } catch (SQLException | RuntimeException | Error e) {
+      AutoCloseables.close(e, clientHandler, allocator);
+      throw e;
+    }
   }
 
   private static ArrowFlightSqlClientHandler createNewClientHandler(
@@ -117,40 +123,31 @@ public final class ArrowFlightConnection extends AvaticaConnection {
       final BufferAllocator allocator,
       final DriverVersion driverVersion)
       throws SQLException {
-    try {
-      return new ArrowFlightSqlClientHandler.Builder()
-          .withHost(config.getHost())
-          .withPort(config.getPort())
-          .withUsername(config.getUser())
-          .withPassword(config.getPassword())
-          .withTrustStorePath(config.getTrustStorePath())
-          .withTrustStorePassword(config.getTrustStorePassword())
-          .withSystemTrustStore(config.useSystemTrustStore())
-          .withTlsRootCertificates(config.getTlsRootCertificatesPath())
-          .withClientCertificate(config.getClientCertificatePath())
-          .withClientKey(config.getClientKeyPath())
-          .withBufferAllocator(allocator)
-          .withEncryption(config.useEncryption())
-          .withDisableCertificateVerification(config.getDisableCertificateVerification())
-          .withHostnameOverride(config.getHostnameOverride())
-          .withToken(config.getToken())
-          .withCallOptions(config.toCallOption())
-          .withRetainCookies(config.retainCookies())
-          .withRetainAuth(config.retainAuth())
-          .withCatalog(config.getCatalog())
-          .withClientCache(config.useClientCache() ? new FlightClientCache() : null)
-          .withConnectTimeout(config.getConnectTimeout())
-          .withDriverVersion(driverVersion)
-          .withOAuthConfiguration(config.getOauthConfiguration())
-          .build();
-    } catch (final SQLException e) {
-      try {
-        allocator.close();
-      } catch (final Exception allocatorCloseEx) {
-        e.addSuppressed(allocatorCloseEx);
-      }
-      throw e;
-    }
+    return new ArrowFlightSqlClientHandler.Builder()
+        .withHost(config.getHost())
+        .withPort(config.getPort())
+        .withUsername(config.getUser())
+        .withPassword(config.getPassword())
+        .withTrustStorePath(config.getTrustStorePath())
+        .withTrustStorePassword(config.getTrustStorePassword())
+        .withSystemTrustStore(config.useSystemTrustStore())
+        .withTlsRootCertificates(config.getTlsRootCertificatesPath())
+        .withClientCertificate(config.getClientCertificatePath())
+        .withClientKey(config.getClientKeyPath())
+        .withBufferAllocator(allocator)
+        .withEncryption(config.useEncryption())
+        .withDisableCertificateVerification(config.getDisableCertificateVerification())
+        .withHostnameOverride(config.getHostnameOverride())
+        .withToken(config.getToken())
+        .withCallOptions(config.toCallOption())
+        .withRetainCookies(config.retainCookies())
+        .withRetainAuth(config.retainAuth())
+        .withCatalog(config.getCatalog())
+        .withClientCache(config.useClientCache() ? new FlightClientCache() : null)
+        .withConnectTimeout(config.getConnectTimeout())
+        .withDriverVersion(driverVersion)
+        .withOAuthConfiguration(config.getOauthConfiguration())
+        .build();
   }
 
   void reset() throws SQLException {
