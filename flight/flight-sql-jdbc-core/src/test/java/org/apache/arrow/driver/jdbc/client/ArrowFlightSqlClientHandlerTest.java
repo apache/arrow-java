@@ -187,6 +187,7 @@ public class ArrowFlightSqlClientHandlerTest {
       new Object[] {FlightStatusCode.UNAVAILABLE, true},
       new Object[] {FlightStatusCode.UNAUTHENTICATED, true},
       new Object[] {FlightStatusCode.UNKNOWN, false},
+      new Object[] {FlightStatusCode.TIMED_OUT, false},
     };
   }
 

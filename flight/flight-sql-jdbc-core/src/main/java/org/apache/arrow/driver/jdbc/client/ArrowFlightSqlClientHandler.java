@@ -320,13 +320,14 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   }
 
   private void closeSession() throws SQLException {
+    if (!builder.ownsSession) {
+      return;
+    }
     final CallOption[] baseOptions = getOptions();
     final CallOption[] closeSessionOptions = Arrays.copyOf(baseOptions, baseOptions.length + 1);
     closeSessionOptions[baseOptions.length] = CLOSE_SESSION_TIMEOUT;
     try {
-      if (builder.ownsSession) {
-        sqlClient.closeSession(new CloseSessionRequest(), closeSessionOptions);
-      }
+      sqlClient.closeSession(new CloseSessionRequest(), closeSessionOptions);
     } catch (FlightRuntimeException fre) {
       if (catalog.isEmpty() && NO_SESSION_STATUS_CODES.contains(fre.status().code())) {
         logSuppressedCloseException(fre, "closing Flight SQL session");
