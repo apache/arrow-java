@@ -488,4 +488,14 @@ public class ArrowFlightPreparedStatementTest {
       assertEquals(42, updated[0]);
     }
   }
+
+  @Test
+  public void testUpdateQueryWithUnknownCountReturnsZero() throws SQLException {
+    // A server may answer -1 when it does not know the count, as for DDL.
+    String query = "Fake DDL with unknown count";
+    PRODUCER.addUpdateQuery(query, /*updatedRows*/ -1);
+    try (final PreparedStatement stmt = connection.prepareStatement(query)) {
+      assertEquals(0, stmt.executeUpdate());
+    }
+  }
 }

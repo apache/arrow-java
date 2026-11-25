@@ -23,6 +23,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -318,5 +319,15 @@ public class ArrowFlightStatementExecuteTest {
     assertThat(updateCountLarge, is(equalTo(SAMPLE_LARGE_UPDATE_COUNT)));
     assertThat(updateCountSmall, is((long) Integer.MAX_VALUE));
     assertThat(statement.getResultSet(), is(nullValue()));
+  }
+
+  @Test
+  public void testUpdateQueryWithUnknownCountReturnsZero() throws SQLException {
+    // A server may answer -1 when it does not know the count, as for DDL.
+    String query = "Fake DDL with unknown count";
+    PRODUCER.addUpdateQuery(query, /*updatedRows*/ -1);
+    try (final Statement st = connection.createStatement()) {
+      assertEquals(0, st.executeUpdate(query));
+    }
   }
 }

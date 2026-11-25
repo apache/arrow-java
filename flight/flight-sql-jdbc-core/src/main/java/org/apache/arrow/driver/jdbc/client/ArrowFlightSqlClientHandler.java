@@ -287,7 +287,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    * @return the number of rows affected.
    */
   public long executeUpdate(final String query) {
-    return sqlClient.executeUpdate(query, getOptions());
+    return updateCount(sqlClient.executeUpdate(query, getOptions()));
+  }
+
+  /**
+   * Gets the update count to report. A server that does not know how many rows an update changed,
+   * as for most DDL, answers -1, which Avatica takes for "the statement returned a result set".
+   */
+  private static long updateCount(final long recordCount) {
+    return Math.max(recordCount, 0L);
   }
 
   @Override
@@ -487,7 +495,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
       @Override
       public long executeUpdate() {
-        return preparedStatement.executeUpdate(getOptions());
+        return updateCount(preparedStatement.executeUpdate(getOptions()));
       }
 
       @Override
