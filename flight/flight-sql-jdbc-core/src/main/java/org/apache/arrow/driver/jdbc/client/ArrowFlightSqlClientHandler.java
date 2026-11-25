@@ -193,11 +193,23 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           while (locations.hasNext()) {
             Location location = locations.next();
             final URI endpointUri = location.getUri();
-            if (endpointUri.getScheme().equals(LocationSchemes.REUSE_CONNECTION)) {
+            if (endpointUri.getScheme().equals(LocationSchemes.REUSE_CONNECTION)
+                || (!builder.followEndpointLocations
+                    && builder.isConnectionLocation(endpointUri))) {
               stream =
                   new CloseableEndpointStreamPair(
                       sqlClient.getStream(endpoint.getTicket(), getOptions()), null);
               break;
+            }
+            if (!builder.followEndpointLocations) {
+              exceptions.add(
+                  new SQLException(
+                      String.format(
+                          "Refusing to connect to endpoint location %s because "
+                              + "followEndpointLocations is false and it is not on the host and "
+                              + "port of the connection to %s.",
+                          endpointUri, builder.getLocation().getUri())));
+              continue;
             }
             final boolean encryptEndpoint =
                 endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS);
@@ -752,6 +764,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting boolean retainAuth = true;
 
+    @VisibleForTesting boolean followEndpointLocations = true;
+
     @VisibleForTesting Optional<String> catalog = Optional.empty();
 
     // Copies (getStreams endpoint handlers) authenticate as the connection; on servers that key
@@ -807,6 +821,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.catalog = original.catalog;
       this.oauthConfig = original.oauthConfig;
       this.ownsSession = false;
+      this.followEndpointLocations = original.followEndpointLocations;
 
       if (original.retainCookies) {
         this.cookieFactory = original.cookieFactory;
@@ -951,6 +966,26 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     }
 
     /**
+     * Checks whether an endpoint location names the host and port this handler connects to, or the
+     * hostname override and that port. As for the connection, the override is ignored when
+     * encryption is disabled.
+     *
+     * @param endpointUri the endpoint location.
+     * @return whether the endpoint can be fetched over this handler's connection.
+     */
+    @VisibleForTesting
+    boolean isConnectionLocation(final URI endpointUri) {
+      final String endpointHost = stripBrackets(endpointUri.getHost());
+      if (endpointHost == null || endpointUri.getPort() != port) {
+        return false;
+      }
+      return endpointHost.equalsIgnoreCase(stripBrackets(host))
+          || (useEncryption
+              && hostnameOverride != null
+              && endpointHost.equalsIgnoreCase(stripBrackets(hostnameOverride)));
+    }
+
+    /**
      * Strips the brackets from an IPv6 literal. {@link URI#getHost()} keeps them, but a host set
      * through properties may not have them.
      */
@@ -1053,6 +1088,21 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      */
     public Builder withRetainAuth(boolean retainAuth) {
       this.retainAuth = retainAuth;
+      return this;
+    }
+
+    /**
+     * Sets whether getStreams() may connect to the endpoint locations returned by the server. These
+     * connections are sent this handler's credentials. When false, an endpoint is only fetched over
+     * this handler's connection: if it has no locations, the {@link
+     * LocationSchemes#REUSE_CONNECTION} location, or a location on this handler's host (or hostname
+     * override) and port. Other locations are refused.
+     *
+     * @param followEndpointLocations whether to connect to endpoint locations.
+     * @return this builder instance.
+     */
+    public Builder withFollowEndpointLocations(boolean followEndpointLocations) {
+      this.followEndpointLocations = followEndpointLocations;
       return this;
     }
 

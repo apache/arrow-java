@@ -674,6 +674,90 @@ public class ResultSetTest {
   }
 
   @Test
+  public void testPartitionedFlightServerWithoutFollowingEndpointLocations() throws Exception {
+    final Schema schema =
+        new Schema(
+            Collections.singletonList(
+                Field.nullablePrimitive("int_column", new ArrowType.Int(32, true))));
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+        VectorSchemaRoot partition = VectorSchemaRoot.create(schema, allocator)) {
+      final Ticket ticket = new Ticket("first".getBytes(StandardCharsets.UTF_8));
+      final AtomicInteger dataRequests = new AtomicInteger();
+      final FlightProducer dataProducer =
+          new PartitionedFlightSqlProducer.DataOnlyFlightSqlProducer(ticket, partition) {
+            @Override
+            public void getStream(
+                CallContext context, Ticket ticket, ServerStreamListener listener) {
+              dataRequests.incrementAndGet();
+              super.getStream(context, ticket, listener);
+            }
+          };
+
+      try (FlightServer dataServer =
+          FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), dataProducer)
+              .build()
+              .start()) {
+        final FlightEndpoint endpoint = new FlightEndpoint(ticket, dataServer.getLocation());
+        try (final PartitionedFlightSqlProducer rootProducer =
+                new PartitionedFlightSqlProducer(schema, endpoint);
+            FlightServer rootServer =
+                FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), rootProducer)
+                    .build()
+                    .start();
+            Connection newConnection =
+                DriverManager.getConnection(
+                    String.format(
+                        "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false"
+                            + "&followEndpointLocations=false",
+                        rootServer.getLocation().getUri().getHost(), rootServer.getPort()));
+            Statement newStatement = newConnection.createStatement()) {
+          final SQLException e =
+              assertThrows(
+                  SQLException.class, () -> newStatement.executeQuery("Select partitioned_data"));
+          assertThat(e.getMessage(), containsString("followEndpointLocations"));
+          assertEquals(0, dataRequests.get());
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testFallbackFlightServerWithoutFollowingEndpointLocations() throws Exception {
+    final Schema schema =
+        new Schema(
+            Collections.singletonList(Field.nullable("int_column", Types.MinorType.INT.getType())));
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE);
+        VectorSchemaRoot resultData = VectorSchemaRoot.create(schema, allocator)) {
+      resultData.setRowCount(1);
+      ((IntVector) resultData.getVector(0)).set(0, 1);
+
+      try (final FallbackFlightSqlProducer rootProducer =
+              new FallbackFlightSqlProducer(resultData);
+          FlightServer rootServer =
+              FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), rootProducer)
+                  .build()
+                  .start();
+          Connection newConnection =
+              DriverManager.getConnection(
+                  String.format(
+                      "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false"
+                          + "&followEndpointLocations=false",
+                      rootServer.getLocation().getUri().getHost(), rootServer.getPort()));
+          Statement newStatement = newConnection.createStatement();
+          // The endpoint's first location is on another port, so it is skipped for the
+          // arrow-flight-reuse-connection location.
+          ResultSet result = newStatement.executeQuery("fallback with error")) {
+        List<Integer> actualData = new ArrayList<>();
+        while (result.next()) {
+          actualData.add(result.getInt(1));
+        }
+
+        assertEquals(Collections.singletonList(1), actualData);
+      }
+    }
+  }
+
+  @Test
   public void testFallbackFlightServer() throws Exception {
     final Schema schema =
         new Schema(

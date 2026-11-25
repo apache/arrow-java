@@ -19,6 +19,7 @@ package org.apache.arrow.driver.jdbc.utils;
 import static java.lang.Runtime.getRuntime;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CATALOG;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CONNECT_TIMEOUT_MILLIS;
+import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.FOLLOW_ENDPOINT_LOCATIONS;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.HOST;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.HOSTNAME_OVERRIDE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PASSWORD;
@@ -91,6 +92,11 @@ public final class ArrowFlightConnectionConfigImplTest {
   public void testUseEncryptionRejectsFalsyValues(String value) {
     properties.put(USE_ENCRYPTION.camelName(), value);
     assertThat(arrowFlightConnectionConfig.useEncryption(), is(false));
+  }
+
+  @Test
+  public void testFollowEndpointLocationsDefaultsToTrue() {
+    assertThat(arrowFlightConnectionConfig.followEndpointLocations(), is(true));
   }
 
   @ParameterizedTest
@@ -196,6 +202,12 @@ public final class ArrowFlightConnectionConfigImplTest {
             false,
             false,
             (Function<ArrowFlightConnectionConfigImpl, ?>)
-                ArrowFlightConnectionConfigImpl::useClientCache));
+                ArrowFlightConnectionConfigImpl::useClientCache),
+        Arguments.of(
+            FOLLOW_ENDPOINT_LOCATIONS,
+            false,
+            false,
+            (Function<ArrowFlightConnectionConfigImpl, ?>)
+                ArrowFlightConnectionConfigImpl::followEndpointLocations));
   }
 }

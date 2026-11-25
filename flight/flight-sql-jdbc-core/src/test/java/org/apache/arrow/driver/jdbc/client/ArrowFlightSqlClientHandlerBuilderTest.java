@@ -145,6 +145,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     assertNull(builder.token);
     assertTrue(builder.retainAuth);
     assertTrue(builder.retainCookies);
+    assertTrue(builder.followEndpointLocations);
     assertNull(builder.tlsRootCertificatesPath);
     assertNull(builder.clientCertificatePath);
     assertNull(builder.clientKeyPath);
@@ -256,6 +257,43 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
             .withHostnameOverride("flight.example.com");
 
     assertNull(builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1:1234")));
+  }
+
+  @Test
+  public void testIsConnectionLocation() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("Tunnel.Local")
+            .withPort(1234)
+            .withHostnameOverride("flight.example.com");
+
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://tunnel.local:1234")));
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://FLIGHT.example.com:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://tunnel.local:5678")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://tunnel.local")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://other.example.com:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+unix:///tmp/flight.sock")));
+  }
+
+  @Test
+  public void testIsConnectionLocationOnIpv6Host() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder().withHost("::1").withPort(1234);
+
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://[::1]:1234")));
+  }
+
+  @Test
+  public void testIsConnectionLocationIgnoresHostnameOverrideWithoutEncryption() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("127.0.0.1")
+            .withPort(1234)
+            .withEncryption(false)
+            .withHostnameOverride("flight.example.com");
+
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tcp://127.0.0.1:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tcp://flight.example.com:1234")));
   }
 
   @Test

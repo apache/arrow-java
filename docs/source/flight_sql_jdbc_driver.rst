@@ -172,6 +172,19 @@ case-sensitive. The supported parameters are:
        in subsequent internal connections used for retrieving streams
        from separate endpoints.
 
+   * - followEndpointLocations
+     - true
+     - Whether to connect to the endpoint locations returned by the
+       server to retrieve query results. These connections are sent the
+       connection's credentials. When false, an endpoint is only fetched
+       over the existing connection: if it has no locations, the
+       ``arrow-flight-reuse-connection://?`` location, or a location on
+       **HOSTNAME** (or ``hostnameOverride``, when TLS is enabled) and
+       **PORT**. Other locations are refused, and the query fails with an
+       ``SQLException`` if an endpoint has no location that can be used.
+       Set this to false when the server is not trusted to choose which
+       hosts the driver connects to and sends credentials to.
+
 Note that URI values must be URI-encoded if they contain characters such
 as !, @, $, etc.
 
