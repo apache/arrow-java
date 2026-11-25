@@ -409,6 +409,28 @@ public class TestValidateVectorFull {
   }
 
   @Test
+  public void testValidateTruncatedUTF8() {
+    // multi-byte sequences cut short at the end of the value
+    byte[][] truncated = {
+      {(byte) 0xC3}, {(byte) 0xE2, (byte) 0x82}, {'a', (byte) 0xF0, (byte) 0x9F, (byte) 0x98}
+    };
+    for (byte[] value : truncated) {
+      try (final VarCharVector vector = new VarCharVector("v", allocator)) {
+        setVector(vector, "aaa".getBytes(StandardCharsets.UTF_8), value);
+        ValidateUtil.ValidateException e =
+            assertThrows(ValidateUtil.ValidateException.class, vector::validateFull);
+        assertTrue(e.getMessage().contains("UTF"));
+      }
+      try (final LargeVarCharVector vector = new LargeVarCharVector("v", allocator)) {
+        setVector(vector, "aaa".getBytes(StandardCharsets.UTF_8), value);
+        ValidateUtil.ValidateException e =
+            assertThrows(ValidateUtil.ValidateException.class, vector::validateFull);
+        assertTrue(e.getMessage().contains("UTF"));
+      }
+    }
+  }
+
+  @Test
   public void testValidateDecimal() {
     try (final DecimalVector vector =
         new DecimalVector(
