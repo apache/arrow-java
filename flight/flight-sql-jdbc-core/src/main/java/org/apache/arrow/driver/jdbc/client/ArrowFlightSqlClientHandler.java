@@ -100,6 +100,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   private final FlightSqlClient sqlClient;
   private final Set<CallOption> options = new HashSet<>();
   private final Builder builder;
+  private final boolean followEndpointLocations;
   private final Optional<String> catalog;
   private final @Nullable FlightClientCache flightClientCache;
 
@@ -115,6 +116,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     this.cacheKey = Preconditions.checkNotNull(cacheKey);
     this.sqlClient = Preconditions.checkNotNull(sqlClient);
     this.builder = builder;
+    this.followEndpointLocations = builder.followEndpointLocations;
     this.catalog = catalog;
     this.flightClientCache = flightClientCache;
   }
@@ -194,21 +196,23 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
             Location location = locations.next();
             final URI endpointUri = location.getUri();
             if (endpointUri.getScheme().equals(LocationSchemes.REUSE_CONNECTION)
-                || (!builder.followEndpointLocations
-                    && builder.isConnectionLocation(endpointUri))) {
+                || (!followEndpointLocations && builder.isConnectionLocation(endpointUri))) {
               stream =
                   new CloseableEndpointStreamPair(
                       sqlClient.getStream(endpoint.getTicket(), getOptions()), null);
               break;
             }
-            if (!builder.followEndpointLocations) {
+            if (!followEndpointLocations) {
               exceptions.add(
                   new SQLException(
                       String.format(
-                          "Refusing to connect to endpoint location %s because "
-                              + "followEndpointLocations is false and it is not on the host and "
-                              + "port of the connection to %s.",
-                          endpointUri, builder.getLocation().getUri())));
+                          "Refusing endpoint location (scheme=%s, host=%s, port=%d) because "
+                              + "followEndpointLocations is false and it cannot be fetched over "
+                              + "the connection to %s.",
+                          endpointUri.getScheme(),
+                          endpointUri.getHost(),
+                          endpointUri.getPort(),
+                          builder.getLocation().getUri())));
               continue;
             }
             final boolean encryptEndpoint =
@@ -961,15 +965,24 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     }
 
     /**
-     * Checks whether an endpoint location names the host and port this handler connects to or, when
-     * encryption is enabled, the hostname override. The override is matched with this handler's
-     * port, unless it includes a port of its own.
+     * Checks whether an endpoint location is a gRPC location that names the host and port this
+     * handler connects to or, when encryption is enabled, the hostname override. The override is
+     * matched with this handler's port, unless it includes a port of its own. A {@code grpc+tls}
+     * location only matches when encryption is enabled.
      *
      * @param endpointUri the endpoint location.
      * @return whether the endpoint can be fetched over this handler's connection.
      */
     @VisibleForTesting
     boolean isConnectionLocation(final URI endpointUri) {
+      // Other schemes need another transport, such as an HTTP GET for https, and a location that
+      // asks for TLS must not be fetched over a plaintext connection.
+      final String scheme = endpointUri.getScheme();
+      if (!LocationSchemes.GRPC.equals(scheme)
+          && !LocationSchemes.GRPC_INSECURE.equals(scheme)
+          && !(useEncryption && LocationSchemes.GRPC_TLS.equals(scheme))) {
+        return false;
+      }
       if (isOnHostAndPort(endpointUri, host, port)) {
         return true;
       }
@@ -1099,8 +1112,9 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      * Sets whether getStreams() may connect to the endpoint locations returned by the server. These
      * connections are sent this handler's credentials, client certificate and headers. When false,
      * an endpoint is only fetched over this handler's connection: if it has no locations, the
-     * {@link LocationSchemes#REUSE_CONNECTION} location, or a location on this handler's host and
-     * port or, when encryption is enabled, on the hostname override. Other locations are refused.
+     * {@link LocationSchemes#REUSE_CONNECTION} location, or a gRPC location on this handler's host
+     * and port or, when encryption is enabled, on the hostname override. A {@code grpc+tls}
+     * location is only used when encryption is enabled. Other locations are refused.
      *
      * @param followEndpointLocations whether to connect to endpoint locations.
      * @return this builder instance.
