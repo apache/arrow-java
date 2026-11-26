@@ -39,7 +39,9 @@ package org.apache.arrow.vector.complex.impl;
 @SuppressWarnings("unused")
 public class UnionReader extends AbstractFieldReader {
 
-  private static final int NUM_SUPPORTED_TYPES = 51;
+  // The reader/type arrays are indexed by MinorType.ordinal(), so they must be sized to the total
+  // number of minor types (not a hardcoded count, which would break whenever a type is added).
+  private static final int NUM_SUPPORTED_TYPES = MinorType.values().length;
 
   private BaseReader[] readers = new BaseReader[NUM_SUPPORTED_TYPES];
   public UnionVector data;

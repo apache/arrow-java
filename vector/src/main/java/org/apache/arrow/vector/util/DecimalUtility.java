@@ -170,14 +170,21 @@ public class DecimalUtility {
    * original sign bit to a new upper area in 128-bit or 256-bit.
    */
   public static void writeLongToArrowBuf(long value, ArrowBuf bytebuf, int index, int byteWidth) {
-    if (byteWidth != 16 && byteWidth != 32) {
+    if (byteWidth != 4 && byteWidth != 16 && byteWidth != 32) {
       throw new UnsupportedOperationException(
           "DecimalUtility.writeLongToArrowBuf() currently supports "
-              + "128-bit or 256-bit width data");
+              + "32-bit, 128-bit or 256-bit width data");
     }
     final long startIndex = (long) index * byteWidth;
     bytebuf.checkBytes(startIndex, startIndex + byteWidth);
     final long addressOfValue = bytebuf.memoryAddress() + startIndex;
+    if (byteWidth == 4) {
+      if (value < Integer.MIN_VALUE || value > Integer.MAX_VALUE) {
+        throw new IllegalArgumentException("Decimal value does not fit in 32-bit width: " + value);
+      }
+      MemoryUtil.putInt(addressOfValue, (int) value);
+      return;
+    }
     final long padValue = Long.signum(value) == -1 ? -1L : 0L;
     if (LITTLE_ENDIAN) {
       MemoryUtil.putLong(addressOfValue, value);
