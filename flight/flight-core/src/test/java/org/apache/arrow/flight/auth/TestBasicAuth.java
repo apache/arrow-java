@@ -19,13 +19,23 @@ package org.apache.arrow.flight.auth;
 import static org.apache.arrow.flight.FlightTestUtil.LOCALHOST;
 import static org.apache.arrow.flight.Location.forGrpcInsecure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.ImmutableList;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.arrow.flight.Criteria;
 import org.apache.arrow.flight.FlightClient;
 import org.apache.arrow.flight.FlightInfo;
@@ -35,6 +45,8 @@ import org.apache.arrow.flight.FlightStream;
 import org.apache.arrow.flight.FlightTestUtil;
 import org.apache.arrow.flight.NoOpFlightProducer;
 import org.apache.arrow.flight.Ticket;
+import org.apache.arrow.flight.impl.Flight.HandshakeResponse;
+import org.apache.arrow.flight.impl.FlightServiceGrpc;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -97,6 +109,103 @@ public class TestBasicAuth {
         () -> {
           client.listFlights(Criteria.ALL).forEach(action -> fail());
         });
+  }
+
+  @Test
+  public void handshakeBlocksWhileWaitingForClient() throws Exception {
+    final ManagedChannel channel =
+        ManagedChannelBuilder.forAddress(LOCALHOST, server.getPort()).usePlaintext().build();
+    try {
+      // Open a handshake but never send a message, so the server waits for the first one.
+      FlightServiceGrpc.newStub(channel)
+          .handshake(
+              new StreamObserver<HandshakeResponse>() {
+                @Override
+                public void onNext(HandshakeResponse value) {}
+
+                @Override
+                public void onError(Throwable t) {}
+
+                @Override
+                public void onCompleted() {}
+              });
+
+      final Thread handshakeThread = awaitServerHandshakeThread();
+      assertNotNull(handshakeThread, "server handshake did not start");
+      Thread.sleep(200);
+      // The thread must park until a message arrives rather than spin on the queue.
+      assertEquals(Thread.State.WAITING, handshakeThread.getState());
+    } finally {
+      channel.shutdownNow().awaitTermination(5, TimeUnit.SECONDS);
+    }
+  }
+
+  @Test
+  public void interruptedClientHandshakeEndsServerStream() throws Exception {
+    final AtomicReference<Thread> serverThread = new AtomicReference<>();
+    try {
+      assertThrows(
+          RuntimeException.class,
+          () ->
+              client.authenticate(
+                  new ClientAuthHandler() {
+                    @Override
+                    public void authenticate(ClientAuthSender outgoing, Iterator<byte[]> incoming) {
+                      // Let the server park on our first message, then stop mid-handshake.
+                      serverThread.set(awaitServerHandshakeThread());
+                      Thread.currentThread().interrupt();
+                      incoming.next();
+                    }
+
+                    @Override
+                    public byte[] getCallToken() {
+                      return VALID_TOKEN;
+                    }
+                  }));
+    } finally {
+      // next() re-raises the flag before propagating, so clear it for the rest of the suite.
+      Thread.interrupted();
+    }
+    assertNotNull(serverThread.get(), "server handshake did not start");
+
+    // The interrupted client errors the request stream, so the server gives up on the message.
+    for (int i = 0; i < 100 && isWaitingForHandshakeMessage(serverThread.get()); i++) {
+      Thread.sleep(50);
+    }
+    assertFalse(
+        isWaitingForHandshakeMessage(serverThread.get()),
+        "server handshake stayed blocked after the client was interrupted");
+  }
+
+  private static Thread awaitServerHandshakeThread() {
+    for (int i = 0; i < 100; i++) {
+      for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+        if (isWaitingForHandshakeMessage(entry.getValue())) {
+          return entry.getKey();
+        }
+      }
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return null;
+      }
+    }
+    return null;
+  }
+
+  private static boolean isWaitingForHandshakeMessage(Thread thread) {
+    return isWaitingForHandshakeMessage(thread.getStackTrace());
+  }
+
+  private static boolean isWaitingForHandshakeMessage(StackTraceElement[] stack) {
+    for (StackTraceElement frame : stack) {
+      if (frame.getClassName().startsWith(ServerAuthWrapper.class.getName())
+          && frame.getMethodName().equals("next")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @BeforeEach

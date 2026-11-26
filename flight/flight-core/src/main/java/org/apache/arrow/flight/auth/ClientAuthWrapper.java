@@ -63,6 +63,9 @@ public class ClientAuthWrapper {
 
   private static class AuthObserver implements StreamObserver<HandshakeResponse> {
 
+    // Queued after the last message so a blocked reader wakes up when the server is done.
+    private static final byte[] END_OF_STREAM = new byte[0];
+
     private volatile StreamObserver<HandshakeRequest> responseObserver;
     private final LinkedBlockingQueue<byte[]> messages = new LinkedBlockingQueue<>();
     private final AuthSender sender = new AuthSender();
@@ -84,15 +87,19 @@ public class ClientAuthWrapper {
 
           @Override
           public byte[] next() {
-            while (!completed.isDone() || !messages.isEmpty()) {
-              byte[] bytes = messages.poll();
-              if (bytes == null) {
-                // busy wait.
-                continue;
-              } else {
-                return bytes;
-              }
+            final byte[] bytes;
+            try {
+              bytes = messages.take();
+            } catch (InterruptedException e) {
+              Thread.currentThread().interrupt();
+              // Fail the request stream, otherwise the server keeps waiting for a message from us.
+              sender.onError(e);
+              throw new RuntimeException(e);
             }
+            if (bytes != END_OF_STREAM) {
+              return bytes;
+            }
+            messages.add(END_OF_STREAM);
 
             if (completed.isCompletedExceptionally()) {
               // Preserve prior exception behavior
@@ -116,13 +123,15 @@ public class ClientAuthWrapper {
 
           @Override
           public boolean hasNext() {
-            return !messages.isEmpty();
+            final byte[] head = messages.peek();
+            return head != null && head != END_OF_STREAM;
           }
         };
 
     @Override
     public void onError(Throwable t) {
       completed.completeExceptionally(t);
+      messages.add(END_OF_STREAM);
     }
 
     private class AuthSender implements ClientAuthSender {
@@ -149,6 +158,7 @@ public class ClientAuthWrapper {
     @Override
     public void onCompleted() {
       completed.complete(true);
+      messages.add(END_OF_STREAM);
     }
   }
 }
