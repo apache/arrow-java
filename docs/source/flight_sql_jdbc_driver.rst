@@ -107,16 +107,33 @@ case-sensitive. The supported parameters are:
 
    * - trustStore
      - null
-     - When TLS is enabled, the path to the certificate store
+     - When TLS is enabled, the path to the certificate store. Blank values
+       are treated as unset. Takes precedence over ``useSystemTrustStore``,
+       and is ignored when ``tlsRootCerts`` is set.
 
    * - trustStorePassword
      - null
-     - When TLS is enabled, the password for the certificate store
+     - When TLS is enabled, the password for the certificate store. Required
+       when ``trustStore`` is set.
 
    * - tlsRootCerts
      - null
      - Path to PEM-encoded root certificates for TLS - use this as
-       an alternative to ``trustStore``
+       an alternative to ``trustStore``. Blank values are treated as unset.
+
+   * - hostnameOverride
+     - null
+     - When TLS is enabled, the hostname to verify the server certificate
+       against and to send for SNI and as the gRPC ``:authority`` header,
+       instead of **HOSTNAME**. Use this when
+       connecting through a tunnel, a private endpoint, or an IP address
+       that does not match the server certificate. The value replaces the
+       whole ``:authority``, so **PORT** is not sent unless it is included,
+       for example ``flight.example.com:32010``; only the hostname is used
+       for SNI and certificate verification. Endpoints returned by
+       the server are only verified against this hostname if they are on
+       the same host and port as the connection. Ignored when
+       ``useEncryption`` is false.
 
    * - clientCertificate
      - null
@@ -130,7 +147,10 @@ case-sensitive. The supported parameters are:
 
    * - useEncryption
      - true
-     - Whether to use TLS (the default is an encrypted connection)
+     - Whether to use TLS (the default is an encrypted connection).
+       When true, endpoint locations returned by the server that do not
+       use TLS, such as ``grpc+tcp``, are refused and the endpoint's
+       other locations are tried instead.
 
    * - user
      - null
@@ -138,7 +158,8 @@ case-sensitive. The supported parameters are:
 
    * - useSystemTrustStore
      - true
-     - When TLS is enabled, whether to use the system certificate store
+     - When TLS is enabled, whether to use the system certificate store.
+       Ignored when ``trustStore`` or ``tlsRootCerts`` is set.
 
    * - retainCookies
      - true

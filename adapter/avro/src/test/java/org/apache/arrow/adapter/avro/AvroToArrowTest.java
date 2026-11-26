@@ -18,6 +18,7 @@ package org.apache.arrow.adapter.avro;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.arrow.adapter.avro.consumers.AvroStringConsumer;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.VarCharVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
@@ -34,6 +36,11 @@ import org.apache.arrow.vector.complex.StructVector;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.BinaryDecoder;
+import org.apache.avro.io.BinaryEncoder;
+import org.apache.avro.io.DecoderFactory;
+import org.apache.avro.io.EncoderFactory;
+import org.apache.avro.io.ResolvingDecoder;
 import org.junit.jupiter.api.Test;
 
 public class AvroToArrowTest extends AvroTestBase {
@@ -47,6 +54,42 @@ public class AvroToArrowTest extends AvroTestBase {
     FieldVector vector = root.getFieldVectors().get(0);
 
     checkPrimitiveResult(data, vector);
+  }
+
+  /**
+   * Regression for issue 832. {@code AvroStringConsumer} used {@code Decoder.readBytes}, so a
+   * {@link ResolvingDecoder} whose reader schema is a string threw {@code AvroTypeException}:
+   * "Attempt to process a bytes when a string was expected." Values are written with {@code
+   * Encoder.writeString} and include an empty string and a non-ASCII literal so the reused {@code
+   * Utf8} buffer is copied with the correct byte length.
+   */
+  @Test
+  public void testStringTypeWithResolvingDecoder() throws Exception {
+    Schema schema = getSchema("test_primitive_string.avsc");
+    List<String> data = Arrays.asList("v1", "", "你好世界");
+
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    BinaryEncoder encoder = EncoderFactory.get().directBinaryEncoder(out, null);
+    for (String value : data) {
+      encoder.writeString(value);
+    }
+    encoder.flush();
+
+    DecoderFactory factory = DecoderFactory.get();
+    BinaryDecoder binaryDecoder = factory.binaryDecoder(out.toByteArray(), null);
+    ResolvingDecoder resolvingDecoder = factory.resolvingDecoder(schema, schema, binaryDecoder);
+
+    VarCharVector vector = new VarCharVector("str", config.getAllocator());
+    try (AvroStringConsumer consumer = new AvroStringConsumer(vector)) {
+      vector.allocateNew();
+      for (int i = 0; i < data.size(); i++) {
+        resolvingDecoder.configure(binaryDecoder);
+        consumer.consume(resolvingDecoder);
+        resolvingDecoder.drain();
+      }
+      vector.setValueCount(data.size());
+      checkPrimitiveResult(data, vector);
+    }
   }
 
   @Test

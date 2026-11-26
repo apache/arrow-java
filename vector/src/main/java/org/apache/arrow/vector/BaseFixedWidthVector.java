@@ -26,7 +26,6 @@ import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.util.ArrowBufPointer;
 import org.apache.arrow.memory.util.ByteFunctionHelpers;
-import org.apache.arrow.memory.util.MemoryUtil;
 import org.apache.arrow.memory.util.hash.ArrowBufHasher;
 import org.apache.arrow.util.Preconditions;
 import org.apache.arrow.vector.compare.VectorVisitor;
@@ -503,9 +502,9 @@ public abstract class BaseFixedWidthVector extends BaseValueVector
     ArrowBuf bitBuffer = ownBuffers.get(0);
     ArrowBuf dataBuffer = ownBuffers.get(1);
 
-    validityBuffer.getReferenceManager().release();
+    // Clear the vector first, so that a failure while loading leaves it empty but usable
+    clear();
     validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    valueBuffer.getReferenceManager().release();
     valueBuffer = dataBuffer.getReferenceManager().retain(dataBuffer, allocator);
     refreshValueCapacity();
 
@@ -832,11 +831,13 @@ public abstract class BaseFixedWidthVector extends BaseValueVector
     if (from.isNull(fromIndex)) {
       BitVectorHelper.unsetBit(this.getValidityBuffer(), thisIndex);
     } else {
+      this.getDataBuffer()
+          .setBytes(
+              (long) thisIndex * typeWidth,
+              from.getDataBuffer(),
+              (long) fromIndex * typeWidth,
+              typeWidth);
       BitVectorHelper.setBit(this.getValidityBuffer(), thisIndex);
-      MemoryUtil.copyMemory(
-          from.getDataBuffer().memoryAddress() + (long) fromIndex * typeWidth,
-          this.getDataBuffer().memoryAddress() + (long) thisIndex * typeWidth,
-          typeWidth);
     }
   }
 

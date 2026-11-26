@@ -61,6 +61,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class AvaticaParameterBinder {
   private final PreparedStatement preparedStatement;
   private final VectorSchemaRoot parameters;
+  private boolean parametersHandedOff = false;
 
   /**
    * Instantiate a new AvaticaParameterBinder.
@@ -91,20 +92,30 @@ public class AvaticaParameterBinder {
    * @param index index for parameter.
    */
   public void bind(List<TypedValue> typedValues, int index) {
-    if (preparedStatement.getParameterSchema().getFields().size() != typedValues.size()) {
-      throw new IllegalStateException(
-          String.format(
-              "Prepared statement has %s parameters, but only received %s",
-              preparedStatement.getParameterSchema().getFields().size(), typedValues.size()));
-    }
+    try {
+      if (preparedStatement.getParameterSchema().getFields().size() != typedValues.size()) {
+        throw new IllegalStateException(
+            String.format(
+                "Prepared statement has %s parameters, but only received %s",
+                preparedStatement.getParameterSchema().getFields().size(), typedValues.size()));
+      }
 
-    for (int i = 0; i < typedValues.size(); i++) {
-      bind(parameters.getVector(i), typedValues.get(i), index);
-    }
+      for (int i = 0; i < typedValues.size(); i++) {
+        bind(parameters.getVector(i), typedValues.get(i), index);
+      }
 
-    if (!typedValues.isEmpty()) {
-      parameters.setRowCount(index + 1);
-      preparedStatement.setParameters(parameters);
+      if (!typedValues.isEmpty()) {
+        parameters.setRowCount(index + 1);
+        preparedStatement.setParameters(parameters);
+        parametersHandedOff = true;
+      }
+    } catch (RuntimeException e) {
+      // Until the root is handed to the prepared statement, nothing else owns it, so release the
+      // memory held by any values bound before the failure.
+      if (!parametersHandedOff) {
+        parameters.close();
+      }
+      throw e;
     }
   }
 

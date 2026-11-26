@@ -17,11 +17,9 @@
 package org.apache.arrow.driver.jdbc;
 
 import static java.lang.String.format;
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -38,7 +36,6 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
-import org.apache.calcite.avatica.AvaticaUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -115,16 +112,7 @@ public class ArrowFlightStatementExecuteUpdateTest {
   public void testExecuteUpdateShouldReturnSaturatedNumColsAffectedIfDoesNotFitInInt()
       throws SQLException {
     final long result = statement.executeUpdate(LARGE_UPDATE_SAMPLE_QUERY);
-    final long expectedRowCountRaw = LARGE_UPDATE_SAMPLE_QUERY_AFFECTED_COLS;
-    assertThat(
-        result,
-        is(
-            allOf(
-                not(equalTo(expectedRowCountRaw)),
-                equalTo(
-                    (long)
-                        AvaticaUtils.toSaturatedInt(
-                            expectedRowCountRaw))))); // Because of long-to-integer overflow.
+    assertThat(result, is((long) Integer.MAX_VALUE));
   }
 
   @Test
@@ -223,5 +211,14 @@ public class ArrowFlightStatementExecuteUpdateTest {
           is(format("Error while executing SQL \"%s\": Query not found", badQuery)));
     }
     assertThat(count, is(1));
+  }
+
+  @Test
+  public void testExecuteLargeUpdateShouldWrapBadStatement() {
+    final String badQuery = "BAD INVALID UPDATE";
+    final SQLException exception =
+        assertThrows(SQLException.class, () -> statement.executeLargeUpdate(badQuery));
+    assertThat(
+        exception.getMessage(), startsWith(format("Error while executing SQL \"%s\"", badQuery)));
   }
 }

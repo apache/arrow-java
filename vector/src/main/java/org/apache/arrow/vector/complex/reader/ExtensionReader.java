@@ -17,6 +17,7 @@
 package org.apache.arrow.vector.complex.reader;
 
 import org.apache.arrow.vector.holders.ExtensionHolder;
+import org.apache.arrow.vector.types.pojo.ArrowType;
 
 /** Interface for reading extension types. Extends the functionality of {@link BaseReader}. */
 public interface ExtensionReader extends BaseReader {
@@ -41,4 +42,21 @@ public interface ExtensionReader extends BaseReader {
    * @return true if the value is set, false otherwise
    */
   boolean isSet();
+
+  /**
+   * Returns the {@link ArrowType} of the extension data this reader exposes.
+   *
+   * <p>The default derives the type from {@link #getField()}, which works for vector-backed
+   * readers. Holder-backed readers (which have no notion of a {@code Field}) must override this to
+   * return the type carried by their {@link ExtensionHolder} directly.
+   *
+   * <p>Callers that need the extension {@link ArrowType} (e.g. to route a value through a union or
+   * promotable writer) should prefer this over {@code getField().getType()} so the call is
+   * well-defined regardless of how the reader is backed.
+   *
+   * @return the extension {@link ArrowType}
+   */
+  default ArrowType getExtensionType() {
+    return getField().getType();
+  }
 }

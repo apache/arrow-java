@@ -383,21 +383,28 @@ public class MessageSerializer {
     long totalLen = block.getMetadataLength() + block.getBodyLength();
 
     ArrowBuf buffer = alloc.buffer(totalLen);
-    if (in.readFully(buffer, totalLen) != totalLen) {
-      throw new IOException("Unexpected end of input trying to read batch.");
+    final RecordBatch recordBatchFB;
+    final ArrowBuf body;
+    try {
+      if (in.readFully(buffer, totalLen) != totalLen) {
+        throw new IOException("Unexpected end of input trying to read batch.");
+      }
+
+      int prefixSize = buffer.getInt(0) == IPC_CONTINUATION_TOKEN ? 8 : 4;
+
+      ArrowBuf metadataBuffer = buffer.slice(prefixSize, block.getMetadataLength() - prefixSize);
+
+      Message messageFB = Message.getRootAsMessage(metadataBuffer.nioBuffer().asReadOnlyBuffer());
+
+      recordBatchFB = (RecordBatch) messageFB.header(new RecordBatch());
+
+      // Now read the body
+      body = buffer.slice(block.getMetadataLength(), totalLen - block.getMetadataLength());
+    } catch (RuntimeException | IOException e) {
+      buffer.close();
+      throw e;
     }
-
-    int prefixSize = buffer.getInt(0) == IPC_CONTINUATION_TOKEN ? 8 : 4;
-
-    ArrowBuf metadataBuffer = buffer.slice(prefixSize, block.getMetadataLength() - prefixSize);
-
-    Message messageFB = Message.getRootAsMessage(metadataBuffer.nioBuffer().asReadOnlyBuffer());
-
-    RecordBatch recordBatchFB = (RecordBatch) messageFB.header(new RecordBatch());
-
-    // Now read the body
-    final ArrowBuf body =
-        buffer.slice(block.getMetadataLength(), totalLen - block.getMetadataLength());
+    // Releases the body, and so the buffer, once the batch is deserialized
     return deserializeRecordBatch(recordBatchFB, body);
   }
 
@@ -411,50 +418,89 @@ public class MessageSerializer {
    */
   public static ArrowRecordBatch deserializeRecordBatch(RecordBatch recordBatchFB, ArrowBuf body)
       throws IOException {
-    // Now read the body
-    int nodesLength = recordBatchFB.nodesLength();
-    List<ArrowFieldNode> nodes = new ArrayList<>();
-    for (int i = 0; i < nodesLength; ++i) {
-      FieldNode node = recordBatchFB.nodes(i);
-      if ((int) node.length() != node.length() || (int) node.nullCount() != node.nullCount()) {
-        throw new IOException(
-            "Cannot currently deserialize record batches with "
-                + "node length larger than INT_MAX records.");
+    try {
+      // Now read the body
+      int nodesLength = recordBatchFB.nodesLength();
+      List<ArrowFieldNode> nodes = new ArrayList<>();
+      for (int i = 0; i < nodesLength; ++i) {
+        FieldNode node = recordBatchFB.nodes(i);
+        if (node.length() < 0) {
+          throw new IOException("Record batch node " + i + " has negative length " + node.length());
+        }
+        if (node.nullCount() < -1) {
+          throw new IOException(
+              "Record batch node " + i + " has invalid null count " + node.nullCount());
+        }
+        if ((int) node.length() != node.length() || (int) node.nullCount() != node.nullCount()) {
+          throw new IOException(
+              "Cannot currently deserialize record batches with "
+                  + "node length larger than INT_MAX records.");
+        }
+        nodes.add(new ArrowFieldNode(node.length(), node.nullCount()));
       }
-      nodes.add(new ArrowFieldNode(node.length(), node.nullCount()));
-    }
-    List<ArrowBuf> buffers = new ArrayList<>();
-    for (int i = 0; i < recordBatchFB.buffersLength(); ++i) {
-      Buffer bufferFB = recordBatchFB.buffers(i);
-      ArrowBuf vectorBuffer = body.slice(bufferFB.offset(), bufferFB.length());
-      buffers.add(vectorBuffer);
-    }
+      List<ArrowBuf> buffers = new ArrayList<>();
+      for (int i = 0; i < recordBatchFB.buffersLength(); ++i) {
+        Buffer bufferFB = recordBatchFB.buffers(i);
+        long offset = bufferFB.offset();
+        long length = bufferFB.length();
+        if (offset < 0 || length < 0 || offset > body.capacity() - length) {
+          throw new IOException(
+              "Record batch buffer "
+                  + i
+                  + " (offset "
+                  + offset
+                  + ", length "
+                  + length
+                  + ") does not fit in a body of "
+                  + body.capacity()
+                  + " bytes");
+        }
+        ArrowBuf vectorBuffer = body.slice(offset, length);
+        buffers.add(vectorBuffer);
+      }
 
-    ArrowBodyCompression bodyCompression =
-        recordBatchFB.compression() == null
-            ? NoCompressionCodec.DEFAULT_BODY_COMPRESSION
-            : new ArrowBodyCompression(
-                recordBatchFB.compression().codec(), recordBatchFB.compression().method());
+      ArrowBodyCompression bodyCompression =
+          recordBatchFB.compression() == null
+              ? NoCompressionCodec.DEFAULT_BODY_COMPRESSION
+              : new ArrowBodyCompression(
+                  recordBatchFB.compression().codec(), recordBatchFB.compression().method());
 
-    List<Long> variadicBufferCounts = new ArrayList<>();
-    for (int i = 0; i < recordBatchFB.variadicBufferCountsLength(); i++) {
-      variadicBufferCounts.add(recordBatchFB.variadicBufferCounts(i));
-    }
+      List<Long> variadicBufferCounts = new ArrayList<>();
+      long totalVariadicBufferCount = 0;
+      for (int i = 0; i < recordBatchFB.variadicBufferCountsLength(); i++) {
+        long count = recordBatchFB.variadicBufferCounts(i);
+        // Variadic buffers are also listed in the batch buffers, so they cannot outnumber them
+        if (count < 0 || count > recordBatchFB.buffersLength() - totalVariadicBufferCount) {
+          throw new IOException(
+              "Record batch variadic buffer count "
+                  + i
+                  + " is "
+                  + count
+                  + ", but the batch has "
+                  + recordBatchFB.buffersLength()
+                  + " buffers");
+        }
+        totalVariadicBufferCount += count;
+        variadicBufferCounts.add(count);
+      }
 
-    if ((int) recordBatchFB.length() != recordBatchFB.length()) {
-      throw new IOException(
-          "Cannot currently deserialize record batches with more than INT_MAX records.");
+      if (recordBatchFB.length() < 0) {
+        throw new IOException("Record batch has negative length " + recordBatchFB.length());
+      }
+      if ((int) recordBatchFB.length() != recordBatchFB.length()) {
+        throw new IOException(
+            "Cannot currently deserialize record batches with more than INT_MAX records.");
+      }
+      return new ArrowRecordBatch(
+          checkedCastToInt(recordBatchFB.length()),
+          nodes,
+          buffers,
+          bodyCompression,
+          variadicBufferCounts,
+          /*alignBuffers*/ true);
+    } finally {
+      body.getReferenceManager().release();
     }
-    ArrowRecordBatch arrowRecordBatch =
-        new ArrowRecordBatch(
-            checkedCastToInt(recordBatchFB.length()),
-            nodes,
-            buffers,
-            bodyCompression,
-            variadicBufferCounts,
-            /*alignBuffers*/ true);
-    body.getReferenceManager().release();
-    return arrowRecordBatch;
   }
 
   /**
@@ -588,22 +634,31 @@ public class MessageSerializer {
     long totalLen = block.getMetadataLength() + block.getBodyLength();
 
     ArrowBuf buffer = alloc.buffer(totalLen);
-    if (in.readFully(buffer, totalLen) != totalLen) {
-      throw new IOException("Unexpected end of input trying to read batch.");
+    final DictionaryBatch dictionaryBatchFB;
+    final RecordBatch recordBatchFB;
+    final ArrowBuf body;
+    try {
+      if (in.readFully(buffer, totalLen) != totalLen) {
+        throw new IOException("Unexpected end of input trying to read batch.");
+      }
+
+      int prefixSize = buffer.getInt(0) == IPC_CONTINUATION_TOKEN ? 8 : 4;
+
+      ArrowBuf metadataBuffer = buffer.slice(prefixSize, block.getMetadataLength() - prefixSize);
+
+      Message messageFB = Message.getRootAsMessage(metadataBuffer.nioBuffer().asReadOnlyBuffer());
+
+      dictionaryBatchFB = (DictionaryBatch) messageFB.header(new DictionaryBatch());
+      recordBatchFB = dictionaryBatchFB.data();
+
+      // Now read the body
+      body = buffer.slice(block.getMetadataLength(), totalLen - block.getMetadataLength());
+    } catch (RuntimeException | IOException e) {
+      buffer.close();
+      throw e;
     }
-
-    int prefixSize = buffer.getInt(0) == IPC_CONTINUATION_TOKEN ? 8 : 4;
-
-    ArrowBuf metadataBuffer = buffer.slice(prefixSize, block.getMetadataLength() - prefixSize);
-
-    Message messageFB = Message.getRootAsMessage(metadataBuffer.nioBuffer().asReadOnlyBuffer());
-
-    DictionaryBatch dictionaryBatchFB = (DictionaryBatch) messageFB.header(new DictionaryBatch());
-
-    // Now read the body
-    final ArrowBuf body =
-        buffer.slice(block.getMetadataLength(), totalLen - block.getMetadataLength());
-    ArrowRecordBatch recordBatch = deserializeRecordBatch(dictionaryBatchFB.data(), body);
+    // Releases the body, and so the buffer, once the batch is deserialized
+    ArrowRecordBatch recordBatch = deserializeRecordBatch(recordBatchFB, body);
     return new ArrowDictionaryBatch(
         dictionaryBatchFB.id(), recordBatch, dictionaryBatchFB.isDelta());
   }
@@ -620,25 +675,41 @@ public class MessageSerializer {
     MessageResult result = reader.readNext();
     if (result == null) {
       return null;
-    } else if (result.getMessage().bodyLength() > Integer.MAX_VALUE) {
-      throw new IOException("Cannot currently deserialize record batches over 2GB");
     }
 
-    if (result.getMessage().version() != MetadataVersion.V4
-        && result.getMessage().version() != MetadataVersion.V5) {
-      throw new IOException(
-          "Received metadata with an incompatible version number: "
-              + result.getMessage().version());
+    ArrowBuf bodyBuffer = result.getBodyBuffer();
+    // For zero-length batches, need an empty buffer to deserialize the batch
+    if (bodyBuffer == null) {
+      bodyBuffer = reader.allocator.getEmpty();
     }
 
-    switch (result.getMessage().headerType()) {
-      case MessageHeader.RecordBatch:
-        return deserializeRecordBatch(result.getMessage(), result.getBodyBuffer());
-      case MessageHeader.DictionaryBatch:
-        return deserializeDictionaryBatch(result.getMessage(), result.getBodyBuffer());
-      default:
+    try {
+      if (result.getMessage().bodyLength() > Integer.MAX_VALUE) {
+        throw new IOException("Cannot currently deserialize record batches over 2GB");
+      }
+
+      if (result.getMessage().version() != MetadataVersion.V4
+          && result.getMessage().version() != MetadataVersion.V5) {
+        throw new IOException(
+            "Received metadata with an incompatible version number: "
+                + result.getMessage().version());
+      }
+
+      if (result.getMessage().headerType() != MessageHeader.RecordBatch
+          && result.getMessage().headerType() != MessageHeader.DictionaryBatch) {
         throw new IOException("Unexpected message header type " + result.getMessage().headerType());
+      }
+    } catch (IOException e) {
+      // The body was read with the message but will not be deserialized
+      bodyBuffer.close();
+      throw e;
     }
+
+    // Deserializing releases the body
+    if (result.getMessage().headerType() == MessageHeader.RecordBatch) {
+      return deserializeRecordBatch(result.getMessage(), bodyBuffer);
+    }
+    return deserializeDictionaryBatch(result.getMessage(), bodyBuffer);
   }
 
   /**

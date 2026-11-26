@@ -57,6 +57,23 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
     this.currentIndex = 0;
   }
 
+  /**
+   * Reads at most {@code size} characters of the clob from {@code pos}. A chunk never ends with the
+   * high surrogate of a pair: it is left for the next chunk, so that the pair is encoded to UTF-8
+   * as one character instead of two '?'.
+   */
+  private static String readChunk(Clob clob, long pos, int size, long length) throws SQLException {
+    String chunk = clob.getSubString(pos, size);
+    if (chunk.isEmpty()) {
+      throw new SQLException("No characters read from clob at position " + pos + " of " + length);
+    }
+    int last = chunk.length() - 1;
+    if (last > 0 && pos + last < length && Character.isHighSurrogate(chunk.charAt(last))) {
+      return chunk.substring(0, last);
+    }
+    return chunk;
+  }
+
   /** Nullable consumer for clob data. */
   static class NullableClobConsumer extends ClobConsumer {
 
@@ -70,6 +87,8 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
       Clob clob = resultSet.getClob(columnIndexInResultSet);
       if (!resultSet.wasNull()) {
         if (clob != null) {
+          // Fill the offsets of the NULL rows before this one, so it starts after the last value.
+          vector.fillEmpties(currentIndex);
           long length = clob.length();
 
           int read = 1;
@@ -80,17 +99,18 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
           ArrowBuf offsetBuffer = vector.getOffsetBuffer();
           int startIndex = offsetBuffer.getInt(currentIndex * 4L);
           while (read <= length) {
-            String str = clob.getSubString(read, readSize);
+            String str = readChunk(clob, read, readSize, length);
             byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
 
-            while ((dataBuffer.writerIndex() + bytes.length) > dataBuffer.capacity()) {
+            while (dataBuffer.capacity() < startIndex + totalBytes + bytes.length) {
               vector.reallocDataBuffer();
+              dataBuffer = vector.getDataBuffer();
             }
             MemoryUtil.copyToMemory(
                 bytes, 0, dataBuffer.memoryAddress() + startIndex + totalBytes, bytes.length);
 
             totalBytes += bytes.length;
-            read += readSize;
+            read += str.length();
           }
           offsetBuffer.setInt((currentIndex + 1) * 4L, startIndex + totalBytes);
           BitVectorHelper.setBit(vector.getValidityBuffer(), currentIndex);
@@ -113,6 +133,8 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
     public void consume(ResultSet resultSet) throws SQLException {
       Clob clob = resultSet.getClob(columnIndexInResultSet);
       if (clob != null) {
+        // Fill the offsets of the NULL rows before this one, so it starts after the last value.
+        vector.fillEmpties(currentIndex);
         long length = clob.length();
 
         int read = 1;
@@ -123,17 +145,18 @@ public abstract class ClobConsumer extends BaseConsumer<VarCharVector> {
         ArrowBuf offsetBuffer = vector.getOffsetBuffer();
         int startIndex = offsetBuffer.getInt(currentIndex * 4L);
         while (read <= length) {
-          String str = clob.getSubString(read, readSize);
+          String str = readChunk(clob, read, readSize, length);
           byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
 
-          while ((dataBuffer.writerIndex() + bytes.length) > dataBuffer.capacity()) {
+          while (dataBuffer.capacity() < startIndex + totalBytes + bytes.length) {
             vector.reallocDataBuffer();
+            dataBuffer = vector.getDataBuffer();
           }
           MemoryUtil.copyToMemory(
               bytes, 0, dataBuffer.memoryAddress() + startIndex + totalBytes, bytes.length);
 
           totalBytes += bytes.length;
-          read += readSize;
+          read += str.length();
         }
         offsetBuffer.setInt((currentIndex + 1) * 4L, startIndex + totalBytes);
         BitVectorHelper.setBit(vector.getValidityBuffer(), currentIndex);

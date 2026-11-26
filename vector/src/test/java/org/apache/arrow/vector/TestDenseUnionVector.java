@@ -19,22 +19,30 @@ package org.apache.arrow.vector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.complex.DenseUnionVector;
+import org.apache.arrow.vector.complex.LargeListViewVector;
+import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.VectorWithOrdinal;
 import org.apache.arrow.vector.holders.NullableBigIntHolder;
 import org.apache.arrow.vector.holders.NullableBitHolder;
 import org.apache.arrow.vector.holders.NullableFloat4Holder;
+import org.apache.arrow.vector.holders.NullableFloat8Holder;
 import org.apache.arrow.vector.holders.NullableIntHolder;
 import org.apache.arrow.vector.holders.NullableUInt4Holder;
+import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.testing.ValueVectorDataPopulator;
 import org.apache.arrow.vector.types.Types;
 import org.apache.arrow.vector.types.Types.MinorType;
@@ -45,6 +53,7 @@ import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.util.JsonStringHashMap;
 import org.apache.arrow.vector.util.Text;
 import org.apache.arrow.vector.util.TransferPair;
+import org.apache.arrow.vector.util.ValueVectorUtility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -187,6 +196,48 @@ public class TestDenseUnionVector {
 
         assertFalse(destVector.isNull(5));
         assertEquals(false, destVector.getObject(5));
+      }
+    }
+  }
+
+  @Test
+  public void testTransferWithDeclaredTypeIds() {
+    try (DenseUnionVector srcVector = newVectorWithTypeIds5And10()) {
+      Field srcField = srcVector.getField();
+      TransferPair pair = srcVector.getTransferPair(allocator);
+      try (DenseUnionVector destVector = (DenseUnionVector) pair.getTo()) {
+        pair.transfer();
+        destVector.setValueCount(3);
+
+        assertEquals(srcField, destVector.getField());
+        assertEquals(5, destVector.getObject(0));
+        assertEquals(true, destVector.getObject(1));
+        assertEquals(7, destVector.getObject(2));
+
+        TransferPair secondPair = destVector.getTransferPair(allocator);
+        try (DenseUnionVector secondDestVector = (DenseUnionVector) secondPair.getTo()) {
+          secondPair.transfer();
+
+          assertEquals(srcField, secondDestVector.getField());
+          assertEquals(3, secondDestVector.getValueCount());
+          assertEquals(5, secondDestVector.getObject(0));
+          assertEquals(true, secondDestVector.getObject(1));
+          assertEquals(7, secondDestVector.getObject(2));
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferWithDeclaredTypeIds() {
+    try (DenseUnionVector srcVector = newVectorWithTypeIds5And10()) {
+      TransferPair pair = srcVector.getTransferPair(allocator);
+      try (DenseUnionVector destVector = (DenseUnionVector) pair.getTo()) {
+        pair.splitAndTransfer(1, 2);
+
+        assertEquals(2, destVector.getValueCount());
+        assertEquals(true, destVector.getObject(0));
+        assertEquals(7, destVector.getObject(1));
       }
     }
   }
@@ -363,6 +414,388 @@ public class TestDenseUnionVector {
         }
       }
     }
+  }
+
+  @Test
+  public void testSplitAndTransferWithTypeIds() {
+    try (DenseUnionVector source = newVectorWithTypeIds();
+        DenseUnionVector target = (DenseUnionVector) source.getField().createVector(allocator)) {
+      source.makeTransferPair(target).splitAndTransfer(1, 3);
+
+      ValueVectorUtility.validateFull(target);
+      assertEquals(3, target.getValueCount());
+      assertEquals(new Text("a"), target.getObject(0));
+      assertEquals(2, target.getObject(1));
+      assertEquals(new Text("b"), target.getObject(2));
+    }
+  }
+
+  @Test
+  public void testTransferPairWithTypeIdsCreatesTarget() {
+    try (DenseUnionVector source = newVectorWithTypeIds()) {
+      TransferPair pair = source.getTransferPair(allocator);
+      try (DenseUnionVector target = (DenseUnionVector) pair.getTo()) {
+        assertEquals(source.getField(), target.getField());
+
+        pair.splitAndTransfer(1, 2);
+        assertEquals(2, target.getValueCount());
+        assertEquals(new Text("a"), target.getObject(0));
+        assertEquals(2, target.getObject(1));
+
+        pair.transfer();
+        assertEquals(4, target.getValueCount());
+        assertEquals(1, target.getObject(0));
+        assertEquals(new Text("b"), target.getObject(3));
+      }
+    }
+  }
+
+  @Test
+  public void testGetFieldKeepsChildOrder() {
+    // The children of a dense union need not be in the order of their type ids
+    Field field =
+        new Field(
+            "duv",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {10, 5})),
+            Arrays.asList(
+                Field.nullable("s", MinorType.VARCHAR.getType()),
+                Field.nullable("i", MinorType.INT.getType())));
+    try (DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator)) {
+      assertEquals(field, vector.getField());
+      try (ValueVector target = vector.getTransferPair(allocator).getTo()) {
+        assertEquals(field, target.getField());
+      }
+    }
+  }
+
+  /** Registers an int child and then a double child, but creates the double vector first. */
+  private DenseUnionVector newVectorWithChildrenCreatedOutOfOrder() {
+    DenseUnionVector vector = DenseUnionVector.empty("duv", allocator);
+    vector.allocateNew();
+    byte intTypeId = vector.registerNewTypeId(Field.nullable("i", MinorType.INT.getType()));
+    byte doubleTypeId = vector.registerNewTypeId(Field.nullable("d", MinorType.FLOAT8.getType()));
+
+    NullableFloat8Holder doubleHolder = new NullableFloat8Holder();
+    doubleHolder.isSet = 1;
+    NullableIntHolder intHolder = new NullableIntHolder();
+    intHolder.isSet = 1;
+
+    vector.setTypeId(0, doubleTypeId);
+    doubleHolder.value = 1.5;
+    vector.setSafe(0, doubleHolder);
+    vector.setTypeId(1, intTypeId);
+    intHolder.value = 42;
+    vector.setSafe(1, intHolder);
+    vector.setTypeId(2, doubleTypeId);
+    doubleHolder.value = 2.5;
+    vector.setSafe(2, doubleHolder);
+    vector.setValueCount(3);
+    return vector;
+  }
+
+  @Test
+  public void testChildrenCreatedOutOfOrderFollowGetField() {
+    try (DenseUnionVector vector = newVectorWithChildrenCreatedOutOfOrder()) {
+      List<Field> fields = vector.getField().getChildren();
+      List<FieldVector> children = vector.getChildrenFromFields();
+      assertEquals(fields.size(), children.size());
+      for (int i = 0; i < fields.size(); i++) {
+        assertEquals(fields.get(i).getType(), children.get(i).getField().getType());
+      }
+    }
+  }
+
+  @Test
+  public void testTransferWithChildrenCreatedOutOfOrder() {
+    try (DenseUnionVector source = newVectorWithChildrenCreatedOutOfOrder()) {
+      TransferPair pair = source.getTransferPair(allocator);
+      try (DenseUnionVector target = (DenseUnionVector) pair.getTo()) {
+        assertEquals(source.getField().getChildren(), target.getField().getChildren());
+
+        pair.splitAndTransfer(1, 2);
+        assertEquals(2, target.getValueCount());
+        assertEquals(42, target.getObject(0));
+        assertEquals(2.5, target.getObject(1));
+
+        pair.transfer();
+        assertEquals(3, target.getValueCount());
+        assertEquals(1.5, target.getObject(0));
+        assertEquals(42, target.getObject(1));
+        assertEquals(2.5, target.getObject(2));
+      }
+    }
+  }
+
+  @Test
+  public void testUnloadWithChildrenCreatedOutOfOrder() {
+    // The unloader takes the schema from getField() and the buffers from getChildrenFromFields()
+    try (VectorSchemaRoot root = VectorSchemaRoot.of(newVectorWithChildrenCreatedOutOfOrder());
+        ArrowRecordBatch batch = new VectorUnloader(root).getRecordBatch();
+        VectorSchemaRoot loaded = VectorSchemaRoot.create(root.getSchema(), allocator)) {
+      new VectorLoader(loaded).load(batch);
+
+      FieldVector vector = loaded.getVector(0);
+      assertEquals(3, vector.getValueCount());
+      assertEquals(1.5, vector.getObject(0));
+      assertEquals(42, vector.getObject(1));
+      assertEquals(2.5, vector.getObject(2));
+    }
+  }
+
+  @Test
+  public void testRegisterNewTypeIdSkipsTypeIdsOfTransferTarget() {
+    Field field =
+        new Field(
+            "duv",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {2, 0})),
+            Arrays.asList(
+                Field.nullable("i", MinorType.INT.getType()),
+                Field.nullable("s", MinorType.VARCHAR.getType())));
+    try (DenseUnionVector source = (DenseUnionVector) field.createVector(allocator);
+        DenseUnionVector target = (DenseUnionVector) source.getTransferPair(allocator).getTo()) {
+      byte typeId = target.registerNewTypeId(Field.nullable("d", MinorType.FLOAT8.getType()));
+
+      assertEquals(3, typeId);
+      Field expected =
+          new Field(
+              "duv",
+              FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {2, 0, 3})),
+              Arrays.asList(
+                  Field.nullable("i", MinorType.INT.getType()),
+                  Field.nullable("s", MinorType.VARCHAR.getType()),
+                  Field.nullable("d", MinorType.FLOAT8.getType())));
+      assertEquals(expected, target.getField());
+    }
+  }
+
+  @Test
+  public void testMaximumNumberOfChildren() {
+    int[] typeIds = new int[Byte.MAX_VALUE + 1];
+    List<Field> children = new ArrayList<>();
+    for (int i = 0; i < typeIds.length; i++) {
+      typeIds[i] = i;
+      children.add(Field.nullable("c" + i, MinorType.INT.getType()));
+    }
+    Field field =
+        new Field(
+            "duv", FieldType.nullable(new ArrowType.Union(UnionMode.Dense, typeIds)), children);
+    try (DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator)) {
+      assertEquals(field, vector.getField());
+
+      vector.allocateNew();
+      IntVector last = (IntVector) vector.getChildrenFromFields().get(Byte.MAX_VALUE);
+      last.setSafe(0, 7);
+      last.setSafe(1, 8);
+      vector.setTypeId(0, Byte.MAX_VALUE);
+      vector.setTypeId(1, Byte.MAX_VALUE);
+      vector.getOffsetBuffer().setInt(DenseUnionVector.OFFSET_WIDTH, 1);
+      vector.setValueCount(2);
+
+      TransferPair pair = vector.getTransferPair(allocator);
+      try (DenseUnionVector target = (DenseUnionVector) pair.getTo()) {
+        pair.splitAndTransfer(1, 1);
+        assertEquals(field, target.getField());
+        assertEquals(8, target.getObject(0));
+      }
+
+      assertThrows(
+          IllegalStateException.class,
+          () -> vector.registerNewTypeId(Field.nullable("extra", MinorType.INT.getType())));
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferWithUnknownTypeId() {
+    Field field =
+        new Field(
+            "duv",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {10, 5})),
+            Arrays.asList(
+                Field.nullable("a", MinorType.INT.getType()),
+                Field.nullable("b", MinorType.INT.getType())));
+    try (DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator)) {
+      vector.allocateNew();
+      vector.setTypeId(0, (byte) 10);
+      vector.setTypeId(1, (byte) 7);
+      vector.setValueCount(2);
+
+      TransferPair pair = vector.getTransferPair(allocator);
+      try (DenseUnionVector target = (DenseUnionVector) pair.getTo()) {
+        IllegalArgumentException e =
+            assertThrows(IllegalArgumentException.class, () -> pair.splitAndTransfer(0, 2));
+        assertTrue(e.getMessage().contains("type id 7"), e.getMessage());
+        assertEquals(0, target.getValueCount());
+      }
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferWithOffsetGapsInRunEndEncodedChild() {
+    Field child =
+        new Field(
+            "r",
+            FieldType.nullable(ArrowType.RunEndEncoded.INSTANCE),
+            Arrays.asList(
+                Field.notNullable("run_ends", MinorType.INT.getType()),
+                Field.nullable("values", MinorType.INT.getType())));
+    assertSplitWithOffsetGapsFails(
+        child,
+        vector -> {
+          // The populator replaces the children, which the dense union has allocated already
+          RunEndEncodedVector runs = (RunEndEncodedVector) vector;
+          ValueVectorDataPopulator.setVector((IntVector) runs.getRunEndsVector(), 1, 2, 3);
+          ValueVectorDataPopulator.setVector((IntVector) runs.getValuesVector(), 7, 8, 9);
+          runs.setValueCount(3);
+        },
+        "RunEndEncodedVector");
+  }
+
+  @Test
+  public void testSplitAndTransferWithOffsetGapsInLargeListViewChild() {
+    Field child =
+        new Field(
+            "l",
+            FieldType.nullable(ArrowType.LargeListView.INSTANCE),
+            Collections.singletonList(Field.nullable("item", MinorType.INT.getType())));
+    assertSplitWithOffsetGapsFails(
+        child,
+        vector ->
+            ValueVectorDataPopulator.setVector(
+                (LargeListViewVector) vector, List.of(7), List.of(8), List.of(9)),
+        "LargeListViewVector");
+  }
+
+  /**
+   * Splits a dense union whose rows select an int and values 0 and 2 of a child of {@code
+   * childField}, which do not support copying them although they are not consecutive.
+   */
+  private void assertSplitWithOffsetGapsFails(
+      Field childField, Consumer<FieldVector> setThreeValues, String childClass) {
+    Field field =
+        new Field(
+            "duv",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {0, 1})),
+            Arrays.asList(Field.nullable("i", MinorType.INT.getType()), childField));
+    try (DenseUnionVector source = (DenseUnionVector) field.createVector(allocator);
+        DenseUnionVector target = (DenseUnionVector) field.createVector(allocator)) {
+      source.allocateNew();
+      ((IntVector) source.getVectorByType((byte) 0)).setSafe(0, 42);
+      FieldVector child = (FieldVector) source.getVectorByType((byte) 1);
+      setThreeValues.accept(child);
+      int[] typeIds = {0, 1, 1};
+      int[] offsets = {0, 0, 2};
+      for (int i = 0; i < 3; i++) {
+        source.setTypeId(i, (byte) typeIds[i]);
+        source.setOffset(i, offsets[i]);
+      }
+      source.setValueCount(3);
+      // setValueCount() sets the child's value count to the number of rows selecting it
+      child.setValueCount(3);
+
+      TransferPair pair = source.makeTransferPair(target);
+      UnsupportedOperationException e =
+          assertThrows(UnsupportedOperationException.class, () -> pair.splitAndTransfer(0, 3));
+      assertEquals(0, target.getValueCount());
+      assertEquals(0, target.getVectorByType((byte) 0).getValueCount());
+      assertTrue(String.valueOf(e.getMessage()).contains(childClass), e.getMessage());
+    }
+  }
+
+  /** Creates [1, "a", 2, "b"] in a dense union of ints with type id 5 and strings with 10. */
+  private DenseUnionVector newVectorWithTypeIds() {
+    Field field =
+        new Field(
+            "duv",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {5, 10})),
+            Arrays.asList(
+                Field.nullable("i", MinorType.INT.getType()),
+                Field.nullable("s", MinorType.VARCHAR.getType())));
+    DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator);
+    vector.allocateNew();
+    IntVector ints = (IntVector) vector.getVectorByType((byte) 5);
+    VarCharVector strings = (VarCharVector) vector.getVectorByType((byte) 10);
+    ints.setSafe(0, 1);
+    ints.setSafe(1, 2);
+    strings.setSafe(0, new Text("a"));
+    strings.setSafe(1, new Text("b"));
+    for (int i = 0; i < 4; i++) {
+      vector.setTypeId(i, (byte) (i % 2 == 0 ? 5 : 10));
+      vector.setOffset(i, i / 2);
+    }
+    vector.setValueCount(4);
+    return vector;
+  }
+
+  @Test
+  public void testSplitAndTransferWithOffsetGaps() {
+    Field field = newFieldWithIntChild();
+    try (DenseUnionVector source = (DenseUnionVector) field.createVector(allocator);
+        DenseUnionVector target = (DenseUnionVector) field.createVector(allocator)) {
+      setValuesWithOffsetGaps(source);
+
+      source.makeTransferPair(target).splitAndTransfer(1, 2);
+
+      ValueVectorUtility.validateFull(target);
+      assertEquals(2, target.getValueCount());
+      assertEquals(102, target.getObject(0));
+      assertEquals(107, target.getObject(1));
+      // The values the window selects are copied, as they are not contiguous in the child
+      assertEquals(2, target.getVectorByType((byte) 0).getValueCount());
+
+      source.makeTransferPair(target).splitAndTransfer(0, 2);
+      assertEquals(100, target.getObject(0));
+      assertEquals(102, target.getObject(1));
+    }
+  }
+
+  @Test
+  public void testSplitAndTransferWithOffsetGapsInStruct() {
+    // The struct sets the value count of the dense union after the split
+    Field field =
+        new Field(
+            "struct",
+            FieldType.nullable(ArrowType.Struct.INSTANCE),
+            Collections.singletonList(newFieldWithIntChild()));
+    try (StructVector source = (StructVector) field.createVector(allocator);
+        StructVector target = (StructVector) field.createVector(allocator)) {
+      DenseUnionVector duv = (DenseUnionVector) source.getChild("duv");
+      for (int i = 0; i < 3; i++) {
+        source.setIndexDefined(i);
+      }
+      source.setValueCount(3);
+      setValuesWithOffsetGaps(duv);
+
+      source.makeTransferPair(target).splitAndTransfer(1, 2);
+
+      ValueVectorUtility.validateFull(target);
+      assertEquals(2, target.getValueCount());
+      assertEquals(102, target.getObject(0).get("duv"));
+      assertEquals(107, target.getObject(1).get("duv"));
+    }
+  }
+
+  private static Field newFieldWithIntChild() {
+    return new Field(
+        "duv",
+        FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {0})),
+        Collections.singletonList(Field.nullable("i", MinorType.INT.getType())));
+  }
+
+  /** Selects 100, 102 and 107 from a child that holds 100 to 107. */
+  private static void setValuesWithOffsetGaps(DenseUnionVector vector) {
+    vector.allocateNew();
+    IntVector child = (IntVector) vector.getVectorByType((byte) 0);
+    for (int i = 0; i < 8; i++) {
+      child.setSafe(i, 100 + i);
+    }
+    int[] offsets = {0, 2, 7};
+    for (int i = 0; i < offsets.length; i++) {
+      vector.setTypeId(i, (byte) 0);
+      vector.setOffset(i, offsets[i]);
+    }
+    vector.setValueCount(offsets.length);
+    // setValueCount() sets the value count of the child to the number of rows selecting it
+    child.setValueCount(8);
   }
 
   @Test
@@ -705,5 +1138,26 @@ public class TestDenseUnionVector {
     holder.isSet = 1;
     holder.value = value;
     return holder;
+  }
+
+  /** Returns a dense union with declared type ids 5 (int) and 10 (bit), as IPC can produce. */
+  private DenseUnionVector newVectorWithTypeIds5And10() {
+    Field field =
+        new Field(
+            "u",
+            FieldType.nullable(new ArrowType.Union(UnionMode.Dense, new int[] {5, 10})),
+            List.of(
+                Field.nullable("i", MinorType.INT.getType()),
+                Field.nullable("b", MinorType.BIT.getType())));
+    DenseUnionVector vector = (DenseUnionVector) field.createVector(allocator);
+    vector.allocateNew();
+    vector.setTypeId(0, (byte) 5);
+    vector.setSafe(0, newIntHolder(5));
+    vector.setTypeId(1, (byte) 10);
+    vector.setSafe(1, newBitHolder(true));
+    vector.setTypeId(2, (byte) 5);
+    vector.setSafe(2, newIntHolder(7));
+    vector.setValueCount(3);
+    return vector;
   }
 }

@@ -19,6 +19,8 @@ package org.apache.arrow.vector.ipc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,9 +32,12 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.vector.FieldVector;
+import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.VectorSchemaRoot;
+import org.apache.arrow.vector.complex.ListVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.impl.ComplexWriterImpl;
+import org.apache.arrow.vector.complex.impl.UnionListWriter;
 import org.apache.arrow.vector.complex.writer.BaseWriter;
 import org.apache.arrow.vector.dictionary.DictionaryProvider;
 import org.apache.arrow.vector.dictionary.DictionaryProvider.MapDictionaryProvider;
@@ -43,11 +48,22 @@ import org.apache.arrow.vector.types.pojo.FieldType;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.Validator;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestJSONFile extends BaseFileTest {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestJSONFile.class);
+  private static final String NEGATIVE_BATCH_COUNT_JSON =
+      "{\"schema\": {\"fields\": [{\"name\": \"i\", \"type\": {\"name\": \"int\","
+          + " \"isSigned\": true, \"bitWidth\": 32}, \"nullable\": true, \"children\": []}]},"
+          + " \"batches\": [{\"count\": -100, \"columns\": [{\"name\": \"i\", \"count\": 0,"
+          + " \"VALIDITY\": [], \"DATA\": []}]}]}";
+  private static final String INT_FIELD_JSON =
+      "{\"name\": \"NAME\", \"type\": {\"name\": \"int\", \"isSigned\": true,"
+          + " \"bitWidth\": 32}, \"nullable\": true, \"children\": []}";
+
+  @TempDir Path tempDir;
 
   @Test
   public void testNoBatches() throws IOException {
@@ -179,6 +195,73 @@ public class TestJSONFile extends BaseFileTest {
             Validator.compareVectorSchemaRoot(root, rootFromJson);
           }
         }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteReadAfterSchemaSync() throws IOException {
+    File file = tempDir.resolve("promoted.json").toFile();
+    Field child = new Field("varchar", FieldType.nullable(new ArrowType.Utf8()), null);
+    Field listField =
+        new Field("list", FieldType.nullable(new ArrowType.List()), Arrays.asList(child));
+    try (BufferAllocator vectorAllocator =
+            allocator.newChildAllocator("original vectors", 0, Integer.MAX_VALUE);
+        VectorSchemaRoot root =
+            VectorSchemaRoot.create(new Schema(Arrays.asList(listField)), vectorAllocator)) {
+      ListVector vector = (ListVector) root.getVector(0);
+      vector.allocateNew();
+      UnionListWriter writer = vector.getWriter();
+      writer.startList();
+      writer.writeVarChar("a");
+      // A big int does not fit the varchar child, so the writer promotes it to a union
+      writer.writeBigInt(1L);
+      writer.endList();
+      root.setRowCount(1);
+      assertTrue(root.syncSchema());
+
+      writeJSON(file, root, null);
+
+      try (BufferAllocator readerAllocator =
+              allocator.newChildAllocator("reader", 0, Integer.MAX_VALUE);
+          JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+        assertEquals(root.getSchema(), reader.start());
+        try (VectorSchemaRoot rootFromJson = reader.read()) {
+          Validator.compareVectorSchemaRoot(root, rootFromJson);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testWriteReadDuplicateFields() throws IOException {
+    File file = tempDir.resolve("duplicate-fields.json").toFile();
+    Field field = new Field("x", FieldType.nullable(new ArrowType.Int(32, true)), null);
+    try (BufferAllocator vectorAllocator =
+            allocator.newChildAllocator("original vectors", 0, Integer.MAX_VALUE);
+        VectorSchemaRoot root =
+            VectorSchemaRoot.create(new Schema(Arrays.asList(field, field)), vectorAllocator)) {
+      ((IntVector) root.getVector(0)).setSafe(0, 1);
+      ((IntVector) root.getVector(1)).setSafe(0, 2);
+      root.setRowCount(1);
+
+      writeJSON(file, root, null);
+
+      try (BufferAllocator readerAllocator =
+              allocator.newChildAllocator("reader", 0, Integer.MAX_VALUE);
+          JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+        reader.start();
+        try (VectorSchemaRoot rootFromJson = reader.read()) {
+          Validator.compareVectorSchemaRoot(root, rootFromJson);
+        }
+      }
+      try (BufferAllocator readerAllocator =
+              allocator.newChildAllocator("reader", 0, Integer.MAX_VALUE);
+          JsonFileReader reader = new JsonFileReader(file, readerAllocator);
+          VectorSchemaRoot rootFromJson =
+              VectorSchemaRoot.create(reader.start(), readerAllocator)) {
+        assertTrue(reader.read(rootFromJson));
+        Validator.compareVectorSchemaRoot(root, rootFromJson);
       }
     }
   }
@@ -520,5 +603,128 @@ public class TestJSONFile extends BaseFileTest {
         }
       }
     }
+  }
+
+  @Test
+  public void testNegativeColumnCountRejected() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": [{\"name\": \"s\", \"type\": {\"name\": \"struct\"},"
+                + " \"nullable\": true, \"children\": []}]},"
+                + " \"batches\": [{\"count\": 0, \"columns\": [{\"name\": \"s\", \"count\": -100,"
+                + " \"VALIDITY\": []}]}]}");
+    // Small limit, so that sizing buffers from a negative count fails fast
+    try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
+        JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+      reader.start();
+      assertThrows(IllegalArgumentException.class, () -> reader.read());
+    }
+  }
+
+  @Test
+  public void testNegativeBatchCountRejected() throws IOException {
+    File file = writeJson(NEGATIVE_BATCH_COUNT_JSON);
+    try (JsonFileReader reader = new JsonFileReader(file, allocator)) {
+      reader.start();
+      assertThrows(IllegalArgumentException.class, () -> reader.read());
+    }
+  }
+
+  @Test
+  public void testNegativeBatchCountRejectedWhenReadingIntoRoot() throws IOException {
+    File file = writeJson(NEGATIVE_BATCH_COUNT_JSON);
+    try (JsonFileReader reader = new JsonFileReader(file, allocator)) {
+      Schema schema = reader.start();
+      try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, allocator)) {
+        assertThrows(IllegalArgumentException.class, () -> reader.read(root));
+      }
+    }
+  }
+
+  @Test
+  public void testNegativeCountInLaterColumnDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + ", "
+                + INT_FIELD_JSON.replace("NAME", "b")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": 1, \"VALIDITY\": [1], \"DATA\": [5]},"
+                + " {\"name\": \"b\", \"count\": -1, \"VALIDITY\": [], \"DATA\": []}]}]}");
+    assertReadRejectedWithoutLeak(file);
+  }
+
+  @Test
+  public void testNegativeChildCountDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": [{\"name\": \"s\", \"type\": {\"name\": \"struct\"},"
+                + " \"nullable\": true, \"children\": ["
+                + INT_FIELD_JSON.replace("NAME", "c")
+                + "]}]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"s\", \"count\": 1, \"VALIDITY\": [1], \"children\": ["
+                + "{\"name\": \"c\", \"count\": -1, \"VALIDITY\": [], \"DATA\": []}]}]}]}");
+    assertReadRejectedWithoutLeak(file);
+  }
+
+  @Test
+  public void testNullColumnCountRejected() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": null, \"VALIDITY\": [1], \"DATA\": [5]}]}]}");
+    assertReadRejectedWithoutLeak(file);
+  }
+
+  @Test
+  public void testExtraBufferValueDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": 1, \"VALIDITY\": [1, 1], \"DATA\": [5]}]}]}");
+    assertReadRejectedWithoutLeak(file, IllegalStateException.class);
+  }
+
+  @Test
+  public void testInvalidBufferValueDoesNotLeak() throws IOException {
+    File file =
+        writeJson(
+            "{\"schema\": {\"fields\": ["
+                + INT_FIELD_JSON.replace("NAME", "a")
+                + "]}, \"batches\": [{\"count\": 1, \"columns\": ["
+                + "{\"name\": \"a\", \"count\": 1, \"VALIDITY\": [1], \"DATA\": [\"x\"]}]}]}");
+    assertReadRejectedWithoutLeak(file, IOException.class);
+  }
+
+  /** Checks that both read methods reject the file and release everything they allocated. */
+  private void assertReadRejectedWithoutLeak(File file) throws IOException {
+    assertReadRejectedWithoutLeak(file, IllegalArgumentException.class);
+  }
+
+  private void assertReadRejectedWithoutLeak(File file, Class<? extends Throwable> expectedType)
+      throws IOException {
+    try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
+        JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+      reader.start();
+      assertThrows(expectedType, () -> reader.read());
+    }
+    try (BufferAllocator readerAllocator = allocator.newChildAllocator("reader", 0, 1 << 20);
+        JsonFileReader reader = new JsonFileReader(file, readerAllocator)) {
+      Schema schema = reader.start();
+      try (VectorSchemaRoot root = VectorSchemaRoot.create(schema, readerAllocator)) {
+        assertThrows(expectedType, () -> reader.read(root));
+      }
+    }
+  }
+
+  private File writeJson(String json) throws IOException {
+    Path path = Files.createTempFile(tempDir, "arrow-", ".json");
+    Files.writeString(path, json);
+    return path.toFile();
   }
 }

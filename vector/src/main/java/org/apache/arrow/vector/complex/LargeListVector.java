@@ -255,9 +255,14 @@ public class LargeListVector extends BaseValueVector
     ArrowBuf bitBuffer = ownBuffers.get(0);
     ArrowBuf offBuffer = ownBuffers.get(1);
 
-    validityBuffer.getReferenceManager().release();
+    // Release this vector's buffers first, so that a failure while loading leaves it empty but
+    // usable. Unlike clear(), this keeps the child vectors.
+    validityBuffer = releaseBuffer(validityBuffer);
+    offsetBuffer = releaseBuffer(offsetBuffer);
+    lastSet = -1;
+    valueCount = 0;
+
     validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    offsetBuffer.getReferenceManager().release();
     offsetBuffer = offBuffer.getReferenceManager().retain(offBuffer, allocator);
 
     validityAllocationSizeInBytes = checkedCastToInt(validityBuffer.capacity());
@@ -316,7 +321,18 @@ public class LargeListVector extends BaseValueVector
     // Both are set to 0 means 0 bytes are written to the IPC stream which will crash IPC readers
     // in other libraries. According to Arrow spec, we should still output the offset buffer which
     // is [0].
-    offsetBuffer.writerIndex((long) (valueCount + 1) * OFFSET_WIDTH);
+    final long requiredOffsetBufferSize = (long) (valueCount + 1) * OFFSET_WIDTH;
+    if (offsetBuffer.capacity() < requiredOffsetBufferSize) {
+      // An empty vector may still hold the allocator's shared empty buffer
+      ArrowBuf newOffsetBuffer = allocator.buffer(requiredOffsetBufferSize);
+      newOffsetBuffer.setZero(0, newOffsetBuffer.capacity());
+      if (offsetBuffer.capacity() > 0) {
+        newOffsetBuffer.setBytes(0, offsetBuffer, 0, offsetBuffer.capacity());
+      }
+      offsetBuffer.getReferenceManager().release();
+      offsetBuffer = newOffsetBuffer;
+    }
+    offsetBuffer.writerIndex(requiredOffsetBufferSize);
   }
 
   /**

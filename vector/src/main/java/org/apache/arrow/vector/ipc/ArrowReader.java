@@ -35,6 +35,7 @@ import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
 import org.apache.arrow.vector.util.DictionaryUtility;
+import org.apache.arrow.vector.util.ValueVectorUtility;
 import org.apache.arrow.vector.util.VectorBatchAppender;
 
 /** Abstract class to read Schema and ArrowRecordBatches. */
@@ -48,6 +49,8 @@ public abstract class ArrowReader implements DictionaryProvider, AutoCloseable {
 
   private final CompressionCodec.Factory compressionFactory;
 
+  private boolean validateBatches = false;
+
   protected ArrowReader(BufferAllocator allocator) {
     this(allocator, CompressionCodec.Factory.INSTANCE);
   }
@@ -55,6 +58,34 @@ public abstract class ArrowReader implements DictionaryProvider, AutoCloseable {
   protected ArrowReader(BufferAllocator allocator, CompressionCodec.Factory compressionFactory) {
     this.allocator = allocator;
     this.compressionFactory = compressionFactory;
+  }
+
+  /**
+   * Sets whether every record batch and dictionary batch is checked with {@link
+   * ValueVectorUtility#validateFull} once it is loaded. This is off by default, because the check
+   * reads every value of the batch.
+   *
+   * <p>Turn it on when the data comes from an untrusted source. The IPC format does not guarantee
+   * that offsets, views or run ends stay within the buffers they point into, and reading such a
+   * batch can read past the end of a buffer, without bounds checks when {@code
+   * arrow.enable_unsafe_memory_access} is set. With this option, a batch that fails the check is
+   * cleared and the load throws {@link
+   * org.apache.arrow.vector.validate.ValidateUtil.ValidateException}.
+   *
+   * @param validateBatches whether to check each loaded batch
+   */
+  public void setValidateBatches(boolean validateBatches) {
+    this.validateBatches = validateBatches;
+  }
+
+  /**
+   * Returns whether every loaded batch is checked with {@link ValueVectorUtility#validateFull}.
+   *
+   * @return true if loaded batches are checked
+   * @see #setValidateBatches(boolean)
+   */
+  public boolean isValidateBatches() {
+    return validateBatches;
   }
 
   /**
@@ -214,6 +245,14 @@ public abstract class ArrowReader implements DictionaryProvider, AutoCloseable {
     } finally {
       batch.close();
     }
+    if (validateBatches) {
+      try {
+        ValueVectorUtility.validateFull(root);
+      } catch (RuntimeException e) {
+        root.clear();
+        throw e;
+      }
+    }
   }
 
   /**
@@ -249,6 +288,16 @@ public abstract class ArrowReader implements DictionaryProvider, AutoCloseable {
       loader.load(dictionaryBatch.getDictionary());
     } finally {
       dictionaryBatch.close();
+    }
+    // A delta is checked before it is appended, so that an invalid delta leaves the dictionary
+    // unchanged
+    if (validateBatches) {
+      try {
+        ValueVectorUtility.validateFull(vector);
+      } catch (RuntimeException e) {
+        vector.clear();
+        throw e;
+      }
     }
   }
 }

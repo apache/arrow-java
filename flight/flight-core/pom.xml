@@ -22,7 +22,7 @@ under the License.
   <parent>
     <groupId>org.apache.arrow</groupId>
     <artifactId>arrow-flight</artifactId>
-    <version>20.0.0-SNAPSHOT</version>
+    <version>20.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>flight-core</artifactId>
@@ -133,7 +133,7 @@ under the License.
     <dependency>
       <groupId>com.google.api.grpc</groupId>
       <artifactId>proto-google-common-protos</artifactId>
-      <version>2.78.0</version>
+      <version>2.82.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>

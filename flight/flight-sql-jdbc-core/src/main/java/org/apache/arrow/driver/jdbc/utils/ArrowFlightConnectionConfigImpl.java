@@ -84,10 +84,11 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
   /**
    * Gets the KeyStore path.
    *
-   * @return the path.
+   * @return the path, or null if not set or blank.
    */
-  public String getTrustStorePath() {
-    return ArrowFlightConnectionProperty.TRUST_STORE.getString(properties);
+  public @Nullable String getTrustStorePath() {
+    final String trustStorePath = ArrowFlightConnectionProperty.TRUST_STORE.getString(properties);
+    return trustStorePath == null || trustStorePath.trim().isEmpty() ? null : trustStorePath;
   }
 
   /**
@@ -108,8 +109,31 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     return ArrowFlightConnectionProperty.USE_SYSTEM_TRUST_STORE.getBoolean(properties);
   }
 
-  public String getTlsRootCertificatesPath() {
-    return ArrowFlightConnectionProperty.TLS_ROOT_CERTS.getString(properties);
+  /**
+   * Gets the path to PEM-encoded TLS root certificates.
+   *
+   * @return the path, or null if not set or blank.
+   */
+  public @Nullable String getTlsRootCertificatesPath() {
+    final String tlsRootCertificatesPath =
+        ArrowFlightConnectionProperty.TLS_ROOT_CERTS.getString(properties);
+    return tlsRootCertificatesPath == null || tlsRootCertificatesPath.trim().isEmpty()
+        ? null
+        : tlsRootCertificatesPath;
+  }
+
+  /**
+   * Gets the hostname to use for TLS certificate verification and SNI instead of the host.
+   *
+   * @return the hostname override, or null if not set or blank.
+   */
+  public @Nullable String getHostnameOverride() {
+    final String hostnameOverride =
+        ArrowFlightConnectionProperty.HOSTNAME_OVERRIDE.getString(properties);
+    if (hostnameOverride == null || hostnameOverride.trim().isEmpty()) {
+      return null;
+    }
+    return hostnameOverride.trim();
   }
 
   public String getClientCertificatePath() {
@@ -258,6 +282,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     TRUST_STORE_PASSWORD("trustStorePassword", null, Type.STRING, false),
     USE_SYSTEM_TRUST_STORE("useSystemTrustStore", true, Type.BOOLEAN, false),
     TLS_ROOT_CERTS("tlsRootCerts", null, Type.STRING, false),
+    HOSTNAME_OVERRIDE("hostnameOverride", null, Type.STRING, false),
     CLIENT_CERTIFICATE("clientCertificate", null, Type.STRING, false),
     CLIENT_KEY("clientKey", null, Type.STRING, false),
     THREAD_POOL_SIZE("threadPoolSize", 1, Type.NUMBER, false),

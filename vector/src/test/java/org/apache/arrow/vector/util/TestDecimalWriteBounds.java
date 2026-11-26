@@ -1,0 +1,50 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.arrow.vector.util;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.apache.arrow.memory.ArrowBuf;
+import org.apache.arrow.memory.BufferAllocator;
+import org.apache.arrow.memory.RootAllocator;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+public class TestDecimalWriteBounds {
+  @ParameterizedTest
+  @ValueSource(ints = {16, 32})
+  public void testWriteLongChecksBufferBounds(int byteWidth) {
+    try (BufferAllocator allocator = new RootAllocator(128);
+        ArrowBuf buffer = allocator.buffer(3L * byteWidth)) {
+      for (long i = 0; i < buffer.capacity(); i++) {
+        buffer.setByte(i, 100);
+      }
+      // The surrounding allocation keeps this regression test safe even if bounds checks fail.
+      ArrowBuf value = buffer.slice(byteWidth, byteWidth);
+      assertThrows(
+          IndexOutOfBoundsException.class,
+          () -> DecimalUtility.writeLongToArrowBuf(1, value, -1, byteWidth));
+      assertThrows(
+          IndexOutOfBoundsException.class,
+          () -> DecimalUtility.writeLongToArrowBuf(1, value, 1, byteWidth));
+      for (long i = 0; i < buffer.capacity(); i++) {
+        assertEquals((byte) 100, buffer.getByte(i));
+      }
+    }
+  }
+}

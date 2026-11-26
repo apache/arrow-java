@@ -18,20 +18,26 @@ package org.apache.arrow.vector.validate;
 
 import static org.apache.arrow.vector.validate.ValidateUtil.validateOrThrow;
 
+import java.util.List;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.vector.BaseFixedWidthVector;
+import org.apache.arrow.vector.BaseIntVector;
 import org.apache.arrow.vector.BaseLargeVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthVector;
 import org.apache.arrow.vector.BaseVariableWidthViewVector;
 import org.apache.arrow.vector.ExtensionTypeVector;
+import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.NullVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
+import org.apache.arrow.vector.complex.LargeListViewVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.ListViewVector;
 import org.apache.arrow.vector.complex.NonNullableStructVector;
+import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.UnionVector;
 
 /** Utility for validating vector data. */
@@ -121,8 +127,46 @@ public class ValidateVectorDataVisitor implements VectorVisitor<Void, Void> {
 
   @Override
   public Void visit(BaseVariableWidthViewVector vector, Void value) {
+    validateViews(vector);
     vector.validateScalars();
     return null;
+  }
+
+  private void validateViews(BaseVariableWidthViewVector vector) {
+    ArrowBuf viewBuffer = vector.getDataBuffer();
+    List<ArrowBuf> dataBuffers = vector.getDataBuffers();
+    for (int i = 0; i < vector.getValueCount(); i++) {
+      if (vector.isNull(i)) {
+        continue;
+      }
+      long start = (long) i * BaseVariableWidthViewVector.ELEMENT_SIZE;
+      int length = viewBuffer.getInt(start);
+      validateOrThrow(length >= 0, "The view at position %s has a negative length: %s.", i, length);
+      if (length > BaseVariableWidthViewVector.INLINE_SIZE) {
+        long bufferIndexStart =
+            start
+                + BaseVariableWidthViewVector.LENGTH_WIDTH
+                + BaseVariableWidthViewVector.PREFIX_WIDTH;
+        int bufferIndex = viewBuffer.getInt(bufferIndexStart);
+        int offset =
+            viewBuffer.getInt(bufferIndexStart + BaseVariableWidthViewVector.BUF_INDEX_WIDTH);
+        validateOrThrow(
+            bufferIndex >= 0 && bufferIndex < dataBuffers.size(),
+            "The view at position %s refers to data buffer %s, but there are %s data buffers.",
+            i,
+            bufferIndex,
+            dataBuffers.size());
+        long capacity = dataBuffers.get(bufferIndex).capacity();
+        validateOrThrow(
+            offset >= 0 && (long) offset + length <= capacity,
+            "The view at position %s (offset %s, length %s) is outside data buffer %s of %s bytes.",
+            i,
+            offset,
+            length,
+            bufferIndex,
+            capacity);
+      }
+    }
   }
 
   @Override
@@ -137,7 +181,7 @@ public class ValidateVectorDataVisitor implements VectorVisitor<Void, Void> {
 
   @Override
   public Void visit(FixedSizeListVector vector, Void value) {
-    validateOffsetBuffer(vector, vector.getValueCount());
+    // A fixed size list has no offset buffer, and the buffer validation checks the inner length
     ValueVector innerVector = vector.getDataVector();
     if (innerVector != null) {
       innerVector.accept(this, null);
@@ -151,6 +195,91 @@ public class ValidateVectorDataVisitor implements VectorVisitor<Void, Void> {
     ValueVector innerVector = vector.getDataVector();
     if (innerVector != null) {
       innerVector.accept(this, null);
+    }
+    return null;
+  }
+
+  @Override
+  public Void visit(ListViewVector vector, Void value) {
+    ValueVector innerVector = vector.getDataVector();
+    int innerValueCount = innerVector == null ? 0 : innerVector.getValueCount();
+    for (int i = 0; i < vector.getValueCount(); i++) {
+      if (vector.isNull(i)) {
+        continue;
+      }
+      int offset = vector.getOffsetBuffer().getInt((long) i * ListViewVector.OFFSET_WIDTH);
+      int size = vector.getSizeBuffer().getInt((long) i * ListViewVector.SIZE_WIDTH);
+      validateListView(i, offset, size, innerValueCount);
+    }
+    if (innerVector != null) {
+      innerVector.accept(this, null);
+    }
+    return null;
+  }
+
+  @Override
+  public Void visit(LargeListViewVector vector, Void value) {
+    ValueVector innerVector = vector.getDataVector();
+    int innerValueCount = innerVector == null ? 0 : innerVector.getValueCount();
+    for (int i = 0; i < vector.getValueCount(); i++) {
+      if (vector.isNull(i)) {
+        continue;
+      }
+      long offset = vector.getOffsetBuffer().getLong((long) i * LargeListViewVector.OFFSET_WIDTH);
+      long size = vector.getSizeBuffer().getLong((long) i * LargeListViewVector.SIZE_WIDTH);
+      validateListView(i, offset, size, innerValueCount);
+    }
+    if (innerVector != null) {
+      innerVector.accept(this, null);
+    }
+    return null;
+  }
+
+  private void validateListView(int index, long offset, long size, int innerValueCount) {
+    validateOrThrow(
+        size >= 0, "The size at position %s of the list view is negative: %s.", index, size);
+    validateOrThrow(
+        size == 0 || (offset >= 0 && offset <= innerValueCount - size),
+        "The list view at position %s (offset %s, size %s) is outside the inner vector of %s"
+            + " values.",
+        index,
+        offset,
+        size,
+        innerValueCount);
+  }
+
+  @Override
+  public Void visit(RunEndEncodedVector vector, Void value) {
+    FieldVector runEndsVector = vector.getRunEndsVector();
+    FieldVector valuesVector = vector.getValuesVector();
+    if (runEndsVector != null) {
+      int runCount = runEndsVector.getValueCount();
+      // Run ends are positive and strictly increasing, and each run has a value. Before its
+      // children are initialized, the run ends vector is empty and not an integer vector.
+      if (runCount > 0) {
+        BaseIntVector runEnds = (BaseIntVector) runEndsVector;
+        long previousEnd = 0;
+        for (int i = 0; i < runCount; i++) {
+          long end = runEnds.getValueAsLong(i);
+          validateOrThrow(
+              end > previousEnd,
+              "The run end at position %s (%s) is not greater than the previous run end (%s).",
+              i,
+              end,
+              previousEnd);
+          previousEnd = end;
+        }
+        int valueCount = valuesVector == null ? 0 : valuesVector.getValueCount();
+        validateOrThrow(
+            valueCount >= runCount,
+            "The values vector has %s values, fewer than the %s runs.",
+            valueCount,
+            runCount);
+      }
+      runEndsVector.accept(this, null);
+    }
+    if (valuesVector != null) {
+      valuesVector.accept(this, null);
     }
     return null;
   }
@@ -182,7 +311,12 @@ public class ValidateVectorDataVisitor implements VectorVisitor<Void, Void> {
       byte typeId = vector.getTypeId(i);
       ValueVector subVector = vector.getVectorByType(typeId);
       validateOrThrow(
-          offset < subVector.getValueCount(),
+          subVector != null,
+          "Dense union vector type id %s at position %s has no sub-vector.",
+          typeId,
+          i);
+      validateOrThrow(
+          offset >= 0 && offset < subVector.getValueCount(),
           "Dense union vector offset exceeds sub-vector boundary. Vector offset %s, sub vector size %s",
           offset,
           subVector.getValueCount());

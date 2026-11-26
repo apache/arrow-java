@@ -24,8 +24,9 @@ through :external+arrow:ref:`c-data-interface`, even between different language 
 
 .. note::
 
-   The Arrow Java C Data Interface implementation does not support importing arrays with
-   a non-zero offset.
+   Importing arrays with a non-zero offset (for example a sliced record batch) is not always
+   zero-copy: buffers that cannot be sliced at the offset, such as offset buffers or view data,
+   are copied.
 
 Java to Python
 --------------

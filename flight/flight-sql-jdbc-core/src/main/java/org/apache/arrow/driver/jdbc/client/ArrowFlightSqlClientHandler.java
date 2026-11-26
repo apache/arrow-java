@@ -183,11 +183,23 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                       sqlClient.getStream(endpoint.getTicket(), getOptions()), null);
               break;
             }
+            final boolean encryptEndpoint =
+                endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS);
+            if (builder.useEncryption && !encryptEndpoint) {
+              exceptions.add(
+                  new SQLException(
+                      String.format(
+                          "Refusing to connect to endpoint location %s without encryption "
+                              + "because the connection to %s is encrypted.",
+                          endpointUri, builder.getLocation().getUri())));
+              continue;
+            }
             final Builder builderForEndpoint =
                 new Builder(ArrowFlightSqlClientHandler.this.builder)
                     .withHost(endpointUri.getHost())
                     .withPort(endpointUri.getPort())
-                    .withEncryption(endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS))
+                    .withEncryption(encryptEndpoint)
+                    .withHostnameOverride(builder.getHostnameOverrideForEndpoint(endpointUri))
                     .withClientCache(flightClientCache)
                     .withConnectTimeout(builder.connectTimeout);
 
@@ -265,6 +277,16 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
    */
   public FlightInfo getInfo(final String query) {
     return sqlClient.execute(query, getOptions());
+  }
+
+  /**
+   * Executes an update query directly, without creating a prepared statement first.
+   *
+   * @param query The update query.
+   * @return the number of rows affected.
+   */
+  public long executeUpdate(final String query) {
+    return sqlClient.executeUpdate(query, getOptions());
   }
 
   @Override
@@ -667,7 +689,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting String password;
 
-    @VisibleForTesting String trustStorePath;
+    @VisibleForTesting @Nullable String trustStorePath;
 
     @VisibleForTesting String trustStorePassword;
 
@@ -677,9 +699,11 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting boolean disableCertificateVerification;
 
+    @VisibleForTesting @Nullable String hostnameOverride;
+
     @VisibleForTesting boolean useSystemTrustStore = true;
 
-    @VisibleForTesting String tlsRootCertificatesPath;
+    @VisibleForTesting @Nullable String tlsRootCertificatesPath;
 
     @VisibleForTesting String clientCertificatePath;
 
@@ -715,7 +739,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     public Builder() {}
 
     /**
-     * Copies the builder.
+     * Copies the builder. The hostname override is not copied, since it is only valid for the
+     * original host and port.
      *
      * @param original The builder to base this copy off of.
      */
@@ -796,13 +821,16 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     }
 
     /**
-     * Sets the KeyStore path for this handler.
+     * Sets the KeyStore path for this handler. Takes precedence over {@link
+     * #withSystemTrustStore(boolean)}, while {@link #withTlsRootCertificates(String)} takes
+     * precedence over this setting.
      *
-     * @param trustStorePath the KeyStore path.
+     * @param trustStorePath the KeyStore path, or null or blank to unset.
      * @return this instance.
      */
-    public Builder withTrustStorePath(final String trustStorePath) {
-      this.trustStorePath = trustStorePath;
+    public Builder withTrustStorePath(@Nullable final String trustStorePath) {
+      this.trustStorePath =
+          trustStorePath == null || trustStorePath.trim().isEmpty() ? null : trustStorePath;
       return this;
     }
 
@@ -841,7 +869,57 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     }
 
     /**
-     * Sets whether to use the certificates from the operating system.
+     * Sets the hostname to use for TLS certificate verification and SNI instead of the host this
+     * handler connects to. It is also sent as the gRPC authority ({@code :authority} header),
+     * replacing both the host and the port, so it may include a port to keep one in the authority.
+     * Ignored when encryption is disabled.
+     *
+     * @param hostnameOverride the hostname to verify the server certificate against, or null or
+     *     blank to use the host.
+     * @return this instance.
+     */
+    public Builder withHostnameOverride(@Nullable final String hostnameOverride) {
+      final String trimmed = hostnameOverride == null ? null : hostnameOverride.trim();
+      this.hostnameOverride = trimmed == null || trimmed.isEmpty() ? null : trimmed;
+      return this;
+    }
+
+    /**
+     * Gets the hostname override to use when connecting to an endpoint location. The override is
+     * only valid for the host and port it was configured for, so endpoints at any other location
+     * are verified against their own hostname. Like the override itself, it is ignored when the
+     * original connection does not use encryption.
+     *
+     * @param endpointUri the endpoint location.
+     * @return the hostname override if the endpoint is on the original host and port, otherwise
+     *     null.
+     */
+    @VisibleForTesting
+    @Nullable String getHostnameOverrideForEndpoint(final URI endpointUri) {
+      final String endpointHost = stripBrackets(endpointUri.getHost());
+      if (!useEncryption
+          || hostnameOverride == null
+          || endpointHost == null
+          || endpointUri.getPort() != port
+          || !endpointHost.equalsIgnoreCase(stripBrackets(host))) {
+        return null;
+      }
+      return hostnameOverride;
+    }
+
+    /**
+     * Strips the brackets from an IPv6 literal. {@link URI#getHost()} keeps them, but a host set
+     * through properties may not have them.
+     */
+    private static @Nullable String stripBrackets(@Nullable final String host) {
+      return host != null && host.startsWith("[") && host.endsWith("]")
+          ? host.substring(1, host.length() - 1)
+          : host;
+    }
+
+    /**
+     * Sets whether to use the certificates from the operating system. Ignored when {@link
+     * #withTrustStorePath(String)} or {@link #withTlsRootCertificates(String)} is set.
      *
      * @param useSystemTrustStore whether to use the system operating certificates.
      * @return this instance.
@@ -855,11 +933,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      * Sets the TLS root certificate path as an alternative to using the System or other Trust
      * Store. The path must contain a valid PEM file.
      *
-     * @param tlsRootCertificatesPath the TLS root certificate path (if TLS is required).
+     * @param tlsRootCertificatesPath the TLS root certificate path (if TLS is required), or null or
+     *     blank to unset.
      * @return this instance.
      */
-    public Builder withTlsRootCertificates(final String tlsRootCertificatesPath) {
-      this.tlsRootCertificatesPath = tlsRootCertificatesPath;
+    public Builder withTlsRootCertificates(@Nullable final String tlsRootCertificatesPath) {
+      this.tlsRootCertificatesPath =
+          tlsRootCertificatesPath == null || tlsRootCertificatesPath.trim().isEmpty()
+              ? null
+              : tlsRootCertificatesPath;
       return this;
     }
 
@@ -1070,20 +1152,28 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         clientBuilder.location(location);
 
         if (useEncryption) {
+          if (hostnameOverride != null) {
+            clientBuilder.overrideHostname(hostnameOverride);
+          }
+
           if (disableCertificateVerification) {
             clientBuilder.verifyServer(false);
           } else {
             if (tlsRootCertificatesPath != null) {
               clientBuilder.trustedCertificates(
                   ClientAuthenticationUtils.getTlsRootCertificatesStream(tlsRootCertificatesPath));
+            } else if (trustStorePath != null) {
+              if (trustStorePassword == null) {
+                throw new IllegalArgumentException(
+                    "trustStorePassword must be specified when trustStore is set.");
+              }
+              clientBuilder.trustedCertificates(
+                  ClientAuthenticationUtils.getCertificateStream(
+                      trustStorePath, trustStorePassword));
             } else if (useSystemTrustStore) {
               clientBuilder.trustedCertificates(
                   ClientAuthenticationUtils.getCertificateInputStreamFromSystem(
                       trustStorePassword));
-            } else if (trustStorePath != null) {
-              clientBuilder.trustedCertificates(
-                  ClientAuthenticationUtils.getCertificateStream(
-                      trustStorePath, trustStorePassword));
             }
           }
 

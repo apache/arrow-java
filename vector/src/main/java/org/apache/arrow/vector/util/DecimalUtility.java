@@ -45,9 +45,17 @@ public class DecimalUtility {
    */
   public static BigDecimal getBigDecimalFromArrowBuf(
       ArrowBuf bytebuf, int index, int scale, int byteWidth) {
+    return getBigDecimalFromArrowBufAtOffset(bytebuf, (long) index * byteWidth, scale, byteWidth);
+  }
+
+  /**
+   * Read an ArrowType.Decimal at the given byte offset in the ArrowBuf and convert to a BigDecimal
+   * with the given scale.
+   */
+  public static BigDecimal getBigDecimalFromArrowBufAtOffset(
+      ArrowBuf bytebuf, long startIndex, int scale, int byteWidth) {
     byte[] value = new byte[byteWidth];
     byte temp;
-    final long startIndex = (long) index * byteWidth;
 
     bytebuf.getBytes(startIndex, value, 0, byteWidth);
     if (LITTLE_ENDIAN) {
@@ -167,7 +175,9 @@ public class DecimalUtility {
           "DecimalUtility.writeLongToArrowBuf() currently supports "
               + "128-bit or 256-bit width data");
     }
-    final long addressOfValue = bytebuf.memoryAddress() + (long) index * byteWidth;
+    final long startIndex = (long) index * byteWidth;
+    bytebuf.checkBytes(startIndex, startIndex + byteWidth);
+    final long addressOfValue = bytebuf.memoryAddress() + startIndex;
     final long padValue = Long.signum(value) == -1 ? -1L : 0L;
     if (LITTLE_ENDIAN) {
       MemoryUtil.putLong(addressOfValue, value);

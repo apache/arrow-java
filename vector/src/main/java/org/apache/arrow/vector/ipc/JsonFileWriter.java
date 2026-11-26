@@ -192,9 +192,10 @@ public class JsonFileWriter implements AutoCloseable {
     {
       generator.writeObjectField("count", recordBatch.getRowCount());
       generator.writeArrayFieldStart("columns");
-      for (Field field : recordBatch.getSchema().getFields()) {
-        FieldVector vector = recordBatch.getVector(field);
-        writeFromVectorIntoJson(field, vector);
+      // Look vectors up by position: columns can have equal Fields, e.g. duplicate names
+      List<Field> fields = recordBatch.getSchema().getFields();
+      for (int i = 0; i < fields.size(); i++) {
+        writeFromVectorIntoJson(fields.get(i), recordBatch.getVector(i));
       }
       generator.writeEndArray();
     }

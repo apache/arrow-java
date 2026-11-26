@@ -34,7 +34,9 @@ import org.apache.arrow.vector.compare.VectorVisitor;
 import org.apache.arrow.vector.complex.DenseUnionVector;
 import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
+import org.apache.arrow.vector.complex.LargeListViewVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.ListViewVector;
 import org.apache.arrow.vector.complex.NonNullableStructVector;
 import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.UnionVector;
@@ -109,6 +111,15 @@ public class ValidateVectorBufferVisitor implements VectorVisitor<Void, Void> {
         "Not enough capacity for data buffer. Minimum capacity %s, actual capacity %s.",
         minCapacity,
         dataBuffer.capacity());
+  }
+
+  private void validateSizeBuffer(ArrowBuf sizeBuffer, long minCapacity) {
+    validateOrThrow(sizeBuffer != null, "The size buffer is null.");
+    validateOrThrow(
+        sizeBuffer.capacity() >= minCapacity,
+        "Not enough capacity for the size buffer. Minimum capacity %s, actual capacity %s.",
+        minCapacity,
+        sizeBuffer.capacity());
   }
 
   private void validateTypeBuffer(ArrowBuf typeBuf, long minCapacity) {
@@ -242,6 +253,34 @@ public class ValidateVectorBufferVisitor implements VectorVisitor<Void, Void> {
         lastOffset + 1,
         dataVectorLength);
 
+    if (dataVector != null) {
+      dataVector.accept(this, null);
+    }
+    return null;
+  }
+
+  @Override
+  public Void visit(ListViewVector vector, Void value) {
+    int valueCount = vector.getValueCount();
+    validateVectorCommon(vector);
+    validateValidityBuffer(vector, valueCount);
+    validateOffsetBuffer(vector, (long) valueCount * ListViewVector.OFFSET_WIDTH);
+    validateSizeBuffer(vector.getSizeBuffer(), (long) valueCount * ListViewVector.SIZE_WIDTH);
+    FieldVector dataVector = vector.getDataVector();
+    if (dataVector != null) {
+      dataVector.accept(this, null);
+    }
+    return null;
+  }
+
+  @Override
+  public Void visit(LargeListViewVector vector, Void value) {
+    int valueCount = vector.getValueCount();
+    validateVectorCommon(vector);
+    validateValidityBuffer(vector, valueCount);
+    validateOffsetBuffer(vector, (long) valueCount * LargeListViewVector.OFFSET_WIDTH);
+    validateSizeBuffer(vector.getSizeBuffer(), (long) valueCount * LargeListViewVector.SIZE_WIDTH);
+    FieldVector dataVector = vector.getDataVector();
     if (dataVector != null) {
       dataVector.accept(this, null);
     }

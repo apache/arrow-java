@@ -18,9 +18,13 @@ package org.apache.arrow.memory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.EnumMap;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import org.apache.arrow.util.VisibleForTesting;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,85 +33,90 @@ import org.slf4j.LoggerFactory;
  */
 final class CheckAllocator {
   private static final Logger logger = LoggerFactory.getLogger(CheckAllocator.class);
-  // unique package names needed by JPMS module naming
-  private static final String ALLOCATOR_PATH_CORE =
-      "org/apache/arrow/memory/DefaultAllocationManagerFactory.class";
-  private static final String ALLOCATOR_PATH_UNSAFE =
-      "org/apache/arrow/memory/unsafe/DefaultAllocationManagerFactory.class";
-  private static final String ALLOCATOR_PATH_NETTY =
-      "org/apache/arrow/memory/netty/DefaultAllocationManagerFactory.class";
+
+  /**
+   * The DefaultAllocationManagerFactory implementations to look for, in order of precedence. Unsafe
+   * and Netty match {@link DefaultAllocationManagerOption.AllocationManagerType}, so the logged
+   * name can be used to set the type explicitly.
+   */
+  private enum Allocator {
+    // only provided by the memory-core tests
+    Core("org.apache.arrow.memory.DefaultAllocationManagerFactory"),
+    // unique package names needed by JPMS module naming
+    Unsafe("org.apache.arrow.memory.unsafe.DefaultAllocationManagerFactory"),
+    Netty("org.apache.arrow.memory.netty.DefaultAllocationManagerFactory");
+
+    private final String factoryClassName;
+    private final String resourcePath;
+
+    Allocator(String factoryClassName) {
+      this.factoryClassName = factoryClassName;
+      this.resourcePath = factoryClassName.replace('.', '/') + ".class";
+    }
+  }
 
   private CheckAllocator() {}
 
   static String check() {
-    Set<URL> urls = scanClasspath();
-    URL rootAllocator = assertOnlyOne(urls);
-    reportResult(rootAllocator);
-    if (rootAllocator.getPath().contains("memory-core")
-        || rootAllocator.getPath().contains("/org/apache/arrow/memory/core/")) {
-      return "org.apache.arrow.memory.DefaultAllocationManagerFactory";
-    } else if (rootAllocator.getPath().contains("memory-unsafe")
-        || rootAllocator.getPath().contains("/org/apache/arrow/memory/unsafe/")) {
-      return "org.apache.arrow.memory.unsafe.DefaultAllocationManagerFactory";
-    } else if (rootAllocator.getPath().contains("memory-netty")
-        || rootAllocator.getPath().contains("/org/apache/arrow/memory/netty/")) {
-      return "org.apache.arrow.memory.netty.DefaultAllocationManagerFactory";
-    } else {
-      throw new IllegalStateException(
-          "Unknown allocation manager type to infer. Current: " + rootAllocator.getPath());
-    }
+    return check(CheckAllocator.class.getClassLoader());
   }
 
-  @SuppressWarnings("URLEqualsHashCode")
-  private static Set<URL> scanClasspath() {
-    // LinkedHashSet appropriate here because it preserves insertion order
-    // during iteration
-    Set<URL> allocatorPathSet = new LinkedHashSet<>();
-    try {
-      ClassLoader allocatorClassLoader = CheckAllocator.class.getClassLoader();
-      Enumeration<URL> paths;
-      if (allocatorClassLoader == null) {
-        paths = ClassLoader.getSystemResources(ALLOCATOR_PATH_CORE);
-        if (!paths.hasMoreElements()) {
-          paths = ClassLoader.getSystemResources(ALLOCATOR_PATH_UNSAFE);
-        }
-        if (!paths.hasMoreElements()) {
-          paths = ClassLoader.getSystemResources(ALLOCATOR_PATH_NETTY);
-        }
-      } else {
-        paths = allocatorClassLoader.getResources(ALLOCATOR_PATH_CORE);
-        if (!paths.hasMoreElements()) {
-          paths = allocatorClassLoader.getResources(ALLOCATOR_PATH_UNSAFE);
-        }
-        if (!paths.hasMoreElements()) {
-          paths = allocatorClassLoader.getResources(ALLOCATOR_PATH_NETTY);
-        }
-      }
-      while (paths.hasMoreElements()) {
-        URL path = paths.nextElement();
-        allocatorPathSet.add(path);
-      }
-    } catch (IOException ioe) {
-      logger.error("Error getting resources from path", ioe);
-    }
-    return allocatorPathSet;
-  }
-
-  private static void reportResult(URL rootAllocator) {
-    String path = rootAllocator.getPath();
-    String subPath = path.substring(path.indexOf("memory"));
-    logger.info("Using DefaultAllocationManager at {}", subPath);
-  }
-
-  private static URL assertOnlyOne(Set<URL> urls) {
-    if (urls.size() > 1) {
-      logger.warn("More than one DefaultAllocationManager on classpath. Choosing first found");
-    }
-    if (urls.isEmpty()) {
+  @VisibleForTesting
+  static String check(@Nullable ClassLoader classLoader) {
+    Map<Allocator, Set<URL>> found = scanClasspath(classLoader);
+    if (found.isEmpty()) {
       throw new RuntimeException(
           "No DefaultAllocationManager found on classpath. Can't allocate Arrow buffers."
               + " Please consider adding arrow-memory-netty or arrow-memory-unsafe as a dependency.");
     }
-    return urls.iterator().next();
+    Map.Entry<Allocator, Set<URL>> first = found.entrySet().iterator().next();
+    Allocator allocator = first.getKey();
+    Set<URL> urls = first.getValue();
+    if (found.size() > 1) {
+      logger.warn(
+          "Found allocation manager types {} on the classpath, using {}. Set the {} system property"
+              + " or the {} environment variable to choose one explicitly",
+          found.keySet(),
+          allocator,
+          DefaultAllocationManagerOption.ALLOCATION_MANAGER_TYPE_PROPERTY_NAME,
+          DefaultAllocationManagerOption.ALLOCATION_MANAGER_TYPE_ENV_NAME);
+    }
+    if (urls.size() > 1) {
+      logger.warn(
+          "More than one {} DefaultAllocationManager on classpath {}. Choosing first found",
+          allocator,
+          urls);
+    }
+    logger.info(
+        "Allocation manager type not specified, inferred {} from the classpath at {}",
+        allocator,
+        urls.iterator().next());
+    return allocator.factoryClassName;
+  }
+
+  @SuppressWarnings("URLEqualsHashCode")
+  private static Map<Allocator, Set<URL>> scanClasspath(@Nullable ClassLoader classLoader) {
+    // EnumMap iterates in declaration order, which is the order of precedence
+    Map<Allocator, Set<URL>> found = new EnumMap<>(Allocator.class);
+    for (Allocator allocator : Allocator.values()) {
+      try {
+        Enumeration<URL> paths =
+            classLoader == null
+                ? ClassLoader.getSystemResources(allocator.resourcePath)
+                : classLoader.getResources(allocator.resourcePath);
+        // LinkedHashSet appropriate here because it preserves insertion order
+        // during iteration
+        Set<URL> urls = new LinkedHashSet<>();
+        while (paths.hasMoreElements()) {
+          urls.add(paths.nextElement());
+        }
+        if (!urls.isEmpty()) {
+          found.put(allocator, urls);
+        }
+      } catch (IOException ioe) {
+        logger.error("Error getting resources from path", ioe);
+      }
+    }
+    return found;
   }
 }

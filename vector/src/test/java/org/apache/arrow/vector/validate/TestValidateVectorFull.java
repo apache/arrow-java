@@ -27,6 +27,7 @@ import java.util.Arrays;
 import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.BaseVariableWidthViewVector;
 import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.Float4Vector;
@@ -34,9 +35,14 @@ import org.apache.arrow.vector.IntVector;
 import org.apache.arrow.vector.LargeVarCharVector;
 import org.apache.arrow.vector.ValueVector;
 import org.apache.arrow.vector.VarCharVector;
+import org.apache.arrow.vector.ViewVarCharVector;
 import org.apache.arrow.vector.complex.DenseUnionVector;
+import org.apache.arrow.vector.complex.FixedSizeListVector;
 import org.apache.arrow.vector.complex.LargeListVector;
+import org.apache.arrow.vector.complex.LargeListViewVector;
 import org.apache.arrow.vector.complex.ListVector;
+import org.apache.arrow.vector.complex.ListViewVector;
+import org.apache.arrow.vector.complex.RunEndEncodedVector;
 import org.apache.arrow.vector.complex.StructVector;
 import org.apache.arrow.vector.complex.UnionVector;
 import org.apache.arrow.vector.holders.NullableFloat4Holder;
@@ -206,6 +212,111 @@ public class TestValidateVectorFull {
       ValidateUtil.ValidateException e =
           assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
       assertTrue(e.getMessage().contains("The type id at position 0 is negative"));
+    }
+  }
+
+  @Test
+  public void testFixedSizeListVector() {
+    try (final FixedSizeListVector vector = FixedSizeListVector.empty("v", 2, allocator)) {
+      validateFull(vector);
+      setVector(vector, Arrays.asList(1, 2), Arrays.asList(3, 4));
+      validateFull(vector);
+    }
+  }
+
+  @Test
+  public void testListViewVector() {
+    try (final ListViewVector vector = ListViewVector.empty("v", allocator)) {
+      validateFull(vector);
+      setVector(vector, Arrays.asList(1, 2, 3), Arrays.asList(4, 5));
+      validateFull(vector);
+
+      // The second list view (offset 3) now ends past the 5 values of the inner vector
+      vector.getSizeBuffer().setInt(ListViewVector.SIZE_WIDTH, 3);
+
+      ValidateUtil.ValidateException e =
+          assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
+      assertTrue(e.getMessage().contains("is outside the inner vector"), e.getMessage());
+    }
+  }
+
+  @Test
+  public void testLargeListViewVector() {
+    try (final LargeListViewVector vector = LargeListViewVector.empty("v", allocator)) {
+      validateFull(vector);
+      setVector(vector, Arrays.asList(1, 2, 3), Arrays.asList(4, 5));
+      validateFull(vector);
+
+      vector.getOffsetBuffer().setLong(LargeListViewVector.OFFSET_WIDTH, -1);
+
+      ValidateUtil.ValidateException e =
+          assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
+      assertTrue(e.getMessage().contains("is outside the inner vector"), e.getMessage());
+    }
+  }
+
+  @Test
+  public void testViewVarCharVector() {
+    try (final ViewVarCharVector vector = new ViewVarCharVector("v", allocator)) {
+      validateFull(vector);
+      setVector(vector, "short", "a string longer than the inline size");
+      validateFull(vector);
+
+      ArrowBuf views = vector.getDataBuffer();
+      long bufferIndex =
+          BaseVariableWidthViewVector.ELEMENT_SIZE
+              + BaseVariableWidthViewVector.LENGTH_WIDTH
+              + BaseVariableWidthViewVector.PREFIX_WIDTH;
+      views.setInt(bufferIndex, 1);
+      ValidateUtil.ValidateException e =
+          assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
+      assertTrue(e.getMessage().contains("refers to data buffer 1"), e.getMessage());
+
+      views.setInt(bufferIndex, 0);
+      views.setInt(bufferIndex + BaseVariableWidthViewVector.BUF_INDEX_WIDTH, 1_000_000);
+      e = assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
+      assertTrue(e.getMessage().contains("is outside data buffer 0"), e.getMessage());
+    }
+  }
+
+  @Test
+  public void testRunEndEncodedVector() {
+    try (final RunEndEncodedVector vector = RunEndEncodedVector.empty("v", allocator)) {
+      validateFull(vector);
+      setVector(vector, Arrays.asList(1, 3), Arrays.asList(10, 20));
+      validateFull(vector);
+
+      IntVector runEnds = (IntVector) vector.getRunEndsVector();
+      runEnds.set(0, 3);
+      ValidateUtil.ValidateException e =
+          assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
+      assertTrue(e.getMessage().contains("is not greater than the previous run end"));
+
+      runEnds.set(0, 1);
+      vector.getValuesVector().setValueCount(1);
+      e = assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
+      assertTrue(e.getMessage().contains("fewer than the 2 runs"), e.getMessage());
+    }
+  }
+
+  @Test
+  public void testDenseUnionVectorNegativeOffset() {
+    try (final DenseUnionVector vector = DenseUnionVector.empty("union", allocator)) {
+      final NullableFloat4Holder float4Holder = new NullableFloat4Holder();
+      float4Holder.value = 1.01f;
+      float4Holder.isSet = 1;
+      byte float4TypeId =
+          vector.registerNewTypeId(Field.nullable("", Types.MinorType.FLOAT4.getType()));
+      vector.setTypeId(0, float4TypeId);
+      vector.setSafe(0, float4Holder);
+      vector.setValueCount(1);
+      validateFull(vector);
+
+      vector.getOffsetBuffer().setInt(0, -1);
+
+      ValidateUtil.ValidateException e =
+          assertThrows(ValidateUtil.ValidateException.class, () -> validateFull(vector));
+      assertTrue(e.getMessage().contains("Dense union vector offset exceeds sub-vector boundary"));
     }
   }
 

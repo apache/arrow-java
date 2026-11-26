@@ -88,7 +88,6 @@ public class DefaultAllocationManagerOption {
         DEFAULT_ALLOCATION_MANAGER_FACTORY = getUnsafeFactory();
         break;
       case Unknown:
-        LOGGER.info("allocation manager type not specified, using netty as the default type");
         DEFAULT_ALLOCATION_MANAGER_FACTORY = getFactory(CheckAllocator.check());
         break;
       default:

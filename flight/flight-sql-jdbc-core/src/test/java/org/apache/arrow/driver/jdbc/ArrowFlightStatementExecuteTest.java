@@ -17,11 +17,14 @@
 package org.apache.arrow.driver.jdbc;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,6 +36,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.arrow.driver.jdbc.utils.MockFlightSqlProducer;
+import org.apache.arrow.flight.CallStatus;
+import org.apache.arrow.flight.FlightRuntimeException;
+import org.apache.arrow.flight.sql.FlightSqlUtils;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.util.AutoCloseables;
@@ -41,7 +47,6 @@ import org.apache.arrow.vector.VectorSchemaRoot;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
-import org.apache.calcite.avatica.AvaticaUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -166,6 +171,96 @@ public class ArrowFlightStatementExecuteTest {
   }
 
   @Test
+  public void testExecutePrepareFailurePreservesServerError() {
+    final SQLException exception =
+        assertThrows(
+            SQLException.class, () -> statement.execute("SELECT * FROM unregistered_table"));
+
+    assertThat(exception.getMessage(), containsString("Query not found"));
+  }
+
+  @Test
+  public void testConnectionCloseClosesStatementAndResultSetAfterExecute() throws SQLException {
+    PRODUCER.clearActionTypeCounter();
+
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+    final ResultSet resultSet = statement.getResultSet();
+    assertNotNull(resultSet);
+
+    connection.close();
+
+    assertThat(statement.isClosed(), is(true));
+    assertThat(resultSet.isClosed(), is(true));
+    assertThat(
+        PRODUCER
+            .getActionTypeCounter()
+            .getOrDefault(FlightSqlUtils.FLIGHT_SQL_CLOSE_PREPARED_STATEMENT.getType(), 0),
+        is(1));
+  }
+
+  @Test
+  public void testExecuteQueryReplacesResultSetAndRemainsConnectionOwned() throws SQLException {
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+    final ResultSet previousResultSet = statement.getResultSet();
+
+    try (ResultSet resultSet = statement.executeQuery(SAMPLE_QUERY_CMD)) {
+      assertThat(previousResultSet.isClosed(), is(true));
+      assertThat(resultSet.next(), is(true));
+      assertThat(resultSet.getByte(1), is((byte) 0));
+
+      connection.close();
+
+      assertThat(statement.isClosed(), is(true));
+      assertThat(resultSet.isClosed(), is(true));
+    }
+  }
+
+  @Test
+  public void testExecuteQueryMapsPreparedStatementCloseFailureToSQLException()
+      throws SQLException {
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+    final ResultSet previousResultSet = statement.getResultSet();
+    PRODUCER.setClosePreparedStatementFailure(
+        CallStatus.INTERNAL.withDescription("Prepared statement close failed"));
+
+    try {
+      final SQLException exception =
+          assertThrows(SQLException.class, () -> statement.executeQuery(SAMPLE_QUERY_CMD));
+
+      assertThat(exception.getCause(), instanceOf(FlightRuntimeException.class));
+      final FlightRuntimeException cause = (FlightRuntimeException) exception.getCause();
+      assertThat(cause.status().code(), is(CallStatus.INTERNAL.code()));
+      assertThat(cause.status().description(), containsString("Prepared statement close failed"));
+      assertThat(previousResultSet.isClosed(), is(true));
+    } finally {
+      PRODUCER.setClosePreparedStatementFailure(null);
+    }
+  }
+
+  @Test
+  public void testExecuteLargeUpdateMapsPreparedStatementCloseFailureToSQLException()
+      throws SQLException {
+    assertThat(statement.execute(SAMPLE_QUERY_CMD), is(true));
+    final ResultSet previousResultSet = statement.getResultSet();
+    PRODUCER.setClosePreparedStatementFailure(
+        CallStatus.INTERNAL.withDescription("Prepared statement close failed"));
+
+    try {
+      final SQLException exception =
+          assertThrows(
+              SQLException.class, () -> statement.executeLargeUpdate(SAMPLE_LARGE_UPDATE_QUERY));
+
+      assertThat(exception.getCause(), instanceOf(FlightRuntimeException.class));
+      final FlightRuntimeException cause = (FlightRuntimeException) exception.getCause();
+      assertThat(cause.status().code(), is(CallStatus.INTERNAL.code()));
+      assertThat(cause.status().description(), containsString("Prepared statement close failed"));
+      assertThat(previousResultSet.isClosed(), is(true));
+    } finally {
+      PRODUCER.setClosePreparedStatementFailure(null);
+    }
+  }
+
+  @Test
   public void testExecuteShouldRunUpdateQueryForSmallUpdate() throws SQLException {
     assertThat(statement.execute(SAMPLE_UPDATE_QUERY), is(false)); // Means this is an UPDATE query.
     assertThat(
@@ -180,12 +275,7 @@ public class ArrowFlightStatementExecuteTest {
     final long updateCountSmall = statement.getUpdateCount();
     final long updateCountLarge = statement.getLargeUpdateCount();
     assertThat(updateCountLarge, is(equalTo(SAMPLE_LARGE_UPDATE_COUNT)));
-    assertThat(
-        updateCountSmall,
-        is(
-            allOf(
-                equalTo((long) AvaticaUtils.toSaturatedInt(updateCountLarge)),
-                not(equalTo(updateCountLarge)))));
+    assertThat(updateCountSmall, is((long) Integer.MAX_VALUE));
     assertThat(statement.getResultSet(), is(nullValue()));
   }
 
@@ -226,12 +316,7 @@ public class ArrowFlightStatementExecuteTest {
     final long updateCountSmall = statement.getUpdateCount();
     final long updateCountLarge = statement.getLargeUpdateCount();
     assertThat(updateCountLarge, is(equalTo(SAMPLE_LARGE_UPDATE_COUNT)));
-    assertThat(
-        updateCountSmall,
-        is(
-            allOf(
-                equalTo((long) AvaticaUtils.toSaturatedInt(updateCountLarge)),
-                not(equalTo(updateCountLarge)))));
+    assertThat(updateCountSmall, is((long) Integer.MAX_VALUE));
     assertThat(statement.getResultSet(), is(nullValue()));
   }
 }

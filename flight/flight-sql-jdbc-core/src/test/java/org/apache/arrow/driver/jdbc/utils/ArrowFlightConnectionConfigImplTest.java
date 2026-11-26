@@ -20,13 +20,17 @@ import static java.lang.Runtime.getRuntime;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CATALOG;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.CONNECT_TIMEOUT_MILLIS;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.HOST;
+import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.HOSTNAME_OVERRIDE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PASSWORD;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.PORT;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.THREAD_POOL_SIZE;
+import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.TLS_ROOT_CERTS;
+import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.TRUST_STORE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USER;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USE_CLIENT_CACHE;
 import static org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty.USE_ENCRYPTION;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.time.Duration;
@@ -36,6 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -88,6 +93,33 @@ public final class ArrowFlightConnectionConfigImplTest {
     assertThat(arrowFlightConnectionConfig.useEncryption(), is(false));
   }
 
+  @ParameterizedTest
+  @ValueSource(strings = {"", " "})
+  public void testBlankHostnameOverrideIsNull(String value) {
+    properties.put(HOSTNAME_OVERRIDE.camelName(), value);
+    assertThat(arrowFlightConnectionConfig.getHostnameOverride(), is(nullValue()));
+  }
+
+  @Test
+  public void testHostnameOverrideIsTrimmed() {
+    properties.put(HOSTNAME_OVERRIDE.camelName(), " flight.example.com ");
+    assertThat(arrowFlightConnectionConfig.getHostnameOverride(), is("flight.example.com"));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"", " "})
+  public void testBlankTrustStoreIsNull(String value) {
+    properties.put(TRUST_STORE.camelName(), value);
+    assertThat(arrowFlightConnectionConfig.getTrustStorePath(), is(nullValue()));
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"", " "})
+  public void testBlankTlsRootCertsIsNull(String value) {
+    properties.put(TLS_ROOT_CERTS.camelName(), value);
+    assertThat(arrowFlightConnectionConfig.getTlsRootCertificatesPath(), is(nullValue()));
+  }
+
   public static Stream<Arguments> provideParameters() {
     int port = RANDOM.nextInt(Short.toUnsignedInt(Short.MAX_VALUE));
     boolean useEncryption = RANDOM.nextBoolean();
@@ -123,6 +155,24 @@ public final class ArrowFlightConnectionConfigImplTest {
             useEncryption,
             (Function<ArrowFlightConnectionConfigImpl, ?>)
                 ArrowFlightConnectionConfigImpl::useEncryption),
+        Arguments.of(
+            HOSTNAME_OVERRIDE,
+            "flight.example.com",
+            "flight.example.com",
+            (Function<ArrowFlightConnectionConfigImpl, ?>)
+                ArrowFlightConnectionConfigImpl::getHostnameOverride),
+        Arguments.of(
+            TRUST_STORE,
+            "/path/to/truststore.jks",
+            "/path/to/truststore.jks",
+            (Function<ArrowFlightConnectionConfigImpl, ?>)
+                ArrowFlightConnectionConfigImpl::getTrustStorePath),
+        Arguments.of(
+            TLS_ROOT_CERTS,
+            "/path/to/ca.pem",
+            "/path/to/ca.pem",
+            (Function<ArrowFlightConnectionConfigImpl, ?>)
+                ArrowFlightConnectionConfigImpl::getTlsRootCertificatesPath),
         Arguments.of(
             THREAD_POOL_SIZE,
             threadPoolSize,

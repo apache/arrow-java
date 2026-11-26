@@ -16,10 +16,9 @@
  */
 package org.apache.arrow.vector.ipc.message;
 
-import static org.apache.arrow.memory.util.LargeMemoryUtil.checkedCastToInt;
-
 import com.google.flatbuffers.FlatBufferBuilder;
 import org.apache.arrow.flatbuf.FieldNode;
+import org.apache.arrow.util.Preconditions;
 
 /** Metadata about Vectors/Arrays that is written to a channel. */
 public class ArrowFieldNode implements FBSerializable {
@@ -31,12 +30,14 @@ public class ArrowFieldNode implements FBSerializable {
    * Constructs a new instance.
    *
    * @param length The number of values written.
-   * @param nullCount The number of null values.
+   * @param nullCount The number of null values, or -1 if unknown.
    */
   public ArrowFieldNode(long length, long nullCount) {
     super();
-    this.length = checkedCastToInt(length);
-    this.nullCount = checkedCastToInt(nullCount);
+    Preconditions.checkArgument(length >= 0, "Expected length >= 0, got %s", length);
+    Preconditions.checkArgument(nullCount >= -1, "Expected nullCount >= -1, got %s", nullCount);
+    this.length = Math.toIntExact(length);
+    this.nullCount = Math.toIntExact(nullCount);
   }
 
   @Override

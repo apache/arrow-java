@@ -68,12 +68,9 @@ public abstract class TestDataset {
 
   protected List<ArrowRecordBatch> collectResultFromFactory(
       DatasetFactory factory, ScanOptions options) {
-    final Dataset dataset = factory.finish();
-    final Scanner scanner = dataset.newScan(options);
-    try {
-      final List<ArrowRecordBatch> ret = collectTaskData(scanner);
-      AutoCloseables.close(scanner, dataset);
-      return ret;
+    try (Dataset dataset = factory.finish();
+        Scanner scanner = dataset.newScan(options)) {
+      return collectTaskData(scanner);
     } catch (RuntimeException e) {
       throw e;
     } catch (Exception e) {

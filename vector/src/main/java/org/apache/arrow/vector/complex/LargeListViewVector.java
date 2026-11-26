@@ -202,11 +202,15 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
     ArrowBuf offBuffer = ownBuffers.get(1);
     ArrowBuf szBuffer = ownBuffers.get(2);
 
-    validityBuffer.getReferenceManager().release();
+    // Release this vector's buffers first, so that a failure while loading leaves it empty but
+    // usable. Unlike clear(), this keeps the child vectors.
+    validityBuffer = releaseBuffer(validityBuffer);
+    offsetBuffer = releaseBuffer(offsetBuffer);
+    sizeBuffer = releaseBuffer(sizeBuffer);
+    valueCount = 0;
+
     validityBuffer = BitVectorHelper.loadValidityBuffer(fieldNode, bitBuffer, allocator);
-    offsetBuffer.getReferenceManager().release();
     offsetBuffer = offBuffer.getReferenceManager().retain(offBuffer, allocator);
-    sizeBuffer.getReferenceManager().release();
     sizeBuffer = szBuffer.getReferenceManager().retain(szBuffer, allocator);
 
     validityAllocationSizeInBytes = checkedCastToInt(validityBuffer.capacity());
@@ -959,5 +963,20 @@ public class LargeListViewVector extends BaseLargeRepeatedValueViewVector
    */
   public void endValue(int index, int size) {
     sizeBuffer.setInt((long) index * SIZE_WIDTH, size);
+  }
+
+  /** Get data vector start index with the given list index. */
+  public int getElementStartIndex(int index) {
+    return offsetBuffer.getInt((long) index * OFFSET_WIDTH);
+  }
+
+  /** Get the size at the given index. */
+  private int getElementSize(int index) {
+    return sizeBuffer.getInt((long) index * SIZE_WIDTH);
+  }
+
+  /** Get data vector end index with the given list index. */
+  public int getElementEndIndex(int index) {
+    return getElementStartIndex(index) + getElementSize(index);
   }
 }

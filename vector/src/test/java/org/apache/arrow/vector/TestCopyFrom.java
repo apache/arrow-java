@@ -20,15 +20,19 @@ import static org.apache.arrow.vector.TestUtils.newVector;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Period;
+import java.util.Arrays;
 import java.util.Objects;
+import org.apache.arrow.memory.ArrowBuf;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
+import org.apache.arrow.vector.ipc.message.ArrowFieldNode;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -1096,6 +1100,24 @@ public class TestCopyFrom {
       assertTrue(vc2.isNull(4));
       assertFalse(vc2.isNull(5));
       assertEquals("1234567890", Objects.requireNonNull(vc2.getObject(5)).toString());
+    }
+  }
+
+  @Test
+  public void testCopyFromChecksSourceDataBuffer() {
+    try (ArrowBuf data = allocator.buffer(64);
+        IntVector source = new IntVector("source", allocator);
+        IntVector target = new IntVector("target", allocator)) {
+      data.setZero(0, data.capacity());
+      // The batch declares 16 non-null values but its data buffer only holds 1 of them
+      source.loadFieldBuffers(
+          new ArrowFieldNode(16, 0), Arrays.asList(allocator.getEmpty(), data.slice(0, 4)));
+      target.allocateNew(16);
+
+      assertThrows(IndexOutOfBoundsException.class, () -> source.get(8));
+      assertThrows(IndexOutOfBoundsException.class, () -> target.copyFrom(8, 0, source));
+      assertThrows(IndexOutOfBoundsException.class, () -> target.copyFromSafe(8, 0, source));
+      assertTrue(target.isNull(0));
     }
   }
 }
