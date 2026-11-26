@@ -114,7 +114,7 @@ jobs:
       - name: Download the latest Apache Arrow C++
         if: github.event_name != 'schedule'
         run: |
-          ci/scripts/download_cpp.sh
+          ci/scripts/download_cpp.sh latest-rc
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
         uses: actions/checkout@v7
@@ -182,7 +182,7 @@ jobs:
       - name: Download the latest Apache Arrow C++
         if: github.event_name != 'schedule'
         run: |
-          ci/scripts/download_cpp.sh
+          ci/scripts/download_cpp.sh latest-rc
       - name: Checkout Apache Arrow C++
         if: github.event_name == 'schedule'
         uses: actions/checkout@v7
