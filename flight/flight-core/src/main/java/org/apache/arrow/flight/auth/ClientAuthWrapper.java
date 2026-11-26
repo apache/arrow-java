@@ -92,6 +92,8 @@ public class ClientAuthWrapper {
               bytes = messages.take();
             } catch (InterruptedException e) {
               Thread.currentThread().interrupt();
+              // Fail the request stream, otherwise the server keeps waiting for a message from us.
+              sender.onError(e);
               throw new RuntimeException(e);
             }
             if (bytes != END_OF_STREAM) {

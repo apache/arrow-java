@@ -19,7 +19,9 @@ package org.apache.arrow.flight.auth;
 import static org.apache.arrow.flight.FlightTestUtil.LOCALHOST;
 import static org.apache.arrow.flight.Location.forGrpcInsecure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.ImmutableList;
@@ -29,9 +31,11 @@ import io.grpc.stub.StreamObserver;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.arrow.flight.Criteria;
 import org.apache.arrow.flight.FlightClient;
 import org.apache.arrow.flight.FlightInfo;
@@ -126,11 +130,7 @@ public class TestBasicAuth {
                 public void onCompleted() {}
               });
 
-      Thread handshakeThread = null;
-      for (int i = 0; i < 100 && handshakeThread == null; i++) {
-        Thread.sleep(50);
-        handshakeThread = findServerHandshakeThread();
-      }
+      final Thread handshakeThread = awaitServerHandshakeThread();
       assertNotNull(handshakeThread, "server handshake did not start");
       Thread.sleep(200);
       // The thread must park until a message arrives rather than spin on the queue.
@@ -140,16 +140,72 @@ public class TestBasicAuth {
     }
   }
 
-  private static Thread findServerHandshakeThread() {
-    for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
-      for (StackTraceElement frame : entry.getValue()) {
-        if (frame.getClassName().startsWith(ServerAuthWrapper.class.getName())
-            && frame.getMethodName().equals("next")) {
+  @Test
+  public void interruptedClientHandshakeEndsServerStream() throws Exception {
+    final AtomicReference<Thread> serverThread = new AtomicReference<>();
+    try {
+      assertThrows(
+          RuntimeException.class,
+          () ->
+              client.authenticate(
+                  new ClientAuthHandler() {
+                    @Override
+                    public void authenticate(ClientAuthSender outgoing, Iterator<byte[]> incoming) {
+                      // Let the server park on our first message, then stop mid-handshake.
+                      serverThread.set(awaitServerHandshakeThread());
+                      Thread.currentThread().interrupt();
+                      incoming.next();
+                    }
+
+                    @Override
+                    public byte[] getCallToken() {
+                      return VALID_TOKEN;
+                    }
+                  }));
+    } finally {
+      // next() re-raises the flag before propagating, so clear it for the rest of the suite.
+      Thread.interrupted();
+    }
+    assertNotNull(serverThread.get(), "server handshake did not start");
+
+    // The interrupted client errors the request stream, so the server gives up on the message.
+    for (int i = 0; i < 100 && isWaitingForHandshakeMessage(serverThread.get()); i++) {
+      Thread.sleep(50);
+    }
+    assertFalse(
+        isWaitingForHandshakeMessage(serverThread.get()),
+        "server handshake stayed blocked after the client was interrupted");
+  }
+
+  private static Thread awaitServerHandshakeThread() {
+    for (int i = 0; i < 100; i++) {
+      for (Map.Entry<Thread, StackTraceElement[]> entry : Thread.getAllStackTraces().entrySet()) {
+        if (isWaitingForHandshakeMessage(entry.getValue())) {
           return entry.getKey();
         }
       }
+      try {
+        Thread.sleep(50);
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return null;
+      }
     }
     return null;
+  }
+
+  private static boolean isWaitingForHandshakeMessage(Thread thread) {
+    return isWaitingForHandshakeMessage(thread.getStackTrace());
+  }
+
+  private static boolean isWaitingForHandshakeMessage(StackTraceElement[] stack) {
+    for (StackTraceElement frame : stack) {
+      if (frame.getClassName().startsWith(ServerAuthWrapper.class.getName())
+          && frame.getMethodName().equals("next")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @BeforeEach
