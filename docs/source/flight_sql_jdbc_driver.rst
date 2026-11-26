@@ -180,7 +180,8 @@ case-sensitive. The supported parameters are:
        false, an endpoint is only fetched over the existing connection,
        whatever the location's scheme: if it has no locations, the
        ``arrow-flight-reuse-connection://?`` location, or a location on
-       **HOSTNAME** and **PORT**. When TLS is enabled, a location on
+       **HOSTNAME** and **PORT**. Hosts are compared by name, without DNS
+       resolution. When TLS is enabled, a location on
        ``hostnameOverride`` is also used, on **PORT** unless the override
        includes a port. Other locations are skipped, and the query fails
        with an ``SQLException`` if an endpoint has no location that can be

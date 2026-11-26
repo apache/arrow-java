@@ -169,6 +169,15 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
   }
 
   @Test
+  public void testFollowEndpointLocationsIsCopied() {
+    final ArrowFlightSqlClientHandler.Builder rootBuilder =
+        new ArrowFlightSqlClientHandler.Builder().withFollowEndpointLocations(false);
+
+    // Unlike the hostname override, this applies to every location, so a copy must keep it.
+    assertFalse(new ArrowFlightSqlClientHandler.Builder(rootBuilder).followEndpointLocations);
+  }
+
+  @Test
   public void testHostnameOverrideForEndpointOnSameHost() {
     final ArrowFlightSqlClientHandler.Builder builder =
         new ArrowFlightSqlClientHandler.Builder()
