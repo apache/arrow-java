@@ -474,6 +474,79 @@ to be declared is that writer/reader is not as efficient as direct access</p>
 </pre></div>
 </div>
 </section>
+<section id="building-mapvector">
+<h2>Building MapVector<a class="headerlink" href="#building-mapvector" title="Link to this heading">¶</a></h2>
+<p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">MapVector</span></code> stores a collection of key-value pairs at each index.
+Each map entry consists of a non-nullable key and a value that can be nullable.
+The key and value can have different data types.</p>
+<p>The following example creates a MapVector with BIGINT keys and INT values.
+The <code class="xref py py-class docutils literal notranslate"><span class="pre">UnionMapWriter</span></code> is used to write entries into the map. Each entry
+must be started with <code class="docutils literal notranslate"><span class="pre">startEntry()</span></code> and completed with <code class="docutils literal notranslate"><span class="pre">endEntry()</span></code>.
+After all entries have been written, <code class="docutils literal notranslate"><span class="pre">endMap()</span></code> completes the map.</p>
+<div class="highlight-Java notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="w"> </span><span class="p">(</span><span class="n">BufferAllocator</span><span class="w"> </span><span class="n">allocator</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">RootAllocator</span><span class="p">(</span><span class="n">Long</span><span class="p">.</span><span class="na">MAX_VALUE</span><span class="p">);</span>
+<span class="w">  </span><span class="n">MapVector</span><span class="w"> </span><span class="n">mapVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MapVector</span><span class="p">.</span><span class="na">empty</span><span class="p">(</span><span class="s">"map"</span><span class="p">,</span><span class="w"> </span><span class="n">allocator</span><span class="p">,</span><span class="w"> </span><span class="kc">false</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">  </span><span class="n">mapVector</span><span class="p">.</span><span class="na">allocateNew</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">UnionMapWriter</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapVector</span><span class="p">.</span><span class="na">getWriter</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// Write the first map: {1L -&gt; 100, 2L -&gt; 200}</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">setPosition</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">startMap</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">startEntry</span><span class="p">();</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">key</span><span class="p">().</span><span class="na">bigInt</span><span class="p">().</span><span class="na">writeBigInt</span><span class="p">(</span><span class="mi">1L</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">value</span><span class="p">().</span><span class="na">integer</span><span class="p">().</span><span class="na">writeInt</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">endEntry</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">startEntry</span><span class="p">();</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">key</span><span class="p">().</span><span class="na">bigInt</span><span class="p">().</span><span class="na">writeBigInt</span><span class="p">(</span><span class="mi">2L</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">value</span><span class="p">().</span><span class="na">integer</span><span class="p">().</span><span class="na">writeInt</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">endEntry</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">endMap</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">// Write the second map: {3L -&gt; 300}</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">setPosition</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">startMap</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">startEntry</span><span class="p">();</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">key</span><span class="p">().</span><span class="na">bigInt</span><span class="p">().</span><span class="na">writeBigInt</span><span class="p">(</span><span class="mi">3L</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">value</span><span class="p">().</span><span class="na">integer</span><span class="p">().</span><span class="na">writeInt</span><span class="p">(</span><span class="mi">300</span><span class="p">);</span>
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">endEntry</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">endMap</span><span class="p">();</span>
+
+<span class="w">  </span><span class="n">writer</span><span class="p">.</span><span class="na">setValueCount</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">// Read the maps</span>
+<span class="w">  </span><span class="n">UnionMapReader</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mapVector</span><span class="p">.</span><span class="na">getReader</span><span class="p">();</span>
+
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">mapVector</span><span class="p">.</span><span class="na">getValueCount</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">reader</span><span class="p">.</span><span class="na">setPosition</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">reader</span><span class="p">.</span><span class="na">next</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="kt">long</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="na">key</span><span class="p">().</span><span class="na">readLong</span><span class="p">();</span>
+<span class="w">      </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="na">value</span><span class="p">().</span><span class="na">readInteger</span><span class="p">();</span>
+
+<span class="w">      </span><span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="n">key</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">" -&gt; "</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">value</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The output is:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1 -&gt; 100
+2 -&gt; 200
+3 -&gt; 300
+</pre></div>
+</div>
+<p>The example demonstrates that the key and value writers can use different
+data types. For example, <code class="docutils literal notranslate"><span class="pre">bigInt()</span></code> is used for keys while <code class="docutils literal notranslate"><span class="pre">integer()</span></code>
+is used for values.</p>
+<p>The child vectors are initialized by the writer as entries are written,
+so there is no need to manually construct the key and value child fields.</p>
+</section>
 <section id="dictionary-encoding">
 <h2>Dictionary Encoding<a class="headerlink" href="#dictionary-encoding" title="Link to this heading">¶</a></h2>
 <p>Dictionary encoding is a form of compression where values of one type are replaced by values of a smaller type: an array of ints replacing an array of strings is a common example. The mapping between the original values and the replacements is held in a ‘dictionary’. Since the dictionary needs only one copy of each of the longer values, the combination of the dictionary and the array of smaller values may use less memory. The more repetitive the original data, the greater the savings.</p>
@@ -617,6 +690,7 @@ referring to some logical sub-sequence of the data through <code class="xref py 
 <li><a class="reference internal" href="#vector-life-cycle">Vector Life Cycle</a></li>
 <li><a class="reference internal" href="#building-valuevector">Building ValueVector</a></li>
 <li><a class="reference internal" href="#building-listvector">Building ListVector</a></li>
+<li><a class="reference internal" href="#building-mapvector">Building MapVector</a></li>
 <li><a class="reference internal" href="#dictionary-encoding">Dictionary Encoding</a></li>
 <li><a class="reference internal" href="#slicing">Slicing</a></li>
 </ul>
