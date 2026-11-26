@@ -17,6 +17,7 @@
 package org.apache.arrow.driver.jdbc.converter.impl;
 
 import java.math.BigDecimal;
+import org.apache.arrow.vector.Decimal256Vector;
 import org.apache.arrow.vector.DecimalVector;
 import org.apache.arrow.vector.FieldVector;
 import org.apache.arrow.vector.types.pojo.ArrowType;
@@ -34,6 +35,9 @@ public class DecimalAvaticaParameterConverter extends BaseAvaticaParameterConver
     BigDecimal value = (BigDecimal) typedValue.toLocal();
     if (vector instanceof DecimalVector) {
       ((DecimalVector) vector).setSafe(index, value);
+      return true;
+    } else if (vector instanceof Decimal256Vector) {
+      ((Decimal256Vector) vector).setSafe(index, value);
       return true;
     }
     return false;

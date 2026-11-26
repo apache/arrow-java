@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.Date;
@@ -460,6 +461,7 @@ public class ArrowFlightPreparedStatementTest {
   @Test
   public void testUpdateQueryWithBatchedParameters() throws SQLException {
     String query = "Fake update with batched parameters";
+    BigDecimal decimal = new BigDecimal("123456789012345678901234567890123456789.01");
     Schema parameterSchema =
         new Schema(
             Arrays.asList(
@@ -467,22 +469,24 @@ public class ArrowFlightPreparedStatementTest {
                 new Field(
                     "",
                     FieldType.nullable(ArrowType.List.INSTANCE),
-                    Collections.singletonList(Field.nullable("", Types.MinorType.INT.getType())))));
+                    Collections.singletonList(Field.nullable("", Types.MinorType.INT.getType()))),
+                Field.nullable("", new ArrowType.Decimal(76, 2, 256))));
     List<List<Object>> expected =
         Arrays.asList(
-            Arrays.asList(new Text("foo"), new Integer[] {1, 2, null}),
-            Arrays.asList(new Text("bar"), new Integer[] {0, -1, 100000}));
+            Arrays.asList(new Text("foo"), new Integer[] {1, 2, null}, decimal),
+            Arrays.asList(new Text("bar"), new Integer[] {0, -1, 100000}, decimal.negate()));
 
     PRODUCER.addUpdateQuery(query, /*updatedRows*/ 42);
     PRODUCER.addExpectedParameters(query, parameterSchema, expected);
 
     try (final PreparedStatement stmt = connection.prepareStatement(query)) {
-      // TODO: make sure this is validated on the server too
       stmt.setString(1, "foo");
       stmt.setArray(2, connection.createArrayOf("INTEGER", new Integer[] {1, 2, null}));
+      stmt.setBigDecimal(3, decimal);
       stmt.addBatch();
       stmt.setString(1, "bar");
       stmt.setArray(2, connection.createArrayOf("INTEGER", new Integer[] {0, -1, 100000}));
+      stmt.setBigDecimal(3, decimal.negate());
       stmt.addBatch();
       int[] updated = stmt.executeBatch();
       assertEquals(42, updated[0]);
