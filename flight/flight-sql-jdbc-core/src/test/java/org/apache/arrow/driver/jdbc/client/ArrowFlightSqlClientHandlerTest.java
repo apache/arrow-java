@@ -159,6 +159,7 @@ public class ArrowFlightSqlClientHandlerTest {
       // Fetched over the encrypted connection, so this does not drop TLS.
       Collections.singletonList(Location.forGrpcInsecure("localhost", 443)),
       Collections.singletonList(Location.forGrpcTls("flight.example.com", 443)),
+      // The other location is skipped instead of failing the query.
       Arrays.asList(Location.forGrpcTls("other.example.com", 443), Location.reuseConnection()),
     };
   }

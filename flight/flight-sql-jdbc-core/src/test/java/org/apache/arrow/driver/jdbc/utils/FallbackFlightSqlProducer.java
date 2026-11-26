@@ -35,9 +35,15 @@ import org.apache.arrow.vector.types.pojo.Schema;
 
 public class FallbackFlightSqlProducer extends BasicFlightSqlProducer {
   private final VectorSchemaRoot data;
+  private Location location;
 
   public FallbackFlightSqlProducer(VectorSchemaRoot resultData) {
     this.data = resultData;
+  }
+
+  /** Sets the location of this producer's server, returned by the "own location" query. */
+  public void setLocation(Location location) {
+    this.location = location;
   }
 
   @Override
@@ -119,6 +125,8 @@ public class FallbackFlightSqlProducer extends BasicFlightSqlProducer {
                       Location.forGrpcInsecure("203.0.113.0", 9999),
                       Location.reuseConnection())
                   .build());
+    } else if (query.equals("own location")) {
+      endpoints = Collections.singletonList(FlightEndpoint.builder(ticket, location).build());
     } else {
       throw CallStatus.UNIMPLEMENTED.withDescription(query).toRuntimeException();
     }

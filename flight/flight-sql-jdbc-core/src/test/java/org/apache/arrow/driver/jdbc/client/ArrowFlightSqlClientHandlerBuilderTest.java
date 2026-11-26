@@ -276,11 +276,32 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
   }
 
   @Test
-  public void testIsConnectionLocationOnIpv6Host() {
+  public void testIsConnectionLocationWithHostnameOverridePort() {
+    // The override replaces the whole authority, so its own port is used instead.
     final ArrowFlightSqlClientHandler.Builder builder =
-        new ArrowFlightSqlClientHandler.Builder().withHost("::1").withPort(1234);
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("127.0.0.1")
+            .withPort(1234)
+            .withHostnameOverride("flight.example.com:32010");
 
-    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://[::1]:1234")));
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://flight.example.com:32010")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://flight.example.com:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://flight.example.com")));
+  }
+
+  @Test
+  public void testIsConnectionLocationOnIpv6Host() {
+    // The JDBC URL is parsed with URI#getHost, which keeps the brackets.
+    assertTrue(
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost(URI.create("jdbc://[::1]:1234").getHost())
+            .withPort(1234)
+            .isConnectionLocation(URI.create("grpc+tls://[::1]:1234")));
+    assertTrue(
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("::1")
+            .withPort(1234)
+            .isConnectionLocation(URI.create("grpc+tls://[::1]:1234")));
   }
 
   @Test

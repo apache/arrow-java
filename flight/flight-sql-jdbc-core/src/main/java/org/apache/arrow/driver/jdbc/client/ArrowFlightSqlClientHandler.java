@@ -954,35 +954,39 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      */
     @VisibleForTesting
     @Nullable String getHostnameOverrideForEndpoint(final URI endpointUri) {
-      final String endpointHost = stripBrackets(endpointUri.getHost());
-      if (!useEncryption
-          || hostnameOverride == null
-          || endpointHost == null
-          || endpointUri.getPort() != port
-          || !endpointHost.equalsIgnoreCase(stripBrackets(host))) {
+      if (!useEncryption || hostnameOverride == null || !isOnHostAndPort(endpointUri, host, port)) {
         return null;
       }
       return hostnameOverride;
     }
 
     /**
-     * Checks whether an endpoint location names the host and port this handler connects to, or the
-     * hostname override and that port. As for the connection, the override is ignored when
-     * encryption is disabled.
+     * Checks whether an endpoint location names the host and port this handler connects to or, when
+     * encryption is enabled, the hostname override. The override is matched with this handler's
+     * port, unless it includes a port of its own.
      *
      * @param endpointUri the endpoint location.
      * @return whether the endpoint can be fetched over this handler's connection.
      */
     @VisibleForTesting
     boolean isConnectionLocation(final URI endpointUri) {
-      final String endpointHost = stripBrackets(endpointUri.getHost());
-      if (endpointHost == null || endpointUri.getPort() != port) {
+      if (isOnHostAndPort(endpointUri, host, port)) {
+        return true;
+      }
+      if (!useEncryption || hostnameOverride == null) {
         return false;
       }
-      return endpointHost.equalsIgnoreCase(stripBrackets(host))
-          || (useEncryption
-              && hostnameOverride != null
-              && endpointHost.equalsIgnoreCase(stripBrackets(hostnameOverride)));
+      return isOnHostAndPort(endpointUri, hostnameOverride, port)
+          || (endpointUri.getPort() != -1
+              && hostnameOverride.equalsIgnoreCase(endpointUri.getRawAuthority()));
+    }
+
+    private static boolean isOnHostAndPort(
+        final URI endpointUri, @Nullable final String host, final int port) {
+      final String endpointHost = stripBrackets(endpointUri.getHost());
+      return endpointHost != null
+          && endpointUri.getPort() == port
+          && endpointHost.equalsIgnoreCase(stripBrackets(host));
     }
 
     /**
@@ -1093,10 +1097,10 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     /**
      * Sets whether getStreams() may connect to the endpoint locations returned by the server. These
-     * connections are sent this handler's credentials. When false, an endpoint is only fetched over
-     * this handler's connection: if it has no locations, the {@link
-     * LocationSchemes#REUSE_CONNECTION} location, or a location on this handler's host (or hostname
-     * override) and port. Other locations are refused.
+     * connections are sent this handler's credentials, client certificate and headers. When false,
+     * an endpoint is only fetched over this handler's connection: if it has no locations, the
+     * {@link LocationSchemes#REUSE_CONNECTION} location, or a location on this handler's host and
+     * port or, when encryption is enabled, on the hostname override. Other locations are refused.
      *
      * @param followEndpointLocations whether to connect to endpoint locations.
      * @return this builder instance.

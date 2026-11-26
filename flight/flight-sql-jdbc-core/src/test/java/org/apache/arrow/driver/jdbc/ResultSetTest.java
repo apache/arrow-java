@@ -722,7 +722,7 @@ public class ResultSetTest {
   }
 
   @Test
-  public void testFallbackFlightServerWithoutFollowingEndpointLocations() throws Exception {
+  public void testOwnLocationWithoutFollowingEndpointLocations() throws Exception {
     final Schema schema =
         new Schema(
             Collections.singletonList(Field.nullable("int_column", Types.MinorType.INT.getType())));
@@ -736,23 +736,23 @@ public class ResultSetTest {
           FlightServer rootServer =
               FlightServer.builder(allocator, forGrpcInsecure("localhost", 0), rootProducer)
                   .build()
-                  .start();
-          Connection newConnection =
-              DriverManager.getConnection(
-                  String.format(
-                      "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false"
-                          + "&followEndpointLocations=false",
-                      rootServer.getLocation().getUri().getHost(), rootServer.getPort()));
-          Statement newStatement = newConnection.createStatement();
-          // The endpoint's first location is on another port, so it is skipped for the
-          // arrow-flight-reuse-connection location.
-          ResultSet result = newStatement.executeQuery("fallback with error")) {
-        List<Integer> actualData = new ArrayList<>();
-        while (result.next()) {
-          actualData.add(result.getInt(1));
-        }
+                  .start()) {
+        rootProducer.setLocation(rootServer.getLocation());
+        try (Connection newConnection =
+                DriverManager.getConnection(
+                    String.format(
+                        "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false"
+                            + "&followEndpointLocations=false",
+                        rootServer.getLocation().getUri().getHost(), rootServer.getPort()));
+            Statement newStatement = newConnection.createStatement();
+            ResultSet result = newStatement.executeQuery("own location")) {
+          List<Integer> actualData = new ArrayList<>();
+          while (result.next()) {
+            actualData.add(result.getInt(1));
+          }
 
-        assertEquals(Collections.singletonList(1), actualData);
+          assertEquals(Collections.singletonList(1), actualData);
+        }
       }
     }
   }
