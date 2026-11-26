@@ -35,7 +35,7 @@ import org.apache.arrow.vector.types.pojo.Schema;
 
 public class FallbackFlightSqlProducer extends BasicFlightSqlProducer {
   private final VectorSchemaRoot data;
-  private Location location;
+  private volatile Location location;
 
   public FallbackFlightSqlProducer(VectorSchemaRoot resultData) {
     this.data = resultData;
