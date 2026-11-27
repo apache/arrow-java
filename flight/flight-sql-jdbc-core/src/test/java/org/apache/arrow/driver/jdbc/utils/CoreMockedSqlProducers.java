@@ -367,7 +367,7 @@ public final class CoreMockedSqlProducers {
                 new Field(
                     "float2",
                     new FieldType(
-                        true,
+                        false,
                         new ArrowType.FloatingPoint(FloatingPointPrecision.SINGLE),
                         null,
                         new FlightSqlColumnMetadata.Builder()

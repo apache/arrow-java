@@ -185,6 +185,13 @@ public class ResultSetMetadataTest {
   }
 
   @Test
+  public void testShouldIsNullable() throws SQLException {
+    assertThat(metadata.isNullable(1), equalTo(ResultSetMetaData.columnNullable));
+    assertThat(metadata.isNullable(2), equalTo(ResultSetMetaData.columnNullable));
+    assertThat(metadata.isNullable(3), equalTo(ResultSetMetaData.columnNoNulls));
+  }
+
+  @Test
   public void testShouldIsAutoIncrement() throws SQLException {
     assertThat(metadata.isAutoIncrement(1), equalTo(true));
     assertThat(metadata.isAutoIncrement(2), equalTo(false));
