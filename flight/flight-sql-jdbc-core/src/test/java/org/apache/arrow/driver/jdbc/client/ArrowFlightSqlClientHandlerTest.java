@@ -18,6 +18,7 @@ package org.apache.arrow.driver.jdbc.client;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,8 +31,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -96,16 +99,138 @@ public class ArrowFlightSqlClientHandlerTest {
     }
   }
 
+  @ParameterizedTest
+  @MethodSource
+  public void testGetStreamsRefusesOtherLocationsWhenNotFollowingEndpointLocations(
+      final boolean useEncryption, final Location location) throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      try (ArrowFlightSqlClientHandler handler =
+          handler(
+              sqlClient,
+              builder(allocator)
+                  .withEncryption(useEncryption)
+                  .withFollowEndpointLocations(false))) {
+        final FlightInfo flightInfo = flightInfoWithLocations(location);
+
+        // A connection attempt would fail with a different error, so the message shows that the
+        // location was refused before connecting and sending the credentials.
+        final SQLException ex =
+            assertThrows(SQLException.class, () -> handler.getStreams(flightInfo));
+        assertTrue(ex.getMessage().contains("followEndpointLocations"), ex.getMessage());
+        verifyNoInteractions(sqlClient);
+      }
+    }
+  }
+
+  private static Object[] testGetStreamsRefusesOtherLocationsWhenNotFollowingEndpointLocations() {
+    return new Object[] {
+      new Object[] {true, Location.forGrpcTls("other.example.com", 443)},
+      new Object[] {true, Location.forGrpcTls("localhost", 8443)},
+      new Object[] {false, Location.forGrpcInsecure("other.example.com", 443)},
+      // On the connection's host and port, but needing another transport.
+      new Object[] {false, Location.forGrpcTls("localhost", 443)},
+      new Object[] {true, new Location(URI.create("https://localhost:443/results"))},
+    };
+  }
+
+  @Test
+  public void testGetStreamsKeepsFollowEndpointLocationsSettingAfterBuilderChanges()
+      throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      final ArrowFlightSqlClientHandler.Builder builder =
+          builder(allocator).withFollowEndpointLocations(false);
+      try (ArrowFlightSqlClientHandler handler = handler(sqlClient, builder)) {
+        builder.withFollowEndpointLocations(true);
+        final FlightInfo flightInfo =
+            flightInfoWithLocations(Location.forGrpcInsecure("other.example.com", 443));
+
+        final SQLException ex =
+            assertThrows(SQLException.class, () -> handler.getStreams(flightInfo));
+        assertTrue(ex.getMessage().contains("followEndpointLocations is false"), ex.getMessage());
+        verifyNoInteractions(sqlClient);
+      }
+    }
+  }
+
+  @Test
+  public void testGetStreamsOmitsUriDetailsWhenNotFollowingEndpointLocations() throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      try (ArrowFlightSqlClientHandler handler =
+          handler(sqlClient, builder(allocator).withFollowEndpointLocations(false))) {
+        final FlightInfo flightInfo =
+            flightInfoWithLocations(
+                new Location(
+                    URI.create("https://userinfo@other.example.com:443/results?query#fragment")));
+
+        final SQLException ex =
+            assertThrows(SQLException.class, () -> handler.getStreams(flightInfo));
+        final String message = ex.getMessage();
+        assertTrue(message.contains("scheme=https, host=other.example.com, port=443"), message);
+        assertFalse(message.contains("userinfo"), message);
+        assertFalse(message.contains("/results"), message);
+        assertFalse(message.contains("?query"), message);
+        assertFalse(message.contains("#fragment"), message);
+        verifyNoInteractions(sqlClient);
+      }
+    }
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void testGetStreamsUsesConnectionWhenNotFollowingEndpointLocations(
+      final List<Location> locations) throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      final FlightStream stream = mock(FlightStream.class);
+      when(sqlClient.getStream(any(Ticket.class), any(CallOption[].class))).thenReturn(stream);
+      try (ArrowFlightSqlClientHandler handler =
+          handler(
+              sqlClient,
+              builder(allocator)
+                  .withHostnameOverride("flight.example.com")
+                  .withFollowEndpointLocations(false))) {
+        final FlightInfo flightInfo = flightInfoWithLocations(locations.toArray(new Location[0]));
+
+        final List<CloseableEndpointStreamPair> streams = handler.getStreams(flightInfo);
+        assertEquals(1, streams.size());
+        assertSame(stream, streams.get(0).getStream());
+        AutoCloseables.close(streams);
+      }
+    }
+  }
+
+  private static Object[] testGetStreamsUsesConnectionWhenNotFollowingEndpointLocations() {
+    return new Object[] {
+      Collections.singletonList(Location.forGrpcTls("localhost", 443)),
+      // Fetched over the encrypted connection, so this does not drop TLS.
+      Collections.singletonList(Location.forGrpcInsecure("localhost", 443)),
+      Collections.singletonList(new Location(URI.create("grpc://localhost:443"))),
+      Collections.singletonList(Location.forGrpcTls("flight.example.com", 443)),
+      // The other location is skipped instead of failing the query.
+      Arrays.asList(Location.forGrpcTls("other.example.com", 443), Location.reuseConnection()),
+    };
+  }
+
+  private static ArrowFlightSqlClientHandler.Builder builder(final BufferAllocator allocator) {
+    return new ArrowFlightSqlClientHandler.Builder()
+        .withHost("localhost")
+        .withPort(443)
+        .withEncryption(true)
+        .withUsername("user")
+        .withPassword("password")
+        .withBufferAllocator(allocator);
+  }
+
   private static ArrowFlightSqlClientHandler encryptedHandler(
       final FlightSqlClient sqlClient, final BufferAllocator allocator) {
-    final ArrowFlightSqlClientHandler.Builder builder =
-        new ArrowFlightSqlClientHandler.Builder()
-            .withHost("localhost")
-            .withPort(443)
-            .withEncryption(true)
-            .withUsername("user")
-            .withPassword("password")
-            .withBufferAllocator(allocator);
+    return handler(sqlClient, builder(allocator));
+  }
+
+  private static ArrowFlightSqlClientHandler handler(
+      final FlightSqlClient sqlClient, final ArrowFlightSqlClientHandler.Builder builder) {
     return new ArrowFlightSqlClientHandler(
         "cacheKey", sqlClient, builder, new ArrayList<>(), Optional.empty(), null);
   }

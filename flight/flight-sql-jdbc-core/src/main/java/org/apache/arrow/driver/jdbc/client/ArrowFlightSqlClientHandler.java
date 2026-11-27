@@ -100,6 +100,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
   private final FlightSqlClient sqlClient;
   private final Set<CallOption> options = new HashSet<>();
   private final Builder builder;
+  private final boolean followEndpointLocations;
   private final Optional<String> catalog;
   private final @Nullable FlightClientCache flightClientCache;
 
@@ -115,6 +116,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     this.cacheKey = Preconditions.checkNotNull(cacheKey);
     this.sqlClient = Preconditions.checkNotNull(sqlClient);
     this.builder = builder;
+    this.followEndpointLocations = builder.followEndpointLocations;
     this.catalog = catalog;
     this.flightClientCache = flightClientCache;
   }
@@ -193,11 +195,25 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           while (locations.hasNext()) {
             Location location = locations.next();
             final URI endpointUri = location.getUri();
-            if (endpointUri.getScheme().equals(LocationSchemes.REUSE_CONNECTION)) {
+            if (endpointUri.getScheme().equals(LocationSchemes.REUSE_CONNECTION)
+                || (!followEndpointLocations && builder.isConnectionLocation(endpointUri))) {
               stream =
                   new CloseableEndpointStreamPair(
                       sqlClient.getStream(endpoint.getTicket(), getOptions()), null);
               break;
+            }
+            if (!followEndpointLocations) {
+              exceptions.add(
+                  new SQLException(
+                      String.format(
+                          "Refusing endpoint location (scheme=%s, host=%s, port=%d) because "
+                              + "followEndpointLocations is false and it cannot be fetched over "
+                              + "the connection to %s.",
+                          endpointUri.getScheme(),
+                          endpointUri.getHost(),
+                          endpointUri.getPort(),
+                          builder.getLocation().getUri())));
+              continue;
             }
             final boolean encryptEndpoint =
                 endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS);
@@ -752,6 +768,8 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
 
     @VisibleForTesting boolean retainAuth = true;
 
+    @VisibleForTesting boolean followEndpointLocations = true;
+
     @VisibleForTesting Optional<String> catalog = Optional.empty();
 
     // Copies (getStreams endpoint handlers) authenticate as the connection; on servers that key
@@ -807,6 +825,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       this.catalog = original.catalog;
       this.oauthConfig = original.oauthConfig;
       this.ownsSession = false;
+      this.followEndpointLocations = original.followEndpointLocations;
 
       if (original.retainCookies) {
         this.cookieFactory = original.cookieFactory;
@@ -939,15 +958,48 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      */
     @VisibleForTesting
     @Nullable String getHostnameOverrideForEndpoint(final URI endpointUri) {
-      final String endpointHost = stripBrackets(endpointUri.getHost());
-      if (!useEncryption
-          || hostnameOverride == null
-          || endpointHost == null
-          || endpointUri.getPort() != port
-          || !endpointHost.equalsIgnoreCase(stripBrackets(host))) {
+      if (!useEncryption || hostnameOverride == null || !isOnHostAndPort(endpointUri, host, port)) {
         return null;
       }
       return hostnameOverride;
+    }
+
+    /**
+     * Checks whether an endpoint location is a gRPC location that names the host and port this
+     * handler connects to or, when encryption is enabled, the hostname override. The override is
+     * matched with this handler's port, unless it includes a port of its own. A {@code grpc+tls}
+     * location only matches when encryption is enabled.
+     *
+     * @param endpointUri the endpoint location.
+     * @return whether the endpoint can be fetched over this handler's connection.
+     */
+    @VisibleForTesting
+    boolean isConnectionLocation(final URI endpointUri) {
+      // Other schemes need another transport, such as an HTTP GET for https, and a location that
+      // asks for TLS must not be fetched over a plaintext connection.
+      final String scheme = endpointUri.getScheme();
+      if (!LocationSchemes.GRPC.equals(scheme)
+          && !LocationSchemes.GRPC_INSECURE.equals(scheme)
+          && !(useEncryption && LocationSchemes.GRPC_TLS.equals(scheme))) {
+        return false;
+      }
+      if (isOnHostAndPort(endpointUri, host, port)) {
+        return true;
+      }
+      if (!useEncryption || hostnameOverride == null) {
+        return false;
+      }
+      return isOnHostAndPort(endpointUri, hostnameOverride, port)
+          || (endpointUri.getPort() != -1
+              && hostnameOverride.equalsIgnoreCase(endpointUri.getRawAuthority()));
+    }
+
+    private static boolean isOnHostAndPort(
+        final URI endpointUri, @Nullable final String host, final int port) {
+      final String endpointHost = stripBrackets(endpointUri.getHost());
+      return endpointHost != null
+          && endpointUri.getPort() == port
+          && endpointHost.equalsIgnoreCase(stripBrackets(host));
     }
 
     /**
@@ -1053,6 +1105,22 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
      */
     public Builder withRetainAuth(boolean retainAuth) {
       this.retainAuth = retainAuth;
+      return this;
+    }
+
+    /**
+     * Sets whether getStreams() may connect to the endpoint locations returned by the server. These
+     * connections are sent this handler's credentials, client certificate and headers. When false,
+     * an endpoint is only fetched over this handler's connection: if it has no locations, the
+     * {@link LocationSchemes#REUSE_CONNECTION} location, or a gRPC location on this handler's host
+     * and port or, when encryption is enabled, on the hostname override. A {@code grpc+tls}
+     * location is only used when encryption is enabled. Other locations are refused.
+     *
+     * @param followEndpointLocations whether to connect to endpoint locations.
+     * @return this builder instance.
+     */
+    public Builder withFollowEndpointLocations(boolean followEndpointLocations) {
+      this.followEndpointLocations = followEndpointLocations;
       return this;
     }
 

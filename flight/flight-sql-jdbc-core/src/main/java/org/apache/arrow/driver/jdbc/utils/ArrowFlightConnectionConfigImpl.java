@@ -183,6 +183,14 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
   }
 
   /**
+   * Indicates if the driver may connect to the endpoint locations returned by the server to fetch
+   * results. When false, results are only fetched over the existing connection.
+   */
+  public boolean followEndpointLocations() {
+    return ArrowFlightConnectionProperty.FOLLOW_ENDPOINT_LOCATIONS.getBoolean(properties);
+  }
+
+  /**
    * The catalog to which a connection is made.
    *
    * @return the catalog.
@@ -289,6 +297,7 @@ public final class ArrowFlightConnectionConfigImpl extends ConnectionConfigImpl 
     TOKEN("token", null, Type.STRING, false),
     RETAIN_COOKIES("retainCookies", true, Type.BOOLEAN, false),
     RETAIN_AUTH("retainAuth", true, Type.BOOLEAN, false),
+    FOLLOW_ENDPOINT_LOCATIONS("followEndpointLocations", true, Type.BOOLEAN, false),
     CATALOG("catalog", null, Type.STRING, false),
     CONNECT_TIMEOUT_MILLIS("connectTimeoutMs", 10000, Type.NUMBER, false),
     USE_CLIENT_CACHE("useClientCache", true, Type.BOOLEAN, false),

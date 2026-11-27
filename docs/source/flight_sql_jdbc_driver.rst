@@ -172,6 +172,24 @@ case-sensitive. The supported parameters are:
        in subsequent internal connections used for retrieving streams
        from separate endpoints.
 
+   * - followEndpointLocations
+     - true
+     - Whether to connect to the endpoint locations returned by the
+       server to retrieve query results. These connections are sent the
+       connection's credentials, client certificate and headers. When
+       false, an endpoint is only fetched over the existing connection:
+       if it has no locations, the ``arrow-flight-reuse-connection://?``
+       location, or a ``grpc``, ``grpc+tcp`` or ``grpc+tls`` location on
+       **HOSTNAME** and **PORT**. A ``grpc+tls`` location is only used
+       when TLS is enabled. Hosts are compared by name, without DNS
+       resolution. When TLS is enabled, a location on ``hostnameOverride``
+       is also used, on **PORT** unless the override includes a port.
+       Other locations are skipped, and the query fails with an
+       ``SQLException`` if an endpoint has no location that can be used.
+       ``retainCookies`` and ``retainAuth`` have no effect when this is
+       false. Set this to false when the server is not trusted to choose
+       which hosts the driver connects to and sends credentials to.
+
 Note that URI values must be URI-encoded if they contain characters such
 as !, @, $, etc.
 

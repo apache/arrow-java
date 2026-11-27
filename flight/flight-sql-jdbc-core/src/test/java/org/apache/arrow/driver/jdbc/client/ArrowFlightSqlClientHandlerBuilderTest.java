@@ -145,6 +145,7 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     assertNull(builder.token);
     assertTrue(builder.retainAuth);
     assertTrue(builder.retainCookies);
+    assertTrue(builder.followEndpointLocations);
     assertNull(builder.tlsRootCertificatesPath);
     assertNull(builder.clientCertificatePath);
     assertNull(builder.clientKeyPath);
@@ -165,6 +166,15 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
     // The override is only valid for the original host and port, so a copy must not carry it to
     // another location by default.
     assertNull(copiedBuilder.hostnameOverride);
+  }
+
+  @Test
+  public void testFollowEndpointLocationsIsCopied() {
+    final ArrowFlightSqlClientHandler.Builder rootBuilder =
+        new ArrowFlightSqlClientHandler.Builder().withFollowEndpointLocations(false);
+
+    // Unlike the hostname override, this applies to every location, so a copy must keep it.
+    assertFalse(new ArrowFlightSqlClientHandler.Builder(rootBuilder).followEndpointLocations);
   }
 
   @Test
@@ -256,6 +266,64 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
             .withHostnameOverride("flight.example.com");
 
     assertNull(builder.getHostnameOverrideForEndpoint(URI.create("grpc+tls://127.0.0.1:1234")));
+  }
+
+  @Test
+  public void testIsConnectionLocation() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("Tunnel.Local")
+            .withPort(1234)
+            .withHostnameOverride("flight.example.com");
+
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://tunnel.local:1234")));
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://FLIGHT.example.com:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://tunnel.local:5678")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://tunnel.local")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://other.example.com:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+unix:///tmp/flight.sock")));
+  }
+
+  @Test
+  public void testIsConnectionLocationWithHostnameOverridePort() {
+    // The override replaces the whole authority, so its own port is used instead.
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("127.0.0.1")
+            .withPort(1234)
+            .withHostnameOverride("flight.example.com:32010");
+
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tls://flight.example.com:32010")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://flight.example.com:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tls://flight.example.com")));
+  }
+
+  @Test
+  public void testIsConnectionLocationOnIpv6Host() {
+    // The JDBC URL is parsed with URI#getHost, which keeps the brackets.
+    assertTrue(
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost(URI.create("jdbc://[::1]:1234").getHost())
+            .withPort(1234)
+            .isConnectionLocation(URI.create("grpc+tls://[::1]:1234")));
+    assertTrue(
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("::1")
+            .withPort(1234)
+            .isConnectionLocation(URI.create("grpc+tls://[::1]:1234")));
+  }
+
+  @Test
+  public void testIsConnectionLocationIgnoresHostnameOverrideWithoutEncryption() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder()
+            .withHost("127.0.0.1")
+            .withPort(1234)
+            .withEncryption(false)
+            .withHostnameOverride("flight.example.com");
+
+    assertTrue(builder.isConnectionLocation(URI.create("grpc+tcp://127.0.0.1:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("grpc+tcp://flight.example.com:1234")));
   }
 
   @Test
