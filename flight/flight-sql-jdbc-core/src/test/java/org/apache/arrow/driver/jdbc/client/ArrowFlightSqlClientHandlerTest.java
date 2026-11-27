@@ -228,8 +228,7 @@ public class ArrowFlightSqlClientHandlerTest {
       when(sqlClient.getStream(any(Ticket.class), any(CallOption[].class))).thenReturn(stream);
       try (ArrowFlightSqlClientHandler handler =
           handler(
-              sqlClient,
-              builder(allocator).withFollowEndpointLocations(followEndpointLocations))) {
+              sqlClient, builder(allocator).withFollowEndpointLocations(followEndpointLocations))) {
         final FlightInfo flightInfo =
             flightInfoWithLocations(
                 new Location(URI.create("//localhost:443")), Location.reuseConnection());
@@ -250,8 +249,7 @@ public class ArrowFlightSqlClientHandlerTest {
       final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
       try (ArrowFlightSqlClientHandler handler =
           handler(
-              sqlClient,
-              builder(allocator).withFollowEndpointLocations(followEndpointLocations))) {
+              sqlClient, builder(allocator).withFollowEndpointLocations(followEndpointLocations))) {
         final FlightInfo flightInfo =
             flightInfoWithLocations(new Location(URI.create("//localhost:443")));
 
