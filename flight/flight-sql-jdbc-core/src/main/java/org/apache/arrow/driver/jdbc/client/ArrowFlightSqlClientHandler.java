@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -175,19 +176,12 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
         } else {
           // Clone the builder and then set the new endpoint on it.
 
-          // GH-38574: Currently a new FlightClient will be made for each partition that
-          // returns a
-          // non-empty Location then disposed of. It may be better to cache clients
-          // because a server
-          // may report the same Locations. It would also be good to identify when the
-          // reported
-          // location
-          // is the same as the original connection's Location and skip creating a
-          // FlightClient in
-          // that scenario.
-          // Also copy the cache to the client so we can share a cache. Cache needs to
-          // cache
-          // negative attempts too.
+          // GH-38574: A new FlightClient is made for each partition that returns a non-empty
+          // Location, then disposed of. The FlightClientCache shared with these clients only
+          // tracks which locations are reachable, so clients are not reused when a server
+          // reports the same Locations. When followEndpointLocations is false, a location that
+          // is this connection's (see Builder#isConnectionLocation) is fetched over it instead,
+          // but by default it still gets a new FlightClient.
           List<Exception> exceptions = new ArrayList<>();
           CloseableEndpointStreamPair stream = null;
           FlightLocationQueue locations =
@@ -195,7 +189,12 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
           while (locations.hasNext()) {
             Location location = locations.next();
             final URI endpointUri = location.getUri();
-            if (endpointUri.getScheme().equals(LocationSchemes.REUSE_CONNECTION)
+            final String scheme = schemeOf(endpointUri);
+            if (scheme == null) {
+              exceptions.add(new SQLException("Refusing endpoint location without a scheme."));
+              continue;
+            }
+            if (scheme.equals(LocationSchemes.REUSE_CONNECTION)
                 || (!followEndpointLocations && builder.isConnectionLocation(endpointUri))) {
               stream =
                   new CloseableEndpointStreamPair(
@@ -209,14 +208,13 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
                           "Refusing endpoint location (scheme=%s, host=%s, port=%d) because "
                               + "followEndpointLocations is false and it cannot be fetched over "
                               + "the connection to %s.",
-                          endpointUri.getScheme(),
+                          scheme,
                           endpointUri.getHost(),
                           endpointUri.getPort(),
                           builder.getLocation().getUri())));
               continue;
             }
-            final boolean encryptEndpoint =
-                endpointUri.getScheme().equals(LocationSchemes.GRPC_TLS);
+            final boolean encryptEndpoint = scheme.equals(LocationSchemes.GRPC_TLS);
             if (builder.useEncryption && !encryptEndpoint) {
               exceptions.add(
                   new SQLException(
@@ -299,6 +297,15 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
       throw new SQLException(outerException);
     }
     return endpoints;
+  }
+
+  /**
+   * Returns the scheme of an endpoint location in lower case, since URI schemes are
+   * case-insensitive, or null if it has none.
+   */
+  private static @Nullable String schemeOf(final URI endpointUri) {
+    final String scheme = endpointUri.getScheme();
+    return scheme == null ? null : scheme.toLowerCase(Locale.ROOT);
   }
 
   /**
@@ -977,7 +984,7 @@ public final class ArrowFlightSqlClientHandler implements AutoCloseable {
     boolean isConnectionLocation(final URI endpointUri) {
       // Other schemes need another transport, such as an HTTP GET for https, and a location that
       // asks for TLS must not be fetched over a plaintext connection.
-      final String scheme = endpointUri.getScheme();
+      final String scheme = schemeOf(endpointUri);
       if (!LocationSchemes.GRPC.equals(scheme)
           && !LocationSchemes.GRPC_INSECURE.equals(scheme)
           && !(useEncryption && LocationSchemes.GRPC_TLS.equals(scheme))) {

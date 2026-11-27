@@ -57,6 +57,7 @@ import org.apache.arrow.vector.types.pojo.Schema;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class ArrowFlightSqlClientHandlerTest {
 
@@ -209,9 +210,57 @@ public class ArrowFlightSqlClientHandlerTest {
       Collections.singletonList(Location.forGrpcInsecure("localhost", 443)),
       Collections.singletonList(new Location(URI.create("grpc://localhost:443"))),
       Collections.singletonList(Location.forGrpcTls("flight.example.com", 443)),
+      // Schemes are case-insensitive.
+      Collections.singletonList(new Location(URI.create("GRPC+TLS://localhost:443"))),
+      Collections.singletonList(new Location(URI.create("ARROW-FLIGHT-REUSE-CONNECTION://?"))),
       // The other location is skipped instead of failing the query.
       Arrays.asList(Location.forGrpcTls("other.example.com", 443), Location.reuseConnection()),
     };
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  public void testGetStreamsSkipsLocationWithoutScheme(final boolean followEndpointLocations)
+      throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      final FlightStream stream = mock(FlightStream.class);
+      when(sqlClient.getStream(any(Ticket.class), any(CallOption[].class))).thenReturn(stream);
+      try (ArrowFlightSqlClientHandler handler =
+          handler(
+              sqlClient,
+              builder(allocator).withFollowEndpointLocations(followEndpointLocations))) {
+        final FlightInfo flightInfo =
+            flightInfoWithLocations(
+                new Location(URI.create("//localhost:443")), Location.reuseConnection());
+
+        final List<CloseableEndpointStreamPair> streams = handler.getStreams(flightInfo);
+        assertEquals(1, streams.size());
+        assertSame(stream, streams.get(0).getStream());
+        AutoCloseables.close(streams);
+      }
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(booleans = {true, false})
+  public void testGetStreamsRefusesLocationWithoutScheme(final boolean followEndpointLocations)
+      throws Exception {
+    try (BufferAllocator allocator = new RootAllocator(Long.MAX_VALUE)) {
+      final FlightSqlClient sqlClient = mock(FlightSqlClient.class);
+      try (ArrowFlightSqlClientHandler handler =
+          handler(
+              sqlClient,
+              builder(allocator).withFollowEndpointLocations(followEndpointLocations))) {
+        final FlightInfo flightInfo =
+            flightInfoWithLocations(new Location(URI.create("//localhost:443")));
+
+        final SQLException ex =
+            assertThrows(SQLException.class, () -> handler.getStreams(flightInfo));
+        assertTrue(ex.getMessage().contains("without a scheme"), ex.getMessage());
+        verifyNoInteractions(sqlClient);
+      }
+    }
   }
 
   private static ArrowFlightSqlClientHandler.Builder builder(final BufferAllocator allocator) {
