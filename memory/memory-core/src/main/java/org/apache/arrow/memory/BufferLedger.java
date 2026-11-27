@@ -174,8 +174,15 @@ public class BufferLedger implements ValueWithKeyIncluded<BufferAllocator>, Refe
     if (historicalLog != null) {
       historicalLog.recordEvent("retain(%d)", increment);
     }
-    final int originalReferenceCount = BUF_REF_CNT_UPDATER.getAndAdd(this, increment);
-    Preconditions.checkArgument(originalReferenceCount > 0);
+    // Never increment from 0: the memory has already been released. An unconditional getAndAdd
+    // would leave the count positive after throwing, so a later retain would succeed on freed
+    // memory (https://github.com/apache/arrow-java/issues/906).
+    int originalReferenceCount;
+    do {
+      originalReferenceCount = bufRefCnt;
+      Preconditions.checkArgument(originalReferenceCount > 0);
+    } while (!BUF_REF_CNT_UPDATER.compareAndSet(
+        this, originalReferenceCount, originalReferenceCount + increment));
   }
 
   /**
