@@ -16,149 +16,107 @@
  */
 package org.apache.arrow.memory.util;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InaccessibleObjectException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import sun.misc.Unsafe;
+import java.util.function.Supplier;
+import org.apache.arrow.memory.DefaultAllocationManagerOption;
+import org.apache.arrow.util.VisibleForTesting;
 
 /** Utilities for memory related operations. */
 public class MemoryUtil {
-  private static final org.slf4j.Logger logger =
-      org.slf4j.LoggerFactory.getLogger(MemoryUtil.class);
-
-  private static final @Nullable Constructor<?> DIRECT_BUFFER_CONSTRUCTOR;
-
-  /** The unsafe object from which to access the off-heap memory. */
-  private static final Unsafe UNSAFE;
-
-  /** The start offset of array data relative to the start address of the array object. */
-  private static final long BYTE_ARRAY_BASE_OFFSET;
-
-  /** The offset of the address field with the {@link java.nio.ByteBuffer} object. */
-  private static final long BYTE_BUFFER_ADDRESS_OFFSET;
 
   /** If the native byte order is little-endian. */
   public static final boolean LITTLE_ENDIAN = ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN;
 
-  // Java 1.8, 9, 11, 17, 21 becomes 1, 9, 11, 17, and 21.
-  @SuppressWarnings("StringSplitter")
-  private static final int majorVersion =
-      Integer.parseInt(System.getProperty("java.specification.version").split("\\D+")[0]);
+  /**
+   * The system property used to select the {@link MemoryUtilAccessor} implementation. When unset,
+   * this defaults to FFM if {@link
+   * DefaultAllocationManagerOption#ALLOCATION_MANAGER_TYPE_PROPERTY_NAME} (or its environment
+   * variable) is set to {@code FFM}, so that selecting the FFM allocation manager avoids {@code
+   * sun.misc.Unsafe} entirely unless this property overrides it.
+   */
+  public static final String MEMORY_ACCESSOR_TYPE_PROPERTY_NAME = "arrow.memory.accessor.type";
 
-  static {
-    try {
-      // try to get the unsafe object
-      final Object maybeUnsafe =
-          AccessController.doPrivileged(
-              new PrivilegedAction<Object>() {
-                @Override
-                @SuppressWarnings({"nullness:argument", "nullness:return"})
-                // incompatible argument for parameter obj of Field.get
-                // incompatible types in return
-                public Object run() {
-                  try {
-                    final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
-                    unsafeField.setAccessible(true);
-                    return unsafeField.get(null);
-                  } catch (Throwable e) {
-                    return e;
-                  }
-                }
-              });
+  private static final org.slf4j.Logger logger =
+      org.slf4j.LoggerFactory.getLogger(MemoryUtil.class);
 
-      if (maybeUnsafe instanceof Throwable) {
-        throw (Throwable) maybeUnsafe;
-      }
+  private static final MemoryUtilAccessor ACCESSOR =
+      resolveAccessor(
+          System.getProperty(MEMORY_ACCESSOR_TYPE_PROPERTY_NAME, ""),
+          DefaultAllocationManagerOption.getDefaultAllocationManagerType(),
+          MemoryUtil::loadFfmAccessor);
 
-      UNSAFE = (Unsafe) maybeUnsafe;
+  private MemoryUtil() {}
 
-      // get the offset of the data inside a byte array object
-      BYTE_ARRAY_BASE_OFFSET = UNSAFE.arrayBaseOffset(byte[].class);
+  /** Returns the fully qualified class name of the {@link MemoryUtilAccessor} in use. */
+  @VisibleForTesting
+  public static String getAccessorClassName() {
+    return ACCESSOR.getClass().getName();
+  }
 
-      // get the offset of the address field in a java.nio.Buffer object
-      long maybeOffset;
-      Field addressField = java.nio.Buffer.class.getDeclaredField("address");
+  @VisibleForTesting
+  static MemoryUtilAccessor resolveAccessor(
+      String type,
+      DefaultAllocationManagerOption.AllocationManagerType allocationManagerType,
+      Supplier<MemoryUtilAccessor> ffmAccessorLoader) {
+    if ("FFM".equals(type)) {
+      logger.info(
+          "{}=FFM, loading org.apache.arrow.memory.ffm.FfmMemoryAccessor",
+          MEMORY_ACCESSOR_TYPE_PROPERTY_NAME);
+      return ffmAccessorLoader.get();
+    }
+    if (type.isEmpty()
+        && allocationManagerType == DefaultAllocationManagerOption.AllocationManagerType.FFM) {
       try {
-        addressField.setAccessible(true);
-        maybeOffset = UNSAFE.objectFieldOffset(addressField);
-      } catch (InaccessibleObjectException e) {
-        maybeOffset = -1;
-        logger.debug(
-            "Cannot access the address field of java.nio.Buffer. DirectBuffer operations wont be available",
+        MemoryUtilAccessor accessor = ffmAccessorLoader.get();
+        logger.info(
+            "{}=FFM, also loading org.apache.arrow.memory.ffm.FfmMemoryAccessor to avoid"
+                + " sun.misc.Unsafe (override with {}=Unsafe if this is not wanted)",
+            DefaultAllocationManagerOption.ALLOCATION_MANAGER_TYPE_PROPERTY_NAME,
+            MEMORY_ACCESSOR_TYPE_PROPERTY_NAME);
+        return accessor;
+      } catch (RuntimeException | LinkageError e) {
+        // Unlike an explicit arrow.memory.accessor.type=FFM request, this preference is only
+        // inferred from a different property, which may not even be load-bearing (e.g. a
+        // caller-supplied custom AllocationManager.Factory that never reads it). Fall back
+        // instead of poisoning MemoryUtil's <clinit> for the rest of the JVM's life (JLS 12.4.2).
+        // LinkageError covers arrow-memory-ffm on a JDK older than 22
+        // (UnsupportedClassVersionError) and a failing FfmMemoryAccessor static initializer.
+        logger.warn(
+            "{}=FFM but the FFM accessor could not be loaded (arrow-memory-ffm is missing or needs"
+                + " JDK 22+); falling back to Unsafe for {} (set {}=Unsafe to silence this"
+                + " warning)",
+            DefaultAllocationManagerOption.ALLOCATION_MANAGER_TYPE_PROPERTY_NAME,
+            MEMORY_ACCESSOR_TYPE_PROPERTY_NAME,
+            MEMORY_ACCESSOR_TYPE_PROPERTY_NAME,
             e);
       }
-      BYTE_BUFFER_ADDRESS_OFFSET = maybeOffset;
+    }
+    if (!"Unsafe".equals(type) && !type.isEmpty()) {
+      logger.warn(
+          "Unrecognized {}={}, falling back to Unsafe (valid values: Unsafe, FFM)",
+          MEMORY_ACCESSOR_TYPE_PROPERTY_NAME,
+          type);
+    }
+    return UnsafeMemoryAccessor.INSTANCE;
+  }
 
-      Constructor<?> directBufferConstructor;
-      long address = -1;
-      final ByteBuffer direct = ByteBuffer.allocateDirect(1);
-      try {
-
-        final Object maybeDirectBufferConstructor =
-            AccessController.doPrivileged(
-                new PrivilegedAction<Object>() {
-                  @Override
-                  public Object run() {
-                    try {
-                      final Constructor<?> constructor =
-                          (majorVersion >= 21)
-                              ? direct.getClass().getDeclaredConstructor(long.class, long.class)
-                              : direct.getClass().getDeclaredConstructor(long.class, int.class);
-                      constructor.setAccessible(true);
-                      logger.debug("Constructor for direct buffer found and made accessible");
-                      return constructor;
-                    } catch (NoSuchMethodException e) {
-                      logger.debug("Cannot get constructor for direct buffer allocation", e);
-                      return e;
-                    } catch (SecurityException e) {
-                      logger.debug("Cannot get constructor for direct buffer allocation", e);
-                      return e;
-                    } catch (InaccessibleObjectException e) {
-                      logger.debug("Cannot get constructor for direct buffer allocation", e);
-                      return e;
-                    }
-                  }
-                });
-
-        if (maybeDirectBufferConstructor instanceof Constructor<?>) {
-          address = UNSAFE.allocateMemory(1);
-          // try to use the constructor now
-          try {
-            ((Constructor<?>) maybeDirectBufferConstructor).newInstance(address, 1);
-            directBufferConstructor = (Constructor<?>) maybeDirectBufferConstructor;
-            logger.debug("direct buffer constructor: available");
-          } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            logger.warn("unable to instantiate a direct buffer via constructor", e);
-            directBufferConstructor = null;
-          }
-        } else {
-          logger.debug(
-              "direct buffer constructor: unavailable", (Throwable) maybeDirectBufferConstructor);
-          directBufferConstructor = null;
-        }
-      } finally {
-        if (address != -1) {
-          UNSAFE.freeMemory(address);
-        }
-      }
-      DIRECT_BUFFER_CONSTRUCTOR = directBufferConstructor;
-    } catch (Throwable e) {
-      // This exception will get swallowed, but it's necessary for the static analysis that ensures
-      // the static fields above get initialized
-      final RuntimeException failure =
-          new RuntimeException(
-              "Failed to initialize MemoryUtil. You must start Java with "
-                  + "`--add-opens=java.base/java.nio=org.apache.arrow.memory.core,ALL-UNNAMED` "
-                  + "(See https://arrow.apache.org/docs/java/install.html)",
-              e);
-      failure.printStackTrace();
-      throw failure;
+  @SuppressWarnings({"nullness:argument", "nullness:return"})
+  private static MemoryUtilAccessor loadFfmAccessor() {
+    try {
+      Field field =
+          Class.forName("org.apache.arrow.memory.ffm.FfmMemoryAccessor")
+              .getDeclaredField("INSTANCE");
+      field.setAccessible(true);
+      return (MemoryUtilAccessor) field.get(null);
+    } catch (ReflectiveOperationException e) {
+      throw new RuntimeException(
+          "Please add arrow-memory-ffm to your classpath,"
+              + " no FfmMemoryAccessor found to satisfy "
+              + MEMORY_ACCESSOR_TYPE_PROPERTY_NAME
+              + "=FFM",
+          e);
     }
   }
 
@@ -169,103 +127,85 @@ public class MemoryUtil {
    * @return address of the underlying memory.
    */
   public static long getByteBufferAddress(ByteBuffer buf) {
-    if (BYTE_BUFFER_ADDRESS_OFFSET != -1) {
-      return UNSAFE.getLong(buf, BYTE_BUFFER_ADDRESS_OFFSET);
-    }
-    throw new UnsupportedOperationException(
-        "Byte buffer address cannot be obtained because sun.misc.Unsafe or java.nio.DirectByteBuffer.<init>(long, int) is not available");
+    return ACCESSOR.getByteBufferAddress(buf);
   }
-
-  private MemoryUtil() {}
 
   /** Create nio byte buffer. */
   public static ByteBuffer directBuffer(long address, int capacity) {
-    if (DIRECT_BUFFER_CONSTRUCTOR != null) {
-      if (capacity < 0) {
-        throw new IllegalArgumentException("Capacity is negative, has to be positive or 0");
-      }
-      try {
-        return (ByteBuffer) DIRECT_BUFFER_CONSTRUCTOR.newInstance(address, capacity);
-      } catch (Throwable cause) {
-        throw new Error(cause);
-      }
-    }
-    throw new UnsupportedOperationException(
-        "sun.misc.Unsafe or java.nio.DirectByteBuffer.<init>(long, int) not available");
-  }
-
-  @SuppressWarnings(
-      "nullness:argument") // to handle null assignment on third party dependency: Unsafe
-  private static void copyMemory(
-      @Nullable Object srcBase,
-      long srcOffset,
-      @Nullable Object destBase,
-      long destOffset,
-      long bytes) {
-    UNSAFE.copyMemory(srcBase, srcOffset, destBase, destOffset, bytes);
+    return ACCESSOR.directBuffer(address, capacity);
   }
 
   public static void copyMemory(long srcAddress, long destAddress, long bytes) {
-    UNSAFE.copyMemory(srcAddress, destAddress, bytes);
+    ACCESSOR.copyMemory(srcAddress, destAddress, bytes);
   }
 
   public static void copyToMemory(byte[] src, long srcIndex, long destAddress, long bytes) {
-    copyMemory(src, BYTE_ARRAY_BASE_OFFSET + srcIndex, null, destAddress, bytes);
+    ACCESSOR.copyToMemory(src, srcIndex, destAddress, bytes);
   }
 
   public static void copyFromMemory(long srcAddress, byte[] dest, long destIndex, long bytes) {
-    copyMemory(null, srcAddress, dest, BYTE_ARRAY_BASE_OFFSET + destIndex, bytes);
+    ACCESSOR.copyFromMemory(srcAddress, dest, destIndex, bytes);
   }
 
   public static byte getByte(long address) {
-    return UNSAFE.getByte(address);
+    return ACCESSOR.getByte(address);
   }
 
   public static void putByte(long address, byte value) {
-    UNSAFE.putByte(address, value);
+    ACCESSOR.putByte(address, value);
   }
 
   public static short getShort(long address) {
-    return UNSAFE.getShort(address);
+    return ACCESSOR.getShort(address);
   }
 
   public static void putShort(long address, short value) {
-    UNSAFE.putShort(address, value);
+    ACCESSOR.putShort(address, value);
   }
 
   public static int getInt(long address) {
-    return UNSAFE.getInt(address);
+    return ACCESSOR.getInt(address);
   }
 
   public static void putInt(long address, int value) {
-    UNSAFE.putInt(address, value);
+    ACCESSOR.putInt(address, value);
   }
 
   public static long getLong(long address) {
-    return UNSAFE.getLong(address);
+    return ACCESSOR.getLong(address);
   }
 
   public static void putLong(long address, long value) {
-    UNSAFE.putLong(address, value);
+    ACCESSOR.putLong(address, value);
   }
 
   public static void setMemory(long address, long bytes, byte value) {
-    UNSAFE.setMemory(address, bytes, value);
+    ACCESSOR.setMemory(address, bytes, value);
   }
 
   public static int getInt(byte[] bytes, int index) {
-    return UNSAFE.getInt(bytes, BYTE_ARRAY_BASE_OFFSET + index);
+    return ACCESSOR.getInt(bytes, index);
   }
 
   public static long getLong(byte[] bytes, int index) {
-    return UNSAFE.getLong(bytes, BYTE_ARRAY_BASE_OFFSET + index);
+    return ACCESSOR.getLong(bytes, index);
   }
 
   public static long allocateMemory(long bytes) {
-    return UNSAFE.allocateMemory(bytes);
+    return ACCESSOR.allocateMemory(bytes);
   }
 
+  /**
+   * Frees native memory at the given address.
+   *
+   * <p>Behavior depends on the accessor selected by {@value #MEMORY_ACCESSOR_TYPE_PROPERTY_NAME}.
+   * The default Unsafe accessor frees any valid native address, whatever allocated it. The FFM
+   * accessor ({@code org.apache.arrow.memory.ffm.FfmMemoryAccessor}) only frees addresses that came
+   * from its own {@link #allocateMemory}, because it releases the owning {@code Arena} rather than
+   * the address; an address from any other source (JNI, a foreign {@code malloc}) is a silent no-op
+   * there.
+   */
   public static void freeMemory(long address) {
-    UNSAFE.freeMemory(address);
+    ACCESSOR.freeMemory(address);
   }
 }
