@@ -16,4 +16,5 @@
 # under the License.
 
 brew "openjdk@17"
+brew "maven"
 brew "sccache"
