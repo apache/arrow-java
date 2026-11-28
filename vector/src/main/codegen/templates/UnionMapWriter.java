@@ -34,6 +34,10 @@ package org.apache.arrow.vector.complex.impl;
 
 <#include "/@includes/vv_imports.ftl" />
 
+<#function is_timestamp_tz type>
+  <#return type?starts_with("TimeStamp") && type?ends_with("TZ")>
+</#function>
+
 /*
  * This class is generated using freemarker and the ${.template_name} template.
  */
@@ -145,6 +149,25 @@ public class UnionMapWriter extends UnionListWriter {
   <#assign uncappedName = name?uncap_first/>
   <#if uncappedName == "int" ><#assign uncappedName = "integer" /></#if>
   <#if !minor.typeParams?? >
+  @Override
+  public ${name}Writer ${uncappedName}() {
+    switch (mode) {
+      case KEY:
+        return entryWriter.${uncappedName}(MapVector.KEY_NAME);
+      case VALUE:
+        return entryWriter.${uncappedName}(MapVector.VALUE_NAME);
+      default:
+        return this;
+    }
+  }
+
+  </#if>
+  <#if is_timestamp_tz(minor.class)>
+  /**
+   * Return the writer for the "key" or "value" field, depending on the current mode. The field
+   * must already exist: create it with {@link #${uncappedName}(String, String)}, passing
+   * {@link MapVector#KEY_NAME} or {@link MapVector#VALUE_NAME} and the timezone.
+   */
   @Override
   public ${name}Writer ${uncappedName}() {
     switch (mode) {
