@@ -411,6 +411,24 @@ internal connections when retrieving streams from separate endpoints.</p></td>
 in subsequent internal connections used for retrieving streams
 from separate endpoints.</p></td>
 </tr>
+<tr class="row-odd"><td><p>followEndpointLocations</p></td>
+<td><p>true</p></td>
+<td><p>Whether to connect to the endpoint locations returned by the
+server to retrieve query results. These connections are sent the
+connection’s credentials, client certificate and headers. When
+false, an endpoint is only fetched over the existing connection:
+if it has no locations, the <code class="docutils literal notranslate"><span class="pre">arrow-flight-reuse-connection://?</span></code>
+location, or a <code class="docutils literal notranslate"><span class="pre">grpc</span></code>, <code class="docutils literal notranslate"><span class="pre">grpc+tcp</span></code> or <code class="docutils literal notranslate"><span class="pre">grpc+tls</span></code> location on
+<strong>HOSTNAME</strong> and <strong>PORT</strong>. A <code class="docutils literal notranslate"><span class="pre">grpc+tls</span></code> location is only used
+when TLS is enabled. Hosts are compared by name, without DNS
+resolution. When TLS is enabled, a location on <code class="docutils literal notranslate"><span class="pre">hostnameOverride</span></code>
+is also used, on <strong>PORT</strong> unless the override includes a port.
+Other locations are skipped, and the query fails with an
+<code class="docutils literal notranslate"><span class="pre">SQLException</span></code> if an endpoint has no location that can be used.
+<code class="docutils literal notranslate"><span class="pre">retainCookies</span></code> and <code class="docutils literal notranslate"><span class="pre">retainAuth</span></code> have no effect when this is
+false. Set this to false when the server is not trusted to choose
+which hosts the driver connects to and sends credentials to.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
