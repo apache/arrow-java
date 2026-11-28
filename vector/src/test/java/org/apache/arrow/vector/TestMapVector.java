@@ -44,6 +44,8 @@ import org.apache.arrow.vector.complex.writer.FieldWriter;
 import org.apache.arrow.vector.extension.UuidType;
 import org.apache.arrow.vector.holders.FixedSizeBinaryHolder;
 import org.apache.arrow.vector.holders.NullableUuidHolder;
+import org.apache.arrow.vector.holders.TimeStampMilliTZHolder;
+import org.apache.arrow.vector.holders.TimeStampNanoTZHolder;
 import org.apache.arrow.vector.types.Types.MinorType;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
@@ -1692,6 +1694,49 @@ public class TestMapVector {
         assertEquals(0, offsets.getInt(0));
         assertEquals(0, allocator.getEmpty().writerIndex());
       }
+    }
+  }
+
+  @Test
+  public void testTimeStampTZWriter() {
+    try (MapVector mapVector = MapVector.empty("map_vector", allocator, false)) {
+      UnionMapWriter writer = mapVector.getWriter();
+      writer.allocate();
+
+      TimeStampMilliTZHolder key = new TimeStampMilliTZHolder();
+      key.timezone = "Europe/Paris";
+      TimeStampNanoTZHolder value = new TimeStampNanoTZHolder();
+      value.timezone = "America/Sao_Paulo";
+
+      // {1000 -> 1000000, 2000 -> null}
+      writer.setPosition(0);
+      writer.startMap();
+      writer.startEntry();
+      key.value = 1_000L;
+      writer.key().timeStampMilliTZ(MapVector.KEY_NAME, key.timezone).write(key);
+      value.value = 1_000_000L;
+      writer.value().timeStampNanoTZ(MapVector.VALUE_NAME, value.timezone).write(value);
+      writer.endEntry();
+      writer.startEntry();
+      key.value = 2_000L;
+      writer.key().timeStampMilliTZ().write(key);
+      writer.value().timeStampNanoTZ().writeNull();
+      writer.endEntry();
+      writer.endMap();
+      writer.setValueCount(1);
+
+      StructVector entries = (StructVector) mapVector.getDataVector();
+      TimeStampMilliTZVector keys = (TimeStampMilliTZVector) entries.getChild(MapVector.KEY_NAME);
+      TimeStampNanoTZVector values = (TimeStampNanoTZVector) entries.getChild(MapVector.VALUE_NAME);
+      assertEquals("Europe/Paris", keys.getTimeZone());
+      assertEquals("America/Sao_Paulo", values.getTimeZone());
+      assertEquals(2, entries.getValueCount());
+      assertEquals(1_000L, keys.get(0));
+      assertEquals(1_000_000L, values.get(0));
+      // the null value only nulls the value, not the whole entry
+      assertFalse(entries.isNull(1));
+      assertEquals(2_000L, keys.get(1));
+      assertTrue(values.isNull(1));
     }
   }
 }

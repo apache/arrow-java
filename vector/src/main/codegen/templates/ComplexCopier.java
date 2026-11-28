@@ -80,8 +80,12 @@ public class ComplexCopier {
             FieldReader structReader = reader.reader();
             if (structReader.isSet()) {
               writer.startEntry();
-              copy(mapReader.key(), getMapWriterForReader(mapReader.key(), writer.key()));
-              copy(mapReader.value(), getMapWriterForReader(mapReader.value(), writer.value()));
+              copy(
+                  mapReader.key(),
+                  getMapWriterForReader(mapReader.key(), writer.key(), MapVector.KEY_NAME));
+              copy(
+                  mapReader.value(),
+                  getMapWriterForReader(mapReader.value(), writer.value(), MapVector.VALUE_NAME));
               writer.endEntry();
             } else {
               writer.writeNull();
@@ -228,7 +232,16 @@ public class ComplexCopier {
     }
   }
 
-  private static FieldWriter getMapWriterForReader(FieldReader reader, MapWriter writer) {
+  /**
+   * Return the writer for a map key or value.
+   *
+   * @param reader the key or value reader
+   * @param writer the map writer, already in key or value mode
+   * @param name the entry field to write: {@link MapVector#KEY_NAME} or
+   *     {@link MapVector#VALUE_NAME}
+   */
+  private static FieldWriter getMapWriterForReader(
+      FieldReader reader, MapWriter writer, String name) {
     switch (reader.getMinorType()) {
     <#list vv.types as type><#list type.minor as minor><#assign name = minor.class?cap_first />
     <#assign fields = minor.fields!type.fields />
@@ -236,6 +249,19 @@ public class ComplexCopier {
     <#if !minor.typeParams?? || minor.class?starts_with("Decimal") >
       case ${name?upper_case}:
       return (FieldWriter) writer.<#if name == "Int">integer<#else>${uncappedName}</#if>();
+    </#if>
+    <#if is_timestamp_tz(minor.class)>
+      case ${name?upper_case}:
+        if (reader.getField().getType() instanceof ArrowType.Timestamp) {
+          ArrowType.Timestamp type = (ArrowType.Timestamp) reader.getField().getType();
+          // The map writer writes into the entry struct, so create the key or value field with
+          // the source timezone, as the struct lookup does.
+          return (FieldWriter) ((FieldWriter) writer).${uncappedName}(name, type.getTimezone());
+        } else {
+          throw new UnsupportedOperationException(
+              "Cannot copy " + reader.getMinorType() + " from a field of type "
+                  + reader.getField().getType());
+        }
     </#if>
     </#list></#list>
       case STRUCT:

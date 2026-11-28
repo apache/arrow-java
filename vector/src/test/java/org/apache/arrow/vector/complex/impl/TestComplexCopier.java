@@ -25,7 +25,7 @@ import java.util.UUID;
 import org.apache.arrow.memory.BufferAllocator;
 import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.DecimalVector;
-import org.apache.arrow.vector.IntVector;
+import org.apache.arrow.vector.TimeStampMilliTZVector;
 import org.apache.arrow.vector.TimeStampNanoTZVector;
 import org.apache.arrow.vector.UuidVector;
 import org.apache.arrow.vector.compare.VectorEqualsVisitor;
@@ -1112,18 +1112,18 @@ public class TestComplexCopier {
   }
 
   @Test
-  public void testCopyMapOfTimeStampNanoTZVectorThrows() {
+  public void testCopyMapOfTimeStampTZVector() {
     try (final MapVector from = MapVector.empty("v", allocator, false);
         final MapVector to = MapVector.empty("v", allocator, false)) {
 
       StructVector entries =
           (StructVector)
               from.addOrGetVector(FieldType.notNullable(ArrowType.Struct.INSTANCE)).getVector();
-      IntVector keys =
+      TimeStampMilliTZVector keys =
           entries.addOrGet(
               MapVector.KEY_NAME,
-              FieldType.notNullable(Types.MinorType.INT.getType()),
-              IntVector.class);
+              FieldType.notNullable(new ArrowType.Timestamp(TimeUnit.MILLISECOND, "Europe/Paris")),
+              TimeStampMilliTZVector.class);
       TimeStampNanoTZVector values =
           entries.addOrGet(
               MapVector.VALUE_NAME,
@@ -1131,21 +1131,38 @@ public class TestComplexCopier {
               TimeStampNanoTZVector.class);
       from.allocateNew();
 
+      // {1000 -> 1000000, 2000 -> null}
       int offset = from.startNewValue(0);
-      keys.setSafe(offset, 1);
+      keys.setSafe(offset, 1_000L);
       values.setSafe(offset, 1_000_000L);
       entries.setIndexDefined(offset);
-      from.endValue(0, 1);
-      from.setValueCount(1);
+      keys.setSafe(offset + 1, 2_000L);
+      values.setNull(offset + 1);
+      entries.setIndexDefined(offset + 1);
+      from.endValue(0, 2);
+      // null
+      from.setNull(1);
+      // {3000 -> 3000000}
+      offset = from.startNewValue(2);
+      keys.setSafe(offset, 3_000L);
+      values.setSafe(offset, 3_000_000L);
+      entries.setIndexDefined(offset);
+      from.endValue(2, 1);
+      from.setValueCount(3);
 
       // copy values
       FieldReader in = from.getReader();
       FieldWriter out = to.getWriter();
-      in.setPosition(0);
-      out.setPosition(0);
-      UnsupportedOperationException e =
-          assertThrows(UnsupportedOperationException.class, () -> ComplexCopier.copy(in, out));
-      assertEquals("TIMESTAMPNANOTZ", e.getMessage());
+      for (int i = 0; i < 3; i++) {
+        in.setPosition(i);
+        out.setPosition(i);
+        ComplexCopier.copy(in, out);
+      }
+      to.setValueCount(3);
+
+      // validate equals, including the key and value timezones
+      assertEquals(from.getField(), to.getField());
+      assertTrue(VectorEqualsVisitor.vectorEquals(from, to));
     }
   }
 }
