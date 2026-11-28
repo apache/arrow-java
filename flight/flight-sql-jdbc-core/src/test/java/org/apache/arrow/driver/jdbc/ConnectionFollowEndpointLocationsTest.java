@@ -31,7 +31,10 @@ import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 import io.grpc.netty.NettyServerBuilder;
+import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.URI;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -46,7 +49,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import org.apache.arrow.driver.jdbc.authentication.UserPasswordAuthentication;
+import org.apache.arrow.driver.jdbc.utils.ArrowFlightConnectionConfigImpl.ArrowFlightConnectionProperty;
 import org.apache.arrow.driver.jdbc.utils.FallbackFlightSqlProducer;
+import org.apache.arrow.driver.jdbc.utils.FlightSqlTestCertificates;
 import org.apache.arrow.driver.jdbc.utils.PartitionedFlightSqlProducer;
 import org.apache.arrow.flight.FlightEndpoint;
 import org.apache.arrow.flight.FlightProducer;
@@ -78,6 +83,9 @@ public class ConnectionFollowEndpointLocationsTest {
   private static final Metadata.Key<String> AUTHORIZATION =
       Metadata.Key.of("authorization", Metadata.ASCII_STRING_MARSHALLER);
   private static final Ticket TICKET = new Ticket("data".getBytes(StandardCharsets.UTF_8));
+  // Issued for localhost, which the servers bind to.
+  private static final FlightSqlTestCertificates.CertKeyPair CERT_KEY =
+      FlightSqlTestCertificates.exampleTlsCerts().get(0);
 
   private BufferAllocator allocator;
   private VectorSchemaRoot data;
@@ -166,6 +174,55 @@ public class ConnectionFollowEndpointLocationsTest {
     }
   }
 
+  @Test
+  public void testPlaintextOwnLocationIsFetchedOverTlsConnection() throws Exception {
+    final Set<SocketAddress> clients = ConcurrentHashMap.newKeySet();
+    try (FallbackFlightSqlProducer producer = new FallbackFlightSqlProducer(data);
+        FlightServer rootServer =
+            tlsServer(
+                producer,
+                (call, headers) ->
+                    clients.add(call.getAttributes().get(Grpc.TRANSPORT_ATTR_REMOTE_ADDR)))) {
+      // The server only accepts TLS, so fetching this location over plaintext would fail.
+      producer.setLocation(Location.forGrpcInsecure("localhost", rootServer.getPort()));
+      try (Connection connection =
+              DriverManager.getConnection(tlsUrl(rootServer, "&followEndpointLocations=false"));
+          Statement statement = connection.createStatement();
+          ResultSet resultSet = statement.executeQuery("own location")) {
+        assertTrue(resultSet.next());
+        assertEquals(1, resultSet.getInt(1));
+      }
+      assertEquals(1, clients.size());
+    }
+  }
+
+  @Test
+  public void testUpperCaseTlsLocationIsFollowedOverTls() throws Exception {
+    final List<String> dataServerCalls = Collections.synchronizedList(new ArrayList<>());
+    try (FlightServer dataServer =
+            tlsServerBuilder(
+                    new PartitionedFlightSqlProducer.DataOnlyFlightSqlProducer(TICKET, data),
+                    (call, headers) ->
+                        dataServerCalls.add(String.valueOf(headers.get(AUTHORIZATION))))
+                .build()
+                .start();
+        PartitionedFlightSqlProducer producer =
+            new PartitionedFlightSqlProducer(
+                data.getSchema(),
+                new FlightEndpoint(
+                    TICKET,
+                    new Location(URI.create("GRPC+TLS://localhost:" + dataServer.getPort()))));
+        FlightServer rootServer = tlsServer(producer, (call, headers) -> {});
+        Connection connection = DriverManager.getConnection(tlsUrl(rootServer, ""));
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("SELECT 1")) {
+      // Schemes are case-insensitive, so this is not refused as an unencrypted location.
+      assertTrue(resultSet.next());
+      assertEquals(1, resultSet.getInt(1));
+      assertFalse(dataServerCalls.isEmpty());
+    }
+  }
+
   /** Starts a server that serves {@link #TICKET} and records the authorization of each call. */
   private FlightServer dataServer(final List<String> calls) throws Exception {
     return serverBuilder(
@@ -186,9 +243,34 @@ public class ConnectionFollowEndpointLocationsTest {
         .start();
   }
 
+  /** Starts a TLS server that requires {@link #USER} and {@link #PASSWORD}. */
+  private FlightServer tlsServer(
+      final FlightProducer producer, final BiConsumer<ServerCall<?, ?>, Metadata> onCall)
+      throws Exception {
+    return tlsServerBuilder(producer, onCall)
+        .headerAuthenticator(
+            new UserPasswordAuthentication.Builder().user(USER, PASSWORD).build().authenticate())
+        .build()
+        .start();
+  }
+
+  private FlightServer.Builder tlsServerBuilder(
+      final FlightProducer producer, final BiConsumer<ServerCall<?, ?>, Metadata> onCall)
+      throws IOException {
+    return serverBuilder(Location.forGrpcTls("localhost", 0), producer, onCall)
+        .useTls(CERT_KEY.cert, CERT_KEY.key);
+  }
+
   private FlightServer.Builder serverBuilder(
       final FlightProducer producer, final BiConsumer<ServerCall<?, ?>, Metadata> onCall) {
-    return FlightServer.builder(allocator, Location.forGrpcInsecure("localhost", 0), producer)
+    return serverBuilder(Location.forGrpcInsecure("localhost", 0), producer, onCall);
+  }
+
+  private FlightServer.Builder serverBuilder(
+      final Location location,
+      final FlightProducer producer,
+      final BiConsumer<ServerCall<?, ?>, Metadata> onCall) {
+    return FlightServer.builder(allocator, location, producer)
         .transportHint(
             "grpc.builderConsumer",
             (Consumer<NettyServerBuilder>)
@@ -210,5 +292,19 @@ public class ConnectionFollowEndpointLocationsTest {
     return String.format(
         "jdbc:arrow-flight-sql://%s:%d/?useEncryption=false&user=%s&password=%s%s",
         server.getLocation().getUri().getHost(), server.getPort(), USER, PASSWORD, extraParameters);
+  }
+
+  private static String tlsUrl(final FlightServer server, final String extraParameters)
+      throws Exception {
+    return String.format(
+        "jdbc:arrow-flight-sql://%s:%d/?useEncryption=true&useSystemTrustStore=false&%s=%s"
+            + "&user=%s&password=%s%s",
+        server.getLocation().getUri().getHost(),
+        server.getPort(),
+        ArrowFlightConnectionProperty.TLS_ROOT_CERTS.camelName(),
+        URLEncoder.encode(CERT_KEY.cert.getPath(), "UTF-8"),
+        USER,
+        PASSWORD,
+        extraParameters);
   }
 }

@@ -285,6 +285,21 @@ public class ArrowFlightSqlClientHandlerBuilderTest {
   }
 
   @Test
+  public void testIsConnectionLocationIgnoresSchemeCase() {
+    final ArrowFlightSqlClientHandler.Builder builder =
+        new ArrowFlightSqlClientHandler.Builder().withHost("localhost").withPort(1234);
+
+    assertTrue(builder.isConnectionLocation(URI.create("GRPC+TLS://localhost:1234")));
+    assertTrue(builder.isConnectionLocation(URI.create("Grpc+Tcp://localhost:1234")));
+    assertTrue(builder.isConnectionLocation(URI.create("GRPC://localhost:1234")));
+    assertFalse(builder.isConnectionLocation(URI.create("//localhost:1234")));
+    assertFalse(
+        builder
+            .withEncryption(false)
+            .isConnectionLocation(URI.create("GRPC+TLS://localhost:1234")));
+  }
+
+  @Test
   public void testIsConnectionLocationWithHostnameOverridePort() {
     // The override replaces the whole authority, so its own port is used instead.
     final ArrowFlightSqlClientHandler.Builder builder =
